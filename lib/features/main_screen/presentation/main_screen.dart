@@ -215,7 +215,7 @@ class _MainScreenState extends State<MainScreen> {
                         margin: const EdgeInsets.symmetric(horizontal: 4),
                         decoration: isSelected
                             ? BoxDecoration(
-                                color: AppTheme.appThemePrimary,
+                                color: AppTheme.appIconTheme,
                                 borderRadius: BorderRadius.circular(10),
                               )
                             : null,
