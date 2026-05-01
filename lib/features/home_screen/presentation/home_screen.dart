@@ -151,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen>
     final selectedTextColor = Colors.white;
     final unselectedTextColor = isDarkMode
         ? Colors.grey[400]!
-        : const Color.fromRGBO(100, 80, 60, 1);
+        : const Color.fromRGBO(124, 58, 40, 1);
 
     const tabs = ['Surah', "Juz'e", 'Hizb'];
 
