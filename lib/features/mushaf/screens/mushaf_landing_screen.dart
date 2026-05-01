@@ -1,0 +1,1411 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/features/progression_tracker/provider/progression_tracker_provider.dart';
+import 'package:the_message_of_the_quran/features/progression_tracker/screens/progression_tracker_screen.dart';
+
+import '../../../core/utils/responsive_helper.dart';
+import '../../../core/widgets/responsive_content_wrapper.dart';
+import '../provider/mushaf_landing_provider.dart';
+import '../services/mushaf_download_manager.dart';
+import '../utils/surah_unicode.dart';
+import '../../../core/theme/app_theme.dart';
+import '../widgets/star_number.dart';
+import 'mushaf_reader_screen.dart';
+
+// ─── Surah metadata ──────────────────────────────────────────────────────────
+
+class _SurahMeta {
+  const _SurahMeta(this.no, this.name, this.meaning, this.ayahs);
+  final int no;
+  final String name;
+  final String meaning;
+  final int ayahs;
+}
+
+class _QuickAccessItem {
+  const _QuickAccessItem({required this.label, this.surahNo, this.ayahNo});
+
+  final String label;
+  final int? surahNo;
+  final int? ayahNo;
+}
+
+const List<int> _revelationOrder = [
+  96,
+  68,
+  73,
+  74,
+  1,
+  111,
+  81,
+  87,
+  92,
+  89,
+  93,
+  94,
+  103,
+  100,
+  108,
+  102,
+  107,
+  109,
+  105,
+  113,
+  114,
+  112,
+  53,
+  80,
+  97,
+  91,
+  85,
+  95,
+  106,
+  101,
+  75,
+  104,
+  77,
+  50,
+  90,
+  86,
+  54,
+  38,
+  7,
+  72,
+  36,
+  25,
+  35,
+  19,
+  20,
+  56,
+  26,
+  27,
+  28,
+  17,
+  10,
+  11,
+  12,
+  15,
+  6,
+  37,
+  31,
+  34,
+  39,
+  40,
+  41,
+  42,
+  43,
+  44,
+  45,
+  46,
+  51,
+  88,
+  18,
+  16,
+  71,
+  14,
+  21,
+  23,
+  32,
+  52,
+  67,
+  69,
+  70,
+  78,
+  79,
+  82,
+  84,
+  30,
+  29,
+  83,
+  2,
+  8,
+  3,
+  33,
+  60,
+  4,
+  99,
+  57,
+  47,
+  13,
+  55,
+  76,
+  65,
+  98,
+  59,
+  24,
+  22,
+  63,
+  58,
+  49,
+  66,
+  64,
+  61,
+  62,
+  48,
+  5,
+  9,
+  110,
+];
+
+const List<_SurahMeta> _surahMeta = [
+  _SurahMeta(1, 'Al-Fatihah', 'The Opener', 7),
+  _SurahMeta(2, 'Al-Baqarah', 'The Cow', 286),
+  _SurahMeta(3, "Ali 'Imran", 'Family of Imran', 200),
+  _SurahMeta(4, 'An-Nisa', 'The Women', 176),
+  _SurahMeta(5, "Al-Ma'idah", 'The Table Spread', 120),
+  _SurahMeta(6, "Al-An'am", 'The Cattle', 165),
+  _SurahMeta(7, "Al-A'raf", 'The Heights', 206),
+  _SurahMeta(8, 'Al-Anfal', 'The Spoils of War', 75),
+  _SurahMeta(9, 'At-Tawbah', 'The Repentance', 129),
+  _SurahMeta(10, 'Yunus', 'Jonah', 109),
+  _SurahMeta(11, 'Hud', 'Hud', 123),
+  _SurahMeta(12, 'Yusuf', 'Joseph', 111),
+  _SurahMeta(13, "Ar-Ra'd", 'The Thunder', 43),
+  _SurahMeta(14, 'Ibrahim', 'Abraham', 52),
+  _SurahMeta(15, 'Al-Hijr', 'The Rocky Tract', 99),
+  _SurahMeta(16, 'An-Nahl', 'The Bee', 128),
+  _SurahMeta(17, 'Al-Isra', 'The Night Journey', 111),
+  _SurahMeta(18, 'Al-Kahf', 'The Cave', 110),
+  _SurahMeta(19, 'Maryam', 'Mary', 98),
+  _SurahMeta(20, 'Ta-Ha', 'Ta-Ha', 135),
+  _SurahMeta(21, 'Al-Anbiya', 'The Prophets', 112),
+  _SurahMeta(22, 'Al-Hajj', 'The Pilgrimage', 78),
+  _SurahMeta(23, "Al-Mu'minun", 'The Believers', 118),
+  _SurahMeta(24, 'An-Nur', 'The Light', 64),
+  _SurahMeta(25, 'Al-Furqan', 'The Criterion', 77),
+  _SurahMeta(26, "Ash-Shu'ara", 'The Poets', 227),
+  _SurahMeta(27, 'An-Naml', 'The Ant', 93),
+  _SurahMeta(28, 'Al-Qasas', 'The Stories', 88),
+  _SurahMeta(29, "Al-'Ankabut", 'The Spider', 69),
+  _SurahMeta(30, 'Ar-Rum', 'The Romans', 60),
+  _SurahMeta(31, 'Luqman', 'Luqman', 34),
+  _SurahMeta(32, 'As-Sajdah', 'The Prostration', 30),
+  _SurahMeta(33, 'Al-Ahzab', 'The Combined Forces', 73),
+  _SurahMeta(34, 'Saba', 'Sheba', 54),
+  _SurahMeta(35, 'Fatir', 'Originator', 45),
+  _SurahMeta(36, 'Ya-Sin', 'Ya Sin', 83),
+  _SurahMeta(37, 'As-Saffat', 'Those Who Set The Rows', 182),
+  _SurahMeta(38, 'Sad', 'The Letter Sad', 88),
+  _SurahMeta(39, 'Az-Zumar', 'The Troops', 75),
+  _SurahMeta(40, 'Ghafir', 'The Forgiver', 85),
+  _SurahMeta(41, 'Fussilat', 'Explained In Detail', 54),
+  _SurahMeta(42, 'Ash-Shura', 'The Consultation', 53),
+  _SurahMeta(43, 'Az-Zukhruf', 'The Ornaments of Gold', 89),
+  _SurahMeta(44, 'Ad-Dukhan', 'The Smoke', 59),
+  _SurahMeta(45, 'Al-Jathiyah', 'The Crouching', 37),
+  _SurahMeta(46, 'Al-Ahqaf', 'The Wind-Curved Sandhills', 35),
+  _SurahMeta(47, 'Muhammad', 'Muhammad', 38),
+  _SurahMeta(48, 'Al-Fath', 'The Victory', 29),
+  _SurahMeta(49, 'Al-Hujurat', 'The Rooms', 18),
+  _SurahMeta(50, 'Qaf', 'The Letter Qaf', 45),
+  _SurahMeta(51, 'Adh-Dhariyat', 'The Winnowing Winds', 60),
+  _SurahMeta(52, 'At-Tur', 'The Mount', 49),
+  _SurahMeta(53, 'An-Najm', 'The Star', 62),
+  _SurahMeta(54, 'Al-Qamar', 'The Moon', 55),
+  _SurahMeta(55, 'Ar-Rahman', 'The Beneficent', 78),
+  _SurahMeta(56, "Al-Waqi'ah", 'The Inevitable', 96),
+  _SurahMeta(57, 'Al-Hadid', 'The Iron', 29),
+  _SurahMeta(58, 'Al-Mujadila', 'The Pleading Woman', 22),
+  _SurahMeta(59, 'Al-Hashr', 'The Exile', 24),
+  _SurahMeta(60, 'Al-Mumtahanah', 'She That is to be Examined', 13),
+  _SurahMeta(61, 'As-Saff', 'The Ranks', 14),
+  _SurahMeta(62, "Al-Jumu'ah", 'The Congregation, Friday', 11),
+  _SurahMeta(63, 'Al-Munafiqun', 'The Hypocrites', 11),
+  _SurahMeta(64, 'At-Taghabun', 'The Mutual Disillusion', 18),
+  _SurahMeta(65, 'At-Talaq', 'The Divorce', 12),
+  _SurahMeta(66, 'At-Tahrim', 'The Prohibition', 12),
+  _SurahMeta(67, 'Al-Mulk', 'The Sovereignty', 30),
+  _SurahMeta(68, 'Al-Qalam', 'The Pen', 52),
+  _SurahMeta(69, 'Al-Haqqah', 'The Reality', 52),
+  _SurahMeta(70, "Al-Ma'arij", 'The Ascending Stairways', 44),
+  _SurahMeta(71, 'Nuh', 'Noah', 28),
+  _SurahMeta(72, 'Al-Jinn', 'The Jinn', 28),
+  _SurahMeta(73, 'Al-Muzzammil', 'The Enshrouded One', 20),
+  _SurahMeta(74, 'Al-Muddaththir', 'The Cloaked One', 56),
+  _SurahMeta(75, 'Al-Qiyamah', 'The Resurrection', 40),
+  _SurahMeta(76, 'Al-Insan', 'The Man', 31),
+  _SurahMeta(77, 'Al-Mursalat', 'The Emissaries', 50),
+  _SurahMeta(78, 'An-Naba', 'The Tidings', 40),
+  _SurahMeta(79, "An-Nazi'at", 'Those Who Drag Forth', 46),
+  _SurahMeta(80, "'Abasa", 'He Frowned', 42),
+  _SurahMeta(81, 'At-Takwir', 'The Overthrowing', 29),
+  _SurahMeta(82, 'Al-Infitar', 'The Cleaving', 19),
+  _SurahMeta(83, 'Al-Mutaffifin', 'The Defrauding', 36),
+  _SurahMeta(84, 'Al-Inshiqaq', 'The Sundering', 25),
+  _SurahMeta(85, 'Al-Buruj', 'The Mansions of the Stars', 22),
+  _SurahMeta(86, 'At-Tariq', 'The Nightcomer', 17),
+  _SurahMeta(87, "Al-A'la", 'The Most High', 19),
+  _SurahMeta(88, 'Al-Ghashiyah', 'The Overwhelming', 26),
+  _SurahMeta(89, 'Al-Fajr', 'The Dawn', 30),
+  _SurahMeta(90, 'Al-Balad', 'The City', 20),
+  _SurahMeta(91, 'Ash-Shams', 'The Sun', 15),
+  _SurahMeta(92, 'Al-Layl', 'The Night', 21),
+  _SurahMeta(93, 'Ad-Duha', 'The Morning Hours', 11),
+  _SurahMeta(94, 'Ash-Sharh', 'The Relief', 8),
+  _SurahMeta(95, 'At-Tin', 'The Fig', 8),
+  _SurahMeta(96, "Al-'Alaq", 'The Clot', 19),
+  _SurahMeta(97, 'Al-Qadr', 'The Power', 5),
+  _SurahMeta(98, 'Al-Bayyinah', 'The Clear Proof', 8),
+  _SurahMeta(99, 'Az-Zalzalah', 'The Earthquake', 8),
+  _SurahMeta(100, "Al-'Adiyat", 'The Courser', 11),
+  _SurahMeta(101, "Al-Qari'ah", 'The Calamity', 11),
+  _SurahMeta(102, 'At-Takathur', 'The Rivalry in World Increase', 8),
+  _SurahMeta(103, "Al-'Asr", 'The Declining Day', 3),
+  _SurahMeta(104, 'Al-Humazah', 'The Traducer', 9),
+  _SurahMeta(105, 'Al-Fil', 'The Elephant', 5),
+  _SurahMeta(106, 'Quraysh', 'Quraysh', 4),
+  _SurahMeta(107, "Al-Ma'un", 'The Small Kindnesses', 7),
+  _SurahMeta(108, 'Al-Kawthar', 'The Abundance', 3),
+  _SurahMeta(109, 'Al-Kafirun', 'The Disbelievers', 6),
+  _SurahMeta(110, 'An-Nasr', 'The Divine Support', 3),
+  _SurahMeta(111, 'Al-Masad', 'The Palm Fiber', 5),
+  _SurahMeta(112, 'Al-Ikhlas', 'Sincerity', 4),
+  _SurahMeta(113, 'Al-Falaq', 'The Daybreak', 5),
+  _SurahMeta(114, 'An-Nas', 'Mankind', 6),
+];
+
+const List<(String juzName, String startingSurah)> _juzMeta = [
+  ('Alif Lam Mim', 'Al-Fatihah 1'),
+  ('Sayaqool', 'Al-Baqarah 142'),
+  ('Tilkal-Rusul', 'Al-Baqarah 253'),
+  ('Lan Tanaloo', "Ali 'Imran 92"),
+  ('Wal Mohsanaat', 'An-Nisa 24'),
+  ('La Yuhibb-ullah', 'An-Nisa 148'),
+  ('Wa Iza Samiu', "Al-Ma'idah 82"),
+  ('Wa Law Annana', "Al-An'am 111"),
+  ('Qal Al-Malao', "Al-A'raf 88"),
+  ('Wa Alamu', 'Al-Anfal 41'),
+  ('Yatazeroon', 'At-Tawbah 93'),
+  ('Wa Ma Min Dabbah', 'Hud 6'),
+  ("Wa Ma Ubarri'u", 'Yusuf 53'),
+  ('Rubama', 'Al-Hijr 1'),
+  ('Subhanallazi', 'Al-Isra 1'),
+  ('Qal Alum', 'Al-Kahf 75'),
+  ('Iqtaraba', 'Al-Anbiya 1'),
+  ('Qad Aflaha', "Al-Mu'minun 1"),
+  ('Wa Qalallazina', 'Al-Furqan 21'),
+  ('Amman Khalaq', 'An-Naml 59'),
+  ('Utlu Ma Uhiya', "Al-'Ankabut 45"),
+  ('Wa Man Yaqnut', 'Al-Ahzab 31'),
+  ('Wa Mali', 'Ya-Sin 27'),
+  ('Fa Man Azlamu', 'Az-Zumar 32'),
+  ('Ilahe Yuruddu', 'Fussilat 47'),
+  ('Ha-Mim', 'Al-Ahqaf 1'),
+  ('Qala Fa Ma Khatbukum', 'Adh-Dhariyat 31'),
+  ('Qad Sami Allah', 'Al-Mujadila 1'),
+  ('Tabarakallazi', 'Al-Mulk 1'),
+  ('Amma', 'An-Naba 1'),
+];
+
+const List<_QuickAccessItem> _quickAccessItems = [
+  _QuickAccessItem(label: 'Ayatul Kursi', surahNo: 2, ayahNo: 255),
+  _QuickAccessItem(label: 'Surah Yaseen', surahNo: 36),
+  _QuickAccessItem(label: 'Surah Al-Mulk', surahNo: 67),
+  _QuickAccessItem(label: 'Ar-Rahman', surahNo: 55),
+  _QuickAccessItem(label: 'Al-Waqi\'ah', surahNo: 56),
+  _QuickAccessItem(label: 'Al-Kahf', surahNo: 18),
+];
+
+// ─── Colors ───────────────────────────────────────────────────────────────
+const _kPrimaryColor = AppTheme.appIconTheme;
+const _kSecondaryDark = AppTheme.appIconTheme;
+const _kWhite = Color(0xffFFFFFF);
+const _kBlack = Color(0xff000000);
+const _kWhite70 = Color(0xB3FFFFFF);
+const _kBlack54 = Color(0x8A000000);
+const _kGrey3C = Color(0xFF3C3C3C);
+const _kMaddina = 'assets/icons/revamp/madeena_icon.svg';
+const _kMakkah = 'assets/icons/revamp/makkah_icon.svg';
+
+// ─── Screen ───────────────────────────────────────────────────────────────
+
+class MushafLandingScreen extends StatefulWidget {
+  const MushafLandingScreen({
+    super.key,
+    this.embedded = false,
+    this.onSurahSelected,
+  });
+
+  final bool embedded;
+  final ValueChanged<int>? onSurahSelected;
+
+  @override
+  State<MushafLandingScreen> createState() => _MushafLandingScreenState();
+}
+
+class _MushafLandingScreenState extends State<MushafLandingScreen>
+    with SingleTickerProviderStateMixin {
+  static const double _embeddedBottomNavOffset = kBottomNavigationBarHeight;
+  static const Set<int> _madinanSurahs = <int>{
+    2,
+    3,
+    4,
+    5,
+    8,
+    9,
+    22,
+    24,
+    33,
+    47,
+    48,
+    49,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    76,
+    98,
+    99,
+    110,
+  };
+
+  late final TabController _tabController;
+  late final MushafLandingProvider _p;
+  final MushafDownloadManager _downloadManager = MushafDownloadManager.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+    _p = MushafLandingProvider();
+    _downloadManager.addListener(_onDownloadStateChanged);
+  }
+
+  @override
+  void dispose() {
+    _downloadManager.removeListener(_onDownloadStateChanged);
+    _tabController.dispose();
+    _p.dispose();
+    super.dispose();
+  }
+
+  void _onDownloadStateChanged() {
+    if (_downloadManager.isDone && mounted) {
+      _p.setFontsInstalled();
+    }
+  }
+
+  Future<void> _openSurah(BuildContext context, int suraNo) async {
+    if (widget.onSurahSelected != null) {
+      widget.onSurahSelected!(suraNo);
+      return;
+    }
+    final page = await _p.getFirstPageForSurah(suraNo);
+    if (!context.mounted) return;
+    if (!_p.fontsInstalled && page > MushafLandingProvider.previewPageLimit) {
+      _handleUndownloadedPage(context);
+      return;
+    }
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (_) => MushafReaderScreen(initialPage: page),
+          ),
+        )
+        .then((_) => _p.refreshAfterReader());
+  }
+
+  Future<void> _openSurahAyah(
+    BuildContext context, {
+    required int suraNo,
+    required int ayaNo,
+  }) async {
+    final page = await _p.getPageForSurahAyah(suraNo, ayaNo);
+    if (!context.mounted) return;
+    _openPage(context, page);
+  }
+
+  void _openPage(BuildContext context, int page) {
+    if (!_p.fontsInstalled && page > MushafLandingProvider.previewPageLimit) {
+      _handleUndownloadedPage(context);
+      return;
+    }
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (_) => MushafReaderScreen(initialPage: page),
+          ),
+        )
+        .then((_) => _p.refreshAfterReader());
+  }
+
+  void _handleUndownloadedPage(BuildContext context) {
+    if (_downloadManager.isDownloading) {
+      final percent = (_downloadManager.progress * 100).toStringAsFixed(0);
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(
+          SnackBar(
+            content: Text('Download in progress — $percent% complete'),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      return;
+    }
+    _showDownloadDialog(context);
+  }
+
+  void _showDownloadDialog(BuildContext context) {
+    final maxW = ResponsiveHelper.bottomSheetMaxWidth(context);
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: maxW ?? double.infinity),
+          child: AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Row(
+              children: [
+                const Icon(Icons.download_rounded, color: _kSecondaryDark),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Download Required',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            content: Text(
+              'Pages 1–2 are available offline.\n'
+              'Download the Mushaf font pack to read the full Quran.\n\n'
+              'The download will continue in the background.',
+              style: GoogleFonts.poppins(fontSize: 14),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: Text(
+                  'Cancel',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFF525866),
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                  _downloadManager.startDownload();
+                  ScaffoldMessenger.of(context)
+                    ..clearSnackBars()
+                    ..showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Mushaf download started. You can continue using the app.',
+                        ),
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _kSecondaryDark,
+                  foregroundColor: _kWhite,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text(
+                  'Download',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider.value(
+      value: _p,
+      child: Consumer<MushafLandingProvider>(
+        builder: (context, p, _) {
+          if (widget.embedded) return _buildBody(context);
+          return _buildScaffold(context);
+        },
+      ),
+    );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    final isLandscape =
+        MediaQuery.orientationOf(context) == Orientation.landscape;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    if (isLandscape) {
+      return NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [
+          SliverToBoxAdapter(
+            child: _buildRecentlyReadSection(context, isDarkMode, isLandscape),
+          ),
+          SliverToBoxAdapter(
+            child: _buildTabBar(context, isDarkMode, isLandscape),
+          ),
+        ],
+        body: TabBarView(
+          controller: _tabController,
+          children: [
+            _buildSurahTab(context, isDarkMode),
+            _buildJuzTab(context, isDarkMode),
+            _buildRevelationTab(context, isDarkMode),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildRecentlyReadSection(context, isDarkMode, isLandscape),
+        _buildTabBar(context, isDarkMode, isLandscape),
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              _buildSurahTab(context, isDarkMode),
+              _buildJuzTab(context, isDarkMode),
+              _buildRevelationTab(context, isDarkMode),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildScaffold(BuildContext context) {
+    final scaffoldColor = Theme.of(context).scaffoldBackgroundColor;
+
+    return Scaffold(
+      backgroundColor: scaffoldColor,
+      // appBar: AppBar(
+      //   title: Text(
+      //     'Quran',
+      //     style: TextStyle(
+      //         color: iconColor, fontWeight: FontWeight.w600, fontSize: 18),
+      //   ),
+      //   backgroundColor: scaffoldColor,
+      //   elevation: 0.5,
+      //   surfaceTintColor: Colors.transparent,
+      //   iconTheme: IconThemeData(color: iconColor),
+      // ),
+      body: _buildBody(context),
+    );
+  }
+
+  // ─── Recently Read ────────────────────────────────────────────────────────
+
+  Widget _buildRecentlyReadSection(
+    BuildContext context,
+    bool isDarkMode,
+    bool isLandscape,
+  ) {
+    final textColor = isDarkMode ? Colors.white : Colors.black;
+    final subColor = isDarkMode ? Colors.white60 : Colors.black54;
+    final cardBg = isDarkMode ? _kGrey3C : Colors.white;
+
+    final suraNo = _p.lastRead?.suraNo ?? 1;
+    final ayaNo = _p.lastRead?.ayaNo ?? 1;
+    final meta = suraNo >= 1 && suraNo <= 114
+        ? _surahMeta[suraNo - 1]
+        : _surahMeta[0];
+    final arabicGlyph = SurahUnicodeData.getSurahNameUnicode(suraNo);
+
+    final hPad = ResponsiveHelper.horizontalPadding(context);
+    return Padding(
+      padding: EdgeInsets.fromLTRB(hPad, isLandscape ? 6 : 8, hPad, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Recently Read',
+            style: TextStyle(
+              color: textColor,
+              fontSize: isLandscape ? 12 : 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(height: isLandscape ? 4 : 6),
+          _buildProgressTrackerCard(context, isDarkMode, isLandscape),
+          SizedBox(height: isLandscape ? 6 : 8),
+          _buildQuickAccessWrap(context, isDarkMode, isLandscape),
+          SizedBox(height: isLandscape ? 6 : 8),
+          GestureDetector(
+            onTap: () => _openPage(context, _p.lastRead?.page ?? 1),
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: isLandscape ? 8 : 12,
+                vertical: isLandscape ? 6 : 8,
+              ),
+              decoration: BoxDecoration(
+                color: cardBg,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isDarkMode
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : Colors.grey.withValues(alpha: 0.18),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: isDarkMode
+                        ? Colors.black.withValues(alpha: 0.25)
+                        : Colors.grey.withValues(alpha: 0.12),
+                    blurRadius: 6,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    arabicGlyph,
+                    style: TextStyle(
+                      fontSize: isLandscape ? 18 : 22,
+                      fontFamily: 'sura_names',
+                      color: textColor,
+                      height: 1.1,
+                    ),
+                  ),
+                  SizedBox(width: isLandscape ? 8 : 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Surah ${meta.name}',
+                          style: TextStyle(
+                            color: textColor,
+                            fontSize: isLandscape ? 13 : 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          '${meta.meaning} • Ayah $ayaNo',
+                          style: TextStyle(
+                            color: subColor,
+                            fontSize: isLandscape ? 10 : 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: subColor,
+                    size: isLandscape ? 18 : 20,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProgressTrackerCard(
+    BuildContext context,
+    bool isDarkMode,
+    bool isLandscape,
+  ) {
+    final textColor = isDarkMode ? Colors.white : Colors.black;
+    final subColor = isDarkMode ? Colors.white70 : Colors.black54;
+    final cardBg = isDarkMode ? _kGrey3C : Colors.white;
+
+    return Consumer<ProgressionTrackerProvider>(
+      builder: (context, progressionProv, _) {
+        final activeProgression = progressionProv.activeProgression;
+        final hasProgression = activeProgression != null;
+
+        String subtitle;
+        String percentText;
+        double progressValue;
+
+        if (hasProgression) {
+          final completedAyahs = progressionProv.completedAyahsFor(activeProgression.id!);
+          final pct = activeProgression.totalAyahs > 0
+              ? (completedAyahs / activeProgression.totalAyahs * 100).round()
+              : 0;
+          subtitle = activeProgression.arabicName.isNotEmpty
+              ? activeProgression.arabicName
+              : activeProgression.surahName;
+          percentText = '$completedAyahs/${activeProgression.totalAyahs}';
+          progressValue = pct / 100;
+        } else {
+          subtitle = 'Tap to add your first progression';
+          percentText = '';
+          progressValue = 0;
+        }
+
+        final cardLabel = hasProgression
+            ? 'Progress Tracker: ${activeProgression.surahName}'
+            : 'Start your progression tracker.';
+
+        return Semantics(
+          button: true,
+          label: cardLabel,
+          excludeSemantics: true,
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const ProgressionTrackerScreen(),
+                ),
+              ).then((_) => progressionProv.loadProgressions());
+            },
+            child: Container(
+              padding: EdgeInsets.all(isLandscape ? 8 : 10),
+              decoration: BoxDecoration(
+                color: cardBg,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isDarkMode
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : Colors.grey.withValues(alpha: 0.18),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: isDarkMode
+                        ? Colors.black.withValues(alpha: 0.24)
+                        : AppTheme.appIconTheme.withValues(alpha: 0.08),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: isLandscape ? 32 : 36,
+                    height: isLandscape ? 32 : 36,
+                    decoration: BoxDecoration(
+                      color: AppTheme.appIconTheme.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      Icons.auto_graph_rounded,
+                      color: AppTheme.appIconTheme,
+                      size: isLandscape ? 16 : 18,
+                    ),
+                  ),
+                  SizedBox(width: isLandscape ? 8 : 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Progress Tracker',
+                          style: TextStyle(
+                            color: textColor,
+                            fontSize: isLandscape ? 12 : 14,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          subtitle,
+                          style: TextStyle(
+                            color: subColor,
+                            fontSize: isLandscape ? 10 : 11,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        if (progressValue > 0) ...[
+                          SizedBox(height: isLandscape ? 4 : 6),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(999),
+                            child: LinearProgressIndicator(
+                              value: progressValue,
+                              minHeight: isLandscape ? 4 : 5,
+                              backgroundColor: isDarkMode
+                                  ? Colors.white.withValues(alpha: 0.12)
+                                  : Colors.black.withValues(alpha: 0.08),
+                              valueColor: const AlwaysStoppedAnimation<Color>(
+                                AppTheme.appIconTheme,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: isLandscape ? 8 : 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      if (percentText.isNotEmpty)
+                        Text(
+                          percentText,
+                          style: TextStyle(
+                            color: AppTheme.appIconTheme,
+                            fontSize: isLandscape ? 14 : 16,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      if (hasProgression) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          '${(progressValue * 100).round()}%',
+                          style: TextStyle(
+                            color: AppTheme.appIconTheme,
+                            fontSize: isLandscape ? 10 : 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                      SizedBox(height: isLandscape ? 4 : 6),
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        color: subColor,
+                        size: isLandscape ? 16 : 18,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildQuickAccessWrap(
+    BuildContext context,
+    bool isDarkMode,
+    bool isLandscape,
+  ) {
+    final spacing = isLandscape ? 6.0 : 8.0;
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: List.generate(_quickAccessItems.length, (index) {
+          final item = _quickAccessItems[index];
+
+          return Padding(
+            padding: EdgeInsets.only(
+              right: index == _quickAccessItems.length - 1 ? 0 : spacing,
+            ),
+            child: _buildQuickAccessChip(
+              context,
+              item,
+              isDarkMode,
+              isLandscape,
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildQuickAccessChip(
+    BuildContext context,
+    _QuickAccessItem item,
+    bool isDarkMode,
+    bool isLandscape,
+  ) {
+    final borderColor = AppTheme.appIconTheme.withValues(alpha: 0.75);
+    final chipBg = isDarkMode
+        ? AppTheme.appIconTheme.withValues(alpha: 0.12)
+        : Colors.white;
+    final labelColor = isDarkMode ? Colors.white : Colors.black87;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: () {
+          if (item.ayahNo != null && item.surahNo != null) {
+            _openSurahAyah(context, suraNo: item.surahNo!, ayaNo: item.ayahNo!);
+            return;
+          }
+
+          if (item.surahNo != null) {
+            _openSurah(context, item.surahNo!);
+          }
+        },
+        child: Ink(
+          padding: EdgeInsets.symmetric(
+            horizontal: isLandscape ? 10 : 12,
+            vertical: isLandscape ? 6 : 7,
+          ),
+          decoration: BoxDecoration(
+            color: chipBg,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: borderColor, width: 1.2),
+          ),
+          child: Text(
+            item.label,
+            style: TextStyle(
+              color: labelColor,
+              fontSize: isLandscape ? 11 : 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ─── Tab Bar ──────────────────────────────────────────────────────────────
+
+  Widget _buildTabBar(BuildContext context, bool isDarkMode, bool isLandscape) {
+    final greyLineColor = isDarkMode
+        ? Colors.grey.shade700
+        : Colors.grey.shade300;
+
+    final hPad = ResponsiveHelper.horizontalPadding(context);
+    return Padding(
+      padding: EdgeInsets.only(
+        top: isLandscape ? 8 : 20,
+        left: hPad,
+        right: hPad,
+      ),
+      child: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(height: 2, color: greyLineColor),
+          ),
+          TabBar(
+            controller: _tabController,
+            indicator: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: _kSecondaryDark, width: 2.0),
+              ),
+            ),
+            indicatorSize: TabBarIndicatorSize.tab,
+            dividerColor: Colors.transparent,
+            labelColor: isDarkMode ? Colors.white : _kSecondaryDark,
+            unselectedLabelColor: isDarkMode
+                ? Colors.grey[400]
+                : Colors.grey[600],
+            labelPadding: const EdgeInsets.symmetric(horizontal: 2),
+            tabs: [
+              Tab(
+                height: 30,
+                child: Container(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Text(
+                    'Surah',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+              Tab(
+                height: 30,
+                child: Container(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Text(
+                    "Juz'",
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+              Tab(
+                height: 30,
+                child: Container(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Text(
+                    'Revelation',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ─── Surah Tab ────────────────────────────────────────────────────────────
+
+  Widget _buildSurahTab(BuildContext context, bool isDarkMode) {
+    final surahs = _p.sortAscending ? _surahMeta : _surahMeta.reversed.toList();
+
+    return Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: ResponsiveHelper.horizontalPadding(context),
+            vertical: 0,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              GestureDetector(
+                onTap: _p.toggleSort,
+                child: Row(
+                  children: [
+                    Text(
+                      'SORT BY: ',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: isDarkMode ? Colors.white54 : Colors.black45,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    Text(
+                      _p.sortAscending ? 'ASCENDING' : 'DESCENDING',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: _kPrimaryColor,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Icon(
+                      _p.sortAscending
+                          ? Icons.keyboard_arrow_up
+                          : Icons.keyboard_arrow_down,
+                      size: 16,
+                      color: _kPrimaryColor,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: ResponsiveContentWrapper(
+            child: ListView.builder(
+              padding: EdgeInsets.fromLTRB(
+                ResponsiveHelper.horizontalPadding(context),
+                0,
+                ResponsiveHelper.horizontalPadding(context),
+                0,
+              ),
+              itemCount: surahs.length,
+              itemBuilder: (context, i) =>
+                  _buildSurahCard(context, surahs[i], isDarkMode),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ─── Juz Tab ──────────────────────────────────────────────────────────────
+
+  Widget _buildJuzTab(BuildContext context, bool isDarkMode) {
+    final bottomPadding =
+        MediaQuery.of(context).padding.bottom + _embeddedBottomNavOffset + 16;
+
+    final hPad = ResponsiveHelper.horizontalPadding(context);
+    return ResponsiveContentWrapper(
+      child: ListView.builder(
+        padding: EdgeInsets.fromLTRB(hPad, 8, hPad, bottomPadding),
+        itemCount: 30,
+        itemBuilder: (context, i) {
+          final juzNo = i + 1;
+          final meta = _juzMeta[i];
+          final firstPage = _p.juzPages.length > i
+              ? _p.juzPages[i].firstPage
+              : 1;
+          return _buildJuzCard(
+            context,
+            juzNo,
+            meta.$1,
+            meta.$2,
+            firstPage,
+            isDarkMode,
+          );
+        },
+      ),
+    );
+  }
+
+  // ─── Revelation Tab ───────────────────────────────────────────────────────
+
+  Widget _buildRevelationTab(BuildContext context, bool isDarkMode) {
+    final bottomPadding =
+        MediaQuery.of(context).padding.bottom + _embeddedBottomNavOffset + 16;
+    final surahs = <_SurahMeta>[];
+    for (final suraNo in _revelationOrder) {
+      if (suraNo >= 1 && suraNo <= 114) surahs.add(_surahMeta[suraNo - 1]);
+    }
+
+    final hPad = ResponsiveHelper.horizontalPadding(context);
+    return ResponsiveContentWrapper(
+      child: ListView.builder(
+        padding: EdgeInsets.fromLTRB(hPad, 8, hPad, bottomPadding),
+        itemCount: surahs.length,
+        itemBuilder: (context, i) => _buildSurahCard(
+          context,
+          surahs[i],
+          isDarkMode,
+          revelationIndex: i + 1,
+        ),
+      ),
+    );
+  }
+
+  // ─── Card Widgets ─────────────────────────────────────────────────────────
+
+  Widget _buildSurahCard(
+    BuildContext context,
+    _SurahMeta meta,
+    bool isDarkMode, {
+    int? revelationIndex,
+  }) {
+    final textColor = isDarkMode ? _kWhite : _kBlack;
+    final subColor = isDarkMode ? _kWhite70 : _kBlack54;
+    final cardBg = isDarkMode ? _kGrey3C : Colors.white;
+    final metaIcon = _madinanSurahs.contains(meta.no) ? _kMaddina : _kMakkah;
+    final arabicGlyph = SurahUnicodeData.getSurahNameUnicode(meta.no);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: InkWell(
+        onTap: () => _openSurah(context, meta.no),
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          decoration: BoxDecoration(
+            color: cardBg,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isDarkMode
+                  ? Colors.white.withValues(alpha: 0.1)
+                  : Colors.grey.withValues(alpha: 0.2),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: isDarkMode
+                    ? Colors.black.withValues(alpha: 0.3)
+                    : Colors.grey.withValues(alpha: 0.15),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Row(
+              children: [
+                StarNumber(
+                  number: revelationIndex ?? meta.no,
+                  isHighlighted: _p.lastRead?.suraNo == meta.no,
+                  textColor: isDarkMode ? _kWhite : _kBlack,
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        meta.name,
+                        style: GoogleFonts.poppins(
+                          color: textColor,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          SvgPicture.asset(
+                            metaIcon,
+                            height: 12,
+                            width: 12,
+                            colorFilter: const ColorFilter.mode(
+                              AppTheme.appIconTheme,
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Icon(Icons.circle, size: 6, color: subColor),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${meta.ayahs}',
+                            style: GoogleFonts.poppins(
+                              fontSize: 10,
+                              color: subColor,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              meta.meaning,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.poppins(
+                                fontSize: 10,
+                                color: subColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  arabicGlyph,
+                  style: TextStyle(
+                    color: isDarkMode
+                        ? _kWhite70.withValues(alpha: 0.87)
+                        : _kBlack,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: 'sura_names',
+                    fontSize: 30,
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildJuzCard(
+    BuildContext context,
+    int juzNo,
+    String juzName,
+    String startsSurah,
+    int firstPage,
+    bool isDarkMode,
+  ) {
+    final textColor = isDarkMode ? Colors.white : Colors.black;
+    final subColor = isDarkMode ? Colors.white54 : Colors.black54;
+    final cardBg = isDarkMode ? _kGrey3C : Colors.white;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: InkWell(
+        onTap: () => _openPage(context, firstPage),
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: cardBg,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isDarkMode
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.grey.withValues(alpha: 0.18),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: isDarkMode
+                    ? Colors.black.withValues(alpha: 0.25)
+                    : Colors.grey.withValues(alpha: 0.1),
+                blurRadius: 6,
+                offset: const Offset(0, 1),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              _buildDiamondBadge(juzNo, isDarkMode),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Juz $juzNo',
+                      style: TextStyle(
+                        color: textColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      juzName,
+                      style: TextStyle(color: subColor, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+              Text(
+                startsSurah,
+                style: TextStyle(color: subColor, fontSize: 11),
+                textAlign: TextAlign.end,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDiamondBadge(int number, bool isDarkMode) {
+    return SizedBox(
+      width: 40,
+      height: 40,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Transform.rotate(
+            angle: 0.785,
+            child: Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: isDarkMode
+                    ? _kPrimaryColor.withValues(alpha: 0.15)
+                    : _kPrimaryColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(
+                  color: _kPrimaryColor.withValues(alpha: 0.5),
+                  width: 1.2,
+                ),
+              ),
+            ),
+          ),
+          Text(
+            '$number',
+            style: TextStyle(
+              color: _kPrimaryColor,
+              fontWeight: FontWeight.w700,
+              fontSize: number > 99 ? 10 : 13,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
