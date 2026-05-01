@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/provider/progression_tracker_provider.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/services/progression_notification_service.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
@@ -97,7 +98,7 @@ class _AddProgressionScreenState extends State<AddProgressionScreen> {
         ? Colors.white.withValues(alpha: 0.08)
         : Colors.grey.withValues(alpha: 0.18);
 
-    return Scaffold(
+    return BaseScreenLayout(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.chevron_left, color: Colors.white),
@@ -115,7 +116,7 @@ class _AddProgressionScreenState extends State<AddProgressionScreen> {
         elevation: 0,
         backgroundColor: AppTheme.appThemePrimary,
       ),
-      body: SingleChildScrollView(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

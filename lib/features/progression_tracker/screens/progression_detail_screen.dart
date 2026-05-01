@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/provider/progression_detail_provider.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/provider/progression_tracker_provider.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/screens/progression_day_detail_screen.dart';
@@ -209,7 +210,7 @@ class _ProgressionDetailScreenState extends State<ProgressionDetailScreen> {
         ? Colors.white.withValues(alpha: 0.08)
         : Colors.grey.withValues(alpha: 0.18);
 
-    return Scaffold(
+    return BaseScreenLayout(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.chevron_left, color: Colors.white),
@@ -233,7 +234,7 @@ class _ProgressionDetailScreenState extends State<ProgressionDetailScreen> {
           ),
         ],
       ),
-      body: Consumer<ProgressionDetailProvider>(
+      child: Consumer<ProgressionDetailProvider>(
         builder: (context, detail, _) {
           if (detail.isLoading || detail.progression == null) {
             return const Center(child: CircularProgressIndicator());

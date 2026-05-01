@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
-import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
+import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/author_screen/provider/author_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -24,12 +24,11 @@ class _AuthorScreenState extends State<AuthorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BaseScreenLayout(
       appBar: AppBar(
         title: Text('About Author', style: AppTextTheme.titleRegular),
       ),
-      body: ResponsiveContentWrapper(
-        child: Padding(
+      child: Padding(
         padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
         child: Consumer<AuthorProvider>(
           builder: (context, authorProvider, child) {
@@ -85,7 +84,6 @@ class _AuthorScreenState extends State<AuthorScreen> {
             );
           },
         ),
-      ),
       ),
     );
   }

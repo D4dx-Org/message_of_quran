@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
-import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
+import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_card.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
@@ -12,7 +12,7 @@ class SearchScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<SurahProvider>(context, listen: false);
-    return Scaffold(
+    return BaseScreenLayout(
       appBar: AppBar(
         title: Text("Search", style: AppTextTheme.titleRegular.copyWith(color: Colors.white)),
         leading: IconButton(
@@ -26,9 +26,7 @@ class SearchScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: SafeArea(
-        child: ResponsiveContentWrapper(
-          child: Padding(
+      child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
@@ -96,8 +94,6 @@ class SearchScreen extends StatelessWidget {
             ],
           ),
         ),
-        ),
-      ),
     );
   }
 }

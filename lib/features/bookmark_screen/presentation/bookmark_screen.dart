@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/ayah_bookmark_model.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
-import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
+import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/mushaf/screens/mushaf_reader_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_card.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
@@ -77,10 +77,9 @@ class BookmarkScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Scaffold(
-      body: ResponsiveContentWrapper(
-        child: CustomScrollView(
-          slivers: [
+    return BaseScreenLayout(
+      child: CustomScrollView(
+        slivers: [
             Consumer<SurahProvider>(
               builder: (context, value, child) {
                 return value.bookmarkedList.isEmpty
@@ -265,7 +264,6 @@ class BookmarkScreen extends StatelessWidget {
             ),
           ],
         ),
-      ),
     );
   }
 }

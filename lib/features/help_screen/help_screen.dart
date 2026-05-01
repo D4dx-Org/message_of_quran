@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
-import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
+import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/help_screen/provider/help_provider.dart';
 
 class HelpScreen extends StatefulWidget {
@@ -23,13 +23,12 @@ class _HelpScreenState extends State<HelpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BaseScreenLayout(
       appBar: AppBar(
         title: Text('FAQ', style: AppTextTheme.titleRegular),
         centerTitle: true,
       ),
-      body: ResponsiveContentWrapper(
-        child: Consumer<HelpProvider>(
+      child: Consumer<HelpProvider>(
           builder: (context, helpProvider, child) {
             if (helpProvider.isHelpLoading) {
               return const Center(
@@ -112,7 +111,6 @@ class _HelpScreenState extends State<HelpScreen> {
             );
           },
         ),
-      ),
     );
   }
 }

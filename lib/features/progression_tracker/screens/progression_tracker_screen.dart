@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/provider/progression_tracker_provider.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/screens/add_progression_screen.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/screens/progression_detail_screen.dart';
@@ -14,7 +15,7 @@ class ProgressionTrackerScreen extends StatelessWidget {
     final textColor = isDark ? Colors.white : Colors.black;
     final subColor = isDark ? Colors.white70 : Colors.black54;
 
-    return Scaffold(
+    return BaseScreenLayout(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.chevron_left, color: Colors.white),
@@ -32,7 +33,20 @@ class ProgressionTrackerScreen extends StatelessWidget {
         elevation: 0,
         backgroundColor: AppTheme.appThemePrimary,
       ),
-      body: Consumer<ProgressionTrackerProvider>(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const AddProgressionScreen()),
+          ).then((_) {
+            if (!context.mounted) return;
+            context.read<ProgressionTrackerProvider>().loadProgressions();
+          });
+        },
+        backgroundColor: AppTheme.appIconTheme,
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+      child: Consumer<ProgressionTrackerProvider>(
         builder: (context, provider, _) {
           if (provider.isLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -164,19 +178,6 @@ class ProgressionTrackerScreen extends StatelessWidget {
             },
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const AddProgressionScreen()),
-          ).then((_) {
-            if (!context.mounted) return;
-            context.read<ProgressionTrackerProvider>().loadProgressions();
-          });
-        },
-        backgroundColor: AppTheme.appIconTheme,
-        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

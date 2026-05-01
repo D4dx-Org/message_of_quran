@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
-import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
+import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/ayah_of_the_day/provider/ayah_of_the_day_provider.dart';
 import 'package:the_message_of_the_quran/features/ayah_of_the_day/presentation/widgets/ayah_poster_widget.dart';
 
@@ -28,7 +28,7 @@ class _AyahOfTheDayScreenState extends State<AyahOfTheDayScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
+    return BaseScreenLayout(
       appBar: AppBar(
         title: Semantics(
           header: true,
@@ -39,8 +39,7 @@ class _AyahOfTheDayScreenState extends State<AyahOfTheDayScreen> {
         ),
         centerTitle: true,
       ),
-      body: ResponsiveContentWrapper(
-        child: Consumer<AyahOfTheDayProvider>(
+      child: Consumer<AyahOfTheDayProvider>(
         builder: (context, provider, _) {
           if (provider.isLoading) {
             return const Center(
@@ -193,7 +192,6 @@ class _AyahOfTheDayScreenState extends State<AyahOfTheDayScreen> {
             ),
           );
         },
-      ),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/core/services/database/arabic_block_db_helper.dart';
 import 'package:the_message_of_the_quran/core/services/database/translation_block_db_helper.dart';
 import 'package:the_message_of_the_quran/core/models/arabic_block_model.dart';
@@ -107,7 +108,7 @@ class _AyahReadingScreenState extends State<AyahReadingScreen> {
         ? Colors.white.withValues(alpha: 0.08)
         : Colors.grey.withValues(alpha: 0.18);
 
-    return Scaffold(
+    return BaseScreenLayout(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.chevron_left, color: Colors.white),
@@ -125,7 +126,7 @@ class _AyahReadingScreenState extends State<AyahReadingScreen> {
         elevation: 0,
         backgroundColor: AppTheme.appThemePrimary,
       ),
-      body: Consumer<ProgressionDetailProvider>(
+      child: Consumer<ProgressionDetailProvider>(
         builder: (context, detail, _) {
           if (detail.progression == null || detail.currentAyah == null) {
             return const Center(child: CircularProgressIndicator());

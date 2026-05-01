@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
-import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
+import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/contact_us_screen/presentation/provider/contact_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -64,11 +64,9 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BaseScreenLayout(
       appBar: AppBar(),
-
-      body: ResponsiveContentWrapper(
-        child: Container(
+      child: Container(
         decoration: const BoxDecoration(),
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -304,7 +302,6 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
             ),
           ),
         ),
-      ),
       ),
     );
   }

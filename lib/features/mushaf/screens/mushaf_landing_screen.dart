@@ -6,6 +6,7 @@ import 'package:the_message_of_the_quran/features/progression_tracker/provider/p
 import 'package:the_message_of_the_quran/features/progression_tracker/screens/progression_tracker_screen.dart';
 
 import '../../../core/utils/responsive_helper.dart';
+import '../../../core/widgets/base_screen_layout.dart';
 import '../../../core/widgets/responsive_content_wrapper.dart';
 import '../provider/mushaf_landing_provider.dart';
 import '../services/mushaf_download_manager.dart';
@@ -593,22 +594,8 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
   }
 
   Widget _buildScaffold(BuildContext context) {
-    final scaffoldColor = Theme.of(context).scaffoldBackgroundColor;
-
-    return Scaffold(
-      backgroundColor: scaffoldColor,
-      // appBar: AppBar(
-      //   title: Text(
-      //     'Quran',
-      //     style: TextStyle(
-      //         color: iconColor, fontWeight: FontWeight.w600, fontSize: 18),
-      //   ),
-      //   backgroundColor: scaffoldColor,
-      //   elevation: 0.5,
-      //   surfaceTintColor: Colors.transparent,
-      //   iconTheme: IconThemeData(color: iconColor),
-      // ),
-      body: _buildBody(context),
+    return BaseScreenLayout(
+      child: _buildBody(context),
     );
   }
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
+import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_app_block.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_audio_block.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_dark_mode_block.dart';
@@ -11,9 +11,8 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ResponsiveContentWrapper(
-        child: CustomScrollView(
+    return BaseScreenLayout(
+      child: CustomScrollView(
         slivers: [
           // SliverAppBar(
           //   pinned: true,
@@ -54,7 +53,6 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
         ],
-      ),
       ),
     );
   }

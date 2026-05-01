@@ -14,6 +14,7 @@ import 'package:the_message_of_the_quran/core/services/database/tajweed_db_helpe
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
+import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
 import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
@@ -1507,7 +1508,7 @@ class _SurahScreenState extends State<SurahScreen> {
           Provider.of<AudioProvider>(context, listen: false).stopAudio();
         }
       },
-      child: Scaffold(
+      child: BaseScreenLayout(
         appBar: CommonAppBar.appBar(
           context,
           onSurahInfoTap: _hasPreface &&
@@ -1553,7 +1554,7 @@ class _SurahScreenState extends State<SurahScreen> {
             ],
           ],
         ),
-        body: Column(
+        child: Column(
           children: [
             Expanded(
               child: GestureDetector(

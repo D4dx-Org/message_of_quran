@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:the_message_of_the_quran/core/models/preface_model.dart';
 import 'package:the_message_of_the_quran/core/services/database/preface_db_helper.dart';
+import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 
 class IntroductionScreen extends StatelessWidget {
   const IntroductionScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BaseScreenLayout(
       appBar: AppBar(
         title: const Text('ആമുഖം'),
       ),
-      body: FutureBuilder<PrefaceModel?>(
+      child: FutureBuilder<PrefaceModel?>(
         future: PrefaceDbHelper.getGeneralPreface(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {

@@ -8,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../../core/utils/responsive_helper.dart';
 import '../provider/mushaf_reader_provider.dart';
 import '../services/mushaf_download_manager.dart';
+import '../../../core/widgets/base_screen_layout.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../surah_screen/provider/surah_provider.dart';
 import '../widgets/mushaf_page_view.dart';
@@ -405,8 +406,9 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
       child: Consumer<MushafReaderProvider>(
         builder: (context, p, _) {
           if (!p.initialised || p.pageController == null) {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
+            return const BaseScreenLayout(
+              topBorderRadius: 0,
+              child: Center(child: CircularProgressIndicator()),
             );
           }
           return _buildScaffold(context);
@@ -436,8 +438,22 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
 
   Widget _buildScaffold(BuildContext context) {
     final fontSize = _landscapeFontSize(context);
-    return Scaffold(
-      body: Stack(
+    return BaseScreenLayout(
+      topBorderRadius: 0,
+      floatingActionButton:
+          (!_p.fontsInstalled &&
+              _p.currentPage == MushafReaderProvider.previewLimit)
+          ? FloatingActionButton.extended(
+              onPressed: () => _showDownloadPrompt(
+                targetPage: MushafReaderProvider.previewLimit + 1,
+              ),
+              icon: const Icon(Icons.download_rounded),
+              label: const Text('Continue Reading'),
+              backgroundColor: _kPrimaryColor,
+              foregroundColor: Colors.white,
+            )
+          : null,
+      child: Stack(
         children: [
           Positioned.fill(
             child: _p.isListView
@@ -488,19 +504,6 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
           ),
         ],
       ),
-      floatingActionButton:
-          (!_p.fontsInstalled &&
-              _p.currentPage == MushafReaderProvider.previewLimit)
-          ? FloatingActionButton.extended(
-              onPressed: () => _showDownloadPrompt(
-                targetPage: MushafReaderProvider.previewLimit + 1,
-              ),
-              icon: const Icon(Icons.download_rounded),
-              label: const Text('Continue Reading'),
-              backgroundColor: _kPrimaryColor,
-              foregroundColor: Colors.white,
-            )
-          : null,
     );
   }
 

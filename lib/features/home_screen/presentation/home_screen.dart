@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/juz_hizb_model.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
-import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
+import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/core/widgets/scroll_to_top_button.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_screen_list.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/surah_chip_row.dart';
@@ -64,76 +64,31 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.appThemePrimary,
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return BaseScreenLayout(
+      topBorderRadius: 70,
       floatingActionButton: ScrollToTopButton(
         visible: _showScrollToTop,
         onPressed: _scrollToTop,
       ),
-      body: SafeArea(
-        top: false,
-        child: ResponsiveContentWrapper(
-        child: Builder(
-          builder: (context) {
-            final isDarkMode =
-                Theme.of(context).brightness == Brightness.dark;
-
-            return Column(
-              children: [
-                // Brown header with chip row
-                Container(
-                  width: double.infinity,
-                  color: AppTheme.appThemePrimary,
-                  child: const Padding(
-                    padding: EdgeInsets.only(top: 8, bottom: 16),
-                    child: SurahChipRow(),
-                  ),
-                ),
-                // White content card with rounded top corners
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(70),
-                        topRight: Radius.circular(70),
-                      ),
-                      gradient: isDarkMode
-                          ? null
-                          : const LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Color.fromRGBO(255, 255, 255, 1),
-                                Color.fromRGBO(255, 250, 234, 1),
-                              ],
-                            ),
-                      color: isDarkMode ? const Color(0xFF1C1C1E) : null,
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color.fromRGBO(0, 0, 0, 0.25),
-                          blurRadius: 4,
-                          offset: Offset(0, -2),
-                        ),
-                      ],
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 20),
-                        _buildPillTabBar(context, isDarkMode),
-                        const SizedBox(height: 12),
-                        Expanded(
-                          child: _buildTabBarView(context, isDarkMode, false),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
+      headerContent: Container(
+        width: double.infinity,
+        color: AppTheme.appThemePrimary,
+        child: const Padding(
+          padding: EdgeInsets.only(top: 8, bottom: 16),
+          child: SurahChipRow(),
         ),
-        ),
+      ),
+      child: Column(
+        children: [
+          const SizedBox(height: 20),
+          _buildPillTabBar(context, isDarkMode),
+          const SizedBox(height: 12),
+          Expanded(
+            child: _buildTabBarView(context, isDarkMode, false),
+          ),
+        ],
       ),
     );
   }
@@ -148,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen>
     final unselectedBg = isDarkMode
         ? const Color(0xFF3A3A3C)
         : const Color.fromRGBO(221, 221, 221, 1);
-    final selectedTextColor = Colors.white;
+    const selectedTextColor = Colors.white;
     final unselectedTextColor = isDarkMode
         ? Colors.grey[400]!
         : const Color.fromRGBO(124, 58, 40, 1);
