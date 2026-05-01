@@ -199,7 +199,7 @@ class _MainScreenState extends State<MainScreen> {
                 final item = _navItems[index];
                 final isSelected = displayIndex == index;
                 final color = isSelected
-                    ? AppTheme.appIconTheme
+                    ? Colors.white
                     : inactiveColor;
 
                 return Expanded(
@@ -215,7 +215,7 @@ class _MainScreenState extends State<MainScreen> {
                         margin: const EdgeInsets.symmetric(horizontal: 4),
                         decoration: isSelected
                             ? BoxDecoration(
-                                color: const Color.fromRGBO(235, 195, 140, 1),
+                                color: AppTheme.appThemePrimary,
                                 borderRadius: BorderRadius.circular(10),
                               )
                             : null,

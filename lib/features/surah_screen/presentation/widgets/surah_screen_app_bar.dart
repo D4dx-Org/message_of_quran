@@ -184,7 +184,7 @@ class SurahCompactHeader extends StatelessWidget {
                   fontFamily: 'Amiri',
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: AppTheme.appIconTheme,
+                  color: Colors.white,
                   height: 1.2,
                 ),
                 maxLines: 1,
@@ -196,7 +196,7 @@ class SurahCompactHeader extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 10,
-                  color: AppTheme.appIconTheme.withValues(alpha: 0.7),
+                  color: Colors.white.withValues(alpha: 0.7),
                 ),
               ),
             ],
@@ -221,10 +221,10 @@ class SurahCompactHeader extends StatelessWidget {
           onPressed: onPressed,
           padding: EdgeInsets.zero,
           iconSize: 12,
-          color: AppTheme.appIconTheme,
+          color: Colors.white,
           style: IconButton.styleFrom(
             shape: CircleBorder(
-              side: BorderSide(color: AppTheme.appIconTheme.withValues(alpha: 0.4)),
+              side: BorderSide(color: Colors.white.withValues(alpha: 0.4)),
             ),
           ),
           icon: Icon(icon),
