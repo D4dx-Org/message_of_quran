@@ -82,7 +82,7 @@ class _MainScreenState extends State<MainScreen> {
     final controller = Provider.of<HomeProvider>(context);
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    final navBg = isDarkMode ? const Color(0xFF1C1C1E) : Colors.white;
+    final navBg = isDarkMode ? const Color(0xFF1C1C1E) : const Color.fromRGBO(255, 248, 235, 1);
     final inactiveColor = isDarkMode ? Colors.white70 : const Color(0xFF9E9E9E);
     final displayIndex = controller.currentIndex;
     final tablet = ResponsiveHelper.isTablet(context);
@@ -215,7 +215,7 @@ class _MainScreenState extends State<MainScreen> {
                         margin: const EdgeInsets.symmetric(horizontal: 4),
                         decoration: isSelected
                             ? BoxDecoration(
-                                color: const Color.fromRGBO(255, 234, 191, 1),
+                                color: const Color.fromRGBO(235, 195, 140, 1),
                                 borderRadius: BorderRadius.circular(10),
                               )
                             : null,
