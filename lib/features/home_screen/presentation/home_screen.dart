@@ -170,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen>
             return Row(
               children: [
                 for (int index = 0; index < 3; index++) ...[
-                  if (index > 0) const SizedBox(width: 3),
+                  if (index > 0) const SizedBox(width: 8),
                   Expanded(
                     child: GestureDetector(
                       onTap: () => _tabController.animateTo(index),
