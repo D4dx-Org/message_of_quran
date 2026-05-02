@@ -253,7 +253,7 @@ class _MainScreenState extends State<MainScreen> {
                       );
                     }
                 
-                    // Other items: filled bg when active, plain when inactive
+                    // Other items: active gets a filled container, inactive stays plain
                     return Expanded(
                       child: Semantics(
                         button: true,
@@ -263,12 +263,12 @@ class _MainScreenState extends State<MainScreen> {
                           onTap: () => _onItemTapped(index),
                           borderRadius: BorderRadius.circular(10),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                             margin: const EdgeInsets.symmetric(horizontal: 4),
                             decoration: isSelected
                                 ? BoxDecoration(
                                     color: isDarkMode
-                                        ? const Color.fromRGBO(80, 50, 30, 0.3)
+                                        ? Colors.white.withValues(alpha: 0.12)
                                         : const Color.fromRGBO(255, 234, 191, 1),
                                     borderRadius: BorderRadius.circular(10),
                                   )
