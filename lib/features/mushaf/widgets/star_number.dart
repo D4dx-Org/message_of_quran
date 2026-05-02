@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 class StarNumber extends StatelessWidget {
@@ -39,12 +41,11 @@ class StarNumber extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           if (isHighlighted)
-            Container(
-              width: size * 0.72,
-              height: size * 0.72,
-              decoration: const BoxDecoration(
-                color: Color.fromRGBO(124, 58, 40, 1),
-                shape: BoxShape.circle,
+            CustomPaint(
+              size: Size(size, size),
+              painter: _HexagonPainter(
+                color: polygonColor,
+                radius: size * 0.44,
               ),
             ),
           Image.asset(
@@ -67,4 +68,37 @@ class StarNumber extends StatelessWidget {
       ),
     );
   }
+}
+
+class _HexagonPainter extends CustomPainter {
+  final Color color;
+  final double radius;
+
+  _HexagonPainter({required this.color, required this.radius});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    final path = Path();
+    for (int i = 0; i < 6; i++) {
+      final angle = (math.pi / 3) * i - math.pi / 2;
+      final x = center.dx + radius * math.cos(angle);
+      final y = center.dy + radius * math.sin(angle);
+      if (i == 0) {
+        path.moveTo(x, y);
+      } else {
+        path.lineTo(x, y);
+      }
+    }
+    path.close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(_HexagonPainter oldDelegate) =>
+      color != oldDelegate.color || radius != oldDelegate.radius;
 }

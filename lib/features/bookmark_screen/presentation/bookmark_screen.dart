@@ -93,7 +93,7 @@ class BookmarkScreen extends StatelessWidget {
                         ),
                       )
                     : SliverPadding(
-                        padding: const EdgeInsets.all(10),
+                        padding: const EdgeInsets.fromLTRB(10, 20, 10, 10),
                         sliver: SliverList(
                           delegate: SliverChildBuilderDelegate(
                             childCount: value.bookmarkedList.length,

@@ -83,7 +83,7 @@ class _MainScreenState extends State<MainScreen> {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final navBg = isDarkMode ? const Color(0xFF1C1C1E) : const Color.fromRGBO(255, 248, 235, 1);
-    final inactiveColor = isDarkMode ? Colors.white70 : const Color(0xFF9E9E9E);
+    final inactiveColor = isDarkMode ? Colors.white70 : const Color(0xFF4A4A4A);
     final displayIndex = controller.currentIndex;
     final tablet = ResponsiveHelper.isTablet(context);
     final scale = ResponsiveHelper.scaleFactor(context);
@@ -181,6 +181,8 @@ class _MainScreenState extends State<MainScreen> {
       drawer: const CommonDrawer(),
       body: pageBody,
       bottomNavigationBar: Container(
+        clipBehavior: Clip.none,
+        // height: 80,
         decoration: BoxDecoration(
           color: navBg,
           boxShadow: [
@@ -194,69 +196,115 @@ class _MainScreenState extends State<MainScreen> {
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 6),
-            child: Row(
-              children: List.generate(_navItems.length, (index) {
-                final item = _navItems[index];
-                final isSelected = displayIndex == index;
-                final color = isSelected
-                    ? Colors.white
-                    : inactiveColor;
-
-                return Expanded(
-                  child: Semantics(
-                    button: true,
-                    label: '${item.label} tab${isSelected ? ', selected' : ''}',
-                    excludeSemantics: true,
-                    child: InkWell(
-                      onTap: () => _onItemTapped(index),
-                      borderRadius: BorderRadius.circular(10),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        decoration: isSelected
-                            ? BoxDecoration(
-                                color: AppTheme.appIconTheme,
-                                borderRadius: BorderRadius.circular(10),
-                              )
-                            : null,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (item.icon.isEmpty)
-                              Icon(
-                                Icons.info_outline_rounded,
-                                size: 24,
-                                color: color,
-                              )
-                            else
-                              SvgPicture.asset(
-                                item.icon,
-                                width: 24,
-                                height: 24,
-                                colorFilter: ColorFilter.mode(
-                                  color,
-                                  BlendMode.srcIn,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: List.generate(_navItems.length, (index) {
+                    final item = _navItems[index];
+                    final isSelected = displayIndex == index;
+                    final isMushaf = index == 2;
+                
+                    final color = isMushaf
+                        ? Colors.white
+                        : isSelected
+                            ? AppTheme.appIconTheme
+                            : inactiveColor;
+                
+                    // Mushaf: floating elevated icon, no title
+                    if (isMushaf) {
+                      return Expanded(
+                        child: Semantics(
+                          button: true,
+                          label: '${item.label} tab${isSelected ? ', selected' : ''}',
+                          excludeSemantics: true,
+                          child: GestureDetector(
+                            onTap: () => _onItemTapped(index),
+                            child: Transform.translate(
+                              offset: const Offset(0, -25),
+                              child: Center(
+                                child: Container(
+                                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.appIconTheme,
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppTheme.appIconTheme.withValues(alpha: 0.3),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: SvgPicture.asset(
+                                    item.icon,
+                                    width: 30,
+                                    height: 30,
+                                    colorFilter: const ColorFilter.mode(
+                                      Colors.white,
+                                      BlendMode.srcIn,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            const SizedBox(height: 3),
-                            Text(
-                              item.label,
-                              style: TextStyle(
-                                color: color,
-                                fontSize: 10,
-                                fontWeight: isSelected
-                                    ? FontWeight.w700
-                                    : FontWeight.w400,
-                              ),
                             ),
-                          ],
+                          ),
+                        ),
+                      );
+                    }
+                
+                    // Other items: no filled bg, just color icon+text
+                    return Expanded(
+                      child: Semantics(
+                        button: true,
+                        label: '${item.label} tab${isSelected ? ', selected' : ''}',
+                        excludeSemantics: true,
+                        child: InkWell(
+                          onTap: () => _onItemTapped(index),
+                          borderRadius: BorderRadius.circular(10),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                            margin: const EdgeInsets.symmetric(horizontal: 4),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (item.icon.isEmpty)
+                                  Icon(
+                                    Icons.info_outline_rounded,
+                                    size: 24,
+                                    color: color,
+                                  )
+                                else
+                                  SvgPicture.asset(
+                                    item.icon,
+                                    width: 24,
+                                    height: 24,
+                                    colorFilter: ColorFilter.mode(
+                                      color,
+                                      BlendMode.srcIn,
+                                    ),
+                                  ),
+                                const SizedBox(height: 3),
+                                Text(
+                                  item.label,
+                                  style: TextStyle(
+                                    color: color,
+                                    fontSize: 10,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w700
+                                        : FontWeight.w400,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                );
-              }),
+                    );
+                  }),
+                ),
+              ],
             ),
           ),
         ),

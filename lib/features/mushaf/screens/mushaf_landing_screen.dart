@@ -619,7 +619,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
 
     final hPad = ResponsiveHelper.horizontalPadding(context);
     return Padding(
-      padding: EdgeInsets.fromLTRB(hPad, isLandscape ? 6 : 8, hPad, 0),
+      padding: EdgeInsets.fromLTRB(hPad, isLandscape ? 12 : 20, hPad, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

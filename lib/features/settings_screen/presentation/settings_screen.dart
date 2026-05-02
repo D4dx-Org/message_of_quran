@@ -28,7 +28,7 @@ class SettingsScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             sliver: SliverList.list(
               children: const [
-                SizedBox(height: 8),
+                SizedBox(height: 20),
                 _SectionLabel('Appearance'),
                 SizedBox(height: 8),
                 SettingsScreenDarkModeBlock(),
