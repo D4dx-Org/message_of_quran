@@ -45,7 +45,7 @@ class StarNumber extends StatelessWidget {
               size: Size(size, size),
               painter: _HexagonPainter(
                 color: polygonColor,
-                radius: size * 0.44,
+                radius: size * 0.50,
               ),
             ),
           Image.asset(
