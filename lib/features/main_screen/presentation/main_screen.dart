@@ -82,7 +82,7 @@ class _MainScreenState extends State<MainScreen> {
     final controller = Provider.of<HomeProvider>(context);
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    final navBg = isDarkMode ? const Color(0xFF1C1C1E) : const Color.fromRGBO(255, 248, 235, 1);
+    final navBg = isDarkMode ? const Color(0xFF1C1C1E) : Colors.white;
     final inactiveColor = isDarkMode ? Colors.white70 : const Color(0xFF4A4A4A);
     final displayIndex = controller.currentIndex;
     final tablet = ResponsiveHelper.isTablet(context);
