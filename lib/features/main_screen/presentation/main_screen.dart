@@ -82,7 +82,7 @@ class _MainScreenState extends State<MainScreen> {
     final controller = Provider.of<HomeProvider>(context);
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    final navBg = isDarkMode ? const Color(0xFF1C1C1E) : Colors.white;
+    final navBg = isDarkMode ? const Color(0xFF1C1C1E) : const Color.fromRGBO(255, 248, 235, 1);
     final inactiveColor = isDarkMode ? Colors.white70 : const Color(0xFF4A4A4A);
     final displayIndex = controller.currentIndex;
     final tablet = ResponsiveHelper.isTablet(context);
@@ -178,18 +178,6 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: appBar,
-      floatingActionButton: FloatingActionButton(onPressed: (){
-          _onItemTapped(2);
-      },child: SvgPicture.asset(
-                                    _navItems[2].icon,
-                                    width: 30,
-                                    height: 30,
-                                    colorFilter: const ColorFilter.mode(
-                                      Colors.white,
-                                      BlendMode.srcIn,
-                                    ),
-                                  ),),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       drawer: const CommonDrawer(),
       body: pageBody,
       bottomNavigationBar: Container(
@@ -224,48 +212,48 @@ class _MainScreenState extends State<MainScreen> {
                             : inactiveColor;
                 
                     // Mushaf: floating elevated icon, no title
-                    // if (isMushaf) {
-                    //   return Expanded(
-                    //     child: Semantics(
-                    //       button: true,
-                    //       label: '${item.label} tab${isSelected ? ', selected' : ''}',
-                    //       excludeSemantics: true,
-                    //       child: GestureDetector(
-                    //         onTap: () => _onItemTapped(index),
-                    //         child: Transform.translate(
-                    //           offset: const Offset(0, -4),
-                    //           child: Center(
-                    //             child: Container(
-                    //               padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                    //               decoration: BoxDecoration(
-                    //                 color: Colors.white,
-                    //                 borderRadius: BorderRadius.circular(10),
-                    //                 boxShadow: [
-                    //                   BoxShadow(
-                    //                     color:Colors.white,
-                    //                     blurRadius: 8,
-                    //                     offset: const Offset(0, 4),
-                    //                   ),
-                    //                 ],
-                    //               ),
-                    //               child: SvgPicture.asset(
-                    //                 item.icon,
-                    //                 width: 30,
-                    //                 height: 30,
-                    //                 colorFilter: const ColorFilter.mode(
-                    //                   Colors.white,
-                    //                   BlendMode.srcIn,
-                    //                 ),
-                    //               ),
-                    //             ),
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   );
-                    // }
+                    if (isMushaf) {
+                      return Expanded(
+                        child: Semantics(
+                          button: true,
+                          label: '${item.label} tab${isSelected ? ', selected' : ''}',
+                          excludeSemantics: true,
+                          child: GestureDetector(
+                            onTap: () => _onItemTapped(index),
+                            child: Transform.translate(
+                              offset: const Offset(0, -25),
+                              child: Center(
+                                child: Container(
+                                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.appIconTheme,
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppTheme.appIconTheme.withValues(alpha: 0.3),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: SvgPicture.asset(
+                                    item.icon,
+                                    width: 30,
+                                    height: 30,
+                                    colorFilter: const ColorFilter.mode(
+                                      Colors.white,
+                                      BlendMode.srcIn,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
                 
-                    // Other items: no filled bg, just color icon+text
+                    // Other items: filled bg when active, plain when inactive
                     return Expanded(
                       child: Semantics(
                         button: true,
@@ -275,8 +263,16 @@ class _MainScreenState extends State<MainScreen> {
                           onTap: () => _onItemTapped(index),
                           borderRadius: BorderRadius.circular(10),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
                             margin: const EdgeInsets.symmetric(horizontal: 4),
+                            decoration: isSelected
+                                ? BoxDecoration(
+                                    color: isDarkMode
+                                        ? const Color.fromRGBO(80, 50, 30, 0.3)
+                                        : const Color.fromRGBO(255, 234, 191, 1),
+                                    borderRadius: BorderRadius.circular(10),
+                                  )
+                                : null,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
