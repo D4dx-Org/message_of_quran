@@ -4,46 +4,43 @@ import 'package:the_message_of_the_quran/core/models/preface_model.dart';
 import 'package:the_message_of_the_quran/core/services/database/database_helper.dart';
 
 class PrefaceDbHelper {
+  /// Returns the introduction text from quran_asad.sqlite for the given surah,
+  /// wrapped in a single [PrefaceModel] to keep existing UI code compatible.
   static Future<List<PrefaceModel>> getPrefaceBySurahId(int surahId) async {
-    final db = DatabaseHelper.quranMalayalamDb;
+    final db = DatabaseHelper.quranAsadDb;
     if (db == null) {
-      debugPrint('PrefaceDbHelper: database not initialized');
+      debugPrint('PrefaceDbHelper: quranAsadDb not initialized');
       return [];
     }
 
     try {
       final result = await db.query(
-        DbConstants.prefaceTable,
-        where:
-            '${DbConstants.prefaceSuraId} = ? AND ${DbConstants.prefaceId} != 0',
+        DbConstants.asadSurahsTable,
+        columns: [DbConstants.asadSurahIntroduction],
+        where: '${DbConstants.asadSurahNumber} = ?',
         whereArgs: [surahId],
-        orderBy: '${DbConstants.prefaceId} ASC',
       );
-      return result.map((map) => PrefaceModel.fromJson(map)).toList();
+      if (result.isEmpty) return [];
+      final introText =
+          (result.first[DbConstants.asadSurahIntroduction] ?? '').toString();
+      if (introText.trim().isEmpty) return [];
+      return [
+        PrefaceModel(
+          id: surahId,
+          prefaceSubTitle: '',
+          prefaceText: introText,
+          suraId: surahId,
+        ),
+      ];
     } catch (e) {
       debugPrint(
-          'PrefaceDbHelper: Error fetching preface for surah $surahId: $e');
+          'PrefaceDbHelper: Error fetching introduction for surah $surahId: $e');
       return [];
     }
   }
 
   static Future<PrefaceModel?> getGeneralPreface() async {
-    final db = DatabaseHelper.quranMalayalamDb;
-    if (db == null) {
-      debugPrint('PrefaceDbHelper: database not initialized');
-      return null;
-    }
-
-    try {
-      final result = await db.query(
-        DbConstants.prefaceTable,
-        where: '${DbConstants.prefaceId} = 0',
-      );
-      if (result.isEmpty) return null;
-      return PrefaceModel.fromJson(result.first);
-    } catch (e) {
-      debugPrint('PrefaceDbHelper: Error fetching general preface: $e');
-      return null;
-    }
+    // General preface is not available in quran_asad.sqlite
+    return null;
   }
 }

@@ -120,4 +120,37 @@ class DbConstants {
   static const String prefaceSubTitle = "preface_sub_title";
   static const String prefaceText = "preface_text";
   static const String prefaceSuraId = "sura_id";
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // quran_asad.sqlite database
+  // ═══════════════════════════════════════════════════════════════════════════
+  static const String quranAsadDbName = "quran_asad.sqlite";
+  static const String quranAsadDbVersionKey = 'quran_asad_db_version';
+  static const int quranAsadDbVersion = 2;
+
+  // ─── Table names (quran_asad.sqlite) ───
+  static const String asadSurahsTable = "surahs";
+  static const String asadVersesTable = "verses";
+  static const String asadFootnotesTable = "footnotes";
+
+  // ─── surahs columns (quran_asad.sqlite → surahs) ───
+  static const String asadSurahNumber = "number";
+  static const String asadSurahOrdinalLabel = "ordinal_label";
+  static const String asadSurahName = "name";
+  static const String asadSurahTranslation = "translation";
+  static const String asadSurahPeriod = "period";
+  static const String asadSurahHasBismillah = "has_bismillah";
+  static const String asadSurahIntroduction = "introduction";
+
+  // ─── verses columns (quran_asad.sqlite → verses) ───
+  static const String asadVerseId = "id";
+  static const String asadVerseSurahNumber = "surah_number";
+  static const String asadVerseNumber = "verse_number";
+  static const String asadVerseText = "text";
+
+  // ─── footnotes columns (quran_asad.sqlite → footnotes) ───
+  static const String asadFootnoteId = "id";
+  static const String asadFootnoteSurahNumber = "surah_number";
+  static const String asadFootnoteNumber = "footnote_number";
+  static const String asadFootnoteText = "text";
 }

@@ -38,4 +38,21 @@ class InterpretationModel {
       isVerified: (json[DbConstants.isVerified] as int?) == 1,
     );
   }
+
+  /// Creates an [InterpretationModel] from a quran_asad `footnotes` row.
+  static InterpretationModel fromAsadJson(Map<dynamic, dynamic> json) {
+    final footnoteNum = (json[DbConstants.asadFootnoteNumber] as int?) ?? -1;
+    return InterpretationModel(
+      id: (json[DbConstants.asadFootnoteId] ?? '').toString(),
+      surahNumber: (json[DbConstants.asadFootnoteSurahNumber] as int?) ?? -1,
+      ayaRangeStart: footnoteNum,
+      ayaRangeEnd: footnoteNum,
+      interpretationNumber: footnoteNum,
+      language: '',
+      interpretationText: (json[DbConstants.asadFootnoteText] as String?) ?? '',
+      createdBy: '',
+      createdByRole: '',
+      isVerified: true,
+    );
+  }
 }

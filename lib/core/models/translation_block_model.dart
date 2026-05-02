@@ -27,4 +27,18 @@ class TranslationBlockModel {
       arabicId: null,
     );
   }
+
+  /// Creates a [TranslationBlockModel] from a quran_asad `verses` row.
+  /// Each row is a single verse, so verseFrom == verseTo.
+  factory TranslationBlockModel.fromAsadJson(Map<String, dynamic> json) {
+    final verseNum = json[DbConstants.asadVerseNumber] as int?;
+    return TranslationBlockModel(
+      translationText: json[DbConstants.asadVerseText] as String?,
+      verseFrom: verseNum,
+      verseTo: verseNum,
+      chapterNo: json[DbConstants.asadVerseSurahNumber] as int?,
+      translationNo: null,
+      arabicId: null,
+    );
+  }
 }

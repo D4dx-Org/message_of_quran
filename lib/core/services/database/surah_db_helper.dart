@@ -5,19 +5,27 @@ import 'package:the_message_of_the_quran/core/services/database/database_helper.
 
 class SurahDbHelper {
   static Future<List<SurahModel>> getAllSuras() async {
-    final db = DatabaseHelper.quranMalayalamDb;
+    final db = DatabaseHelper.quranAsadDb;
     if (db == null) {
-      debugPrint('SurahDbHelper: quranMalayalamDb not initialized');
+      debugPrint('SurahDbHelper: quranAsadDb not initialized');
       return [];
     }
 
     try {
-      final result = await db.query(
-        DbConstants.surasTable,
-        orderBy: '${DbConstants.suraNumber} ASC',
+      final rows = await db.query(
+        DbConstants.asadSurahsTable,
+        orderBy: '${DbConstants.asadSurahNumber} ASC',
       );
-      return result.map((map) => SurahModel.fromJson(map)).toList();
+
+      return rows.map((row) {
+        return SurahModel.fromAsadJson(
+          row,
+          arabicName: (row['arabic_name'] ?? '').toString(),
+          ayathCount: (row['ayath_count'] as int?) ?? 0,
+        );
+      }).toList();
     } catch (e) {
+      debugPrint('SurahDbHelper: Error fetching surahs — $e');
       return [];
     }
   }

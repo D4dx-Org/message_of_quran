@@ -13,34 +13,41 @@ class DatabaseHelper {
   DatabaseHelper._internal();
   static final DatabaseHelper _instance = DatabaseHelper._internal();
 
-  static Database? quranMalayalamDb;
+  static Database? quranMalayalamDb; // disabled — kept for future use
+  static Database? quranAsadDb;
   static Database? userDatabase;
 
   static Future<void> initializeServices() async {
     final prefs = await SharedPreferences.getInstance();
 
-    // Force re-copy of quran_malayalam_.db when the bundled version has changed.
-    final storedQmVersion =
-        prefs.getInt(DbConstants.quranMalayalamDbVersionKey) ?? 0;
-    if (storedQmVersion < DbConstants.quranMalayalamDbVersion) {
-      final databasesPath = await getDatabasesPath();
-      final qmPath = join(databasesPath, DbConstants.quranMalayalamDbName);
+    // ── quran_malayalam_.db — disabled for now ──
+    // quranMalayalamDb = await initDatabase(
+    //   name: DbConstants.quranMalayalamDbName,
+    //   dbName: DbConstants.quranMalayalamDbName,
+    // );
+
+    // ── quran_asad.sqlite ──
+    final storedAsadVersion =
+        prefs.getInt(DbConstants.quranAsadDbVersionKey) ?? 0;
+    if (storedAsadVersion < DbConstants.quranAsadDbVersion) {
+      final databasesPath2 = await getDatabasesPath();
+      final asadPath = join(databasesPath2, DbConstants.quranAsadDbName);
       for (final suffix in ['', '-wal', '-shm']) {
         try {
-          await File('$qmPath$suffix').delete();
+          await File('$asadPath$suffix').delete();
         } catch (e) {
-          debugPrint('DB: failed to delete $qmPath$suffix — $e');
+          debugPrint('DB: failed to delete $asadPath$suffix — $e');
         }
       }
     }
 
-    quranMalayalamDb = await initDatabase(
-      name: DbConstants.quranMalayalamDbName,
-      dbName: DbConstants.quranMalayalamDbName,
+    quranAsadDb = await initDatabase(
+      name: DbConstants.quranAsadDbName,
+      dbName: DbConstants.quranAsadDbName,
     );
     await prefs.setInt(
-      DbConstants.quranMalayalamDbVersionKey,
-      DbConstants.quranMalayalamDbVersion,
+      DbConstants.quranAsadDbVersionKey,
+      DbConstants.quranAsadDbVersion,
     );
 
     final databasesPath = await getDatabasesPath();

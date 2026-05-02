@@ -5,7 +5,7 @@ import 'package:the_message_of_the_quran/core/services/database/database_helper.
 class ArabicBlockDbHelper {
   static Future<List<ArabicBlockModel>> getArabicBlocksBySurah(
       int surahNumber) async {
-    final db = DatabaseHelper.quranMalayalamDb;
+    final db = DatabaseHelper.quranAsadDb;
     if (db == null) return [];
 
     try {

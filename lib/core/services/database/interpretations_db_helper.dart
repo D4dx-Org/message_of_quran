@@ -8,15 +8,15 @@ class InterpretationsDbHelper {
     required int surahNumber,
     required int interpretationNumber,
   }) async {
-    final db = DatabaseHelper.quranMalayalamDb;
+    final db = DatabaseHelper.quranAsadDb;
     if (db == null) return [];
     try {
       final rows = await db.query(
-        DbConstants.interpretationsTable,
-        where: '${DbConstants.suraNumber} = ? AND ${DbConstants.interpretationNumber} = ?',
+        DbConstants.asadFootnotesTable,
+        where: '${DbConstants.asadFootnoteSurahNumber} = ? AND ${DbConstants.asadFootnoteNumber} = ?',
         whereArgs: [surahNumber, interpretationNumber],
       );
-      return rows.map((e) => InterpretationModel.fromJson(e)).toList();
+      return rows.map((e) => InterpretationModel.fromAsadJson(e)).toList();
     } catch (e) {
       return [];
     }
@@ -25,14 +25,14 @@ class InterpretationsDbHelper {
   static Future<Map<String, int>> getInterpretationRange({
     required int surahNumber,
   }) async {
-    final db = DatabaseHelper.quranMalayalamDb;
+    final db = DatabaseHelper.quranAsadDb;
     if (db == null) return {'min': -1, 'max': -1};
     try {
       final result = await db.rawQuery(
-        'SELECT MIN(${DbConstants.interpretationNumber}) as min_num,'
-        ' MAX(${DbConstants.interpretationNumber}) as max_num'
-        ' FROM ${DbConstants.interpretationsTable}'
-        ' WHERE ${DbConstants.suraNumber} = ?',
+        'SELECT MIN(${DbConstants.asadFootnoteNumber}) as min_num,'
+        ' MAX(${DbConstants.asadFootnoteNumber}) as max_num'
+        ' FROM ${DbConstants.asadFootnotesTable}'
+        ' WHERE ${DbConstants.asadFootnoteSurahNumber} = ?',
         [surahNumber],
       );
       if (result.isEmpty) return {'min': -1, 'max': -1};

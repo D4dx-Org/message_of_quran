@@ -2384,7 +2384,7 @@ class _TajweedWordRowState extends State<_TajweedWordRow> {
   }
 
   Future<void> _loadWords() async {
-    final db = DatabaseHelper.quranMalayalamDb;
+    final db = DatabaseHelper.quranAsadDb;
     if (db == null) return;
     final words = await TajweedDbHelper.getWordsForBlock(
       db: db,

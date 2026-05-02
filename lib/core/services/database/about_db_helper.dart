@@ -7,7 +7,7 @@ class AboutDbHelper {
   static Future<List<AboutModel>>getAboutInfo()async{
     
     try {
-    final aboutInfo = DatabaseHelper.quranMalayalamDb;
+    final aboutInfo = DatabaseHelper.quranAsadDb;
       if (aboutInfo == null) {
         debugPrint('AboutDbHelper: database not initialized');
         return [];

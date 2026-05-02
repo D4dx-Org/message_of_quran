@@ -7,7 +7,7 @@ class ContactDbHelper {
   static Future<List<ContactModel>>getContactInfo()async{
     try {
 
-      final contactInfo = DatabaseHelper.quranMalayalamDb;
+      final contactInfo = DatabaseHelper.quranAsadDb;
       if (contactInfo == null) {
         debugPrint('ContactDbHelper: database not initialized');
         return [];

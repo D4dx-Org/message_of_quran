@@ -6,7 +6,7 @@ import 'package:the_message_of_the_quran/core/services/database/database_helper.
 class HelpDbHelper {
   static Future<List<HelpModel>> getHelpInfo() async {
     try {
-      final db = DatabaseHelper.quranMalayalamDb;
+      final db = DatabaseHelper.quranAsadDb;
       if (db == null) {
         debugPrint('HelpDbHelper: database not initialized');
         return [];

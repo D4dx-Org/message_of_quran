@@ -5,7 +5,7 @@ import 'package:the_message_of_the_quran/core/services/database/database_helper.
 class JuzHizbDbHelper {
   /// Returns the 30 Juz entries with their starting surah and ayah.
   static Future<List<JuzHizbModel>> getAllJuz() async {
-    final db = DatabaseHelper.quranMalayalamDb;
+    final db = DatabaseHelper.quranAsadDb;
     if (db == null) return [];
 
     try {
@@ -25,7 +25,7 @@ class JuzHizbDbHelper {
 
   /// Returns the 60 Hizb entries with their starting surah and ayah.
   static Future<List<JuzHizbModel>> getAllHizb() async {
-    final db = DatabaseHelper.quranMalayalamDb;
+    final db = DatabaseHelper.quranAsadDb;
     if (db == null) return [];
 
     try {
