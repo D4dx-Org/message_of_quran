@@ -192,15 +192,18 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: appBar,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _onItemTapped(2);
-        },
-        child: SvgPicture.asset(
-          _navItems[2].icon,
-          width: 30,
-          height: 30,
-          colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+      floatingActionButton: Transform.translate(
+        offset: const Offset(0, 10),
+        child: FloatingActionButton(
+          onPressed: () {
+            _onItemTapped(2);
+          },
+          child: SvgPicture.asset(
+            _navItems[2].icon,
+            width: 30,
+            height: 30,
+            colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -254,19 +257,19 @@ class _MainScreenState extends State<MainScreen> {
                               vertical: 4,
                             ),
                             margin: const EdgeInsets.symmetric(horizontal: 4),
-                            decoration: isSelected && !isMushaf
-                                ? BoxDecoration(
-                                    color: isDarkMode
-                                        ? Colors.white.withValues(alpha: 0.12)
-                                        : const Color.fromRGBO(
-                                            255,
-                                            234,
-                                            191,
-                                            1,
-                                          ),
-                                    borderRadius: BorderRadius.circular(10),
-                                  )
-                                : null,
+                            // decoration: 
+                            //     ? BoxDecoration(
+                            //         color: isDarkMode
+                            //             ? Colors.white.withValues(alpha: 0.12)
+                            //             : const Color.fromRGBO(
+                            //                 255,
+                            //                 234,
+                            //                 191,
+                            //                 1,
+                            //               ),
+                            //         borderRadius: BorderRadius.circular(10),
+                            //       )
+                            //     : null,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
