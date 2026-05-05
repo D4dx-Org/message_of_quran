@@ -27,6 +27,7 @@ import 'package:the_message_of_the_quran/features/progression_tracker/provider/p
 import 'package:the_message_of_the_quran/features/settings_screen/providers/reminder_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/tajweed_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/wakelock_provider.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/ayah_of_the_day/provider/ayah_of_the_day_provider.dart';
 import 'package:the_message_of_the_quran/core/services/notification/notification_services.dart';
 import 'package:the_message_of_the_quran/features/ayah_of_the_day/presentation/ayah_of_the_day_screen.dart';
@@ -181,6 +182,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => TajweedProvider()),
         ChangeNotifierProvider(create: (context) => ReminderProvider()),
         ChangeNotifierProvider(create: (context) => WakelockProvider()),
+        ChangeNotifierProvider(create: (context) => LanguageProvider()),
         ChangeNotifierProvider(create: (context) => AyahOfTheDayProvider()),
         ChangeNotifierProvider(create: (context) => AudioProvider()),
         ChangeNotifierProvider(create: (context) => LastReadProvider()),

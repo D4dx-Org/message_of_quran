@@ -9,6 +9,7 @@ class SurahModel {
   final String description;
   final int ayathCount;
   final String place;
+  final String malayalamName;
   final String introduction;
   final String createdBy;
   final String createdByRole;
@@ -20,6 +21,7 @@ class SurahModel {
     required this.name,
     required this.searchName,
     required this.arabicName,
+    this.malayalamName = '',
     required this.description,
     required this.ayathCount,
     required this.place,
@@ -52,6 +54,7 @@ class SurahModel {
   static SurahModel fromAsadJson(
     Map<dynamic, dynamic> asadRow, {
     String arabicName = '',
+    String malayalamName = '',
     int ayathCount = 0,
   }) {
     final String name = (asadRow[DbConstants.asadSurahName] ?? '').toString();
@@ -62,6 +65,7 @@ class SurahModel {
       name: name,
       searchName: searchName,
       arabicName: arabicName,
+      malayalamName: malayalamName,
       description: (asadRow[DbConstants.asadSurahTranslation] ?? '').toString(),
       ayathCount: ayathCount,
       place: (asadRow[DbConstants.asadSurahPeriod] ?? '').toString(),

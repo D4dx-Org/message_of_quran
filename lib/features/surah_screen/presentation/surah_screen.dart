@@ -1484,7 +1484,12 @@ class _SurahScreenState extends State<SurahScreen> {
                   onPageChanged: (pageIndex) =>
                       _handlePageChanged(controller, pageIndex),
                   itemBuilder: (_, index) {
-                    return SingleChildScrollView(child: ayahWidgets[index]);
+                    return SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 72),
+                        child: ayahWidgets[index],
+                      ),
+                    );
                   },
                 ),
               ),

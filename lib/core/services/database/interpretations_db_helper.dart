@@ -7,6 +7,23 @@ class InterpretationsDbHelper {
   static Future<List<InterpretationModel>> getinterpretations({
     required int surahNumber,
     required int interpretationNumber,
+    bool malayalam = false,
+  }) async {
+    if (malayalam) {
+      return _getInterpretationsMalayalam(
+        surahNumber: surahNumber,
+        interpretationNumber: interpretationNumber,
+      );
+    }
+    return _getInterpretationsAsad(
+      surahNumber: surahNumber,
+      interpretationNumber: interpretationNumber,
+    );
+  }
+
+  static Future<List<InterpretationModel>> _getInterpretationsAsad({
+    required int surahNumber,
+    required int interpretationNumber,
   }) async {
     final db = DatabaseHelper.quranAsadDb;
     if (db == null) return [];
@@ -22,7 +39,25 @@ class InterpretationsDbHelper {
     }
   }
 
+  static Future<List<InterpretationModel>> _getInterpretationsMalayalam({
+    required int surahNumber,
+    required int interpretationNumber,
+  }) async {
+    // Malayalam DB disabled — will be re-enabled when data is ready
+    return [];
+  }
+
   static Future<Map<String, int>> getInterpretationRange({
+    required int surahNumber,
+    bool malayalam = false,
+  }) async {
+    if (malayalam) {
+      return _getInterpretationRangeMalayalam(surahNumber: surahNumber);
+    }
+    return _getInterpretationRangeAsad(surahNumber: surahNumber);
+  }
+
+  static Future<Map<String, int>> _getInterpretationRangeAsad({
     required int surahNumber,
   }) async {
     final db = DatabaseHelper.quranAsadDb;
@@ -46,13 +81,24 @@ class InterpretationsDbHelper {
     }
   }
 
+  static Future<Map<String, int>> _getInterpretationRangeMalayalam({
+    required int surahNumber,
+  }) async {
+    // Malayalam DB disabled — will be re-enabled when data is ready
+    return {'min': -1, 'max': -1};
+  }
+
   /// Returns the first footnote number for the given surah as the default
   /// starting page when opening from an ayah tap.
   static Future<int> getInterpretationNumberForAyah({
     required int surahNumber,
     required int ayahNumber,
+    bool malayalam = false,
   }) async {
-    final range = await getInterpretationRange(surahNumber: surahNumber);
+    final range = await getInterpretationRange(
+      surahNumber: surahNumber,
+      malayalam: malayalam,
+    );
     final min = range['min'] ?? -1;
     return min != -1 ? min : 1;
   }

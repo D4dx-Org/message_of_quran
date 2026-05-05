@@ -30,6 +30,21 @@ class SurahProvider extends ChangeNotifier {
   List<TranslationBlockModel> translationBlockList = [];
   bool _isSwiping = false;
 
+  // ── Language state ──
+  bool _isMalayalam = false;
+  bool get isMalayalam => _isMalayalam;
+
+  /// Called when language changes. Reloads all content.
+  Future<void> setMalayalam(bool value) async {
+    if (_isMalayalam == value) return;
+    _isMalayalam = value;
+    surahList = [];
+    await getAllSurah();
+    if (surahList.isNotEmpty && index >= 0 && index < surahList.length) {
+      await getAyasForCurrentSurah();
+    }
+  }
+
   // ── Ayah toggle-selection state (Set of individual ayah numbers) ──
   final Set<int> _selectedAyahs = {};
 
@@ -285,7 +300,7 @@ class SurahProvider extends ChangeNotifier {
     isSurahLoading = true;
 
     try {
-      surahList = await SurahDbHelper.getAllSuras();
+      surahList = await SurahDbHelper.getAllSuras(malayalam: _isMalayalam);
     } catch (e) {
       surahList = [];
     } finally {
@@ -496,6 +511,7 @@ class SurahProvider extends ChangeNotifier {
       if (minInterpretationNumber == -1 || maxInterpretationNumber == -1) {
         final range = await InterpretationsDbHelper.getInterpretationRange(
           surahNumber: surahList[index].surahNumber,
+          malayalam: _isMalayalam,
         );
         minInterpretationNumber = range['min'] ?? -1;
         maxInterpretationNumber = range['max'] ?? -1;
@@ -504,6 +520,7 @@ class SurahProvider extends ChangeNotifier {
       interpretationList = await InterpretationsDbHelper.getinterpretations(
         surahNumber: surahList[index].surahNumber,
         interpretationNumber: interpretationNumber,
+        malayalam: _isMalayalam,
       );
     } catch (e) {
       interpretationList = [];
@@ -533,6 +550,7 @@ class SurahProvider extends ChangeNotifier {
         await InterpretationsDbHelper.getInterpretationNumberForAyah(
           surahNumber: surahNum,
           ayahNumber: ayahNumber,
+          malayalam: _isMalayalam,
         );
     if (pageNumber == -1) pageNumber = 1;
     await getInterpretations(pageNumber);
@@ -559,7 +577,7 @@ class SurahProvider extends ChangeNotifier {
     try {
       final results = await Future.wait([
         ArabicBlockDbHelper.getArabicBlocksBySurah(surahNumber),
-        TranslationBlockDbHelper.getTranslationBlocksBySurah(surahNumber),
+        TranslationBlockDbHelper.getTranslationBlocksBySurah(surahNumber, malayalam: _isMalayalam),
       ]);
       arabicBlockList = results[0] as List<ArabicBlockModel>;
       translationBlockList = results[1] as List<TranslationBlockModel>;

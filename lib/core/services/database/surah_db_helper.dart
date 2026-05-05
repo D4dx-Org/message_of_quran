@@ -4,7 +4,14 @@ import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:the_message_of_the_quran/core/services/database/database_helper.dart';
 
 class SurahDbHelper {
-  static Future<List<SurahModel>> getAllSuras() async {
+  static Future<List<SurahModel>> getAllSuras({bool malayalam = false}) async {
+    if (malayalam) {
+      return _getAllSurasMalayalam();
+    }
+    return _getAllSurasAsad();
+  }
+
+  static Future<List<SurahModel>> _getAllSurasAsad() async {
     final db = DatabaseHelper.quranAsadDb;
     if (db == null) {
       debugPrint('SurahDbHelper: quranAsadDb not initialized');
@@ -21,6 +28,7 @@ class SurahDbHelper {
         return SurahModel.fromAsadJson(
           row,
           arabicName: (row['arabic_name'] ?? '').toString(),
+          malayalamName: (row['malayalam_name'] ?? '').toString(),
           ayathCount: (row['ayath_count'] as int?) ?? 0,
         );
       }).toList();
@@ -28,5 +36,10 @@ class SurahDbHelper {
       debugPrint('SurahDbHelper: Error fetching surahs — $e');
       return [];
     }
+  }
+
+  static Future<List<SurahModel>> _getAllSurasMalayalam() async {
+    // Malayalam DB disabled — will be re-enabled when data is ready
+    return [];
   }
 }

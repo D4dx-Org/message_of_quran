@@ -3,6 +3,7 @@ import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_app_block.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_audio_block.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_dark_mode_block.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_language_block.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_quran_block.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_tajweed_block.dart';
 
@@ -28,6 +29,10 @@ class SettingsScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             sliver: SliverList.list(
               children: const [
+                SizedBox(height: 20),
+                _SectionLabel('Language'),
+                SizedBox(height: 8),
+                SettingsScreenLanguageBlock(),
                 SizedBox(height: 20),
                 _SectionLabel('Appearance'),
                 SizedBox(height: 8),

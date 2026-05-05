@@ -7,10 +7,10 @@ class DbConstants {
   static const String userDbName = "user_data.db";
   static const String dbLocation = "assets/db";
 
-  /// quran_malayalam_ database (consolidated)
-  static const String quranMalayalamDbName = "quran_malayalam_.db";
-  static const String quranMalayalamDbVersionKey = 'quran_malayalam_db_version';
-  static const int quranMalayalamDbVersion = 3;
+  // quran_malayalam_.db — disabled, will be re-enabled when data is ready
+  // static const String quranMalayalamDbName = "quran_malayalam_.db";
+  // static const String quranMalayalamDbVersionKey = 'quran_malayalam_db_version';
+  // static const int quranMalayalamDbVersion = 3;
 
   // ─── Table names (quran_malayalam.db) ───
   static const String surasTable = "suras";
@@ -126,7 +126,7 @@ class DbConstants {
   // ═══════════════════════════════════════════════════════════════════════════
   static const String quranAsadDbName = "quran_asad.sqlite";
   static const String quranAsadDbVersionKey = 'quran_asad_db_version';
-  static const int quranAsadDbVersion = 2;
+  static const int quranAsadDbVersion = 3;
 
   // ─── Table names (quran_asad.sqlite) ───
   static const String asadSurahsTable = "surahs";
@@ -141,6 +141,7 @@ class DbConstants {
   static const String asadSurahPeriod = "period";
   static const String asadSurahHasBismillah = "has_bismillah";
   static const String asadSurahIntroduction = "introduction";
+  static const String asadSurahMalayalamName = "malayalam_name";
 
   // ─── verses columns (quran_asad.sqlite → verses) ───
   static const String asadVerseId = "id";

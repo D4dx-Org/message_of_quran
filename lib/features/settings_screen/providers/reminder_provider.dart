@@ -28,9 +28,13 @@ class ReminderProvider extends ChangeNotifier {
       hour: prefs.getInt(_hourKey) ?? 20,
       minute: prefs.getInt(_minuteKey) ?? 0,
     );
-    final notificationsAllowed = await AwesomeNotifications()
-        .isNotificationAllowed();
+    final notificationsAllowed =
+        await AwesomeNotifications().isNotificationAllowed();
     if (notificationsAllowed) {
+      // Request exact alarm permission (required on Android 12+ for precise scheduling)
+      await AwesomeNotifications().requestPermissionToSendNotifications(
+        permissions: [NotificationPermission.PreciseAlarms],
+      );
       await _scheduleFridayReminder();
       if (_isEnabled) {
         await _scheduleReminder();
@@ -119,7 +123,7 @@ class ReminderProvider extends ChangeNotifier {
         ),
         schedule: NotificationCalendar(
           weekday: DateTime.friday,
-          hour: 6,
+          hour: 11,
           minute: 0,
           second: 0,
           repeats: true,

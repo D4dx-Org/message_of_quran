@@ -13,18 +13,11 @@ class DatabaseHelper {
   DatabaseHelper._internal();
   static final DatabaseHelper _instance = DatabaseHelper._internal();
 
-  static Database? quranMalayalamDb; // disabled — kept for future use
   static Database? quranAsadDb;
   static Database? userDatabase;
 
   static Future<void> initializeServices() async {
     final prefs = await SharedPreferences.getInstance();
-
-    // ── quran_malayalam_.db — disabled for now ──
-    // quranMalayalamDb = await initDatabase(
-    //   name: DbConstants.quranMalayalamDbName,
-    //   dbName: DbConstants.quranMalayalamDbName,
-    // );
 
     // ── quran_asad.sqlite ──
     final storedAsadVersion =

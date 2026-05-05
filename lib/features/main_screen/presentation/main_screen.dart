@@ -14,6 +14,7 @@ import 'package:the_message_of_the_quran/features/mushaf/screens/mushaf_landing_
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 import 'package:the_message_of_the_quran/main.dart' as app;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -51,7 +52,11 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-      await Provider.of<SurahProvider>(context, listen: false).getAllSurah();
+      final prefs = await SharedPreferences.getInstance();
+      final isMalayalam = (prefs.getString('app_language') ?? 'en') == 'ml';
+      final surahProvider = Provider.of<SurahProvider>(context, listen: false);
+      await surahProvider.setMalayalam(isMalayalam);
+      await surahProvider.getAllSurah();
       if (!mounted) return;
 
       final pendingRoute = app.pendingNotificationRoute;
