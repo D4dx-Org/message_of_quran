@@ -39,7 +39,6 @@ class SurahDbHelper {
   }
 
   static Future<List<SurahModel>> _getAllSurasMalayalam() async {
-    // Malayalam DB disabled — will be re-enabled when data is ready
-    return [];
+    return _getAllSurasAsad();
   }
 }

@@ -59,7 +59,7 @@ class HomeScreenListTile extends StatelessWidget {
                       style: GoogleFonts.poppins(
                         color: textColor,
                         fontWeight: FontWeight.w600,
-                        fontSize: 15,
+                        fontSize: 12,
                       ),
                     ),
                     const SizedBox(height: 2),

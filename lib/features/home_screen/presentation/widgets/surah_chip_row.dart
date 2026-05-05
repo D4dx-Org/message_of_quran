@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
 class SurahChipRow extends StatelessWidget {
   const SurahChipRow({super.key});
 
-  static const List<({String label, int surahNumber, int? ayahId})> _chips = [
-    (label: 'Ayatul Kursi', surahNumber: 2, ayahId: 255),
-    (label: 'Yaseen', surahNumber: 36, ayahId: null),
-    (label: 'Al Mulk', surahNumber: 67, ayahId: null),
-    (label: 'Ar Rahman', surahNumber: 55, ayahId: null),
-    (label: "Al Waqi'ah", surahNumber: 56, ayahId: null),
-    (label: 'Al Kahf', surahNumber: 18, ayahId: null),
+  static const List<({String labelEn, String labelMl, int surahNumber, int? ayahId})> _chips = [
+    (labelEn: 'Ayatul Kursi', labelMl: 'ആയത്തുൽ കുർസി', surahNumber: 2, ayahId: 255),
+    (labelEn: 'Yaseen', labelMl: '', surahNumber: 36, ayahId: null),
+    (labelEn: 'Al Mulk', labelMl: '', surahNumber: 67, ayahId: null),
+    (labelEn: 'Ar Rahman', labelMl: '', surahNumber: 55, ayahId: null),
+    (labelEn: "Al Waqi'ah", labelMl: '', surahNumber: 56, ayahId: null),
+    (labelEn: 'Al Kahf', labelMl: '', surahNumber: 18, ayahId: null),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
+    final surahList = context.watch<SurahProvider>().surahList;
+
     return SizedBox(
       height: 40,
       child: ListView.separated(
@@ -27,6 +31,20 @@ class SurahChipRow extends StatelessWidget {
         separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
           final chip = _chips[index];
+
+          // Resolve label based on language
+          String label;
+          if (isMalayalam && chip.labelMl.isNotEmpty) {
+            label = chip.labelMl;
+          } else if (isMalayalam && surahList.isNotEmpty) {
+            final surah = surahList.where((s) => s.surahNumber == chip.surahNumber).firstOrNull;
+            label = (surah != null && surah.malayalamName.isNotEmpty)
+                ? surah.malayalamName
+                : chip.labelEn;
+          } else {
+            label = chip.labelEn;
+          }
+
           return GestureDetector(
             onTap: () async {
               final surahProv = context.read<SurahProvider>();
@@ -50,7 +68,7 @@ class SurahChipRow extends StatelessWidget {
               ),
               alignment: Alignment.center,
               child: Text(
-                chip.label,
+                label,
                 style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: 12,
