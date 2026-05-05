@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:the_message_of_the_quran/core/constants/db_constants.dart';
 import 'package:the_message_of_the_quran/core/models/translation_block_model.dart';
 import 'package:the_message_of_the_quran/core/services/database/database_helper.dart';

@@ -54,6 +54,7 @@ class _MainScreenState extends State<MainScreen> {
       if (!mounted) return;
       final prefs = await SharedPreferences.getInstance();
       final isMalayalam = (prefs.getString('app_language') ?? 'en') == 'ml';
+      // ignore: use_build_context_synchronously
       final surahProvider = Provider.of<SurahProvider>(context, listen: false);
       await surahProvider.setMalayalam(isMalayalam);
       await surahProvider.getAllSurah();

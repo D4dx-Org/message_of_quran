@@ -19,7 +19,7 @@ class SettingsScreenLanguageBlock extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.language, color: AppTheme.appIconTheme),
+            const    Icon(Icons.language, color: AppTheme.appIconTheme),
                 const SizedBox(width: 12),
                 Text(
                   'Language',
