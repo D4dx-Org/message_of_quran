@@ -10,6 +10,7 @@ import 'package:the_message_of_the_quran/features/ayah_of_the_day/presentation/a
 import 'package:the_message_of_the_quran/features/contact_us_screen/presentation/contact_us_screen.dart';
 import 'package:the_message_of_the_quran/features/help_screen/help_screen.dart';
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -19,6 +20,7 @@ class CommonDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<HomeProvider>(context, listen: false);
+    final isMl = context.watch<LanguageProvider>().isMalayalam;
     final theme = Theme.of(context);
     final scale = ResponsiveHelper.scaleFactor(context);
     final isTablet = ResponsiveHelper.isTablet(context);
@@ -125,7 +127,7 @@ class CommonDrawer extends StatelessWidget {
                 child: Column(
                   children: [
                     _DrawerTile(
-                      title: 'Home',
+                      title: isMl ? 'ഹോം' : 'Home',
                       icon: Icons.home_outlined,
                       onTap: () {
                         controller.changeIndex(0);
@@ -134,7 +136,7 @@ class CommonDrawer extends StatelessWidget {
                       },
                     ),
                     _DrawerTile(
-                      title: 'Ayah of the Day',
+                      title: isMl ? 'ഇന്നത്തെ ആയത്ത്' : 'Ayah of the Day',
                       icon: Icons.auto_awesome_outlined,
                       onTap: () {
                         Navigator.pop(context);
@@ -147,7 +149,7 @@ class CommonDrawer extends StatelessWidget {
                       },
                     ),
                     _DrawerTile(
-                      title: 'About Author',
+                      title: isMl ? 'രചയിതാവ്' : 'About Author',
                       icon: Icons.person_outline,
                       onTap: () {
                         Navigator.pop(context);
@@ -212,7 +214,7 @@ class CommonDrawer extends StatelessWidget {
                       },
                     ),
                     _DrawerTile(
-                      title: 'Privacy',
+                      title: isMl ? 'സ്വകാര്യത' : 'Privacy',
                       icon: Icons.shield_outlined,
                       onTap: () {
                         try {
@@ -223,7 +225,7 @@ class CommonDrawer extends StatelessWidget {
                       },
                     ),
                     _DrawerTile(
-                      title: 'Send Feedback',
+                      title: isMl ? 'അഭിപ്രായം അറിയിക്കുക' : 'Send Feedback',
                       icon: Icons.mail_outline,
                       onTap: () {
                         try {

@@ -11,6 +11,7 @@ import 'package:the_message_of_the_quran/features/home_screen/presentation/widge
 import 'package:the_message_of_the_quran/features/home_screen/providers/juz_hizb_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -108,7 +109,8 @@ class _HomeScreenState extends State<HomeScreen>
         ? Colors.grey[400]!
         : const Color.fromRGBO(124, 58, 40, 1);
 
-    const tabs = ['Surah', "Juz'e", 'Hizb'];
+    final isMl = context.watch<LanguageProvider>().isMalayalam;
+    final tabs = isMl ? ['സൂറത്ത്', 'ജുസ്', 'ഹിസ്ബ്'] : ['Surah', "Juz'e", 'Hizb'];
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -202,6 +204,7 @@ class _HomeScreenState extends State<HomeScreen>
     bool available,
     bool isDarkMode,
   ) {
+    final isMl = context.watch<LanguageProvider>().isMalayalam;
     final textColor = isDarkMode ? Colors.white : const Color.fromRGBO(124, 58, 40, 1);
     final subColor = isDarkMode ? Colors.white54 : Colors.grey[600]!;
 
@@ -232,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Juz ${juz.number}',
+                    isMl ? 'ജുസ് ${juz.number}' : 'Juz ${juz.number}',
                     style: TextStyle(
                       color: textColor,
                       fontWeight: FontWeight.w600,
@@ -241,7 +244,9 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'SURAH ${juz.surahNumber}  •  AYAH ${juz.ayahNumber}',
+                    isMl
+                        ? 'സൂറത്ത് ${juz.surahNumber}  •  ആയത്ത് ${juz.ayahNumber}'
+                        : 'SURAH ${juz.surahNumber}  •  AYAH ${juz.ayahNumber}',
                     style: TextStyle(
                       color: subColor,
                       fontSize: 11,
@@ -288,6 +293,7 @@ class _HomeScreenState extends State<HomeScreen>
     bool available,
     bool isDarkMode,
   ) {
+    final isMl = context.watch<LanguageProvider>().isMalayalam;
     final textColor = isDarkMode ? Colors.white : const Color.fromRGBO(124, 58, 40, 1);
     final subColor = isDarkMode ? Colors.white54 : Colors.grey[600]!;
 
@@ -318,7 +324,7 @@ class _HomeScreenState extends State<HomeScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Hizb ${hizb.number}',
+                    isMl ? 'ഹിസ്ബ് ${hizb.number}' : 'Hizb ${hizb.number}',
                     style: TextStyle(
                       color: textColor,
                       fontWeight: FontWeight.w600,
@@ -327,7 +333,9 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'SURAH ${hizb.surahNumber}  •  AYAH ${hizb.ayahNumber}',
+                    isMl
+                        ? 'സൂറത്ത് ${hizb.surahNumber}  •  ആയത്ത് ${hizb.ayahNumber}'
+                        : 'SURAH ${hizb.surahNumber}  •  AYAH ${hizb.ayahNumber}',
                     style: TextStyle(
                       color: subColor,
                       fontSize: 11,

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
 import 'package:the_message_of_the_quran/features/mushaf/widgets/star_number.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
 bool _isMeccan(String place) =>
@@ -20,12 +21,15 @@ class HomeScreenListTile extends StatelessWidget {
       return const SizedBox.shrink();
     }
     final surah = controller.surahList[index];
+    final isMl = context.watch<LanguageProvider>().isMalayalam;
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDarkMode ? Colors.white : const Color.fromRGBO(124, 58, 40, 1);
     final subColor = isDarkMode ? Colors.white54 : Colors.grey[600]!;
     final lastReadSurah = context.watch<LastReadProvider>().surahNumber;
 
-    final placeName = _isMeccan(surah.place) ? 'MEKKAH' : 'MADINAH';
+    final placeName = isMl
+        ? (_isMeccan(surah.place) ? 'മക്ക' : 'മദീന')
+        : (_isMeccan(surah.place) ? 'MEKKAH' : 'MADINAH');
     final placeType = _isMeccan(surah.place) ? 'Meccan' : 'Medinan';
 
     return Semantics(
@@ -51,7 +55,7 @@ class HomeScreenListTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      surah.name,
+                      isMl && surah.malayalamName.isNotEmpty ? surah.malayalamName : surah.name,
                       style: GoogleFonts.poppins(
                         color: textColor,
                         fontWeight: FontWeight.w600,
@@ -60,7 +64,9 @@ class HomeScreenListTile extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '$placeName  •  ${surah.ayathCount} AYAT',
+                      isMl
+                          ? '$placeName  •  ${surah.ayathCount} ആയത്ത്'
+                          : '$placeName  •  ${surah.ayathCount} AYAT',
                       style: GoogleFonts.poppins(
                         fontSize: 11,
                         color: subColor,
