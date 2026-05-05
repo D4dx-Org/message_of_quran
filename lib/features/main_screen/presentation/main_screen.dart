@@ -109,7 +109,12 @@ class _MainScreenState extends State<MainScreen> {
 
     // ── Tablet: NavigationRail on the left ──
     if (tablet) {
-      return Scaffold(
+      return PopScope(
+        canPop: displayIndex == 0,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) _onItemTapped(0);
+        },
+        child: Scaffold(
         key: _scaffoldKey,
         appBar: appBar,
         floatingActionButton: FloatingActionButton(
@@ -185,11 +190,17 @@ class _MainScreenState extends State<MainScreen> {
             Expanded(child: pageBody),
           ],
         ),
+      ),
       );
     }
 
     // ── Phone: BottomNavigationBar ──
-    return Scaffold(
+    return PopScope(
+      canPop: displayIndex == 0,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _onItemTapped(0);
+      },
+      child: Scaffold(
       key: _scaffoldKey,
       appBar: appBar,
       floatingActionButton: Transform.translate(
@@ -313,6 +324,7 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ),
         ),
+      ),
       ),
     );
   }

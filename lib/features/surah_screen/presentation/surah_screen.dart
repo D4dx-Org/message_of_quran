@@ -1211,7 +1211,7 @@ class _SurahScreenState extends State<SurahScreen> {
                   child: Row(
                     children: [
                       const Text(
-                        'വിശദീകരണം',
+                        'Explanation',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
