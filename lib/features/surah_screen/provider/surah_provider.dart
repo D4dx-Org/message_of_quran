@@ -243,7 +243,7 @@ class SurahProvider extends ChangeNotifier {
       }
     }
     buffer.writeln();
-    buffer.writeln('Source : വിശുദ്ധ ഖുര്‍ആന്‍ വിവര്‍ത്തനം');
+    buffer.writeln('Source : The Message of the Quran');
     buffer.writeln(
       'Android : https://play.google.com/store/apps/details?id=com.d4dx.quran',
     );

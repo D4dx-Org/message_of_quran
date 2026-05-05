@@ -26,13 +26,13 @@ class FontSizeChangerProvider extends ChangeNotifier {
   };
 
   int quranFontSize = 19;
-  int quranTransaltionFontSize = 18;
-  int interpretationFontSize = 15;
+  int quranTransaltionFontSize = 15;
+  int interpretationFontSize = 14;
   bool translationJustify = true;
   bool interpretationJustify = true;
   bool quranJustify = true;
   // Default font for the Qur'an text (used when SharedPreferences has no value yet).
-  String fontType = "Amiri";
+  String fontType = "Uthmani";
 
   FontSizeChangerProvider() {
     WidgetsBinding.instance.addPostFrameCallback((_) => _load());
@@ -40,7 +40,7 @@ class FontSizeChangerProvider extends ChangeNotifier {
 
   Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
-    String defaultFont = 'Amiri';
+    String defaultFont = 'Uthmani';
     final savedFont = prefs.getString(_fontTypeKey) ?? defaultFont;
     fontType = availableFonts.contains(savedFont) ? savedFont : defaultFont;
     translationJustify = prefs.getBool(_translationJustifyKey) ?? true;
