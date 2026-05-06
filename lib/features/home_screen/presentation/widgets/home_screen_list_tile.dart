@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
 import 'package:the_message_of_the_quran/features/mushaf/widgets/star_number.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
@@ -27,6 +28,7 @@ class HomeScreenListTile extends StatelessWidget {
     final subColor = isDarkMode ? Colors.white54 : Colors.grey[600]!;
     final lastReadSurah = context.watch<LastReadProvider>().surahNumber;
 
+    final scale = ResponsiveHelper.scaleFactor(context);
     final placeName = isMl
         ? (_isMeccan(surah.place) ? 'മക്ക' : 'മദീന')
         : (_isMeccan(surah.place) ? 'MEKKAH' : 'MADINAH');
@@ -56,10 +58,12 @@ class HomeScreenListTile extends StatelessWidget {
                   children: [
                     Text(
                       isMl && surah.malayalamName.isNotEmpty ? surah.malayalamName : surah.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.poppins(
                         color: textColor,
                         fontWeight: FontWeight.w600,
-                        fontSize: 12,
+                        fontSize: 12 * scale,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -68,7 +72,7 @@ class HomeScreenListTile extends StatelessWidget {
                           ? '$placeName  •  ${surah.ayathCount} ആയത്ത്'
                           : '$placeName  •  ${surah.ayathCount} AYAT',
                       style: GoogleFonts.poppins(
-                        fontSize: 11,
+                        fontSize: 11 * scale,
                         color: subColor,
                         fontWeight: FontWeight.w400,
                         letterSpacing: 0.3,
@@ -80,12 +84,14 @@ class HomeScreenListTile extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 surah.arabicName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: isDarkMode
                       ? Colors.white.withValues(alpha: 0.87)
                       : const Color.fromRGBO(124, 58, 40, 1),
                   fontFamily: 'Amiri',
-                  fontSize: 18,
+                  fontSize: 18 * scale,
                   fontWeight: FontWeight.w700,
                 ),
               ),

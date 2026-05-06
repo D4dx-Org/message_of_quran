@@ -214,7 +214,7 @@ class CommonDrawer extends StatelessWidget {
                       },
                     ),
                     _DrawerTile(
-                      title: isMl ? 'സ്വകാര്യത' : 'Privacy',
+                      title: 'Privacy',
                       icon: Icons.shield_outlined,
                       onTap: () {
                         try {
