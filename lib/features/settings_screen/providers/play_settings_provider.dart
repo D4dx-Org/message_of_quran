@@ -18,7 +18,7 @@ class PlaySettingsProvider extends ChangeNotifier {
   static const _speedKey = 'playback_speed';
   static const _verticalScrollKey = 'vertical_scroll';
 
-  static const List<double> speedPresets = [0.75, 1.0, 1.25, 1.5];
+  static const List<double> speedPresets = [0.5, 1.0, 1.5, 2.0];
 
   static const List<ReciterInfo> reciters = [
     ReciterInfo(name: 'Mishary Rashid Alafasy', folderName: 'Alafasy_128kbps'),
