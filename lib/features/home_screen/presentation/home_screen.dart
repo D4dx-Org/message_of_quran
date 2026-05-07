@@ -122,8 +122,9 @@ class _HomeScreenState extends State<HomeScreen>
           borderRadius: BorderRadius.circular(20),
         ),
         child: AnimatedBuilder(
-          animation: _tabController,
+          animation: _tabController.animation!,
           builder: (context, _) {
+            final currentIndex = _tabController.animation!.value.round();
             return Row(
               children: [
                 for (int index = 0; index < 3; index++) ...[
@@ -134,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen>
                       child: Container(
                         height: 26,
                         decoration: BoxDecoration(
-                          color: _tabController.index == index
+                          color: currentIndex == index
                               ? selectedBg
                               : unselectedBg,
                           borderRadius: BorderRadius.circular(20),
@@ -145,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen>
                           style: GoogleFonts.poppins(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: _tabController.index == index
+                            color: currentIndex == index
                                 ? selectedTextColor
                                 : unselectedTextColor,
                           ),
