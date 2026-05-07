@@ -34,7 +34,7 @@ class _MainScreenState extends State<MainScreen> {
   static const List<({String icon, String label})> _navItems = [
     (icon: 'assets/icons/revamp/home_icons.svg', label: 'Home'),
     (icon: 'assets/icons/revamp/bookmarks_page.svg', label: 'Bookmarks'),
-    (icon: 'assets/icons/revamp/mushaf_page.svg', label: 'Mushaf'),
+    (icon: 'assets/icons/revamp/mushaf_page.svg', label: ''),
     (icon: 'assets/icons/revamp/settings_icon.svg', label: 'Settings'),
     (icon: '', label: 'About'),
   ];
@@ -179,7 +179,7 @@ class _MainScreenState extends State<MainScreen> {
                           Icons.info_outline_rounded,
                           color: AppTheme.appIconTheme,
                         )
-                      : SvgPicture.asset(
+                      : item.label==""? const SizedBox.shrink() : SvgPicture.asset(
                           item.icon,
                           width: 24 * scale,
                           height: 24 * scale,
@@ -298,7 +298,8 @@ class _MainScreenState extends State<MainScreen> {
                                     color: color,
                                   )
                                 else
-                                  SvgPicture.asset(
+                             if(item.label.isEmpty)     const SizedBox.shrink()
+                             else     SvgPicture.asset(
                                     item.icon,
                                     width: 24,
                                     height: 24,

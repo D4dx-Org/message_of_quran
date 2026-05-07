@@ -136,7 +136,7 @@ class CommonDrawer extends StatelessWidget {
                       },
                     ),
                     _DrawerTile(
-                      title: isMl ? 'ഇന്നത്തെ ആയത്ത്' : 'Ayah of the Day',
+                      title: 'Ayah of the Day',
                       icon: Icons.auto_awesome_outlined,
                       onTap: () {
                         Navigator.pop(context);

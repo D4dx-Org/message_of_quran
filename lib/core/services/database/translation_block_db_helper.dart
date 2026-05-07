@@ -34,7 +34,22 @@ class TranslationBlockDbHelper {
 
   static Future<List<TranslationBlockModel>> _getTranslationBlocksMalayalam(
       int surahNumber) async {
-    // Malayalam DB disabled — will be re-enabled when data is ready
-    return [];
+    final db = DatabaseHelper.quranMalayalamDb;
+    if (db == null) return [];
+
+    try {
+      final rows = await db.query(
+        DbConstants.translationsTable,
+        where: '${DbConstants.suraNumber} = ?',
+        whereArgs: [surahNumber],
+        orderBy: '${DbConstants.ayaRangeStart} ASC',
+      );
+
+      return rows
+          .map((row) => TranslationBlockModel.fromJson(Map<String, dynamic>.from(row)))
+          .toList();
+    } catch (e) {
+      return [];
+    }
   }
 }

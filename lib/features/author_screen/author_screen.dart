@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/author_screen/provider/author_provider.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AuthorScreen extends StatefulWidget {
@@ -14,19 +15,32 @@ class AuthorScreen extends StatefulWidget {
 }
 
 class _AuthorScreenState extends State<AuthorScreen> {
+  bool? _lastMalayalam;
+
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await Provider.of<AuthorProvider>(context, listen: false).getAuthorInfo();
-    });
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
+    if (_lastMalayalam != isMalayalam) {
+      _lastMalayalam = isMalayalam;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          Provider.of<AuthorProvider>(context, listen: false)
+              .getAuthorInfo(malayalam: isMalayalam);
+        }
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     return BaseScreenLayout(
       appBar: AppBar(
-        title: Text('About Author', style: AppTextTheme.titleRegular),
+        title: Text(
+          isMalayalam ? 'രചയിതാവ്' : 'About Author',
+          style: AppTextTheme.titleRegular,
+        ),
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),

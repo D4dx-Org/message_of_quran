@@ -4,9 +4,18 @@ import 'package:the_message_of_the_quran/core/models/preface_model.dart';
 import 'package:the_message_of_the_quran/core/services/database/database_helper.dart';
 
 class PrefaceDbHelper {
-  /// Returns the introduction text from quran_asad.sqlite for the given surah,
-  /// wrapped in a single [PrefaceModel] to keep existing UI code compatible.
-  static Future<List<PrefaceModel>> getPrefaceBySurahId(int surahId) async {
+  /// Returns the introduction/preface text for the given surah.
+  /// When [malayalam] is true, fetches from the Malayalam DB's prefaces table.
+  /// Otherwise, fetches from quran_asad.sqlite's introduction column.
+  static Future<List<PrefaceModel>> getPrefaceBySurahId(int surahId,
+      {bool malayalam = false}) async {
+    if (malayalam) {
+      return _getPrefaceMalayalam(surahId);
+    }
+    return _getPrefaceAsad(surahId);
+  }
+
+  static Future<List<PrefaceModel>> _getPrefaceAsad(int surahId) async {
     final db = DatabaseHelper.quranAsadDb;
     if (db == null) {
       debugPrint('PrefaceDbHelper: quranAsadDb not initialized');
@@ -35,6 +44,31 @@ class PrefaceDbHelper {
     } catch (e) {
       debugPrint(
           'PrefaceDbHelper: Error fetching introduction for surah $surahId: $e');
+      return [];
+    }
+  }
+
+  static Future<List<PrefaceModel>> _getPrefaceMalayalam(int surahId) async {
+    final db = DatabaseHelper.quranMalayalamDb;
+    if (db == null) {
+      debugPrint('PrefaceDbHelper: quranMalayalamDb not initialized');
+      return [];
+    }
+
+    try {
+      final result = await db.query(
+        DbConstants.prefaceTable,
+        where: '${DbConstants.prefaceSuraId} = ?',
+        whereArgs: [surahId],
+      );
+      if (result.isEmpty) return [];
+      return result
+          .map((map) => PrefaceModel.fromJson(map))
+          .where((p) => p.prefaceSubTitle.toLowerCase() != 'general preface')
+          .toList();
+    } catch (e) {
+      debugPrint(
+          'PrefaceDbHelper: Error fetching Malayalam preface for surah $surahId: $e');
       return [];
     }
   }

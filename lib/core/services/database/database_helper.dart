@@ -14,6 +14,7 @@ class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
 
   static Database? quranAsadDb;
+  static Database? quranMalayalamDb;
   static Database? userDatabase;
 
   static Future<void> initializeServices() async {
@@ -41,6 +42,31 @@ class DatabaseHelper {
     await prefs.setInt(
       DbConstants.quranAsadDbVersionKey,
       DbConstants.quranAsadDbVersion,
+    );
+
+    // ── quran_malayalam_.db ──
+    final storedMalayalamVersion =
+        prefs.getInt(DbConstants.quranMalayalamDbVersionKey) ?? 0;
+    if (storedMalayalamVersion < DbConstants.quranMalayalamDbVersion) {
+      final databasesPath3 = await getDatabasesPath();
+      final malayalamPath =
+          join(databasesPath3, DbConstants.quranMalayalamDbName);
+      for (final suffix in ['', '-wal', '-shm']) {
+        try {
+          await File('$malayalamPath$suffix').delete();
+        } catch (e) {
+          debugPrint('DB: failed to delete $malayalamPath$suffix — $e');
+        }
+      }
+    }
+
+    quranMalayalamDb = await initDatabase(
+      name: DbConstants.quranMalayalamDbName,
+      dbName: DbConstants.quranMalayalamDbName,
+    );
+    await prefs.setInt(
+      DbConstants.quranMalayalamDbVersionKey,
+      DbConstants.quranMalayalamDbVersion,
     );
 
     final databasesPath = await getDatabasesPath();

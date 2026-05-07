@@ -25,6 +25,7 @@ import 'package:the_message_of_the_quran/features/settings_screen/providers/play
 import 'package:the_message_of_the_quran/features/settings_screen/providers/tajweed_provider.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/reading_progress_provider.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/audio_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
@@ -155,7 +156,8 @@ class _SurahScreenState extends State<SurahScreen> {
       return;
     }
     final surahNumber = _surahProv.surahList[_surahProv.index].surahNumber;
-    final prefaces = await PrefaceDbHelper.getPrefaceBySurahId(surahNumber);
+    final isMl = context.read<LanguageProvider>().isMalayalam;
+    final prefaces = await PrefaceDbHelper.getPrefaceBySurahId(surahNumber, malayalam: isMl);
     if (!mounted) return;
     setState(() {
       _hasPreface = prefaces.isNotEmpty;
@@ -771,6 +773,7 @@ class _SurahScreenState extends State<SurahScreen> {
       return;
     }
     final surah = controller.surahList[controller.index];
+    final isMl = context.read<LanguageProvider>().isMalayalam;
 
     final bsMaxWidth = ResponsiveHelper.bottomSheetMaxWidth(context);
     showModalBottomSheet(
@@ -823,10 +826,15 @@ class _SurahScreenState extends State<SurahScreen> {
                 alignment: WrapAlignment.center,
                 children: [
                   _infoChip(
-                    'അവതരണം :',
-                    _isMeccan(surah.place) ? 'മക്ക' : 'മദീന',
+                    isMl ? 'അവതരണം :' : 'Revelation :',
+                    _isMeccan(surah.place)
+                        ? (isMl ? 'മക്ക' : 'Makkah')
+                        : (isMl ? 'മദീന' : 'Madinah'),
                   ),
-                  _infoChip('സൂക്തങ്ങൾ :', _toArabicNumerals(surah.ayathCount)),
+                  _infoChip(
+                    isMl ? 'സൂക്തങ്ങൾ :' : 'Verses :',
+                    _toArabicNumerals(surah.ayathCount),
+                  ),
                 ],
               ),
             ),
@@ -834,7 +842,7 @@ class _SurahScreenState extends State<SurahScreen> {
             // Preface sections
             Expanded(
               child: FutureBuilder(
-                future: PrefaceDbHelper.getPrefaceBySurahId(surah.surahNumber),
+                future: PrefaceDbHelper.getPrefaceBySurahId(surah.surahNumber, malayalam: isMl),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());

@@ -7,10 +7,9 @@ class DbConstants {
   static const String userDbName = "user_data.db";
   static const String dbLocation = "assets/db";
 
-  // quran_malayalam_.db — disabled, will be re-enabled when data is ready
-  // static const String quranMalayalamDbName = "quran_malayalam_.db";
-  // static const String quranMalayalamDbVersionKey = 'quran_malayalam_db_version';
-  // static const int quranMalayalamDbVersion = 3;
+  static const String quranMalayalamDbName = "quran_malayalam_.db";
+  static const String quranMalayalamDbVersionKey = 'quran_malayalam_db_version';
+  static const int quranMalayalamDbVersion = 3;
 
   // ─── Table names (quran_malayalam.db) ───
   static const String surasTable = "suras";

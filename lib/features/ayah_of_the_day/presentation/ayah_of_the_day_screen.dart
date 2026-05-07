@@ -5,7 +5,6 @@ import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/ayah_of_the_day/provider/ayah_of_the_day_provider.dart';
 import 'package:the_message_of_the_quran/features/ayah_of_the_day/presentation/widgets/ayah_poster_widget.dart';
-import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 
 class AyahOfTheDayScreen extends StatefulWidget {
   const AyahOfTheDayScreen({super.key});
@@ -28,14 +27,13 @@ class _AyahOfTheDayScreenState extends State<AyahOfTheDayScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isMl = context.watch<LanguageProvider>().isMalayalam;
 
     return BaseScreenLayout(
       appBar: AppBar(
         title: Semantics(
           header: true,
           child: Text(
-            isMl ? 'ഇന്നത്തെ ആയത്ത്' : 'Ayah of the Day',
+            'Ayah of the Day',
             style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 18),
           ),
         ),

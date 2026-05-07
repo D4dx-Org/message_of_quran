@@ -43,8 +43,18 @@ class InterpretationsDbHelper {
     required int surahNumber,
     required int interpretationNumber,
   }) async {
-    // Malayalam DB disabled — will be re-enabled when data is ready
-    return [];
+    final db = DatabaseHelper.quranMalayalamDb;
+    if (db == null) return [];
+    try {
+      final rows = await db.query(
+        DbConstants.interpretationsTable,
+        where: '${DbConstants.suraNumber} = ? AND ${DbConstants.interpretationNumber} = ?',
+        whereArgs: [surahNumber, interpretationNumber],
+      );
+      return rows.map((e) => InterpretationModel.fromJson(e)).toList();
+    } catch (e) {
+      return [];
+    }
   }
 
   static Future<Map<String, int>> getInterpretationRange({
@@ -84,8 +94,25 @@ class InterpretationsDbHelper {
   static Future<Map<String, int>> _getInterpretationRangeMalayalam({
     required int surahNumber,
   }) async {
-    // Malayalam DB disabled — will be re-enabled when data is ready
-    return {'min': -1, 'max': -1};
+    final db = DatabaseHelper.quranMalayalamDb;
+    if (db == null) return {'min': -1, 'max': -1};
+    try {
+      final result = await db.rawQuery(
+        'SELECT MIN(${DbConstants.interpretationNumber}) as min_num,'
+        ' MAX(${DbConstants.interpretationNumber}) as max_num'
+        ' FROM ${DbConstants.interpretationsTable}'
+        ' WHERE ${DbConstants.suraNumber} = ?',
+        [surahNumber],
+      );
+      if (result.isEmpty) return {'min': -1, 'max': -1};
+      return {
+        'min': (result.first['min_num'] as int?) ?? -1,
+        'max': (result.first['max_num'] as int?) ?? -1,
+      };
+    } catch (e) {
+      debugPrint('InterpretationsDB: Malayalam bounds query failed — $e');
+      return {'min': -1, 'max': -1};
+    }
   }
 
   /// Returns the first footnote number for the given surah as the default

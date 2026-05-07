@@ -4,6 +4,7 @@ import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/about_screen/provider/about_providers.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutScreen extends StatefulWidget {
@@ -14,12 +15,20 @@ class AboutScreen extends StatefulWidget {
 }
 
 class _AboutScreenState extends State<AboutScreen> {
+  bool? _lastMalayalam;
+
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AboutProvider>().getAboutInfo();
-    });
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
+    if (_lastMalayalam != isMalayalam) {
+      _lastMalayalam = isMalayalam;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.read<AboutProvider>().getAboutInfo(malayalam: isMalayalam);
+        }
+      });
+    }
   }
 
   Future<void> _launchBookPlusUrl() async {

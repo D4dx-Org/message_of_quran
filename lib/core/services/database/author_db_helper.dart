@@ -4,9 +4,10 @@ import 'package:the_message_of_the_quran/core/models/authors_model.dart';
 import 'package:the_message_of_the_quran/core/services/database/database_helper.dart';
 
 class AuthorDbHelper {
-  static Future<List<AuthorsModel>> getAuthors() async {
+  static Future<List<AuthorsModel>> getAuthors({bool malayalam = false}) async {
     try {
-      final db = DatabaseHelper.quranAsadDb;
+      // Author data only exists in the Malayalam DB
+      final db = DatabaseHelper.quranMalayalamDb;
       if (db == null) {
         debugPrint('AuthorDbHelper: database not initialized');
         return [];
