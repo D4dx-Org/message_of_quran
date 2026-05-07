@@ -964,7 +964,8 @@ class _SurahScreenState extends State<SurahScreen> {
     int currentAyah = verseFrom;
 
     for (final match in matches) {
-      final segment = arabicText.substring(pos, match.end);
+      final segment =
+          '${arabicText.substring(pos, match.start)} ${arabicText.substring(match.start, match.end)} ';
       final isPlaying = playingAyahId == currentAyah;
       final isSelected = controller.isAyahSelected(currentAyah);
       final ayahNum = currentAyah;
@@ -2502,7 +2503,10 @@ class _TajweedWordRowState extends State<_TajweedWordRow> {
       // Badge only appears once the last word image of this ayah has loaded.
       if (_ayahBadgeVisible[ayahNo] == true) {
         children.add(
-          _AyahNumberBadge(number: ayahNo, highlighted: isPlayingAyah),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 2),
+            child: _AyahNumberBadge(number: ayahNo, highlighted: isPlayingAyah),
+          ),
         );
       }
     }
