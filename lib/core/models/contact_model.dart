@@ -28,7 +28,7 @@ class ContactModel {
       mobile: json[DbConstants.contactMobile] ?? "  Mobile Number Unavailable",
       whatsapp: json[DbConstants.contactWhatsapp] ?? "Whatsapp Unavailable",
       email: json[DbConstants.contactEmail] ?? "Email Unavailable",
-      address: json[DbConstants.contactAddress] ?? "Address Unavailable",
+      address: json[DbConstants.contactAddress] ?? "D4DX Innovations LLP\nMavoor Road, Calicut, Kerala, Pin 673004",
       remarks: json[DbConstants.contactRemarks] ?? "Remarks Unavailable",
       createdBy: json[DbConstants.contactCreatedBy] ?? "Unknown",
       createdByRole: json[DbConstants.contactCreatedByRole] ?? "Unknown",

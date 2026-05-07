@@ -40,7 +40,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
     final contactProvider = Provider.of<ContactProvider>(context, listen: false);
     final whatsapp = contactProvider.contactList.isNotEmpty
         ? contactProvider.contactList[0].whatsapp.toString().replaceAll(RegExp(r'[^0-9]'), '')
-        : '919048930451';
+        : '919946666139';
     final Uri whatsappUri = Uri.parse('https://wa.me/$whatsapp');
     if (await canLaunchUrl(whatsappUri)) {
       if (!mounted) return;
@@ -278,7 +278,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                   builder: (context, contactProvider, child) {
                                     return Text(
                                       contactProvider.contactList.isEmpty
-                                          ? "Address Unavailable"
+                                          ? "D4DX Innovations LLP\nMavoor Road, Calicut, Kerala, Pin 673004"
                                           : contactProvider
                                                 .contactList[0]
                                                 .address
