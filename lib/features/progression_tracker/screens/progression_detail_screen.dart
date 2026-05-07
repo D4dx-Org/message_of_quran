@@ -249,7 +249,7 @@ class _ProgressionDetailScreenState extends State<ProgressionDetailScreen> {
           );
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
             child: Column(
               children: [
                 // Header card: surah name + percentage

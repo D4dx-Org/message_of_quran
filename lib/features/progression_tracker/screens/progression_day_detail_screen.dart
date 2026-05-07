@@ -72,7 +72,7 @@ class _ProgressionDayDetailScreenState
           final ayahs = detail.currentDayAyahs;
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
             child: Column(
               children: [
                 // Surah header card

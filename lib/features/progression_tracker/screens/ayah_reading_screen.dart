@@ -148,7 +148,7 @@ class _AyahReadingScreenState extends State<AyahReadingScreen> {
               _textLoaded ? _getTranslationText(ayah.ayahNumber) : '';
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
             child: Column(
               children: [
                 // Surah header card

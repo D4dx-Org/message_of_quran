@@ -66,7 +66,7 @@ class ProgressionTrackerScreen extends StatelessWidget {
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
             itemCount: provider.progressions.length,
             itemBuilder: (context, index) {
               final p = provider.progressions[index];
