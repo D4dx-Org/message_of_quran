@@ -1168,6 +1168,7 @@ class _SurahScreenState extends State<SurahScreen> {
       ),
       builder: (_) => Consumer<SurahProvider>(
         builder: (ctx, ctrl, _) {
+          final isMl = ctx.read<LanguageProvider>().isMalayalam;
           final fontSettings = Provider.of<FontSizeChangerProvider>(ctx);
           final isLoading = ctrl.currentInterpretationNumber == -1;
           final hasBounds =
@@ -1219,9 +1220,9 @@ class _SurahScreenState extends State<SurahScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
                     children: [
-                      const Text(
-                        'Explanation',
-                        style: TextStyle(
+                      Text(
+                        isMl ? 'വിശദീകരണം' : 'Explanation',
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
