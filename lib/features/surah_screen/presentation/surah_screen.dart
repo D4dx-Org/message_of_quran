@@ -1074,7 +1074,7 @@ class _SurahScreenState extends State<SurahScreen> {
                   style: const TextStyle(
                     fontSize: 9,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF9C5A20),
+                    color: AppTheme.appIconTheme,
                   ),
                 ),
               );
@@ -1107,7 +1107,7 @@ class _SurahScreenState extends State<SurahScreen> {
                     style: const TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF9C5A20),
+                      color: AppTheme.appIconTheme,
                     ),
                   ),
                 );
@@ -1271,7 +1271,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                           vertical: 4,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFF9C5A20),
+                                          color: Theme.of(ctx).textTheme.bodyLarge?.color ?? const Color.fromRGBO(124, 58, 40, 1),
                                           borderRadius: BorderRadius.circular(
                                             12,
                                           ),
@@ -1669,9 +1669,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                                           AppTextTheme.surahArabiStyle(
                                                             context,
                                                           ),
-                                                          const Color(
-                                                            0xFFA96C09,
-                                                          ),
+                                                          AppTheme.appIconTheme,
                                                           controller,
                                                         ),
                                                       ),
@@ -1766,8 +1764,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                                             ? Icons.bookmark
                                                             : Icons
                                                                   .bookmark_border_outlined,
-                                                        color: AppTheme
-                                                            .appIconTheme,
+                                                        color: AppTheme.appIconTheme,
                                                       ),
                                                     ),
                                                     // Label
@@ -1795,8 +1792,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                                       },
                                                       icon: const Icon(
                                                         Icons.label_outline,
-                                                        color: AppTheme
-                                                            .appIconTheme,
+                                                        color: AppTheme.appIconTheme,
                                                       ),
                                                     ),
                                                     // Share
@@ -1821,8 +1817,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                                       },
                                                       icon: const Icon(
                                                         Icons.share_outlined,
-                                                        color: AppTheme
-                                                            .appIconTheme,
+                                                        color: AppTheme.appIconTheme,
                                                       ),
                                                     ),
                                                     // Play / Stop
@@ -1876,8 +1871,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                   child: CircularProgressIndicator(
                                                                     strokeWidth:
                                                                         2,
-                                                                    color: AppTheme
-                                                                        .appIconTheme,
+                                                                    color: AppTheme.appIconTheme,
                                                                   ),
                                                                 )
                                                               : Icon(
@@ -1886,8 +1880,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                             .stop_circle
                                                                       : Icons
                                                                             .play_circle_outline,
-                                                                  color: AppTheme
-                                                                      .appIconTheme,
+                                                                  color: AppTheme.appIconTheme,
                                                                 ),
                                                         );
                                                       },
@@ -1913,8 +1906,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                                           icon: const Icon(
                                                             Icons
                                                                 .arrow_back_ios_new,
-                                                            color: AppTheme
-                                                                .appIconTheme,
+                                                            color: AppTheme.appIconTheme,
                                                           ),
                                                         ),
                                                       const Spacer(),
@@ -1930,8 +1922,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                                           icon: const Icon(
                                                             Icons
                                                                 .arrow_forward_ios_rounded,
-                                                            color: AppTheme
-                                                                .appIconTheme,
+                                                            color: AppTheme.appIconTheme,
                                                           ),
                                                         ),
                                                     ],
@@ -2105,7 +2096,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                     );
                                   }
                                 : null,
-                            icon: const Icon(Icons.skip_previous),
+                            icon: const Icon(Icons.skip_previous, color: AppTheme.appIconTheme),
                           ),
                           // Play / Pause
                           IconButton(
@@ -2113,13 +2104,14 @@ class _SurahScreenState extends State<SurahScreen> {
                             onPressed: () => audio.togglePlayPause(),
                             icon: Icon(
                               audio.isPlaying ? Icons.pause : Icons.play_arrow,
+                              color: AppTheme.appIconTheme,
                             ),
                           ),
                           // Stop
                           IconButton(
                             tooltip: 'Stop',
                             onPressed: () => audio.stopAudio(),
-                            icon: const Icon(Icons.stop),
+                            icon: const Icon(Icons.stop, color: AppTheme.appIconTheme),
                           ),
                           // Next
                           IconButton(
@@ -2150,7 +2142,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                     );
                                   }
                                 : null,
-                            icon: const Icon(Icons.skip_next),
+                            icon: const Icon(Icons.skip_next, color: AppTheme.appIconTheme),
                           ),
                           // Speed
                           Consumer<PlaySettingsProvider>(
@@ -2501,7 +2493,7 @@ class _TajweedWordRowState extends State<_TajweedWordRow> {
           isPlayingAyah
               ? DecoratedBox(
                   decoration: BoxDecoration(
-                    color: const Color(0xFFA96C09).withValues(alpha: 0.15),
+                    color: AppTheme.appIconTheme.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: wordWidget,
@@ -2551,7 +2543,7 @@ class _AyahNumberBadge extends StatelessWidget {
         fontFamily: 'Uthmani',
         fontSize: 20,
         color: highlighted
-            ? const Color(0xFFA96C09)
+            ? AppTheme.appIconTheme
             : Theme.of(context).colorScheme.primary,
         height: 1,
       ),
@@ -2559,7 +2551,7 @@ class _AyahNumberBadge extends StatelessWidget {
     if (!highlighted) return badge;
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: const Color(0xFFA96C09).withValues(alpha: 0.15),
+        color: AppTheme.appIconTheme.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(4),
       ),
       child: badge,

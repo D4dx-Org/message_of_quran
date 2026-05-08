@@ -60,8 +60,11 @@ class ProgressionDbHelper {
 
   // ── Progressions CRUD ──────────────────────────────────────────────────
 
-  static Future<int> insertProgression(ProgressionModel progression) async {
-    return await _db.insert('progressions', progression.toMap());
+  static Future<int> insertProgression(
+    ProgressionModel progression, {
+    DatabaseExecutor? txn,
+  }) async {
+    return await (txn ?? _db).insert('progressions', progression.toMap());
   }
 
   static Future<List<ProgressionModel>> getAllProgressions() async {
@@ -83,18 +86,20 @@ class ProgressionDbHelper {
   }
 
   static Future<void> deleteProgression(int id) async {
-    // Delete in order: ayahs → days → progression
-    await _db.delete(
-      'progression_ayahs',
-      where: 'progression_id = ?',
-      whereArgs: [id],
-    );
-    await _db.delete(
-      'progression_days',
-      where: 'progression_id = ?',
-      whereArgs: [id],
-    );
-    await _db.delete('progressions', where: 'id = ?', whereArgs: [id]);
+    await _db.transaction((txn) async {
+      // Delete in order: ayahs → days → progression
+      await txn.delete(
+        'progression_ayahs',
+        where: 'progression_id = ?',
+        whereArgs: [id],
+      );
+      await txn.delete(
+        'progression_days',
+        where: 'progression_id = ?',
+        whereArgs: [id],
+      );
+      await txn.delete('progressions', where: 'id = ?', whereArgs: [id]);
+    });
   }
 
   static Future<void> updateProgression(ProgressionModel progression) async {
@@ -108,8 +113,11 @@ class ProgressionDbHelper {
 
   // ── Days CRUD ──────────────────────────────────────────────────────────
 
-  static Future<int> insertDay(ProgressionDayModel day) async {
-    return await _db.insert('progression_days', day.toMap());
+  static Future<int> insertDay(
+    ProgressionDayModel day, {
+    DatabaseExecutor? txn,
+  }) async {
+    return await (txn ?? _db).insert('progression_days', day.toMap());
   }
 
   static Future<List<ProgressionDayModel>> getDaysForProgression(
@@ -124,8 +132,12 @@ class ProgressionDbHelper {
     return result.map((m) => ProgressionDayModel.fromMap(m)).toList();
   }
 
-  static Future<void> updateDayStatus(int dayId, String status) async {
-    await _db.update(
+  static Future<void> updateDayStatus(
+    int dayId,
+    String status, {
+    DatabaseExecutor? txn,
+  }) async {
+    await (txn ?? _db).update(
       'progression_days',
       {'status': status},
       where: 'id = ?',
@@ -135,8 +147,12 @@ class ProgressionDbHelper {
 
   // ── Ayahs CRUD ─────────────────────────────────────────────────────────
 
-  static Future<void> insertAyahs(List<ProgressionAyahModel> ayahs) async {
-    final batch = _db.batch();
+  static Future<void> insertAyahs(
+    List<ProgressionAyahModel> ayahs, {
+    DatabaseExecutor? txn,
+  }) async {
+    final executor = txn ?? _db;
+    final batch = executor.batch();
     for (final ayah in ayahs) {
       batch.insert('progression_ayahs', ayah.toMap());
     }
@@ -165,8 +181,12 @@ class ProgressionDbHelper {
     return result.map((m) => ProgressionAyahModel.fromMap(m)).toList();
   }
 
-  static Future<void> updateAyahStatus(int ayahId, String status) async {
-    await _db.update(
+  static Future<void> updateAyahStatus(
+    int ayahId,
+    String status, {
+    DatabaseExecutor? txn,
+  }) async {
+    await (txn ?? _db).update(
       'progression_ayahs',
       {'status': status},
       where: 'id = ?',

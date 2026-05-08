@@ -28,11 +28,11 @@ class SettingsScreenAudioBlock extends StatelessWidget {
                       children: [
                         const Icon(Icons.person,
                             color: AppTheme.appIconTheme, size: 22),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 16),
                         Text(
                           'Reciter',
                           style: AppTextTheme.drawerStyle
-                              .copyWith(fontWeight: FontWeight.w600),
+                              .copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
                         ),
                       ],
                     ),
@@ -104,11 +104,11 @@ class SettingsScreenAudioBlock extends StatelessWidget {
                       children: [
                         const Icon(Icons.speed,
                             color: AppTheme.appIconTheme, size: 22),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 16),
                         Text(
                           'Playback Speed',
                           style: AppTextTheme.drawerStyle
-                              .copyWith(fontWeight: FontWeight.w600),
+                              .copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
                         ),
                       ],
                     ),
@@ -145,11 +145,11 @@ class SettingsScreenAudioBlock extends StatelessWidget {
                       children: [
                         const Icon(Icons.queue_music,
                             color: AppTheme.appIconTheme, size: 22),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 16),
                         Text(
                           'Play Mode',
                           style: AppTextTheme.drawerStyle
-                              .copyWith(fontWeight: FontWeight.w600),
+                              .copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
                         ),
                       ],
                     ),

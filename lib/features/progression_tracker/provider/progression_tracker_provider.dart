@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:the_message_of_the_quran/core/services/database/database_helper.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/data/progression_db_helper.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/models/progression_model.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/models/progression_day_model.dart';
@@ -89,44 +90,49 @@ class ProgressionTrackerProvider extends ChangeNotifier {
       createdAt: DateTime.now().toIso8601String(),
     );
 
-    final progressionId = await ProgressionDbHelper.insertProgression(
-      progression,
-    );
-
-    // Generate days and ayahs
-    int ayahStart = 1;
-    for (int d = 1; d <= totalDays; d++) {
-      final ayahEnd = (ayahStart + ayahsPerDay - 1).clamp(1, totalAyahs);
-      final isFirstDay = d == 1;
-
-      final day = ProgressionDayModel(
-        progressionId: progressionId,
-        dayNumber: d,
-        startAyah: ayahStart,
-        endAyah: ayahEnd,
-        status: isFirstDay ? 'reading' : 'pending',
+    final progressionId = await DatabaseHelper.userDatabase!.transaction((txn) async {
+      final progId = await ProgressionDbHelper.insertProgression(
+        progression,
+        txn: txn,
       );
 
-      final dayId = await ProgressionDbHelper.insertDay(day);
+      // Generate days and ayahs
+      int ayahStart = 1;
+      for (int d = 1; d <= totalDays; d++) {
+        final ayahEnd = (ayahStart + ayahsPerDay - 1).clamp(1, totalAyahs);
+        final isFirstDay = d == 1;
 
-      // Generate ayahs for this day
-      final ayahs = <ProgressionAyahModel>[];
-      for (int a = ayahStart; a <= ayahEnd; a++) {
-        final isFirstAyahOfFirstDay = isFirstDay && a == ayahStart;
-        ayahs.add(
-          ProgressionAyahModel(
-            progressionId: progressionId,
-            dayId: dayId,
-            ayahNumber: a,
-            status: isFirstAyahOfFirstDay ? 'reading' : 'pending',
-          ),
+        final day = ProgressionDayModel(
+          progressionId: progId,
+          dayNumber: d,
+          startAyah: ayahStart,
+          endAyah: ayahEnd,
+          status: isFirstDay ? 'reading' : 'pending',
         );
-      }
-      await ProgressionDbHelper.insertAyahs(ayahs);
 
-      ayahStart = ayahEnd + 1;
-      if (ayahStart > totalAyahs) break;
-    }
+        final dayId = await ProgressionDbHelper.insertDay(day, txn: txn);
+
+        // Generate ayahs for this day
+        final ayahs = <ProgressionAyahModel>[];
+        for (int a = ayahStart; a <= ayahEnd; a++) {
+          final isFirstAyahOfFirstDay = isFirstDay && a == ayahStart;
+          ayahs.add(
+            ProgressionAyahModel(
+              progressionId: progId,
+              dayId: dayId,
+              ayahNumber: a,
+              status: isFirstAyahOfFirstDay ? 'reading' : 'pending',
+            ),
+          );
+        }
+        await ProgressionDbHelper.insertAyahs(ayahs, txn: txn);
+
+        ayahStart = ayahEnd + 1;
+        if (ayahStart > totalAyahs) break;
+      }
+
+      return progId;
+    });
 
     // Schedule notifications
     await ProgressionNotificationService.scheduleReminders(

@@ -15,6 +15,7 @@ class SettingsScreenListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      horizontalTitleGap: 16,
       tileColor: Colors.transparent,
       leading: Icon(icon, color: AppTheme.appIconTheme),
       title: Text(

@@ -1,97 +1,473 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
-import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_audio_tab.dart';
-import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_display_tab.dart';
-import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_general_tab.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_app_block.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_audio_block.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_card.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_list_tile.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_tajweed_block.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/providers/play_settings_provider.dart';
+import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
-class SettingsScreen extends StatefulWidget {
+class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
+  Widget build(BuildContext context) {
+    return BaseScreenLayout(
+      child: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        children: const [
+          // ── Theme & Language ──────────────────────────────────
+          _SectionLabel('Theme & Language'),
+          SizedBox(height: 8),
+          _ThemeLanguageCard(),
+          SizedBox(height: 24),
+
+          // ── Font Settings ────────────────────────────────────
+          _SectionLabel('Font'),
+          SizedBox(height: 8),
+          _FontSettingsCard(),
+          SizedBox(height: 24),
+
+          // ── Layout ───────────────────────────────────────────
+          _SectionLabel('Layout'),
+          SizedBox(height: 8),
+          _LayoutSettingsCard(),
+          SizedBox(height: 24),
+
+          // ── Tajweed ──────────────────────────────────────────
+          _SectionLabel('Tajweed'),
+          SizedBox(height: 8),
+          SettingsScreenTajweedBlock(),
+          SizedBox(height: 24),
+
+          // ── Audio ──────────────────────────────────────────
+          _SectionLabel('Audio'),
+          SizedBox(height: 8),
+          SettingsScreenAudioBlock(),
+          SizedBox(height: 24),
+
+          // ── General ────────────────────────────────────────
+          _SectionLabel('General'),
+          SizedBox(height: 8),
+          SettingsScreenAppBlock(),
+          SizedBox(height: 32),
+        ],
+      ),
+    );
+  }
 }
 
-class _SettingsScreenState extends State<SettingsScreen>
-    with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
+// ─── Section Label ───────────────────────────────────────────────────────────
 
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel(this.label);
+  final String label;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return BaseScreenLayout(
+    return Text(
+      label.toUpperCase(),
+      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: Theme.of(context).colorScheme.outline,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.8,
+          ),
+    );
+  }
+}
+
+// ─── Theme & Language Card ───────────────────────────────────────────────────
+
+class _ThemeLanguageCard extends StatelessWidget {
+  const _ThemeLanguageCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return SettingsScreenCard(
       child: Column(
         children: [
-          // ── Tab Bar ─────────────────────────────────────────
-          Container(
-            margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest
-                  .withValues(alpha: 0.4),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: TabBar(
-              controller: _tabController,
-              labelColor: AppTheme.appIconTheme,
-              unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
-              indicatorSize: TabBarIndicatorSize.tab,
-              indicator: BoxDecoration(
-                color: AppTheme.appIconTheme.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              dividerHeight: 0,
-              labelStyle: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-              unselectedLabelStyle: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-              ),
-              tabs: const [
-                Tab(
-                  icon: Icon(Icons.palette_outlined, size: 18),
-                  text: 'Display',
-                  height: 52,
-                ),
-                Tab(
-                  icon: Icon(Icons.headphones_outlined, size: 18),
-                  text: 'Audio',
-                  height: 52,
-                ),
-                Tab(
-                  icon: Icon(Icons.settings_outlined, size: 18),
-                  text: 'General',
-                  height: 52,
-                ),
-              ],
+          // Dark theme toggle
+          SettingsScreenListTile(
+            title: 'Dark Theme',
+            icon: Icons.dark_mode_outlined,
+            trailing: Consumer<ThemeProvider>(
+              builder: (context, provider, child) {
+                return Switch.adaptive(
+                  value: provider.isDarkMode,
+                  activeThumbColor: AppTheme.appIconTheme,
+                  thumbIcon: WidgetStatePropertyAll(
+                    Icon(
+                      provider.isDarkMode
+                          ? Icons.dark_mode
+                          : Icons.light_mode,
+                      color: Colors.white,
+                    ),
+                  ),
+                  onChanged: (value) {
+                    provider.setThemeMode(!provider.isDarkMode);
+                  },
+                );
+              },
             ),
           ),
-          const SizedBox(height: 4),
-          // ── Tab Views ───────────────────────────────────────
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: const [
-                SettingsDisplayTab(),
-                SettingsAudioTab(),
-                SettingsGeneralTab(),
+          const Divider(height: 1, indent: 16, endIndent: 16),
+          // Language selector
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.language, color: AppTheme.appIconTheme),
+                    const SizedBox(width: 16),
+                    Text(
+                      'Language',
+                      style: AppTextTheme.drawerStyle
+                          .copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Consumer<LanguageProvider>(
+                  builder: (context, provider, child) {
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: _LanguageChip(
+                            label: 'English',
+                            selected: provider.currentLanguage ==
+                                LanguageProvider.english,
+                            onTap: () {
+                              provider.setLanguage(LanguageProvider.english);
+                              context
+                                  .read<SurahProvider>()
+                                  .setMalayalam(false);
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _LanguageChip(
+                            label: 'മലയാ\u200dളം',
+                            selected: provider.currentLanguage ==
+                                LanguageProvider.malayalam,
+                            onTap: () {
+                              provider.setLanguage(LanguageProvider.malayalam);
+                              context
+                                  .read<SurahProvider>()
+                                  .setMalayalam(true);
+                            },
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ─── Font Settings Card ──────────────────────────────────────────────────────
+
+class _FontSettingsCard extends StatelessWidget {
+  const _FontSettingsCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = Provider.of<FontSizeChangerProvider>(context);
+    return SettingsScreenCard(
+      child: Column(
+        children: [
+          // Font picker
+          Consumer<FontSizeChangerProvider>(
+            builder: (context, value, _) => SettingsScreenListTile(
+              title: "Qur'an Font",
+              icon: Icons.font_download,
+              trailing: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: value.fontType,
+                  icon: const Icon(
+                    Icons.arrow_drop_down,
+                    color: AppTheme.appIconTheme,
+                  ),
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
+                  ),
+                  dropdownColor: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(12),
+                  onChanged: (val) {
+                    if (val != null) value.setFont(val);
+                  },
+                  selectedItemBuilder: (context) {
+                    return FontSizeChangerProvider.availableFonts.map((font) {
+                      return Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          FontSizeChangerProvider.fontDisplayNames[font] ??
+                              font,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.appIconTheme,
+                          ),
+                        ),
+                      );
+                    }).toList();
+                  },
+                  items:
+                      FontSizeChangerProvider.availableFonts.map((font) {
+                    final isSelected = value.fontType == font;
+                    return DropdownMenuItem<String>(
+                      value: font,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            FontSizeChangerProvider.fontDisplayNames[font] ??
+                                font,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: isSelected
+                                  ? FontWeight.w600
+                                  : FontWeight.w400,
+                              color: isSelected
+                                  ? AppTheme.appIconTheme
+                                  : Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.color,
+                            ),
+                          ),
+                          if (isSelected) ...[
+                            const SizedBox(width: 6),
+                            const Icon(
+                              Icons.check,
+                              size: 16,
+                              color: AppTheme.appIconTheme,
+                            ),
+                          ],
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+          ),
+          const Divider(height: 1, indent: 16, endIndent: 16),
+          // Qur'an font size
+          SettingsScreenListTile(
+            title: "Qur'an Font Size",
+            icon: Icons.format_size_outlined,
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  onPressed: () => controller.decrement(true),
+                  icon: const Icon(Icons.remove_circle_outline_rounded),
+                ),
+                Consumer<FontSizeChangerProvider>(
+                  builder: (context, value, child) {
+                    return Text(
+                      '${value.quranFontSize}',
+                      style: AppTextTheme.surahTitle.copyWith(
+                        color: AppTheme.appIconTheme,
+                      ),
+                    );
+                  },
+                ),
+                IconButton(
+                  onPressed: () => controller.increment(true),
+                  icon: const Icon(Icons.add_circle_outline),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1, indent: 16, endIndent: 16),
+          // Translation font size
+          SettingsScreenListTile(
+            title: 'Translation Font Size',
+            icon: Icons.translate,
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  onPressed: () => controller.decrement(false),
+                  icon: const Icon(Icons.remove_circle_outline_rounded),
+                ),
+                Consumer<FontSizeChangerProvider>(
+                  builder: (context, value, child) {
+                    return Text(
+                      '${value.quranTransaltionFontSize}',
+                      style: AppTextTheme.surahTitle.copyWith(
+                        color: AppTheme.appIconTheme,
+                      ),
+                    );
+                  },
+                ),
+                IconButton(
+                  onPressed: () => controller.increment(false),
+                  icon: const Icon(Icons.add_circle_outline),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1, indent: 16, endIndent: 16),
+          // Interpretation font size
+          SettingsScreenListTile(
+            title: 'Interpretation Font Size',
+            icon: Icons.menu_book_outlined,
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  onPressed: () => controller.decrementInterpretation(),
+                  icon: const Icon(Icons.remove_circle_outline_rounded),
+                ),
+                Consumer<FontSizeChangerProvider>(
+                  builder: (context, value, child) {
+                    return Text(
+                      '${value.interpretationFontSize}',
+                      style: AppTextTheme.surahTitle.copyWith(
+                        color: AppTheme.appIconTheme,
+                      ),
+                    );
+                  },
+                ),
+                IconButton(
+                  onPressed: () => controller.incrementInterpretation(),
+                  icon: const Icon(Icons.add_circle_outline),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Layout Settings Card ────────────────────────────────────────────────────
+
+class _LayoutSettingsCard extends StatelessWidget {
+  const _LayoutSettingsCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return SettingsScreenCard(
+      child: Column(
+        children: [
+          Consumer<FontSizeChangerProvider>(
+            builder: (context, value, _) => SettingsScreenListTile(
+              title: 'Justify Translation',
+              icon: Icons.format_align_justify,
+              trailing: Switch(
+                value: value.translationJustify,
+                activeThumbColor: AppTheme.appIconTheme,
+                onChanged: value.setTranslationJustify,
+              ),
+            ),
+          ),
+          const Divider(height: 1, indent: 16, endIndent: 16),
+          Consumer<FontSizeChangerProvider>(
+            builder: (context, value, _) => SettingsScreenListTile(
+              title: 'Justify Interpretation',
+              icon: Icons.notes,
+              trailing: Switch(
+                value: value.interpretationJustify,
+                activeThumbColor: AppTheme.appIconTheme,
+                onChanged: value.setInterpretationJustify,
+              ),
+            ),
+          ),
+          const Divider(height: 1, indent: 16, endIndent: 16),
+          Consumer<FontSizeChangerProvider>(
+            builder: (context, value, _) => SettingsScreenListTile(
+              title: 'Justify Quran Ayahs & Tajweed',
+              icon: Icons.auto_stories_outlined,
+              trailing: Switch(
+                value: value.quranJustify,
+                activeThumbColor: AppTheme.appIconTheme,
+                onChanged: value.setQuranJustify,
+              ),
+            ),
+          ),
+          const Divider(height: 1, indent: 16, endIndent: 16),
+          Consumer<PlaySettingsProvider>(
+            builder: (context, playSettings, _) => SettingsScreenListTile(
+              title: 'Horizontal Scroll',
+              icon: Icons.swap_horiz,
+              trailing: Switch(
+                value: playSettings.verticalScroll,
+                activeThumbColor: AppTheme.appIconTheme,
+                onChanged: (v) => playSettings.setVerticalScroll(v),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Language Chip ───────────────────────────────────────────────────────────
+
+class _LanguageChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _LanguageChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+        decoration: BoxDecoration(
+          color: selected
+              ? AppTheme.appIconTheme.withValues(alpha: 0.12)
+              : Colors.transparent,
+          border: Border.all(
+            color: selected ? AppTheme.appIconTheme : Colors.grey.shade400,
+            width: selected ? 1.5 : 1,
+          ),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+                color: selected ? AppTheme.appIconTheme : Colors.grey,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

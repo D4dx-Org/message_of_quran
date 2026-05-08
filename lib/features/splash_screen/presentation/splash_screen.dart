@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/features/force_update_screen/presentation/force_update_screen.dart';
 import 'package:the_message_of_the_quran/features/main_screen/presentation/main_screen.dart';
 import 'package:the_message_of_the_quran/features/splash_screen/providers/version_check_provider.dart';
@@ -45,11 +46,19 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Image.asset(
-        "assets/images/splash2.png",
-        width: double.infinity,
-        height: double.infinity,
-        fit: BoxFit.cover,
+      backgroundColor: AppTheme.appThemeSplash,
+      body: const Center(
+        child: Text(
+          "The Message\nof the Quran",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 28,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 1.2,
+            height: 1.4,
+          ),
+        ),
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -17,7 +18,27 @@ class DatabaseHelper {
   static Database? quranMalayalamDb;
   static Database? userDatabase;
 
+  static Completer<void>? _initCompleter;
+
   static Future<void> initializeServices() async {
+    // Guard against concurrent calls (e.g. hot restart)
+    if (_initCompleter != null) {
+      return _initCompleter!.future;
+    }
+    _initCompleter = Completer<void>();
+    try {
+      await _doInitialize();
+      _initCompleter!.complete();
+    } catch (e) {
+      _initCompleter!.completeError(e);
+      _initCompleter = null;
+      rethrow;
+    }
+  }
+
+  static Future<void> _doInitialize() async {
+    // Close any previously open connections (handles hot restart)
+    await _closeAll();
     final prefs = await SharedPreferences.getInstance();
 
     // ── quran_asad.sqlite ──
@@ -74,6 +95,9 @@ class DatabaseHelper {
     userDatabase = await openDatabase(
       userDbPath,
       version: 4,
+      onConfigure: (db) async {
+        await db.rawQuery('PRAGMA journal_mode=WAL');
+      },
       onCreate: (db, version) async {
         await db.execute(
           'CREATE TABLE IF NOT EXISTS bookmarks (id INTEGER PRIMARY KEY AUTOINCREMENT, surah_number INTEGER NOT NULL, ayah_id INTEGER NOT NULL, surah_name TEXT, aya_text TEXT, surah_arabic_name TEXT, surah_arabic_number TEXT, label TEXT, navigation_target TEXT, UNIQUE(surah_number, ayah_id))',
@@ -98,6 +122,21 @@ class DatabaseHelper {
         }
       },
     );
+  }
+
+  static Future<void> _closeAll() async {
+    for (final db in [quranAsadDb, quranMalayalamDb, userDatabase]) {
+      if (db != null && db.isOpen) {
+        try {
+          await db.close();
+        } catch (e) {
+          debugPrint('DB: close failed — $e');
+        }
+      }
+    }
+    quranAsadDb = null;
+    quranMalayalamDb = null;
+    userDatabase = null;
   }
 
   static Future<Database> initDatabase({
@@ -158,11 +197,11 @@ class DatabaseHelper {
     }
 
     try {
-      return await openDatabase(path);
+      return await openDatabase(path, readOnly: true);
     } catch (e) {
       debugPrint("database helper : Re-copying asset due to open failure: $e");
       await copyFromAsset();
-      return await openDatabase(path);
+      return await openDatabase(path, readOnly: true);
     }
   }
 }

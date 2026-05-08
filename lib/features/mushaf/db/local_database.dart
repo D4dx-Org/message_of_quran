@@ -21,7 +21,7 @@ class LocalDatabase {
   Future<Database> get database async {
     if (_database != null) return _database!;
     final dbPath = await _copyBundledDatabaseIfNeeded();
-    _database = await openDatabase(dbPath);
+    _database = await openDatabase(dbPath, readOnly: true);
     return _database!;
   }
 

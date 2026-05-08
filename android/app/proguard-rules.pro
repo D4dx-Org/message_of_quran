@@ -23,6 +23,10 @@
 -keep class com.ryanheise.just_audio.** { *; }
 -dontwarn com.ryanheise.just_audio.**
 
+## audio_service
+-keep class com.ryanheise.audioservice.** { *; }
+-dontwarn com.ryanheise.audioservice.**
+
 ## Keep all model classes from being stripped
 -keepattributes Signature
 -keepattributes *Annotation*

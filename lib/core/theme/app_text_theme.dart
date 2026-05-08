@@ -81,6 +81,7 @@ class AppTextTheme {
         ctx,
       ).quranTransaltionFontSize.toDouble(),
       fontWeight: FontWeight.w400,
+      color: Theme.of(ctx).brightness == Brightness.dark ? null : Colors.black,
     );
   }
 
@@ -90,6 +91,7 @@ class AppTextTheme {
         ctx,
       ).interpretationFontSize.toDouble(),
       fontWeight: FontWeight.w400,
+      color: Theme.of(ctx).brightness == Brightness.dark ? null : Colors.black,
     );
   }
 
@@ -118,12 +120,14 @@ class AppTextTheme {
     final controller = Provider.of<FontSizeChangerProvider>(ctx);
     final height = _arabicLineHeights[controller.fontType] ?? 2.0;
     final fontSize = controller.quranFontSize.toDouble();
+    final color = Theme.of(ctx).brightness == Brightness.dark ? null : Colors.black;
     if (controller.fontType == 'Amiri') {
       return TextStyle(
         fontFamily: 'Amiri',
         fontSize: fontSize,
         fontWeight: FontWeight.w400,
         height: height,
+        color: color,
         locale: const Locale('ar'),
         fontFeatures: _amiriFontFeatures,
       );
@@ -133,6 +137,7 @@ class AppTextTheme {
       fontSize: fontSize,
       fontWeight: FontWeight.w400,
       height: height,
+      color: color,
     );
   }
 

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:the_message_of_the_quran/core/services/database/database_helper.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/data/progression_db_helper.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/models/progression_model.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/models/progression_day_model.dart';
@@ -102,25 +103,32 @@ class ProgressionDetailProvider extends ChangeNotifier {
     final allCompleted = freshAyahs.every((a) => a.status == 'completed');
 
     if (allCompleted) {
-      await ProgressionDbHelper.updateDayStatus(dayId, 'completed');
+      await DatabaseHelper.userDatabase!.transaction((txn) async {
+        await ProgressionDbHelper.updateDayStatus(dayId, 'completed', txn: txn);
 
-      // Find the current day index and unlock the next day
-      final dayIdx = _days.indexWhere((d) => d.id == dayId);
-      if (dayIdx >= 0 && dayIdx < _days.length - 1) {
-        final nextDay = _days[dayIdx + 1];
-        await ProgressionDbHelper.updateDayStatus(nextDay.id!, 'reading');
-
-        // Unlock the first ayah of the next day
-        final nextDayAyahs = await ProgressionDbHelper.getAyahsForDay(
-          nextDay.id!,
-        );
-        if (nextDayAyahs.isNotEmpty) {
-          await ProgressionDbHelper.updateAyahStatus(
-            nextDayAyahs.first.id!,
+        // Find the current day index and unlock the next day
+        final dayIdx = _days.indexWhere((d) => d.id == dayId);
+        if (dayIdx >= 0 && dayIdx < _days.length - 1) {
+          final nextDay = _days[dayIdx + 1];
+          await ProgressionDbHelper.updateDayStatus(
+            nextDay.id!,
             'reading',
+            txn: txn,
           );
+
+          // Unlock the first ayah of the next day
+          final nextDayAyahs = await ProgressionDbHelper.getAyahsForDay(
+            nextDay.id!,
+          );
+          if (nextDayAyahs.isNotEmpty) {
+            await ProgressionDbHelper.updateAyahStatus(
+              nextDayAyahs.first.id!,
+              'reading',
+              txn: txn,
+            );
+          }
         }
-      }
+      });
 
       // Reload days
       if (_progression?.id != null) {

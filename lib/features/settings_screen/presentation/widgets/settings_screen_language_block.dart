@@ -20,11 +20,11 @@ class SettingsScreenLanguageBlock extends StatelessWidget {
             Row(
               children: [
             const    Icon(Icons.language, color: AppTheme.appIconTheme),
-                const SizedBox(width: 12),
+                const SizedBox(width: 16),
                 Text(
                   'Language',
                   style: AppTextTheme.drawerStyle
-                      .copyWith(fontWeight: FontWeight.w600),
+                      .copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
                 ),
               ],
             ),
