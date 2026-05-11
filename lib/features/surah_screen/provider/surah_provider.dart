@@ -35,14 +35,18 @@ class SurahProvider extends ChangeNotifier {
   bool get isMalayalam => _isMalayalam;
 
   /// Called when language changes. Reloads all content.
+  /// TODO: Re-enable when Malayalam DB is ready
   Future<void> setMalayalam(bool value) async {
-    if (_isMalayalam == value) return;
-    _isMalayalam = value;
-    surahList = [];
-    await getAllSurah();
-    if (surahList.isNotEmpty && index >= 0 && index < surahList.length) {
-      await getAyasForCurrentSurah();
-    }
+    // No-op: Malayalam DB not available yet. Always use English data.
+    // When Malayalam DB is ready, uncomment the block below.
+    //
+    // if (_isMalayalam == value) return;
+    // _isMalayalam = value;
+    // surahList = [];
+    // await getAllSurah();
+    // if (surahList.isNotEmpty && index >= 0 && index < surahList.length) {
+    //   await getAyasForCurrentSurah();
+    // }
   }
 
   // ── Ayah toggle-selection state (Set of individual ayah numbers) ──
@@ -122,31 +126,13 @@ class SurahProvider extends ChangeNotifier {
       buffer.writeln();
     }
 
-    // Collect per-ayah Arabic text by splitting blocks at verse markers.
-    final markerRegex = RegExp(r'﴿[\u0660-\u06690-9]+﴾');
+    // Collect per-ayah Arabic text.
     for (int i = 0; i < sorted.length; i++) {
       final ayah = sorted[i];
       String? ayahArabic;
       for (final block in arabicBlockList) {
-        final from = block.verseFrom ?? 0;
-        final to = block.verseTo ?? from;
-        if (ayah >= from && ayah <= to) {
-          final text = block.arabicText ?? '';
-          final matches = markerRegex.allMatches(text).toList();
-          if (matches.isEmpty) {
-            ayahArabic = text;
-          } else {
-            int pos = 0;
-            int cur = from;
-            for (final m in matches) {
-              if (cur == ayah) {
-                ayahArabic = text.substring(pos, m.end);
-                break;
-              }
-              pos = m.end;
-              cur++;
-            }
-          }
+        if (block.verseFrom == ayah) {
+          ayahArabic = block.arabicText;
           break;
         }
       }

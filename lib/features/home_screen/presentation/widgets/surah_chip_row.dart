@@ -46,19 +46,21 @@ class SurahChipRow extends StatelessWidget {
           }
 
           return GestureDetector(
-            onTap: () async {
+            onTap: () {
               final surahProv = context.read<SurahProvider>();
-              await surahProv.selectSurahByNumber(chip.surahNumber);
-              if (context.mounted) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => SurahScreen(
-                      scrollToAyahId: chip.ayahId,
-                    ),
+              final idx = surahProv.surahList.indexWhere(
+                (s) => s.surahNumber == chip.surahNumber,
+              );
+              if (idx < 0) return;
+              surahProv.assignIndex(idx);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => SurahScreen(
+                    scrollToAyahId: chip.ayahId,
                   ),
-                );
-              }
+                ),
+              );
             },
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

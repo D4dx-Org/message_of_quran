@@ -10,12 +10,14 @@ class ArabicBlockDbHelper {
 
     try {
       final result = await db.query(
-        DbConstants.arabicBlockTable,
-        where: '${DbConstants.chapterNo} = ?',
+        DbConstants.quranAyasTable,
+        where: '${DbConstants.quranAyasSurahId} = ?',
         whereArgs: [surahNumber],
-        orderBy: '${DbConstants.verseFrom} ASC',
+        orderBy: '${DbConstants.quranAyasAyahId} ASC',
       );
-      return result.map((map) => ArabicBlockModel.fromJson(map)).toList();
+      return result
+          .map((map) => ArabicBlockModel.fromQuranAyasJson(map))
+          .toList();
     } catch (e) {
       return [];
     }

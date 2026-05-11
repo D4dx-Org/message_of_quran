@@ -67,7 +67,7 @@ class _JumpToSheetState extends State<_JumpToSheet> {
     }).toList();
   }
 
-  Future<void> _onSurahTap(SurahModel surah) async {
+  void _onSurahTap(SurahModel surah) {
     if (_navigating) return;
     _navigating = true;
 
@@ -79,20 +79,24 @@ class _JumpToSheetState extends State<_JumpToSheet> {
     // Close the bottom sheet first.
     if (mounted) Navigator.pop(context);
 
-    // Load the new surah data (sets provider index + fetches translations/ayahs).
-    await provider.selectSurahByNumber(surah.surahNumber);
-
-    if (!widget.navCtx.mounted) return;
+    final idx = provider.surahList.indexWhere(
+      (s) => s.surahNumber == surah.surahNumber,
+    );
+    if (idx < 0) return;
+    provider.assignIndex(idx);
 
     if (isOnRoot) {
       // On home screen — push a fresh SurahScreen.
-      Navigator.push(
-        widget.navCtx,
-        MaterialPageRoute(builder: (_) => const SurahScreen()),
-      );
+      if (widget.navCtx.mounted) {
+        Navigator.push(
+          widget.navCtx,
+          MaterialPageRoute(builder: (_) => const SurahScreen()),
+        );
+      }
+    } else {
+      // Already on SurahScreen — load data async; screen rebuilds via Provider.
+      provider.getAyasForCurrentSurah();
     }
-    // If already on SurahScreen, it rebuilds automatically via its Provider
-    // listener — no extra navigation needed (avoids double-jump).
   }
 
   @override

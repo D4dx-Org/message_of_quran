@@ -407,18 +407,7 @@ class _LayoutSettingsCard extends StatelessWidget {
               ),
             ),
           ),
-          const Divider(height: 1, indent: 16, endIndent: 16),
-          Consumer<PlaySettingsProvider>(
-            builder: (context, playSettings, _) => SettingsScreenListTile(
-              title: 'Horizontal Scroll',
-              icon: Icons.swap_horiz,
-              trailing: Switch(
-                value: playSettings.verticalScroll,
-                activeThumbColor: AppTheme.appIconTheme,
-                onChanged: (v) => playSettings.setVerticalScroll(v),
-              ),
-            ),
-          ),
+
         ],
       ),
     );

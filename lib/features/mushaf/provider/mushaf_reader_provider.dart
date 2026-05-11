@@ -73,7 +73,10 @@ class MushafReaderProvider extends ChangeNotifier {
 
   Future<void> init() async {
     repository = MushafRepository(localDatabase: LocalDatabase.instance);
-    audioPlayer = AudioPlayer();
+    audioPlayer = AudioPlayer(
+      androidApplyAudioAttributes: false,
+      handleAudioSessionActivation: false,
+    );
     _playerStateSub = audioPlayer.playerStateStream.listen(_onPlayerStateChanged);
     await _doInit();
   }

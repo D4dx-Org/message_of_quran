@@ -63,11 +63,13 @@ class SearchScreen extends StatelessWidget {
                           )
                         : ListView.separated(
                             itemBuilder: (context, index) => InkWell(
-                              onTap: () async {
+                              onTap: () {
                                 final surah = controller.searchList[index];
-                                await controller.selectSurahByNumber(
-                                    surah.surahNumber);
-                                if (!context.mounted) return;
+                                final idx = controller.surahList.indexWhere(
+                                  (s) => s.surahNumber == surah.surahNumber,
+                                );
+                                if (idx < 0) return;
+                                controller.assignIndex(idx);
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(

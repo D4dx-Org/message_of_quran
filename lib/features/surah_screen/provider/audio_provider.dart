@@ -7,7 +7,10 @@ import 'package:flutter/semantics.dart';
 import 'package:just_audio/just_audio.dart';
 
 class AudioProvider extends ChangeNotifier {
-  AudioPlayer _player = AudioPlayer();
+  AudioPlayer _player = AudioPlayer(
+    androidApplyAudioAttributes: false,
+    handleAudioSessionActivation: false,
+  );
   StreamSubscription? _playerStateSub;
   StreamSubscription? _indexSub;
   bool _isDisposed = false;
@@ -42,6 +45,11 @@ class AudioProvider extends ChangeNotifier {
       debugPrint('AudioProvider: audio session config failed — $e');
     }
   }
+
+  AudioPlayer _createPlayer() => AudioPlayer(
+        androidApplyAudioAttributes: false,
+        handleAudioSessionActivation: false,
+      );
 
   int _playGeneration = 0;
 
@@ -100,12 +108,12 @@ class AudioProvider extends ChangeNotifier {
     _isPaused = false;
     notifyListeners();
 
-    // Recreate the player each time to avoid stale ExoPlayer state.
-    try { await _player.stop(); } catch (e) { debugPrint('AudioProvider: stop failed — $e'); }
-    if (gen != _playGeneration) return;
-    try { await _player.dispose(); } catch (e) { debugPrint('AudioProvider: dispose failed — $e'); }
-    if (gen != _playGeneration) return;
-    _player = AudioPlayer();
+    // Do NOT call stop() here.  stop() transitions ExoPlayer to idle which
+    // internally fires _setPlatformActive(false).  That races with the
+    // _setPlatformActive(true) from setAudioSource below and causes
+    // PlatformException(abort, "Loading interrupted").
+    // setAudioSource() on its own correctly interrupts and replaces the
+    // current source.
 
     // Build a playlist for every individual ayah in the range.
     final count = (ayahEndId - ayahId).abs() + 1;
@@ -117,11 +125,44 @@ class AudioProvider extends ChangeNotifier {
     final playlist = ConcatenatingAudioSource(children: sources);
     log('AudioProvider: playlist has $count track(s) – surah=$surahNumber ayah=$ayahId..$ayahEndId reciter=$reciterFolder');
 
+    try {
+      log('AudioProvider: setting audio source…');
+      await _setAudioSourceWithFallback(playlist);
+      if (gen != _playGeneration) return;
+      await _player.setSpeed(playbackSpeed);
+      if (gen != _playGeneration) return;
+
+      // Subscribe AFTER setAudioSource so the BehaviorSubject replays
+      // "ready" state instead of stale "completed" from the previous
+      // playlist.  This prevents onAyahComplete from re-firing.
+      _setupStreamListeners(gen, ayahId);
+
+      log('AudioProvider: calling play()');
+      _player.play(); // intentionally NOT awaited
+    } catch (e) {
+      log('AudioProvider: playAyah ERROR – $e');
+      // Only reset state if this is still the active generation.
+      // Otherwise a newer playAyah() already set the correct state.
+      if (gen != _playGeneration) return;
+      _isLoading = false;
+      _isPlaying = false;
+      _currentAyahId = null;
+      _playingAyahId = null;
+      _currentSurahNumber = null;
+      _currentTranslationIndex = null;
+      notifyListeners();
+    }
+  }
+
+  /// Sets up playerStateStream and currentIndexStream listeners for the
+  /// given generation.  Called after setAudioSource so BehaviorSubject
+  /// replays "ready" instead of stale "completed".
+  void _setupStreamListeners(int gen, int baseAyahId) {
     // Track which individual ayah within the block is currently playing.
     _indexSub = _player.currentIndexStream.listen((idx) {
       if (gen != _playGeneration) return;
       if (idx != null) {
-        final newAyah = ayahId + idx;
+        final newAyah = baseAyahId + idx;
         if (_playingAyahId != newAyah) {
           _playingAyahId = newAyah;
           // ignore: deprecated_member_use
@@ -170,8 +211,6 @@ class AudioProvider extends ChangeNotifier {
         _isLoading = false;
         // ignore: deprecated_member_use
         SemanticsService.announce('Playback finished', TextDirection.ltr);
-        // Clear the playing-ayah IDs so no ayah stays highlighted after
-        // playback finishes.
         _playingAyahId = null;
         _currentAyahId = null;
         notifyListeners();
@@ -191,27 +230,27 @@ class AudioProvider extends ChangeNotifier {
       _playingAyahId = null;
       notifyListeners();
     });
+  }
 
+  /// Tries [setAudioSource] on the existing player.  If it fails (stale
+  /// ExoPlayer state), disposes the player, creates a fresh one, and retries
+  /// once.  This avoids the normal dispose→new→setAudioSource race while
+  /// still recovering from genuinely broken player instances.
+  Future<void> _setAudioSourceWithFallback(AudioSource source) async {
     try {
-      log('AudioProvider: setting audio source…');
-      await _player.setAudioSource(playlist);
-      if (gen != _playGeneration) return;
-      await _player.setSpeed(playbackSpeed);
-      if (gen != _playGeneration) return;
-      log('AudioProvider: calling play()');
-      _player.play(); // intentionally NOT awaited
+      await _player.setAudioSource(source);
     } catch (e) {
-      log('AudioProvider: playAyah ERROR – $e');
-      // Only reset state if this is still the active generation.
-      // Otherwise a newer playAyah() already set the correct state.
-      if (gen != _playGeneration) return;
-      _isLoading = false;
-      _isPlaying = false;
-      _currentAyahId = null;
-      _playingAyahId = null;
-      _currentSurahNumber = null;
-      _currentTranslationIndex = null;
-      notifyListeners();
+      log('AudioProvider: setAudioSource failed, recreating player – $e');
+      // Cancel stale subscriptions before recreating.
+      await _playerStateSub?.cancel();
+      await _indexSub?.cancel();
+      _playerStateSub = null;
+      _indexSub = null;
+      try { await _player.dispose(); } catch (_) {}
+      _player = _createPlayer();
+      // Small delay to let the native side fully release resources.
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+      await _player.setAudioSource(source);
     }
   }
 

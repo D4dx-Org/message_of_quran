@@ -53,18 +53,20 @@ class HizbColumn extends StatelessWidget {
               excludeSemantics: true,
               child: InkWell(
               onTap: available
-                  ? () async {
+                  ? () {
                       final surahProv = context.read<SurahProvider>();
-                      await surahProv.selectSurahByNumber(hizb.surahNumber);
-                      if (context.mounted) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                SurahScreen(scrollToAyahId: hizb.ayahNumber),
-                          ),
-                        );
-                      }
+                      final idx = surahProv.surahList.indexWhere(
+                        (s) => s.surahNumber == hizb.surahNumber,
+                      );
+                      if (idx < 0) return;
+                      surahProv.assignIndex(idx);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              SurahScreen(scrollToAyahId: hizb.ayahNumber),
+                        ),
+                      );
                     }
                   : null,
               child: Container(

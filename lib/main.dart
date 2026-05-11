@@ -149,10 +149,11 @@ Future<bool> handleNotificationRoute(String route) async {
   }
 
   if (route == surahAlKahfNotificationRoute) {
-    await Provider.of<SurahProvider>(
-      context,
-      listen: false,
-    ).selectSurahByNumber(18);
+    final surahProv = Provider.of<SurahProvider>(context, listen: false);
+    if (surahProv.surahList.isEmpty) await surahProv.getAllSurah();
+    final idx = surahProv.surahList.indexWhere((s) => s.surahNumber == 18);
+    if (idx < 0) return false;
+    surahProv.assignIndex(idx);
     nav.push(MaterialPageRoute(builder: (_) => const SurahScreen()));
     return true;
   }

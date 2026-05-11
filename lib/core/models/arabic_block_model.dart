@@ -21,4 +21,16 @@ class ArabicBlockModel {
       chapterNo: json[DbConstants.chapterNo] as int?,
     );
   }
+
+  /// Creates an [ArabicBlockModel] from a `quranayas` row.
+  /// Each row is a single ayah, so verseFrom == verseTo.
+  factory ArabicBlockModel.fromQuranAyasJson(Map<String, dynamic> json) {
+    final ayahId = json[DbConstants.quranAyasAyahId] as int?;
+    return ArabicBlockModel(
+      arabicText: json[DbConstants.quranAyasAyahText] as String?,
+      verseFrom: ayahId,
+      verseTo: ayahId,
+      chapterNo: json[DbConstants.quranAyasSurahId] as int?,
+    );
+  }
 }

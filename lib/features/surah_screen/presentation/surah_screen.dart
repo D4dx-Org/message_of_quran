@@ -77,16 +77,6 @@ class _SurahScreenState extends State<SurahScreen> {
   /// Tracks the surah index so we can detect jumps and reset scroll.
   int? _lastSurahIndex;
 
-  /// PageController for horizontal ayah-by-ayah mode (vertical scroll setting).
-  final PageController _pageController = PageController();
-
-  /// Current page index in PageView mode.
-  int _currentPageIndex = 0;
-
-  double? _pageSwipeStartX;
-  double? _pageSwipeLastX;
-  int? _pageSwipeStartIndex;
-
   bool _surahTransitionPending = false;
 
   /// True while [_advanceToNextSurah] is transitioning to the next surah.
@@ -132,16 +122,12 @@ class _SurahScreenState extends State<SurahScreen> {
       _lastKnownAyahStart = null;
       _lastVisibleAyahEnd = null;
       _lastScrolledPlayingAyahId = null;
-      _currentPageIndex = 0;
       _surahTransitionPending = false;
       _checkPrefaceAvailability();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         if (_scrollController.hasClients) {
           _scrollController.jumpTo(0);
-        }
-        if (_pageController.hasClients) {
-          _pageController.jumpToPage(0);
         }
       });
     }
@@ -232,23 +218,9 @@ class _SurahScreenState extends State<SurahScreen> {
                 widget.scrollToAyahId! <= end;
           });
         }
-        if (targetIdx >= 0) {
-          _currentPageIndex = targetIdx;
-        }
-
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!mounted) return;
-          final isVertical = Provider.of<PlaySettingsProvider>(
-            context,
-            listen: false,
-          ).verticalScroll;
-          if (isVertical) {
-            if (_pageController.hasClients && _currentPageIndex > 0) {
-              _pageController.jumpToPage(_currentPageIndex);
-            }
-          } else {
-            _scrollToBookmarkedAyah(widget.scrollToAyahId!);
-          }
+          _scrollToBookmarkedAyah(widget.scrollToAyahId!);
         });
       }
 
@@ -378,77 +350,6 @@ class _SurahScreenState extends State<SurahScreen> {
     }
   }
 
-  void _handlePageChanged(SurahProvider controller, int pageIndex) {
-    setState(() => _currentPageIndex = pageIndex);
-    if (pageIndex < _surahProv.arabicBlockList.length) {
-      final block = _surahProv.arabicBlockList[pageIndex];
-      _lastKnownAyahStart = block.verseFrom ?? pageIndex + 1;
-      _lastVisibleAyahEnd = block.verseTo ?? pageIndex + 1;
-      if (_surahProv.surahList.isNotEmpty &&
-          _surahProv.index >= 0 &&
-          _surahProv.index < _surahProv.surahList.length) {
-        final surah = _surahProv.surahList[_surahProv.index];
-        _readingProgressProv.updateProgress(
-          surahNumber: surah.surahNumber,
-          ayahNumber: _lastVisibleAyahEnd ?? (pageIndex + 1),
-          totalAyahs: surah.ayathCount,
-        );
-      }
-    }
-  }
-
-  void _handlePageSwipeStart(PointerDownEvent event) {
-    _pageSwipeStartX = event.position.dx;
-    _pageSwipeLastX = event.position.dx;
-    _pageSwipeStartIndex = _currentPageIndex;
-  }
-
-  void _handlePageSwipeMove(PointerMoveEvent event) {
-    _pageSwipeLastX = event.position.dx;
-  }
-
-  void _handlePageSwipeCancel(PointerEvent event) {
-    _pageSwipeStartX = null;
-    _pageSwipeLastX = null;
-    _pageSwipeStartIndex = null;
-  }
-
-  void _handlePageSwipeEnd(PointerEvent event, SurahProvider controller) {
-    final startX = _pageSwipeStartX;
-    final endX = _pageSwipeLastX ?? startX;
-    final startIndex = _pageSwipeStartIndex;
-
-    _handlePageSwipeCancel(event);
-
-    if (startX == null ||
-        endX == null ||
-        startIndex == null ||
-        controller.arabicBlockList.isEmpty ||
-        _surahTransitionPending) {
-      return;
-    }
-
-    if (startIndex != _currentPageIndex) return;
-
-    final deltaX = endX - startX;
-    if (deltaX.abs() < 32) return;
-
-    final lastPageIndex = controller.arabicBlockList.length - 1;
-
-    if (_currentPageIndex <= 0 &&
-        deltaX < 0 &&
-        _canNavigateToAdjacentSurah(true)) {
-      Future.microtask(() => _navigateToAdjacentSurah(true));
-      return;
-    }
-
-    if (_currentPageIndex >= lastPageIndex &&
-        deltaX > 0 &&
-        _canNavigateToAdjacentSurah(false)) {
-      Future.microtask(() => _navigateToAdjacentSurah(false));
-    }
-  }
-
   /// Saves the current surah + first-visible ayah as the last-read position.
   void _saveLastRead() {
     if (_surahProv.surahList.isEmpty ||
@@ -514,37 +415,6 @@ class _SurahScreenState extends State<SurahScreen> {
     });
     if (idx < 0 || idx >= _itemKeys.length) return;
 
-    // In vertical scroll (PageView) mode, animate to the page instead.
-    final isVertical = Provider.of<PlaySettingsProvider>(
-      context,
-      listen: false,
-    ).verticalScroll;
-    if (isVertical) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted || !_pageController.hasClients) return;
-        final currentPage = _pageController.page?.round() ?? 0;
-        if (currentPage == idx) {
-          // Already on this page — scroll within the page to show the top.
-          final ctx = _itemKeys[idx].currentContext;
-          if (ctx != null) {
-            Scrollable.ensureVisible(
-              ctx,
-              alignment: 0.0,
-              duration: const Duration(milliseconds: 400),
-              curve: Curves.easeInOut,
-            );
-          }
-        } else {
-          _pageController.animateToPage(
-            idx,
-            duration: const Duration(milliseconds: 400),
-            curve: Curves.easeInOut,
-          );
-        }
-      });
-      return;
-    }
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _ensureAyahVisible(idx);
@@ -600,7 +470,6 @@ class _SurahScreenState extends State<SurahScreen> {
   void dispose() {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
-    _pageController.dispose();
     _listeningAudioProv?.removeListener(_onAudioProviderChanged);
     _listeningAudioProv?.stopAudio();
     super.dispose();
@@ -741,20 +610,7 @@ class _SurahScreenState extends State<SurahScreen> {
                       Navigator.pop(context);
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         if (!mounted) return;
-                        final isVertical = Provider.of<PlaySettingsProvider>(
-                          this.context,
-                          listen: false,
-                        ).verticalScroll;
-                        if (isVertical && _pageController.hasClients) {
-                          _pageController.animateToPage(
-                            i,
-                            duration: const Duration(milliseconds: 400),
-                            curve: Curves.easeInOut,
-                          );
-                          setState(() => _currentPageIndex = i);
-                        } else {
-                          _ensureAyahVisible(i);
-                        }
+                        _ensureAyahVisible(i);
                       });
                     },
                   );
@@ -1436,84 +1292,9 @@ class _SurahScreenState extends State<SurahScreen> {
     );
   }
 
-  /// Builds the PageView body for horizontal scroll (ayah-by-ayah) mode.
-  Widget _buildPageViewBody(
-    SurahProvider controller,
-    List<Widget> ayahWidgets,
-  ) {
-    final surah = controller.surahList.isNotEmpty
-        ? controller.surahList[controller.index]
-        : null;
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        ResponsiveHelper.horizontalPadding(context),
-        10,
-        ResponsiveHelper.horizontalPadding(context),
-        0,
-      ),
-      child: ResponsiveContentWrapper(
-        child: Column(
-          children: [
-            // ── Full surah info strip on first page only ──
-            if (surah != null && _currentPageIndex == 0)
-              Column(
-                children: [
-                  SurahInfoStrip(
-                    arabicName: surah.arabicName,
-                    place: surah.place,
-                    ayahCount: surah.ayathCount,
-                    surahNumber: controller.index + 1,
-                    showPrevious: controller.index < controller.surahList.length - 1,
-                    showNext: controller.index > 0,
-                    onPrevious: () => _navigateToAdjacentSurah(false),
-                    onNext: () => _navigateToAdjacentSurah(true),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Text(
-                      'Page ${_currentPageIndex + 1} / ${controller.arabicBlockList.length}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            Expanded(
-              child: Listener(
-                behavior: HitTestBehavior.translucent,
-                onPointerDown: _handlePageSwipeStart,
-                onPointerMove: _handlePageSwipeMove,
-                onPointerUp: (event) => _handlePageSwipeEnd(event, controller),
-                onPointerCancel: _handlePageSwipeCancel,
-                child: PageView.builder(
-                  controller: _pageController,
-                  reverse: true,
-                  itemCount: ayahWidgets.length,
-                  onPageChanged: (pageIndex) =>
-                      _handlePageChanged(controller, pageIndex),
-                  itemBuilder: (_, index) {
-                    return SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 72),
-                        child: ayahWidgets[index],
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<SurahProvider>(context);
-    final playSettings = Provider.of<PlaySettingsProvider>(context);
 
     return PopScope(
       canPop: true,
@@ -1526,36 +1307,22 @@ class _SurahScreenState extends State<SurahScreen> {
       child: BaseScreenLayout(
         appBar: CommonAppBar.appBar(
           context,
-          onSurahInfoTap: _hasPreface &&
-                  !(playSettings.verticalScroll && _currentPageIndex != 0)
+          onSurahInfoTap: _hasPreface
               ? () => _showSurahInfo(context, controller)
-              : null,
-          titleWidget: playSettings.verticalScroll &&
-                  _currentPageIndex != 0 &&
-                  controller.surahList.isNotEmpty
-              ? SurahCompactHeader(
-                  arabicName: controller.surahList[controller.index].arabicName,
-                  pageText: 'Page ${_currentPageIndex + 1} / ${controller.arabicBlockList.length}',
-                  showPrevious: controller.index < controller.surahList.length - 1,
-                  showNext: controller.index > 0,
-                  onPrevious: () => _navigateToAdjacentSurah(false),
-                  onNext: () => _navigateToAdjacentSurah(true),
-                )
               : null,
         ),
         drawer: const CommonDrawer(),
         floatingActionButton: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (!playSettings.verticalScroll)
-              ScrollToTopButton(
-                visible: _showScrollToTop,
-                onPressed: () => _scrollController.animateTo(
-                  0,
-                  duration: const Duration(milliseconds: 400),
-                  curve: Curves.easeInOut,
-                ),
+            ScrollToTopButton(
+              visible: _showScrollToTop,
+              onPressed: () => _scrollController.animateTo(
+                0,
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.easeInOut,
               ),
+            ),
             if (controller.arabicBlockList.isNotEmpty) ...[
               const SizedBox(height: 8),
               FloatingActionButton(
@@ -1587,21 +1354,40 @@ class _SurahScreenState extends State<SurahScreen> {
                     ? const Center(child: CircularProgressIndicator())
                     : Builder(
                         builder: (_) {
-                          final ayahWidgets = List.generate(controller.arabicBlockList.length, (
-                            index,
-                          ) {
+                          final surahNumber = controller.surahList.isNotEmpty
+                              ? controller.surahList[controller.index].surahNumber
+                              : 0;
+                          final surahName = controller.surahList.isNotEmpty
+                              ? controller.surahList[controller.index].name
+                              : 'Surah';
+                          final hPad = ResponsiveHelper.horizontalPadding(
+                            context,
+                          );
+                          return Padding(
+                            padding: EdgeInsets.fromLTRB(hPad, 10, hPad, 0),
+                            child: TweenAnimationBuilder<double>(
+                              key: ValueKey(controller.index),
+                              tween: Tween(begin: 0.0, end: 1.0),
+                              duration: const Duration(milliseconds: 400),
+                              curve: Curves.easeInOut,
+                              builder: (context, opacity, child) {
+                                return Opacity(opacity: opacity, child: child);
+                              },
+                              child: GestureDetector(
+                                behavior: HitTestBehavior.translucent,
+                                onHorizontalDragEnd: _handleContinuousModeSwipe,
+                                child: ResponsiveContentWrapper(
+                                  child: CustomScrollView(
+                                    controller: _scrollController,
+                                    slivers: [
+                                      const SurahScreenAppBar(),
+                                      SliverList(
+                                        delegate: SliverChildBuilderDelegate(
+                                          (context, index) {
                             final block = controller.arabicBlockList[index];
                             final ayaStart = block.verseFrom ?? index + 1;
                             final ayaEnd = block.verseTo ?? index + 1;
-                            final surahNumber = controller.surahList.isNotEmpty
-                                ? controller
-                                      .surahList[controller.index]
-                                      .surahNumber
-                                : 0;
                             final arabicText = block.arabicText ?? '';
-                            final surahName = controller.surahList.isNotEmpty
-                                ? controller.surahList[controller.index].name
-                                : 'Surah';
                             final ayahRange = ayaStart == ayaEnd
                                 ? 'Ayah ${_toArabicNumerals(ayaStart)}'
                                 : 'Ayahs ${_toArabicNumerals(ayaStart)} to ${_toArabicNumerals(ayaEnd)}';
@@ -1711,20 +1497,8 @@ class _SurahScreenState extends State<SurahScreen> {
                                                   surahNumber,
                                                   ayaStart,
                                                 );
-                                            final canNavigateToPreviousSurah =
-                                                _canNavigateToAdjacentSurah(
-                                                  true,
-                                                );
-                                            final canNavigateToNextSurah =
-                                                _canNavigateToAdjacentSurah(
-                                                  false,
-                                                );
                                             const translationText = '';
-                                            return Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.stretch,
-                                              children: [
-                                                Row(
+                                            return Row(
                                                   children: [
                                                     // Bookmark
                                                     IconButton(
@@ -1886,50 +1660,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                                       },
                                                     ),
                                                   ],
-                                                ),
-                                                if (playSettings.verticalScroll || index == controller.arabicBlockList.length - 1) ...[
-                                                  const SizedBox(height: 8),
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      if (canNavigateToNextSurah)
-                                                        IconButton(
-                                                          tooltip: 'Next surah',
-                                                          visualDensity:
-                                                              VisualDensity.compact,
-                                                          onPressed: () =>
-                                                                _navigateToAdjacentSurah(
-                                                                  false,
-                                                                ),
-                                                          icon: const Icon(
-                                                            Icons
-                                                                .arrow_back_ios_new,
-                                                            color: AppTheme.appIconTheme,
-                                                          ),
-                                                        ),
-                                                      const Spacer(),
-                                                      if (canNavigateToPreviousSurah)
-                                                        IconButton(
-                                                          tooltip: 'Previous surah',
-                                                          visualDensity:
-                                                              VisualDensity.compact,
-                                                          onPressed: () =>
-                                                                _navigateToAdjacentSurah(
-                                                                  true,
-                                                                ),
-                                                          icon: const Icon(
-                                                            Icons
-                                                                .arrow_forward_ios_rounded,
-                                                            color: AppTheme.appIconTheme,
-                                                          ),
-                                                        ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ],
-                                            );
+                                                );
                                           },
                                         ),
                                         const Divider(thickness: 0.5),
@@ -1939,34 +1670,48 @@ class _SurahScreenState extends State<SurahScreen> {
                                 },
                               ),
                             );
-                          });
-                          if (playSettings.verticalScroll) {
-                            return _buildPageViewBody(controller, ayahWidgets);
-                          }
-                          final hPad = ResponsiveHelper.horizontalPadding(
-                            context,
-                          );
-                          return Padding(
-                            padding: EdgeInsets.fromLTRB(hPad, 10, hPad, 0),
-                            child: TweenAnimationBuilder<double>(
-                              key: ValueKey(controller.index),
-                              tween: Tween(begin: 0.0, end: 1.0),
-                              duration: const Duration(milliseconds: 400),
-                              curve: Curves.easeInOut,
-                              builder: (context, opacity, child) {
-                                return Opacity(opacity: opacity, child: child);
-                              },
-                              child: GestureDetector(
-                                behavior: HitTestBehavior.translucent,
-                                onHorizontalDragEnd: _handleContinuousModeSwipe,
-                                child: ResponsiveContentWrapper(
-                                  child: CustomScrollView(
-                                    controller: _scrollController,
-                                    slivers: [
-                                      const SurahScreenAppBar(),
-                                      SliverList(
-                                        delegate: SliverChildListDelegate(
-                                          ayahWidgets,
+                          },
+                          childCount: controller.arabicBlockList.length,
+                                        ),
+                                      ),
+                                      // ── Bottom surah navigation arrows ──
+                                      SliverToBoxAdapter(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 4,
+                                            vertical: 16,
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              if (_canNavigateToAdjacentSurah(false))
+                                                IconButton(
+                                                  tooltip: 'Next surah',
+                                                  onPressed: () =>
+                                                      _navigateToAdjacentSurah(false),
+                                                  icon: const Icon(
+                                                    Icons.arrow_back_ios_new,
+                                                    color: AppTheme.appIconTheme,
+                                                  ),
+                                                )
+                                              else
+                                                const SizedBox(width: 48),
+                                              const Spacer(),
+                                              if (_canNavigateToAdjacentSurah(true))
+                                                IconButton(
+                                                  tooltip: 'Previous surah',
+                                                  onPressed: () =>
+                                                      _navigateToAdjacentSurah(true),
+                                                  icon: const Icon(
+                                                    Icons.arrow_forward_ios_rounded,
+                                                    color: AppTheme.appIconTheme,
+                                                  ),
+                                                )
+                                              else
+                                                const SizedBox(width: 48),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ],

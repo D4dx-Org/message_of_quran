@@ -31,11 +31,8 @@ class AyahOfTheDayService {
         await ArabicBlockDbHelper.getArabicBlocksBySurah(surahNo);
     String arabicText = '';
     for (final block in arabicBlocks) {
-      final from = block.verseFrom ?? 0;
-      final to = block.verseTo ?? 0;
-      if (ayahNo >= from && ayahNo <= to) {
-        arabicText =
-            _extractAyahFromBlock(block.arabicText ?? '', from, ayahNo);
+      if (block.verseFrom == ayahNo) {
+        arabicText = (block.arabicText ?? '').trim();
         break;
       }
     }

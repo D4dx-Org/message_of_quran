@@ -94,7 +94,8 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/icons/revamp/
-    - assets/db/
+    - assets/db/quran_asad.sqlite
+    - assets/db/DB.db
     - assets/data/
     - shorebird.yaml
     - assets/fonts/QCF_BSML.TTF

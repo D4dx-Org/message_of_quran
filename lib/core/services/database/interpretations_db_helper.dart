@@ -9,12 +9,6 @@ class InterpretationsDbHelper {
     required int interpretationNumber,
     bool malayalam = false,
   }) async {
-    if (malayalam) {
-      return _getInterpretationsMalayalam(
-        surahNumber: surahNumber,
-        interpretationNumber: interpretationNumber,
-      );
-    }
     return _getInterpretationsAsad(
       surahNumber: surahNumber,
       interpretationNumber: interpretationNumber,
@@ -39,31 +33,10 @@ class InterpretationsDbHelper {
     }
   }
 
-  static Future<List<InterpretationModel>> _getInterpretationsMalayalam({
-    required int surahNumber,
-    required int interpretationNumber,
-  }) async {
-    final db = DatabaseHelper.quranMalayalamDb;
-    if (db == null) return [];
-    try {
-      final rows = await db.query(
-        DbConstants.interpretationsTable,
-        where: '${DbConstants.suraNumber} = ? AND ${DbConstants.interpretationNumber} = ?',
-        whereArgs: [surahNumber, interpretationNumber],
-      );
-      return rows.map((e) => InterpretationModel.fromJson(e)).toList();
-    } catch (e) {
-      return [];
-    }
-  }
-
   static Future<Map<String, int>> getInterpretationRange({
     required int surahNumber,
     bool malayalam = false,
   }) async {
-    if (malayalam) {
-      return _getInterpretationRangeMalayalam(surahNumber: surahNumber);
-    }
     return _getInterpretationRangeAsad(surahNumber: surahNumber);
   }
 
@@ -87,30 +60,6 @@ class InterpretationsDbHelper {
       };
     } catch (e) {
       debugPrint('InterpretationsDB: bounds query failed — $e');
-      return {'min': -1, 'max': -1};
-    }
-  }
-
-  static Future<Map<String, int>> _getInterpretationRangeMalayalam({
-    required int surahNumber,
-  }) async {
-    final db = DatabaseHelper.quranMalayalamDb;
-    if (db == null) return {'min': -1, 'max': -1};
-    try {
-      final result = await db.rawQuery(
-        'SELECT MIN(${DbConstants.interpretationNumber}) as min_num,'
-        ' MAX(${DbConstants.interpretationNumber}) as max_num'
-        ' FROM ${DbConstants.interpretationsTable}'
-        ' WHERE ${DbConstants.suraNumber} = ?',
-        [surahNumber],
-      );
-      if (result.isEmpty) return {'min': -1, 'max': -1};
-      return {
-        'min': (result.first['min_num'] as int?) ?? -1,
-        'max': (result.first['max_num'] as int?) ?? -1,
-      };
-    } catch (e) {
-      debugPrint('InterpretationsDB: Malayalam bounds query failed — $e');
       return {'min': -1, 'max': -1};
     }
   }

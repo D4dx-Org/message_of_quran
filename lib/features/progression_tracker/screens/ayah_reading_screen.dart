@@ -28,8 +28,6 @@ class _AyahReadingScreenState extends State<AyahReadingScreen> {
   List<TranslationBlockModel> _translationBlocks = [];
   bool _textLoaded = false;
 
-  static final _markerRegex = RegExp(r'﴿[\u0660-\u06690-9]+﴾');
-
   @override
   void initState() {
     super.initState();
@@ -57,20 +55,8 @@ class _AyahReadingScreenState extends State<AyahReadingScreen> {
 
   String _getArabicText(int ayahNumber) {
     for (final block in _arabicBlocks) {
-      final from = block.verseFrom ?? 0;
-      final to = block.verseTo ?? from;
-      if (ayahNumber >= from && ayahNumber <= to) {
-        final text = block.arabicText ?? '';
-        final matches = _markerRegex.allMatches(text).toList();
-        if (matches.isEmpty) return text.trim();
-        int pos = 0, cur = from;
-        for (final m in matches) {
-          if (cur == ayahNumber) {
-            return text.substring(pos, m.end).trim();
-          }
-          pos = m.end;
-          cur++;
-        }
+      if (block.verseFrom == ayahNumber) {
+        return (block.arabicText ?? '').trim();
       }
     }
     return '';

@@ -16,7 +16,6 @@ class PlaySettingsProvider extends ChangeNotifier {
   static const _reciterKey = 'reciter_index';
   static const _showTranslationKey = 'show_translation';
   static const _speedKey = 'playback_speed';
-  static const _verticalScrollKey = 'vertical_scroll';
 
   static const List<double> speedPresets = [0.5, 1.0, 1.5, 2.0];
 
@@ -40,14 +39,12 @@ class PlaySettingsProvider extends ChangeNotifier {
   int _selectedReciterIndex = 0;
   bool _showTranslation = true;
   double _playbackSpeed = 1.0;
-  bool _verticalScroll = true;
 
   PlayMode get playMode => _playMode;
   int get selectedReciterIndex => _selectedReciterIndex;
   ReciterInfo get selectedReciter => reciters[_selectedReciterIndex];
   bool get showTranslation => _showTranslation;
   double get playbackSpeed => _playbackSpeed;
-  bool get verticalScroll => _verticalScroll;
 
   PlaySettingsProvider() {
     // Defer until after the first frame so notifyListeners() is never called
@@ -67,7 +64,6 @@ class PlaySettingsProvider extends ChangeNotifier {
       _showTranslation = prefs.getBool(_showTranslationKey) ?? true;
       final savedSpeed = prefs.getDouble(_speedKey) ?? 1.0;
       _playbackSpeed = speedPresets.contains(savedSpeed) ? savedSpeed : 1.0;
-      _verticalScroll = prefs.getBool(_verticalScrollKey) ?? true;
     } catch (e) {
       debugPrint('PlaySettingsProvider: load failed — $e');
     }
@@ -123,18 +119,6 @@ class PlaySettingsProvider extends ChangeNotifier {
       await prefs.setDouble(_speedKey, speed);
     } catch (e) {
       debugPrint('PlaySettingsProvider: setPlaybackSpeed failed — $e');
-    }
-  }
-
-  Future<void> setVerticalScroll(bool value) async {
-    if (_verticalScroll == value) return;
-    _verticalScroll = value;
-    notifyListeners();
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool(_verticalScrollKey, value);
-    } catch (e) {
-      debugPrint('PlaySettingsProvider: setVerticalScroll failed — $e');
     }
   }
 

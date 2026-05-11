@@ -11,7 +11,9 @@ class LanguageProvider extends ChangeNotifier {
   bool _isInitialized = false;
 
   String get currentLanguage => _currentLanguage;
-  bool get isMalayalam => _currentLanguage == malayalam;
+  // TODO: Re-enable when Malayalam DB is ready
+  // bool get isMalayalam => _currentLanguage == malayalam;
+  bool get isMalayalam => false;
 
   LanguageProvider() {
     _initialize();

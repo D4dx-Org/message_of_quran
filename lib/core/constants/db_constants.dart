@@ -7,11 +7,7 @@ class DbConstants {
   static const String userDbName = "user_data.db";
   static const String dbLocation = "assets/db";
 
-  static const String quranMalayalamDbName = "quran_malayalam_.db";
-  static const String quranMalayalamDbVersionKey = 'quran_malayalam_db_version';
-  static const int quranMalayalamDbVersion = 3;
-
-  // ─── Table names (quran_malayalam.db) ───
+  // ─── Table names ───
   static const String surasTable = "suras";
   static const String translationsTable = "translations";
   static const String interpretationsTable = "interpretations";
@@ -27,7 +23,7 @@ class DbConstants {
   static const String createdByRole = "created_by_role";
   static const String isVerified = "is_verified";
 
-  // ─── Suras (quran_malayalam.db → suras) ───
+  // ─── Suras ───
   static const String suraNumber = "sura_number";
   static const String suraName = "name";
   static const String suraArabicName = "arabic_name";
@@ -35,18 +31,18 @@ class DbConstants {
   static const String suraAyathCount = "ayath_count";
   static const String suraPlace = "place";
 
-  // ─── Translations (quran_malayalam.db → translations) ───
+  // ─── Translations ───
   static const String translationText = "translation_text";
   static const String ayaRangeStart = "aya_range_start";
   static const String ayaRangeEnd = "aya_range_end";
   static const String language = "language";
 
-  // ─── Interpretations (quran_malayalam.db → interpretations) ───
+  // ─── Interpretations ───
   static const String interpretationText = "interpretation_text";
   static const String interpretationNumber = "interpretation_number";
   // Also uses: suraNumber, ayaRangeStart, ayaRangeEnd, language
 
-  // ─── Juz & Hizb (quran_malayalam_.db) ───
+  // ─── Juz & Hizb (quran_asad.sqlite) ───
   static const String juzzTable = "juzzs";
   static const String hizbTable = "hizbs";
   static const String customId = "custom_id";
@@ -55,13 +51,13 @@ class DbConstants {
   // ─── chapter_no used across tables ───
   static const String chapterNo = "chapter_no";
 
-  /// Arabic block (quran_malayalam_.db → arabic_ayahs)
+  /// Arabic block (quran_asad.sqlite → arabic_ayahs)
   static const String arabicBlockTable = "arabic_ayahs";
   static const String arabicBlockText = "data_arabic";
   static const String verseFrom = "verse_from";
   static const String verseTo = "verse_to";
 
-  /// Tajweed words (quran_malayalam_.db → tajweed_words)
+  /// Tajweed words (quran_asad.sqlite → tajweed_words)
   static const String tajweedTable = "tajweed_words";
   static const String tajweedSurahNo = "surah_no";
   static const String tajweedAyahNo = "ayah_no";
@@ -93,7 +89,7 @@ class DbConstants {
   static const String authorIsVerified = "is_verified";
   static const String authorId = "id";
 
-  /// Help (quran_malayalam.db → help)
+  /// Help
   static const String helpId = "id";
   static const String helpTitle = "title";
   static const String helpDescription = "description";
@@ -113,7 +109,7 @@ class DbConstants {
   static const String bookmarkLabel = "label";
   static const String bookmarkNavigationTarget = "navigation_target";
 
-  /// Preface / Surah description (quran_malayalam_.db → prefaces)
+  /// Preface / Surah description (quran_asad.sqlite → prefaces)
   static const String prefaceTable = "prefaces";
   static const String prefaceId = "custom_id";
   static const String prefaceSubTitle = "preface_sub_title";
@@ -125,7 +121,7 @@ class DbConstants {
   // ═══════════════════════════════════════════════════════════════════════════
   static const String quranAsadDbName = "quran_asad.sqlite";
   static const String quranAsadDbVersionKey = 'quran_asad_db_version';
-  static const int quranAsadDbVersion = 3;
+  static const int quranAsadDbVersion = 4;
 
   // ─── Table names (quran_asad.sqlite) ───
   static const String asadSurahsTable = "surahs";
@@ -153,4 +149,11 @@ class DbConstants {
   static const String asadFootnoteSurahNumber = "surah_number";
   static const String asadFootnoteNumber = "footnote_number";
   static const String asadFootnoteText = "text";
+
+  // ─── quranayas (quran_asad.sqlite → quranayas) ───
+  static const String quranAyasTable = "quranayas";
+  static const String quranAyasContAyaNo = "contiayano";
+  static const String quranAyasSurahId = "suraid";
+  static const String quranAyasAyahId = "ayaid";
+  static const String quranAyasAyahText = "AyaHText";
 }

@@ -9,9 +9,6 @@ class PrefaceDbHelper {
   /// Otherwise, fetches from quran_asad.sqlite's introduction column.
   static Future<List<PrefaceModel>> getPrefaceBySurahId(int surahId,
       {bool malayalam = false}) async {
-    if (malayalam) {
-      return _getPrefaceMalayalam(surahId);
-    }
     return _getPrefaceAsad(surahId);
   }
 
@@ -48,33 +45,7 @@ class PrefaceDbHelper {
     }
   }
 
-  static Future<List<PrefaceModel>> _getPrefaceMalayalam(int surahId) async {
-    final db = DatabaseHelper.quranMalayalamDb;
-    if (db == null) {
-      debugPrint('PrefaceDbHelper: quranMalayalamDb not initialized');
-      return [];
-    }
-
-    try {
-      final result = await db.query(
-        DbConstants.prefaceTable,
-        where: '${DbConstants.prefaceSuraId} = ?',
-        whereArgs: [surahId],
-      );
-      if (result.isEmpty) return [];
-      return result
-          .map((map) => PrefaceModel.fromJson(map))
-          .where((p) => p.prefaceSubTitle.toLowerCase() != 'general preface')
-          .toList();
-    } catch (e) {
-      debugPrint(
-          'PrefaceDbHelper: Error fetching Malayalam preface for surah $surahId: $e');
-      return [];
-    }
-  }
-
   static Future<PrefaceModel?> getGeneralPreface() async {
-    // General preface is not available in quran_asad.sqlite
     return null;
   }
 }
