@@ -51,12 +51,6 @@ class DbConstants {
   // ─── chapter_no used across tables ───
   static const String chapterNo = "chapter_no";
 
-  /// Arabic block (quran_asad.sqlite → arabic_ayahs)
-  static const String arabicBlockTable = "arabic_ayahs";
-  static const String arabicBlockText = "data_arabic";
-  static const String verseFrom = "verse_from";
-  static const String verseTo = "verse_to";
-
   /// Tajweed words (quran_asad.sqlite → tajweed_words)
   static const String tajweedTable = "tajweed_words";
   static const String tajweedSurahNo = "surah_no";
@@ -121,7 +115,7 @@ class DbConstants {
   // ═══════════════════════════════════════════════════════════════════════════
   static const String quranAsadDbName = "quran_asad.sqlite";
   static const String quranAsadDbVersionKey = 'quran_asad_db_version';
-  static const int quranAsadDbVersion = 4;
+  static const int quranAsadDbVersion = 5;
 
   // ─── Table names (quran_asad.sqlite) ───
   static const String asadSurahsTable = "surahs";
