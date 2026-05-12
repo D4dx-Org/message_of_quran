@@ -9,6 +9,8 @@ import 'package:the_message_of_the_quran/features/author_screen/author_screen.da
 import 'package:the_message_of_the_quran/features/ayah_of_the_day/presentation/ayah_of_the_day_screen.dart';
 import 'package:the_message_of_the_quran/features/contact_us_screen/presentation/contact_us_screen.dart';
 import 'package:the_message_of_the_quran/features/help_screen/help_screen.dart';
+import 'package:the_message_of_the_quran/features/library/presentation/appendix_screen.dart';
+import 'package:the_message_of_the_quran/features/library/presentation/foreword_screen.dart';
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -119,7 +121,6 @@ class CommonDrawer extends StatelessWidget {
               ),
             ),
             SizedBox(height: 8 * scale),
-            const Divider(height: 1),
             // Navigation items
             Expanded(
               child: SingleChildScrollView(
@@ -160,6 +161,38 @@ class CommonDrawer extends StatelessWidget {
                           ),
                         );
                       },
+                    ),
+                    _DrawerExpansionTile(
+                      title: 'Library',
+                      icon: Icons.local_library_outlined,
+                      children: [
+                        _DrawerSubTile(
+                          title: 'Appendix',
+                          icon: Icons.article_outlined,
+                          onTap: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const AppendixScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                        _DrawerSubTile(
+                          title: 'Foreword',
+                          icon: Icons.description_outlined,
+                          onTap: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const ForewordScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ),
                     _DrawerTile(
                       title: 'Settings',
@@ -259,7 +292,6 @@ class CommonDrawer extends StatelessWidget {
                 ),
               ),
             ),
-            const Divider(height: 1),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20 * scale, vertical: 12 * scale),
               child: Text(
@@ -305,6 +337,75 @@ class _DrawerTile extends StatelessWidget {
       contentPadding: EdgeInsets.symmetric(horizontal: 20 * scale, vertical: 2 * scale),
       minLeadingWidth: 24 * scale,
       horizontalTitleGap: 14 * scale,
+    );
+  }
+}
+
+class _DrawerExpansionTile extends StatelessWidget {
+  const _DrawerExpansionTile({
+    required this.title,
+    required this.icon,
+    required this.children,
+  });
+  final String title;
+  final IconData icon;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scale = ResponsiveHelper.scaleFactor(context);
+    return ExpansionTile(
+      leading: Icon(icon, color: AppTheme.appIconTheme, size: 22 * scale),
+      title: Text(
+        title,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          fontWeight: FontWeight.w500,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      tilePadding: EdgeInsets.symmetric(horizontal: 20 * scale, vertical: 0),
+      childrenPadding: EdgeInsets.zero,
+      iconColor: AppTheme.appIconTheme,
+      collapsedIconColor: theme.colorScheme.outline,
+      shape: const Border(),
+      collapsedShape: const Border(),
+      children: children,
+    );
+  }
+}
+
+class _DrawerSubTile extends StatelessWidget {
+  const _DrawerSubTile({
+    required this.title,
+    required this.icon,
+    this.onTap,
+  });
+  final String title;
+  final IconData icon;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scale = ResponsiveHelper.scaleFactor(context);
+    return ListTile(
+      onTap: onTap,
+      leading: Icon(icon, color: AppTheme.appIconTheme, size: 20 * scale),
+      title: Text(
+        title,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          fontWeight: FontWeight.w400,
+          fontSize: 13,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      contentPadding: EdgeInsets.only(left: 56 * scale, right: 20 * scale),
+      minLeadingWidth: 20 * scale,
+      horizontalTitleGap: 12 * scale,
+      dense: true,
     );
   }
 }

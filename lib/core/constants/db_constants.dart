@@ -156,4 +156,18 @@ class DbConstants {
   static const String quranAyasSurahId = "suraid";
   static const String quranAyasAyahId = "ayaid";
   static const String quranAyasAyahText = "AyaHText";
+
+  // ─── appendices (quran_asad.sqlite → appendices) ───
+  static const String appendicesTable = "appendices";
+  static const String appendixNumber = "number";
+  static const String appendixRomanNumeral = "roman_numeral";
+  static const String appendixTitle = "title";
+  static const String appendixBody = "body";
+  static const String appendixPageStart = "page_start";
+  static const String appendixPageEnd = "page_end";
+
+  // ─── foreword (quran_asad.sqlite → foreword) ───
+  static const String forewordTable = "foreword";
+  static const String forewordId = "id";
+  static const String forewordBody = "body";
 }
