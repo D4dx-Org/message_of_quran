@@ -336,6 +336,39 @@ class MushafReaderProvider extends ChangeNotifier {
     await _playFromSurah(suraNo, startAyaNo: startAyaNo);
   }
 
+  AudioPlayer _createAudioPlayer() => AudioPlayer(
+        androidApplyAudioAttributes: false,
+        handleAudioSessionActivation: false,
+      );
+
+  /// Sets audio source with fallback: if the first attempt fails (stale
+  /// ExoPlayer state), disposes the player, creates a fresh one, and retries.
+  Future<void> _setAudioSourceWithFallback(AudioSource source) async {
+    try {
+      await audioPlayer.setAudioSource(source, initialIndex: 0);
+    } catch (e) {
+      log('MushafReader: setAudioSource failed, recreating player – $e');
+      _playerStateSub?.cancel();
+      _playlistIndexSub?.cancel();
+      try { await audioPlayer.dispose(); } catch (_) {}
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+      audioPlayer = _createAudioPlayer();
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+      _playerStateSub = audioPlayer.playerStateStream.listen(_onPlayerStateChanged);
+      try {
+        await audioPlayer.setAudioSource(source, initialIndex: 0);
+      } catch (e2) {
+        log('MushafReader: retry setAudioSource also failed – $e2');
+        try { await audioPlayer.dispose(); } catch (_) {}
+        await Future<void>.delayed(const Duration(milliseconds: 500));
+        audioPlayer = _createAudioPlayer();
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+        _playerStateSub = audioPlayer.playerStateStream.listen(_onPlayerStateChanged);
+        await audioPlayer.setAudioSource(source, initialIndex: 0);
+      }
+    }
+  }
+
   /// Fetches audio for [suraNo] starting from [startAyaNo] and begins
   /// playback.  Used both by [onPlayPressed] and auto-advance on completion.
   Future<void> _playFromSurah(int suraNo, {int startAyaNo = 1}) async {
@@ -343,8 +376,13 @@ class MushafReaderProvider extends ChangeNotifier {
 
     isLoadingAudio = true;
     notifyListeners();
-    await audioPlayer.stop();
     _playlistIndexSub?.cancel();
+
+    // Do NOT call audioPlayer.stop() before setAudioSource.  stop()
+    // transitions ExoPlayer to idle which internally fires
+    // _setPlatformActive(false).  That races with _setPlatformActive(true)
+    // from setAudioSource and causes PlatformException or
+    // "Cannot complete a future with itself".
 
     try {
       const reciterId = 7;
@@ -399,9 +437,8 @@ class MushafReaderProvider extends ChangeNotifier {
       playlistSuraNos = suraNumbers;
       playlistAyaNos = ayaNumbers;
 
-      await audioPlayer.setAudioSource(
+      await _setAudioSourceWithFallback(
         ConcatenatingAudioSource(children: sources),
-        initialIndex: 0,
       );
 
       _playlistIndexSub = audioPlayer.currentIndexStream.listen((index) {

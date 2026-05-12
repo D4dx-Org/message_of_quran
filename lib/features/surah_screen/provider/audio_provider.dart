@@ -246,11 +246,30 @@ class AudioProvider extends ChangeNotifier {
       await _indexSub?.cancel();
       _playerStateSub = null;
       _indexSub = null;
+
+      // Dispose the old player first and wait for native resources to release
+      // fully before creating a new one.
       try { await _player.dispose(); } catch (_) {}
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+
+      // Create a new player and let its internal _setPlatformActive(false)
+      // settle before calling setAudioSource (which triggers
+      // _setPlatformActive(true)).  Without this gap the two futures race
+      // and just_audio hits "Cannot complete a future with itself".
       _player = _createPlayer();
-      // Small delay to let the native side fully release resources.
-      await Future<void>.delayed(const Duration(milliseconds: 200));
-      await _player.setAudioSource(source);
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+
+      try {
+        await _player.setAudioSource(source);
+      } catch (e2) {
+        log('AudioProvider: retry setAudioSource also failed – $e2');
+        // Last resort: one more dispose-recreate cycle.
+        try { await _player.dispose(); } catch (_) {}
+        await Future<void>.delayed(const Duration(milliseconds: 500));
+        _player = _createPlayer();
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+        await _player.setAudioSource(source);
+      }
     }
   }
 

@@ -46,10 +46,13 @@ class SurahChipRow extends StatelessWidget {
           }
 
           return GestureDetector(
-            onTap: () async {
+            onTap: () {
               final surahProv = context.read<SurahProvider>();
-              await surahProv.selectSurahByNumber(chip.surahNumber);
-              if (!context.mounted) return;
+              final idx = surahProv.surahList.indexWhere(
+                (s) => s.surahNumber == chip.surahNumber,
+              );
+              if (idx < 0) return;
+              surahProv.assignIndex(idx);
               Navigator.push(
                 context,
                 MaterialPageRoute(

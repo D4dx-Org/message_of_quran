@@ -200,11 +200,28 @@ class _SurahScreenState extends State<SurahScreen> {
         }
       };
 
-      // Scroll to the target ayah immediately (no extra frame delay).
-      // The TweenAnimationBuilder opacity is still near zero at this point,
-      // so the instant positioning is invisible to the user.
+      // Scroll to the bookmarked / last-read ayah after the list has been
+      // built and laid out. One post-frame callback is enough when the data
+      // was pre-loaded; the retry loop inside _scrollToBookmarkedAyah handles
+      // any remaining layout latency.
       if (widget.scrollToAyahId != null && mounted) {
-        _scrollToBookmarkedAyah(widget.scrollToAyahId!);
+        final blocks = surahProv.arabicBlockList;
+        var targetIdx = blocks.indexWhere(
+          (block) => block.verseFrom == widget.scrollToAyahId,
+        );
+        // Fallback: find the block whose range contains the ayah
+        if (targetIdx < 0) {
+          targetIdx = blocks.indexWhere((block) {
+            final start = block.verseFrom ?? 0;
+            final end = block.verseTo ?? 0;
+            return start <= widget.scrollToAyahId! &&
+                widget.scrollToAyahId! <= end;
+          });
+        }
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          _scrollToBookmarkedAyah(widget.scrollToAyahId!);
+        });
       }
 
       // Run an initial visibility scan so short surahs that fit on one
@@ -490,12 +507,12 @@ class _SurahScreenState extends State<SurahScreen> {
 
     final key = _itemKeys[idx];
     if (key.currentContext != null) {
-      // Item is in the render tree — jump instantly.
-      // The TweenAnimationBuilder fade-in handles the visual transition,
-      // so animated scrolling here would cause visible lag.
+      // Item is in the render tree — scroll precisely to it.
       Scrollable.ensureVisible(
         key.currentContext!,
         alignment: 0.0,
+        duration: const Duration(milliseconds: 450),
+        curve: Curves.easeInOut,
       );
     } else {
       // Item is outside the viewport and not mounted yet.
