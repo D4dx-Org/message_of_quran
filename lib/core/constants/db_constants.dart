@@ -115,7 +115,7 @@ class DbConstants {
   // ═══════════════════════════════════════════════════════════════════════════
   static const String quranAsadDbName = "quran_asad.sqlite";
   static const String quranAsadDbVersionKey = 'quran_asad_db_version';
-  static const int quranAsadDbVersion = 5;
+  static const int quranAsadDbVersion = 7;
 
   // ─── Table names (quran_asad.sqlite) ───
   static const String asadSurahsTable = "surahs";
@@ -151,6 +151,15 @@ class DbConstants {
   static const String quranAyasAyahId = "ayaid";
   static const String quranAyasAyahText = "AyaHText";
 
+  // ─── malayalam_dummy_datas (quran_asad.sqlite → malayalam_dummy_datas) ───
+  static const String malayalamDummyDatasTable = "malayalam_dummy_datas";
+  static const String malayalamDummyId = "id";
+  static const String malayalamDummySurahId = "surah_id";
+  static const String malayalamDummyAyahId = "ayah_id";
+  static const String malayalamDummyTranslation = "malayalam_translation";
+  static const String malayalamDummyInterpretation = "malayalam_interpretation";
+  static const String malayalamDummySurahIntroduction = "surah_introduction";
+
   // ─── appendices (quran_asad.sqlite → appendices) ───
   static const String appendicesTable = "appendices";
   static const String appendixNumber = "number";
@@ -164,4 +173,5 @@ class DbConstants {
   static const String forewordTable = "foreword";
   static const String forewordId = "id";
   static const String forewordBody = "body";
+
 }

@@ -9,6 +9,12 @@ class InterpretationsDbHelper {
     required int interpretationNumber,
     bool malayalam = false,
   }) async {
+    if (malayalam) {
+      return _getInterpretationsThafeemMalayalam(
+        surahNumber: surahNumber,
+        ayahNumber: interpretationNumber,
+      );
+    }
     return _getInterpretationsAsad(
       surahNumber: surahNumber,
       interpretationNumber: interpretationNumber,
@@ -33,10 +39,31 @@ class InterpretationsDbHelper {
     }
   }
 
+  static Future<List<InterpretationModel>> _getInterpretationsThafeemMalayalam({
+    required int surahNumber,
+    required int ayahNumber,
+  }) async {
+    final db = DatabaseHelper.quranAsadDb;
+    if (db == null) return [];
+    try {
+      final rows = await db.query(
+        DbConstants.malayalamDummyDatasTable,
+        where: '${DbConstants.malayalamDummySurahId} = ? AND ${DbConstants.malayalamDummyAyahId} = ?',
+        whereArgs: [surahNumber, ayahNumber],
+      );
+      return rows.map((e) => InterpretationModel.fromMalayalamJson(e)).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
   static Future<Map<String, int>> getInterpretationRange({
     required int surahNumber,
     bool malayalam = false,
   }) async {
+    if (malayalam) {
+      return _getInterpretationRangeThafeemMalayalam(surahNumber: surahNumber);
+    }
     return _getInterpretationRangeAsad(surahNumber: surahNumber);
   }
 
@@ -64,13 +91,42 @@ class InterpretationsDbHelper {
     }
   }
 
-  /// Returns the first footnote number for the given surah as the default
+  static Future<Map<String, int>> _getInterpretationRangeThafeemMalayalam({
+    required int surahNumber,
+  }) async {
+    final db = DatabaseHelper.quranAsadDb;
+    if (db == null) return {'min': -1, 'max': -1};
+    try {
+      final result = await db.rawQuery(
+        'SELECT MIN(${DbConstants.malayalamDummyAyahId}) as min_num,'
+        ' MAX(${DbConstants.malayalamDummyAyahId}) as max_num'
+        ' FROM ${DbConstants.malayalamDummyDatasTable}'
+        ' WHERE ${DbConstants.malayalamDummySurahId} = ?'
+        ' AND ${DbConstants.malayalamDummyAyahId} IS NOT NULL',
+        [surahNumber],
+      );
+      if (result.isEmpty) return {'min': -1, 'max': -1};
+      return {
+        'min': (result.first['min_num'] as int?) ?? -1,
+        'max': (result.first['max_num'] as int?) ?? -1,
+      };
+    } catch (e) {
+      debugPrint('InterpretationsDB: Malayalam bounds query failed — $e');
+      return {'min': -1, 'max': -1};
+    }
+  }
+
+  /// Returns the first footnote/ayah number for the given surah as the default
   /// starting page when opening from an ayah tap.
   static Future<int> getInterpretationNumberForAyah({
     required int surahNumber,
     required int ayahNumber,
     bool malayalam = false,
   }) async {
+    if (malayalam) {
+      // In Malayalam mode, interpretation is per-ayah, so return the ayah number directly.
+      return ayahNumber;
+    }
     final range = await getInterpretationRange(
       surahNumber: surahNumber,
       malayalam: malayalam,

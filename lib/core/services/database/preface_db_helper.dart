@@ -5,10 +5,13 @@ import 'package:the_message_of_the_quran/core/services/database/database_helper.
 
 class PrefaceDbHelper {
   /// Returns the introduction/preface text for the given surah.
-  /// When [malayalam] is true, fetches from the Malayalam DB's prefaces table.
+  /// When [malayalam] is true, fetches from the Tafheem DB's surahs table.
   /// Otherwise, fetches from quran_asad.sqlite's introduction column.
   static Future<List<PrefaceModel>> getPrefaceBySurahId(int surahId,
       {bool malayalam = false}) async {
+    if (malayalam) {
+      return _getPrefaceThafeemMalayalam(surahId);
+    }
     return _getPrefaceAsad(surahId);
   }
 
@@ -41,6 +44,33 @@ class PrefaceDbHelper {
     } catch (e) {
       debugPrint(
           'PrefaceDbHelper: Error fetching introduction for surah $surahId: $e');
+      return [];
+    }
+  }
+
+  static Future<List<PrefaceModel>> _getPrefaceThafeemMalayalam(int surahId) async {
+    final db = DatabaseHelper.quranAsadDb;
+    if (db == null) {
+      debugPrint('PrefaceDbHelper: quranAsadDb not initialized');
+      return [];
+    }
+
+    try {
+      final result = await db.query(
+        DbConstants.malayalamDummyDatasTable,
+        where: '${DbConstants.malayalamDummySurahId} = ? AND ${DbConstants.malayalamDummyAyahId} = 1 AND ${DbConstants.malayalamDummySurahIntroduction} IS NOT NULL AND ${DbConstants.malayalamDummySurahIntroduction} != ?',
+        whereArgs: [surahId, ''],
+      );
+      if (result.isEmpty) return [];
+      return result.map((row) => PrefaceModel(
+        id: (row[DbConstants.malayalamDummyId] as int?) ?? 0,
+        prefaceSubTitle: '',
+        prefaceText: (row[DbConstants.malayalamDummySurahIntroduction] ?? '').toString(),
+        suraId: surahId,
+      )).toList();
+    } catch (e) {
+      debugPrint(
+          'PrefaceDbHelper: Error fetching Malayalam preface for surah $surahId: $e');
       return [];
     }
   }

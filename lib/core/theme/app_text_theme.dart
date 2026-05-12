@@ -224,5 +224,79 @@ class AppTextTheme {
     final s = ResponsiveHelper.scaleFactor(ctx);
     return _malayalamFont(fontSize: 13 * s, fontWeight: FontWeight.w500);
   }
+
+  //////////////////// Foreword fonts ////////////////////
+
+  static TextStyle forewordTitle(BuildContext ctx) {
+    final isDark = Theme.of(ctx).brightness == Brightness.dark;
+    return GoogleFonts.libreBaskerville(
+      fontSize: 22,
+      fontWeight: FontWeight.w400,
+      letterSpacing: 2.0,
+      color: isDark ? Colors.white : Colors.black87,
+    );
+  }
+
+  static TextStyle forewordBody(BuildContext ctx) {
+    final isDark = Theme.of(ctx).brightness == Brightness.dark;
+    return GoogleFonts.libreBaskerville(
+      fontSize: 14,
+      fontWeight: FontWeight.w400,
+      height: 1.8,
+      color: isDark ? Colors.white70 : Colors.black87,
+    );
+  }
+
+  static TextStyle forewordDropCap(BuildContext ctx) {
+    final isDark = Theme.of(ctx).brightness == Brightness.dark;
+    return GoogleFonts.libreBaskerville(
+      fontSize: 32,
+      fontWeight: FontWeight.w700,
+      height: 1.0,
+      color: isDark ? Colors.white : Colors.black87,
+    );
+  }
+
+  static TextStyle forewordQuote(BuildContext ctx) {
+    final isDark = Theme.of(ctx).brightness == Brightness.dark;
+    return GoogleFonts.libreBaskerville(
+      fontSize: 14,
+      fontWeight: FontWeight.w400,
+      fontStyle: FontStyle.italic,
+      height: 1.8,
+      color: isDark ? Colors.white70 : Colors.black87,
+    );
+  }
+
+  static TextStyle forewordFootnote(BuildContext ctx) {
+    final isDark = Theme.of(ctx).brightness == Brightness.dark;
+    return GoogleFonts.libreBaskerville(
+      fontSize: 13,
+      fontWeight: FontWeight.w400,
+      height: 1.7,
+      color: isDark ? Colors.white70 : Colors.black87,
+    );
+  }
+
+  static TextStyle forewordBismillah(BuildContext ctx) {
+    final isDark = Theme.of(ctx).brightness == Brightness.dark;
+    return TextStyle(
+      fontFamily: 'Amiri',
+      fontSize: 28,
+      fontWeight: FontWeight.w400,
+      height: 1.6,
+      color: isDark ? Colors.white : Colors.black87,
+    );
+  }
+
+  static TextStyle forewordVerseRef(BuildContext ctx) {
+    final isDark = Theme.of(ctx).brightness == Brightness.dark;
+    return GoogleFonts.libreBaskerville(
+      fontSize: 13,
+      fontWeight: FontWeight.w400,
+      fontStyle: FontStyle.italic,
+      color: isDark ? Colors.white60 : Colors.black54,
+    );
+  }
 }
 

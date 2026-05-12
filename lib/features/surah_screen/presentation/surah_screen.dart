@@ -867,6 +867,7 @@ class _SurahScreenState extends State<SurahScreen> {
     SurahProvider controller,
   ) {
     final fontSettings = Provider.of<FontSizeChangerProvider>(context);
+    final isMl = context.read<LanguageProvider>().isMalayalam;
     final matching = allBlocks.where((b) {
       final from = b.verseFrom ?? 0;
       final to = b.verseTo ?? 0;
@@ -984,6 +985,27 @@ class _SurahScreenState extends State<SurahScreen> {
                     style: AppTextTheme.surahMalayalamStyle(context),
                   ),
                 );
+                // In Malayalam mode, add a tappable interpretation indicator
+                // since Malayalam translations don't have embedded (N) refs.
+                if (isMl) {
+                  spans.add(
+                    TextSpan(
+                      text: ' ($blockAyah) ',
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () => _showInterpretationSheet(
+                          context,
+                          controller,
+                          blockAyah,
+                          pageNumber: blockAyah,
+                        ),
+                      style: const TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.appIconTheme,
+                      ),
+                    ),
+                  );
+                }
               }
             }
           }

@@ -55,4 +55,22 @@ class InterpretationModel {
       isVerified: true,
     );
   }
+
+  /// Creates an [InterpretationModel] from the `malayalam_dummy_datas` row.
+  /// Maps malayalam_interpretation column to interpretationText.
+  static InterpretationModel fromMalayalamJson(Map<dynamic, dynamic> json) {
+    final ayahId = (json[DbConstants.malayalamDummyAyahId] as int?) ?? -1;
+    return InterpretationModel(
+      id: '${json[DbConstants.malayalamDummySurahId]}_$ayahId',
+      surahNumber: (json[DbConstants.malayalamDummySurahId] as int?) ?? -1,
+      ayaRangeStart: ayahId,
+      ayaRangeEnd: ayahId,
+      interpretationNumber: ayahId,
+      language: 'ml',
+      interpretationText: (json[DbConstants.malayalamDummyInterpretation] as String?) ?? '',
+      createdBy: '',
+      createdByRole: '',
+      isVerified: true,
+    );
+  }
 }

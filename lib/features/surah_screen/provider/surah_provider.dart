@@ -35,18 +35,14 @@ class SurahProvider extends ChangeNotifier {
   bool get isMalayalam => _isMalayalam;
 
   /// Called when language changes. Reloads all content.
-  /// TODO: Re-enable when Malayalam DB is ready
   Future<void> setMalayalam(bool value) async {
-    // No-op: Malayalam DB not available yet. Always use English data.
-    // When Malayalam DB is ready, uncomment the block below.
-    //
-    // if (_isMalayalam == value) return;
-    // _isMalayalam = value;
-    // surahList = [];
-    // await getAllSurah();
-    // if (surahList.isNotEmpty && index >= 0 && index < surahList.length) {
-    //   await getAyasForCurrentSurah();
-    // }
+    if (_isMalayalam == value) return;
+    _isMalayalam = value;
+    surahList = [];
+    await getAllSurah();
+    if (surahList.isNotEmpty && index >= 0 && index < surahList.length) {
+      await getAyasForCurrentSurah();
+    }
   }
 
   // ── Ayah toggle-selection state (Set of individual ayah numbers) ──
