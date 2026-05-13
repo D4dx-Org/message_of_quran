@@ -57,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen> {
               textAlign: TextAlign.center,
               maxLines: 1,
               style: TextStyle(
-                color: Colors.white,
+                color: AppTheme.appThemeSecondary,
                 fontSize: 28,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 1.2,
