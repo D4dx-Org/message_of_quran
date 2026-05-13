@@ -5,9 +5,26 @@ import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/foreword_parser.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
+import 'package:the_message_of_the_quran/features/mushaf/data/mushaf_repository.dart';
+import 'package:the_message_of_the_quran/features/mushaf/utils/mushaf_text_utils.dart';
 
 class ForewordScreen extends StatelessWidget {
   const ForewordScreen({super.key});
+
+  static Future<({ForewordModel? foreword, String bismillahGlyph})>
+      _loadData() async {
+    final results = await Future.wait([
+      ForewordDbHelper.getForeword(),
+      MushafRepository().getBismillahGlyph(2),
+    ]);
+    final foreword = results[0] as ForewordModel?;
+    final rawGlyph = results[1] as String;
+    final segments = rawGlyph.isNotEmpty
+        ? MushafTextUtils.parseLine(rawGlyph, isHeadingOrBismillah: true)
+        : <AyaSegment>[];
+    final glyph = segments.isNotEmpty ? segments.first.text : '';
+    return (foreword: foreword, bismillahGlyph: glyph);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +35,8 @@ class ForewordScreen extends StatelessWidget {
           style: AppTextTheme.titleRegular,
         ),
       ),
-      child: FutureBuilder<ForewordModel?>(
-        future: ForewordDbHelper.getForeword(),
+      child: FutureBuilder<({ForewordModel? foreword, String bismillahGlyph})>(
+        future: _loadData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -32,7 +49,7 @@ class ForewordScreen extends StatelessWidget {
               ),
             );
           }
-          final foreword = snapshot.data;
+          final foreword = snapshot.data?.foreword;
           if (foreword == null) {
             return const Center(
               child: Text(
@@ -41,7 +58,10 @@ class ForewordScreen extends StatelessWidget {
               ),
             );
           }
-          return _ForewordContent(body: foreword.body);
+          return _ForewordContent(
+            body: foreword.body,
+            bismillahGlyph: snapshot.data!.bismillahGlyph,
+          );
         },
       ),
     );
@@ -51,8 +71,9 @@ class ForewordScreen extends StatelessWidget {
 // ─── Content widget with scroll and footnote navigation ─────────────────────
 
 class _ForewordContent extends StatefulWidget {
-  const _ForewordContent({required this.body});
+  const _ForewordContent({required this.body, required this.bismillahGlyph});
   final String body;
+  final String bismillahGlyph;
 
   @override
   State<_ForewordContent> createState() => _ForewordContentState();
@@ -117,11 +138,21 @@ class _ForewordContentState extends State<_ForewordContent> {
         children: [
           // ─── Bismillah ───
           Center(
-            child: Text(
-              'بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ',
-              textDirection: TextDirection.rtl,
-              style: AppTextTheme.forewordBismillah(context),
-            ),
+            child: widget.bismillahGlyph.isNotEmpty
+                ? Text(
+                    widget.bismillahGlyph,
+                    textDirection: TextDirection.ltr,
+                    style: AppTextTheme.forewordBismillah(context).copyWith(
+                      fontFamily: 'QCF_BSML',
+                      fontSize: 30,
+                      height: 1.4,
+                    ),
+                  )
+                : Text(
+                    'بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ',
+                    textDirection: TextDirection.rtl,
+                    style: AppTextTheme.forewordBismillah(context),
+                  ),
           ),
           const SizedBox(height: 20),
           // ─── Ornamental divider ───
