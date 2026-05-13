@@ -46,17 +46,23 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.appThemeSplash,
+      backgroundColor: AppTheme.appThemePrimary,
       body: const Center(
-        child: Text(
-          "The Message\nof the Quran",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 28,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 1.2,
-            height: 1.4,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              "The Message of the Quran",
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 28,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 1.2,
+              ),
+            ),
           ),
         ),
       ),

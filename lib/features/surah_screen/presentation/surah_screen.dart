@@ -1,4 +1,5 @@
-﻿import 'dart:io';
+﻿import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -56,13 +57,11 @@ class SurahScreen extends StatefulWidget {
   State<SurahScreen> createState() => _SurahScreenState();
 }
 
-enum _InitialAyahScrollResult { aligned, targetMissing, unresolved }
-
 class _SurahScreenState extends State<SurahScreen> {
   final ScrollController _scrollController = ScrollController();
   List<GlobalKey> _itemKeys = [];
   bool _showScrollToTop = false;
-  bool _isInitialDeepLinkPending = false;
+  double? _deepLinkCacheExtent;
 
   /// Cached provider references — safe to use in dispose().
   late SurahProvider _surahProv;
@@ -156,7 +155,12 @@ class _SurahScreenState extends State<SurahScreen> {
   @override
   void initState() {
     super.initState();
-    _isInitialDeepLinkPending = widget.scrollToAyahId != null;
+    // Note: we deliberately do NOT show a loading overlay for deep-link
+    // opens. The surah opens at ayah 1 like any normal surah open
+    // (matching the behaviour of the other chips like Yaseen, Al Mulk,
+    // etc.), and once data + first layout are ready we scroll to the
+    // target ayah. This avoids the shaded splash flash before scrolling
+    // to e.g. Ayatul Kursi.
     _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
@@ -204,22 +208,12 @@ class _SurahScreenState extends State<SurahScreen> {
         }
       };
 
-      // Deep-link opens should stay hidden until the target ayah has been
-      // positioned, otherwise large surahs briefly paint at offset 0 and then
-      // visibly catch up to the target ayah.
+      // Surah is already showing at ayah 1; smoothly animate down to the
+      // target ayah after a brief pause so the user clearly sees the surah
+      // open at its first ayah (matching the feel of other chips like
+      // Yaseen / Al Mulk) before it scrolls to e.g. Ayatul Kursi (255).
       if (widget.scrollToAyahId != null && mounted) {
-        await WidgetsBinding.instance.endOfFrame;
-        if (!mounted) return;
-        final result = await _scrollToBookmarkedAyah(
-          widget.scrollToAyahId!,
-          animated: false,
-        );
-        if (!mounted) return;
-        if (result != _InitialAyahScrollResult.unresolved) {
-          setState(() => _isInitialDeepLinkPending = false);
-        }
-      } else if (_isInitialDeepLinkPending && mounted) {
-        setState(() => _isInitialDeepLinkPending = false);
+        unawaited(_animateToAyahAfterLoad(widget.scrollToAyahId!));
       }
 
       // Run an initial visibility scan so short surahs that fit on one
@@ -471,11 +465,6 @@ class _SurahScreenState extends State<SurahScreen> {
     super.dispose();
   }
 
-  /// Scrolls to the translation row whose ayaStart matches [ayaStart].
-  /// Retries on subsequent frames (up to [_maxScrollRetries]) until the
-  /// key's render context becomes available.
-  static const int _maxScrollRetries = 20;
-
   int _findAyahBlockIndex(List<ArabicBlockModel> blocks, int ayaStart) {
     var idx = blocks.indexWhere((block) => block.verseFrom == ayaStart);
     if (idx >= 0) return idx;
@@ -525,57 +514,73 @@ class _SurahScreenState extends State<SurahScreen> {
     return estimatedOffset.clamp(0.0, maxExtent).toDouble();
   }
 
-  Future<_InitialAyahScrollResult> _scrollToBookmarkedAyah(
-    int ayaStart, {
-    bool animated = true,
-  }) async {
-    final blocks = Provider.of<SurahProvider>(context, listen: false).arabicBlockList;
+  /// Used by deep-link opens (Ayatul Kursi chip, etc.): waits one frame so
+  /// ayah 1 paints, then performs a SINGLE smooth scroll directly to
+  /// [ayaStart]. Uses an iterative invisible pre-warm `jumpTo` to build
+  /// the SliverList items around the target so we can read the target's
+  /// EXACT scroll offset from its RenderBox before we start the visible
+  /// animation. The visible animation is then a single `animateTo` to
+  /// that locked offset — no post-animation correction, so the page
+  /// stops cleanly at the target ayah and does not continue scrolling.
+  Future<void> _animateToAyahAfterLoad(int ayaStart) async {
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted || !_scrollController.hasClients) return;
+
+    // Brief pause so ayah 1 is clearly visible before the scroll starts.
+    await Future<void>.delayed(const Duration(milliseconds: 250));
+    if (!mounted || !_scrollController.hasClients) return;
+
+    final blocks = _surahProv.arabicBlockList;
     final idx = _findAyahBlockIndex(blocks, ayaStart);
-    if (idx < 0 || idx >= _itemKeys.length) {
-      return _InitialAyahScrollResult.targetMissing;
-    }
+    if (idx < 0 || idx >= _itemKeys.length) return;
 
-    for (int attempt = 0; attempt < _maxScrollRetries; attempt++) {
-      if (!mounted) return _InitialAyahScrollResult.unresolved;
-      if (!_scrollController.hasClients) {
-        await WidgetsBinding.instance.endOfFrame;
-        continue;
+    try {
+      if (_deepLinkCacheExtent != 120000.0) {
+        setState(() => _deepLinkCacheExtent = 120000.0);
       }
 
-      final key = _itemKeys[idx];
-      if (key.currentContext != null) {
-        await Scrollable.ensureVisible(
-          key.currentContext!,
-          alignment: 0.0,
-          duration: animated ? const Duration(milliseconds: 450) : Duration.zero,
-          curve: Curves.easeInOut,
-        );
-        return _InitialAyahScrollResult.aligned;
-      }
-
-      final estimatedOffset = _estimateScrollOffsetForIndex(idx);
-      if (estimatedOffset != null) {
-        final delta = (_scrollController.offset - estimatedOffset).abs();
-        if (delta > 1) {
-          _scrollController.jumpTo(estimatedOffset);
-        }
-      } else {
-        final maxExtent = _scrollController.position.maxScrollExtent;
-        if (maxExtent > 0) {
-          final fraction = idx / blocks.length;
-          final roughOffset = (fraction * maxExtent).clamp(0.0, maxExtent);
-          final delta = (_scrollController.offset - roughOffset).abs();
-          if (delta > 1) {
-            _scrollController.jumpTo(roughOffset);
-          }
-        }
-      }
-
+      // Enable the larger cache window only after the route is already
+      // visible so the first navigation frame stays lightweight.
       await WidgetsBinding.instance.endOfFrame;
-    }
+      if (!mounted || !_scrollController.hasClients) return;
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted || !_scrollController.hasClients) return;
 
-    return _InitialAyahScrollResult.unresolved;
+      // Read the EXACT target offset from the target's RenderBox if its
+      // element is already built; otherwise fall back to the measured-index
+      // estimator so we still perform exactly one visible animation.
+      double? lockedTargetOffset;
+      final targetCtx = _itemKeys[idx].currentContext;
+      if (targetCtx != null) {
+        // No async gap here — we read render geometry synchronously.
+        // ignore: use_build_context_synchronously
+        final box = targetCtx.findRenderObject() as RenderBox?;
+        if (box != null && box.attached) {
+          final viewport = RenderAbstractViewport.of(box);
+          lockedTargetOffset = viewport.getOffsetToReveal(box, 0.0).offset;
+        }
+      }
+      final maxExtent = _scrollController.position.maxScrollExtent;
+      lockedTargetOffset ??=
+          _estimateScrollOffsetForIndex(idx) ??
+          ((idx / blocks.length) * maxExtent).clamp(0.0, maxExtent).toDouble();
+      final clampedTarget = lockedTargetOffset
+          .clamp(0.0, _scrollController.position.maxScrollExtent)
+          .toDouble();
+
+      // ONE smooth animation to the locked target offset.
+      await _scrollController.animateTo(
+        clampedTarget,
+        duration: const Duration(milliseconds: 700),
+        curve: Curves.easeOutCubic,
+      );
+    } finally {
+      if (mounted && _deepLinkCacheExtent != null) {
+        setState(() => _deepLinkCacheExtent = null);
+      }
+    }
   }
+
 
   void _showJumpTo(
     BuildContext context,
@@ -1560,6 +1565,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                 child: ResponsiveContentWrapper(
                                   child: CustomScrollView(
                                     controller: _scrollController,
+                                    cacheExtent: _deepLinkCacheExtent,
                                     slivers: [
                                       const SurahScreenAppBar(),
                                       SliverList(
@@ -1902,19 +1908,10 @@ class _SurahScreenState extends State<SurahScreen> {
                             ),
                           );
 
-                          if (!_isInitialDeepLinkPending) {
-                            return content;
-                          }
-
-                          return Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              IgnorePointer(
-                                child: Opacity(opacity: 0, child: content),
-                              ),
-                              const Center(child: CircularProgressIndicator()),
-                            ],
-                          );
+                          // Loading overlay removed: deep-link opens just
+                          // show the surah and scroll to the target ayah
+                          // when ready. See initState for details.
+                          return content;
                         },
                       ),
               ),

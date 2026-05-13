@@ -47,10 +47,10 @@ class BookmarkScreen extends StatelessWidget {
     return null;
   }
 
-  Future<void> _openBookmark(
+  void _openBookmark(
     BuildContext context,
     AyahBookmarkModel bookmark,
-  ) async {
+  ) {
     final nav = Navigator.of(context);
     final surahProv = Provider.of<SurahProvider>(context, listen: false);
 
@@ -66,9 +66,12 @@ class BookmarkScreen extends StatelessWidget {
       return;
     }
 
-    await surahProv.selectSurahByNumber(bookmark.surahNumber);
-    if (!context.mounted) return;
-    Navigator.of(context).push(
+    final idx = surahProv.surahList.indexWhere(
+      (s) => s.surahNumber == bookmark.surahNumber,
+    );
+    if (idx < 0) return;
+    surahProv.assignIndex(idx);
+    nav.push(
       MaterialPageRoute(
         builder: (_) => SurahScreen(scrollToAyahId: bookmark.ayahId),
       ),

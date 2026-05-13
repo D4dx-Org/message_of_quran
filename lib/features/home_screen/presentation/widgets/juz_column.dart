@@ -47,10 +47,13 @@ class JuzColumn extends StatelessWidget {
               excludeSemantics: true,
               child: InkWell(
               onTap: available
-                  ? () async {
+                  ? () {
                       final surahProv = context.read<SurahProvider>();
-                      await surahProv.selectSurahByNumber(juz.surahNumber);
-                      if (!context.mounted) return;
+                      final idx = surahProv.surahList.indexWhere(
+                        (s) => s.surahNumber == juz.surahNumber,
+                      );
+                      if (idx < 0) return;
+                      surahProv.assignIndex(idx);
                       Navigator.push(
                         context,
                         MaterialPageRoute(

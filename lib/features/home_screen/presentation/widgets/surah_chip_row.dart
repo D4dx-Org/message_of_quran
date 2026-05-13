@@ -46,10 +46,20 @@ class SurahChipRow extends StatelessWidget {
           }
 
           return GestureDetector(
-            onTap: () async {
+            onTap: () {
+              // Open the surah EXACTLY like the other chips (Yaseen,
+              // Al Mulk, etc.) — just assignIndex and push immediately.
+              // SurahScreen loads its data and, when scrollToAyahId is
+              // non-null (e.g. Ayatul Kursi = 255), automatically scrolls
+              // to that ayah once the layout is ready. Avoiding any
+              // pre-navigation `await` here removes the visible tap-lag
+              // and the double-screen flash on the home screen.
               final surahProv = context.read<SurahProvider>();
-              await surahProv.selectSurahByNumber(chip.surahNumber);
-              if (!context.mounted) return;
+              final idx = surahProv.surahList.indexWhere(
+                (s) => s.surahNumber == chip.surahNumber,
+              );
+              if (idx < 0) return;
+              surahProv.assignIndex(idx);
               Navigator.push(
                 context,
                 MaterialPageRoute(
