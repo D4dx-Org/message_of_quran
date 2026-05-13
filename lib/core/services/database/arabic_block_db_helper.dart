@@ -22,4 +22,25 @@ class ArabicBlockDbHelper {
       return [];
     }
   }
+
+  /// Returns a single [ArabicBlockModel] for [surahNumber]:[ayahNumber].
+  static Future<ArabicBlockModel?> getArabicBlockByVerse(
+      int surahNumber, int ayahNumber) async {
+    final db = DatabaseHelper.quranAsadDb;
+    if (db == null) return null;
+
+    try {
+      final result = await db.query(
+        DbConstants.quranAyasTable,
+        where:
+            '${DbConstants.quranAyasSurahId} = ? AND ${DbConstants.quranAyasAyahId} = ?',
+        whereArgs: [surahNumber, ayahNumber],
+        limit: 1,
+      );
+      if (result.isEmpty) return null;
+      return ArabicBlockModel.fromQuranAyasJson(result.first);
+    } catch (e) {
+      return null;
+    }
+  }
 }

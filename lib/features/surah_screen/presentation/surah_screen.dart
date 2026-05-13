@@ -13,6 +13,7 @@ import 'package:the_message_of_the_quran/core/services/database/preface_db_helpe
 import 'package:the_message_of_the_quran/core/services/database/tajweed_db_helper.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/utils/cross_reference_parser.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
@@ -20,6 +21,7 @@ import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper
 import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/core/widgets/scroll_to_top_button.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/surah_screen_app_bar.dart';
+import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/cross_reference_sheet.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/play_settings_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/tajweed_provider.dart';
@@ -911,10 +913,12 @@ class _SurahScreenState extends State<SurahScreen> {
 
             if (block.translationNo != null) {
               // Legacy path: translationNo from old DB column
-              spans.add(
-                TextSpan(
-                  text: cleaned,
-                  style: AppTextTheme.surahMalayalamStyle(context),
+              spans.addAll(
+                _crossRefSpansForPlainText(
+                  context,
+                  cleaned,
+                  AppTextTheme.surahMalayalamStyle(context),
+                  surahNumber,
                 ),
               );
               final num = block.translationNo;
@@ -943,10 +947,12 @@ class _SurahScreenState extends State<SurahScreen> {
               for (final match in pattern.allMatches(cleaned)) {
                 found = true;
                 if (match.start > lastEnd) {
-                  spans.add(
-                    TextSpan(
-                      text: cleaned.substring(lastEnd, match.start),
-                      style: AppTextTheme.surahMalayalamStyle(context),
+                  spans.addAll(
+                    _crossRefSpansForPlainText(
+                      context,
+                      cleaned.substring(lastEnd, match.start),
+                      AppTextTheme.surahMalayalamStyle(context),
+                      surahNumber,
                     ),
                   );
                 }
@@ -971,18 +977,22 @@ class _SurahScreenState extends State<SurahScreen> {
                 lastEnd = match.end;
               }
               if (found && lastEnd < cleaned.length) {
-                spans.add(
-                  TextSpan(
-                    text: cleaned.substring(lastEnd),
-                    style: AppTextTheme.surahMalayalamStyle(context),
+                spans.addAll(
+                  _crossRefSpansForPlainText(
+                    context,
+                    cleaned.substring(lastEnd),
+                    AppTextTheme.surahMalayalamStyle(context),
+                    surahNumber,
                   ),
                 );
               }
               if (!found) {
-                spans.add(
-                  TextSpan(
-                    text: cleaned,
-                    style: AppTextTheme.surahMalayalamStyle(context),
+                spans.addAll(
+                  _crossRefSpansForPlainText(
+                    context,
+                    cleaned,
+                    AppTextTheme.surahMalayalamStyle(context),
+                    surahNumber,
                   ),
                 );
                 // In Malayalam mode, add a tappable interpretation indicator
@@ -1021,6 +1031,111 @@ class _SurahScreenState extends State<SurahScreen> {
         }).toList(),
       ),
     );
+  }
+
+  /// Builds interpretation text with tappable cross-references.
+  Widget _buildInterpretationCrossRefText(
+    BuildContext context,
+    String text,
+    int currentSurahNumber,
+    bool justify,
+  ) {
+    final segments = parseForCrossReferences(text, currentSurahNumber);
+    // Fast path: no cross-references found
+    if (segments.length == 1 && !segments.first.isCrossReference) {
+      return Text(
+        text,
+        style: AppTextTheme.surahInterpretationStyle(context),
+        textAlign: justify ? TextAlign.justify : TextAlign.start,
+      );
+    }
+
+    final baseStyle = AppTextTheme.surahInterpretationStyle(context);
+    final linkStyle = baseStyle.copyWith(
+      color: AppTheme.appIconTheme,
+      decoration: TextDecoration.underline,
+      decorationColor: AppTheme.appIconTheme,
+    );
+
+    final spans = <InlineSpan>[];
+    for (final seg in segments) {
+      if (seg.isCrossReference) {
+        final ref = seg.crossReference!;
+        spans.add(TextSpan(
+          text: seg.text,
+          style: linkStyle,
+          recognizer: TapGestureRecognizer()
+            ..onTap = () {
+              if (ref.ayahNumber != null) {
+                CrossReferenceSheet.show(
+                  context,
+                  surahNumber: ref.surahNumber,
+                  ayahNumber: ref.ayahNumber!,
+                  noteNumber: ref.noteNumber,
+                );
+              } else if (ref.noteNumber != null) {
+                // Same-surah note reference — show interpretation
+                CrossReferenceSheet.show(
+                  context,
+                  surahNumber: ref.surahNumber,
+                  ayahNumber: 1, // fallback
+                  noteNumber: ref.noteNumber,
+                );
+              }
+            },
+        ));
+      } else {
+        spans.add(TextSpan(text: seg.text, style: baseStyle));
+      }
+    }
+
+    return Text.rich(
+      TextSpan(children: spans),
+      textAlign: justify ? TextAlign.justify : TextAlign.start,
+    );
+  }
+
+  /// Takes plain text and a [TextStyle] and returns a list of [InlineSpan]s
+  /// where any detected cross-references (e.g. "57:20") are tappable.
+  /// If no cross-references are found, returns a single [TextSpan].
+  List<InlineSpan> _crossRefSpansForPlainText(
+    BuildContext context,
+    String text,
+    TextStyle style,
+    int currentSurahNumber,
+  ) {
+    final segments = parseForCrossReferences(text, currentSurahNumber);
+    if (segments.length == 1 && !segments.first.isCrossReference) {
+      return [TextSpan(text: text, style: style)];
+    }
+
+    final linkStyle = style.copyWith(
+      color: AppTheme.appIconTheme,
+      decoration: TextDecoration.underline,
+      decorationColor: AppTheme.appIconTheme,
+    );
+
+    return segments.map<InlineSpan>((seg) {
+      if (seg.isCrossReference) {
+        final ref = seg.crossReference!;
+        return TextSpan(
+          text: seg.text,
+          style: linkStyle,
+          recognizer: TapGestureRecognizer()
+            ..onTap = () {
+              if (ref.ayahNumber != null) {
+                CrossReferenceSheet.show(
+                  context,
+                  surahNumber: ref.surahNumber,
+                  ayahNumber: ref.ayahNumber!,
+                  noteNumber: ref.noteNumber,
+                );
+              }
+            },
+        );
+      }
+      return TextSpan(text: seg.text, style: style);
+    }).toList();
   }
 
   void _showInterpretationSheet(
@@ -1164,16 +1279,13 @@ class _SurahScreenState extends State<SurahScreen> {
                                         ),
                                       ),
                                       const SizedBox(height: 8),
-                                      Text(
+                                      _buildInterpretationCrossRefText(
+                                        ctx,
                                         item.interpretationText,
-                                        style:
-                                            AppTextTheme.surahInterpretationStyle(
-                                              ctx,
-                                            ),
-                                        textAlign:
-                                            fontSettings.interpretationJustify
-                                            ? TextAlign.justify
-                                            : TextAlign.start,
+                                        ctrl.surahList.isNotEmpty
+                                            ? ctrl.surahList[ctrl.index].surahNumber
+                                            : 0,
+                                        fontSettings.interpretationJustify,
                                       ),
                                     ],
                                   ),

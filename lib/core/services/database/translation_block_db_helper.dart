@@ -52,4 +52,39 @@ class TranslationBlockDbHelper {
       return [];
     }
   }
+
+  /// Returns a single [TranslationBlockModel] for [surahNumber]:[ayahNumber].
+  static Future<TranslationBlockModel?> getTranslationBlockByVerse(
+      int surahNumber, int ayahNumber, {bool malayalam = false}) async {
+    final db = DatabaseHelper.quranAsadDb;
+    if (db == null) return null;
+
+    try {
+      if (malayalam) {
+        final rows = await db.query(
+          DbConstants.malayalamDummyDatasTable,
+          where:
+              '${DbConstants.malayalamDummySurahId} = ? AND ${DbConstants.malayalamDummyAyahId} = ?',
+          whereArgs: [surahNumber, ayahNumber],
+          limit: 1,
+        );
+        if (rows.isEmpty) return null;
+        return TranslationBlockModel.fromMalayalamJson(
+            Map<String, dynamic>.from(rows.first));
+      } else {
+        final rows = await db.query(
+          DbConstants.asadVersesTable,
+          where:
+              '${DbConstants.asadVerseSurahNumber} = ? AND ${DbConstants.asadVerseNumber} = ?',
+          whereArgs: [surahNumber, ayahNumber],
+          limit: 1,
+        );
+        if (rows.isEmpty) return null;
+        return TranslationBlockModel.fromAsadJson(
+            Map<String, dynamic>.from(rows.first));
+      }
+    } catch (e) {
+      return null;
+    }
+  }
 }
