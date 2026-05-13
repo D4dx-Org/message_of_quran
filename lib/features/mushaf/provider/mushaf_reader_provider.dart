@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
 
+import 'package:the_message_of_the_quran/core/services/audio_handler.dart';
 import '../data/mushaf_repository.dart';
 import '../db/local_database.dart';
 import '../models/page_meta.dart';
@@ -14,19 +16,23 @@ import '../services/mushaf_install_state.dart';
 /// Holds all mutable state for the Mushaf reader screen.
 class MushafReaderProvider extends ChangeNotifier {
   MushafReaderProvider({
+    required QuranAudioHandler handler,
     int? initialPage,
     int? initialSurahNo,
     int? initialAyaNo,
-  })  : _requestedPage = initialPage,
+  })  : _handler = handler,
+        _requestedPage = initialPage,
         _initialSurahNo = initialSurahNo,
         _initialAyaNo = initialAyaNo;
+
+  final QuranAudioHandler _handler;
+  AudioPlayer get audioPlayer => _handler.player;
 
   static const int previewLimit = 2;
   static const int totalPages = 604;
   static const double kSurahHeaderHeight = 130.0;
 
   late final MushafRepository repository;
-  late final AudioPlayer audioPlayer;
 
   final int? _requestedPage;
   final int? _initialSurahNo;
@@ -73,10 +79,6 @@ class MushafReaderProvider extends ChangeNotifier {
 
   Future<void> init() async {
     repository = MushafRepository(localDatabase: LocalDatabase.instance);
-    audioPlayer = AudioPlayer(
-      androidApplyAudioAttributes: false,
-      handleAudioSessionActivation: false,
-    );
     _playerStateSub = audioPlayer.playerStateStream.listen(_onPlayerStateChanged);
     await _doInit();
   }
@@ -156,8 +158,11 @@ class MushafReaderProvider extends ChangeNotifier {
       audioPlayingAyaId = null;
       notifyListeners();
       // Auto-advance to the next surah (1-114).
+      // Use microtask (not a long delay) so that _playFromSurah runs while
+      // the native player is still active.  A long delay risks the player
+      // auto-deactivating which causes the _setPlatformActive race.
       if (finishedSuraNo != null && finishedSuraNo < 114) {
-        _playFromSurah(finishedSuraNo + 1);
+        Future.microtask(() => _playFromSurah(finishedSuraNo + 1));
       }
       return;
     }
@@ -313,11 +318,11 @@ class MushafReaderProvider extends ChangeNotifier {
     if (isLoadingAudio) return;
     if (selectedAyaId == playingAyaId) {
       if (isPlaying) {
-        await audioPlayer.pause();
+        await _handler.pause();
         return;
       }
       if (playingLabel != null) {
-        await audioPlayer.play();
+        await _handler.play();
         return;
       }
     }
@@ -336,36 +341,43 @@ class MushafReaderProvider extends ChangeNotifier {
     await _playFromSurah(suraNo, startAyaNo: startAyaNo);
   }
 
-  AudioPlayer _createAudioPlayer() => AudioPlayer(
-        androidApplyAudioAttributes: false,
-        handleAudioSessionActivation: false,
-      );
-
-  /// Sets audio source with fallback: if the first attempt fails (stale
-  /// ExoPlayer state), disposes the player, creates a fresh one, and retries.
+  /// Sets audio source with fallback.  On an active player setAudioSource
+  /// works immediately (just_audio fast path).  If it fails (player
+  /// auto-deactivated), tries seek+retry, then recreate via handler as last
+  /// resort inside a guarded zone.
   Future<void> _setAudioSourceWithFallback(AudioSource source) async {
     try {
       await audioPlayer.setAudioSource(source, initialIndex: 0);
     } catch (e) {
-      log('MushafReader: setAudioSource failed, recreating player – $e');
+      log('MushafReader: setAudioSource failed – $e');
+
+      // ── Fallback 1: seek to reset player state, then retry. ──
+      try {
+        log('MushafReader: trying seek(0) + retry');
+        await audioPlayer.seek(Duration.zero, index: 0);
+        await audioPlayer.setAudioSource(source, initialIndex: 0);
+        return;
+      } catch (e2) {
+        log('MushafReader: seek+retry failed – $e2');
+      }
+
+      // ── Fallback 2: recreate player via handler (last resort). ──
+      log('MushafReader: recreating player via handler');
       _playerStateSub?.cancel();
       _playlistIndexSub?.cancel();
-      try { await audioPlayer.dispose(); } catch (_) {}
-      await Future<void>.delayed(const Duration(milliseconds: 500));
-      audioPlayer = _createAudioPlayer();
-      await Future<void>.delayed(const Duration(milliseconds: 300));
-      _playerStateSub = audioPlayer.playerStateStream.listen(_onPlayerStateChanged);
-      try {
-        await audioPlayer.setAudioSource(source, initialIndex: 0);
-      } catch (e2) {
-        log('MushafReader: retry setAudioSource also failed – $e2');
-        try { await audioPlayer.dispose(); } catch (_) {}
-        await Future<void>.delayed(const Duration(milliseconds: 500));
-        audioPlayer = _createAudioPlayer();
-        await Future<void>.delayed(const Duration(milliseconds: 300));
+
+      final completer = Completer<void>();
+      runZonedGuarded(() async {
+        _handler.recreatePlayer();
+        await Future<void>.delayed(const Duration(milliseconds: 100));
         _playerStateSub = audioPlayer.playerStateStream.listen(_onPlayerStateChanged);
         await audioPlayer.setAudioSource(source, initialIndex: 0);
-      }
+        if (!completer.isCompleted) completer.complete();
+      }, (error, stack) {
+        log('MushafReader: guarded zone caught – $error');
+        if (!completer.isCompleted) completer.completeError(error, stack);
+      });
+      await completer.future;
     }
   }
 
@@ -377,6 +389,7 @@ class MushafReaderProvider extends ChangeNotifier {
     isLoadingAudio = true;
     notifyListeners();
     _playlistIndexSub?.cancel();
+    _handler.clearSkipDelegate();
 
     // Do NOT call audioPlayer.stop() before setAudioSource.  stop()
     // transitions ExoPlayer to idle which internally fires
@@ -448,6 +461,13 @@ class MushafReaderProvider extends ChangeNotifier {
           playingAyaId = ayaId;
           audioPlayingAyaId = ayaId;
           playingLabel = playlistLabels[i];
+          // Update media notification with current ayah info
+          _handler.mediaItem.add(MediaItem(
+            id: 'mushaf_${playlistSuraNos[i]}_ayah_${playlistAyaNos[i]}',
+            album: 'The Message of the Quran',
+            title: 'Surah ${playlistSuraNos[i]} - Ayah ${playlistAyaNos[i]}',
+            artist: 'Mishary Rashid Alafasy',
+          ));
           notifyListeners();
           navigateToAyaPage(ayaId);
         }
@@ -471,7 +491,8 @@ class MushafReaderProvider extends ChangeNotifier {
 
   Future<void> stopAndClear() async {
     _playlistIndexSub?.cancel();
-    await audioPlayer.stop();
+    _handler.clearSkipDelegate();
+    await _handler.stop();
     playingLabel = null;
     playingAyaId = null;
     audioPlayingAyaId = null;
@@ -483,9 +504,9 @@ class MushafReaderProvider extends ChangeNotifier {
 
   Future<void> togglePlayPause() async {
     if (isPlaying) {
-      await audioPlayer.pause();
+      await _handler.pause();
     } else {
-      await audioPlayer.play();
+      await _handler.play();
     }
   }
 
@@ -493,7 +514,7 @@ class MushafReaderProvider extends ChangeNotifier {
   void dispose() {
     _playerStateSub?.cancel();
     _playlistIndexSub?.cancel();
-    audioPlayer.dispose();
+    // Don't dispose the player – it's shared via the handler
     pageController?.dispose();
     listScrollController.dispose();
     super.dispose();

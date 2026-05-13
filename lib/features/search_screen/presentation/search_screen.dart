@@ -44,7 +44,7 @@ class SearchScreen extends StatelessWidget {
                       ],
                       onChanged: (value) => controller.search(),
                       controller: controller.searchController,
-                      hintText: "Search By Surah, verses, or any Text",
+                      hintText: "Search By Surah ",
                     ),
                   ),
                 ],

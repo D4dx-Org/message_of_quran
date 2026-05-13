@@ -1,7 +1,9 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/core/services/audio_handler.dart';
 import 'package:the_message_of_the_quran/core/services/database/database_helper.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
@@ -58,56 +60,72 @@ void main() async {
   };
 
   await DatabaseHelper.initializeServices();
-  await OneSignalService.initialize();
-  await MushafDownloadManager.instance.syncWithPersistedState();
 
-  await AwesomeNotifications().initialize(
-    null, // use default app icon
-    [
-      NotificationChannel(
-        channelKey: 'mushaf_download',
-        channelName: 'Mushaf Download',
-        channelDescription: 'Shows Mushaf font download progress',
-        importance: NotificationImportance.Low,
-        enableVibration: false,
-        playSound: false,
-        onlyAlertOnce: true,
-      ),
-      NotificationChannel(
-        channelKey: 'daily_reminder',
-        channelName: 'Daily Reminder',
-        channelDescription: 'Daily Quran reading reminders',
-        importance: NotificationImportance.High,
-        enableVibration: true,
-        playSound: true,
-      ),
-      NotificationChannel(
-        channelKey: 'progression_reminder',
-        channelName: 'Progression Reminder',
-        channelDescription: 'Quran progression learning reminders',
-        importance: NotificationImportance.High,
-        enableVibration: true,
-        playSound: true,
-      ),
-    ],
-    debug: false,
+  // Initialize audio service for background playback & media notifications
+  audioHandler = await AudioService.init(
+    builder: () => QuranAudioHandler(),
+    config: const AudioServiceConfig(
+      androidNotificationChannelId:
+          'com.d4dx.the_message_of_the_quran.audio',
+      androidNotificationChannelName: 'Quran Audio',
+      androidNotificationOngoing: true,
+      androidStopForegroundOnPause: true,
+    ),
   );
 
-  // Wire up notification tap listeners
-  AwesomeNotifications().setListeners(
-    onActionReceivedMethod: _onNotificationTap,
-    onNotificationCreatedMethod:
-        NotificationController.onNotificationCreatedMethod,
-    onNotificationDisplayedMethod:
-        NotificationController.onNotificationDisplayedMethod,
-    onDismissActionReceivedMethod:
-        NotificationController.onDismissActionReceivedMethod,
-  );
+  // Mobile-only services: push notifications, local notifications, downloads
+  if (!kIsWeb) {
+    await OneSignalService.initialize();
+    await MushafDownloadManager.instance.syncWithPersistedState();
 
-  final initialAction = await AwesomeNotifications()
-      .getInitialNotificationAction(removeFromActionEvents: false);
-  if (initialAction != null) {
-    await _onNotificationTap(initialAction);
+    await AwesomeNotifications().initialize(
+      null, // use default app icon
+      [
+        NotificationChannel(
+          channelKey: 'mushaf_download',
+          channelName: 'Mushaf Download',
+          channelDescription: 'Shows Mushaf font download progress',
+          importance: NotificationImportance.Low,
+          enableVibration: false,
+          playSound: false,
+          onlyAlertOnce: true,
+        ),
+        NotificationChannel(
+          channelKey: 'daily_reminder',
+          channelName: 'Daily Reminder',
+          channelDescription: 'Daily Quran reading reminders',
+          importance: NotificationImportance.High,
+          enableVibration: true,
+          playSound: true,
+        ),
+        NotificationChannel(
+          channelKey: 'progression_reminder',
+          channelName: 'Progression Reminder',
+          channelDescription: 'Quran progression learning reminders',
+          importance: NotificationImportance.High,
+          enableVibration: true,
+          playSound: true,
+        ),
+      ],
+      debug: false,
+    );
+
+    // Wire up notification tap listeners
+    AwesomeNotifications().setListeners(
+      onActionReceivedMethod: _onNotificationTap,
+      onNotificationCreatedMethod:
+          NotificationController.onNotificationCreatedMethod,
+      onNotificationDisplayedMethod:
+          NotificationController.onNotificationDisplayedMethod,
+      onDismissActionReceivedMethod:
+          NotificationController.onDismissActionReceivedMethod,
+    );
+
+    final initialAction = await AwesomeNotifications()
+        .getInitialNotificationAction(removeFromActionEvents: false);
+    if (initialAction != null) {
+      await _onNotificationTap(initialAction);
+    }
   }
 
   // Catch async errors that escape the Flutter framework.
@@ -183,7 +201,17 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => WakelockProvider()),
         ChangeNotifierProvider(create: (context) => LanguageProvider()),
         ChangeNotifierProvider(create: (context) => AyahOfTheDayProvider()),
-        ChangeNotifierProvider(create: (context) => AudioProvider()),
+        ChangeNotifierProxyProvider2<SurahProvider, PlaySettingsProvider, AudioProvider>(
+          create: (context) => AudioProvider(audioHandler!),
+          update: (context, surahProvider, playSettingsProvider, audioProvider) {
+            final provider = audioProvider ?? AudioProvider(audioHandler!);
+            provider.attachDependencies(
+              surahProvider: surahProvider,
+              playSettings: playSettingsProvider,
+            );
+            return provider;
+          },
+        ),
         ChangeNotifierProvider(create: (context) => LastReadProvider()),
         ChangeNotifierProvider(create: (context) => ReadingProgressProvider()),
         ChangeNotifierProvider(create: (context) => JuzHizbProvider()),

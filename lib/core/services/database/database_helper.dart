@@ -1,13 +1,15 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:the_message_of_the_quran/core/constants/db_constants.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/data/progression_db_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
+
+import 'db_io_utils_stub.dart'
+    if (dart.library.io) 'db_io_utils.dart' as db_io;
 
 class DatabaseHelper {
   factory DatabaseHelper() => _instance;
@@ -36,6 +38,9 @@ class DatabaseHelper {
   }
 
   static Future<void> _doInitialize() async {
+    // On web, switch the global databaseFactory to the FFI-web implementation.
+    db_io.initDatabaseFactory();
+
     // Close any previously open connections (handles hot restart)
     await _closeAll();
     final prefs = await SharedPreferences.getInstance();
@@ -46,13 +51,9 @@ class DatabaseHelper {
     if (storedAsadVersion < DbConstants.quranAsadDbVersion) {
       final databasesPath2 = await getDatabasesPath();
       final asadPath = join(databasesPath2, DbConstants.quranAsadDbName);
-      for (final suffix in ['', '-wal', '-shm']) {
-        try {
-          await File('$asadPath$suffix').delete();
-        } catch (e) {
-          debugPrint('DB: failed to delete $asadPath$suffix — $e');
-        }
-      }
+      // Delete the old database and its journal files
+      await db_io.deleteFileIfExists(asadPath);
+      await db_io.deleteWalShmFiles(asadPath);
     }
 
     quranAsadDb = await initDatabase(
@@ -120,50 +121,21 @@ class DatabaseHelper {
     var path = join(databasesPath, name);
 
     Future<void> copyFromAsset() async {
-      try {
-        await Directory(dirname(path)).create(recursive: true);
-      } catch (e) {
-        debugPrint('DB: failed to create directory — $e');
-      }
-      // Remove stale WAL/SHM journal files if present
-      for (final suffix in ['-wal', '-shm']) {
-        try {
-          await File('$path$suffix').delete();
-        } catch (e) {
-          debugPrint('DB: failed to delete $path$suffix — $e');
-        }
-      }
-      // Remove old database file
-      try {
-        await File(path).delete();
-      } catch (e) {
-        debugPrint('DB: failed to delete old db — $e');
-      }
       final data = await rootBundle.load(join(DbConstants.dbLocation, dbName));
       final bytes = data.buffer.asUint8List(
         data.offsetInBytes,
         data.lengthInBytes,
       );
-      await File(path).writeAsBytes(bytes, flush: true);
+      await db_io.writeAssetDatabase(path, bytes);
     }
 
-    // Always remove stale WAL/SHM files on startup — they cause
+    // Remove stale WAL/SHM files on startup — they cause
     // SQLITE_CANTOPEN (error 14) on iOS when bundled from macOS.
-    for (final suffix in ['-wal', '-shm']) {
-      final sideFile = File('$path$suffix');
-      if (await sideFile.exists()) {
-        debugPrint(
-          "database helper : Removing stale journal file: $path$suffix",
-        );
-        try {
-          await sideFile.delete();
-        } catch (e) {
-          debugPrint('database helper : Failed to delete $path$suffix – $e');
-        }
-      }
+    if (!kIsWeb) {
+      await db_io.deleteWalShmFiles(path);
     }
 
-    final exists = await databaseExists(path);
+    final exists = await db_io.databaseExistsAt(path);
     if (!exists) {
       debugPrint("database helper : Creating new copy from asset");
       await copyFromAsset();

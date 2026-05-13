@@ -1,10 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
+
+import 'package:the_message_of_the_quran/core/services/database/db_io_utils_stub.dart'
+    if (dart.library.io) 'package:the_message_of_the_quran/core/services/database/db_io_utils.dart'
+    as db_io;
 
 /// Manages a single SQLite database instance copied from bundled assets.
 class LocalDatabase {
@@ -26,17 +27,17 @@ class LocalDatabase {
   }
 
   Future<String> _copyBundledDatabaseIfNeeded() async {
-    final dir = await getApplicationDocumentsDirectory();
-    final dbPath = p.join(dir.path, 'mushaf_DB.db');
+    final databasesPath = await getDatabasesPath();
+    final dbPath = p.join(databasesPath, 'mushaf_DB.db');
 
     final prefs = await SharedPreferences.getInstance();
     final currentVersion = prefs.getInt(_dbVersionKey) ?? 0;
 
-    final dbFile = File(dbPath);
-    if (!await dbFile.exists() || currentVersion < _dbVersion) {
+    final exists = await db_io.databaseExistsAt(dbPath);
+    if (!exists || currentVersion < _dbVersion) {
       final data = await rootBundle.load('assets/db/DB.db');
       final bytes = data.buffer.asUint8List();
-      await dbFile.writeAsBytes(bytes, flush: true);
+      await db_io.writeAssetDatabase(dbPath, bytes);
       await prefs.setInt(_dbVersionKey, _dbVersion);
     }
 

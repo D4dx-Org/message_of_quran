@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/ayah_bookmark_model.dart';
+import 'package:the_message_of_the_quran/core/services/audio_handler.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../core/utils/responsive_helper.dart';
@@ -66,6 +67,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
           CurvedAnimation(parent: _barsAnimController, curve: Curves.easeInOut),
         );
     _p = MushafReaderProvider(
+      handler: audioHandler!,
       initialPage: widget.initialPage,
       initialSurahNo: widget.initialSurahNo,
       initialAyaNo: widget.initialAyaNo,

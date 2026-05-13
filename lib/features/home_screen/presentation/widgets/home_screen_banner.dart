@@ -11,18 +11,15 @@ class HomeScreenBanner extends StatelessWidget {
   const HomeScreenBanner({super.key, this.isLandscape = false});
   final bool isLandscape;
 
-  void _navigateToLastRead(BuildContext context) {
+  Future<void> _navigateToLastRead(BuildContext context) async {
     final lastRead = context.read<LastReadProvider>();
     if (!lastRead.hasLastRead) return;
 
     final surahProv = context.read<SurahProvider>();
     final surahNum = lastRead.surahNumber;
     if (surahNum == null) return;
-    final idx = surahProv.surahList.indexWhere(
-      (s) => s.surahNumber == surahNum,
-    );
-    if (idx < 0) return;
-    surahProv.assignIndex(idx);
+    await surahProv.selectSurahByNumber(surahNum);
+    if (!context.mounted) return;
     Navigator.push(
       context,
       MaterialPageRoute(

@@ -2,6 +2,7 @@
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -22,6 +23,7 @@ import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/core/widgets/scroll_to_top_button.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/surah_screen_app_bar.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/cross_reference_sheet.dart';
+import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_auto_advance.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/play_settings_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/tajweed_provider.dart';
@@ -54,10 +56,13 @@ class SurahScreen extends StatefulWidget {
   State<SurahScreen> createState() => _SurahScreenState();
 }
 
+enum _InitialAyahScrollResult { aligned, targetMissing, unresolved }
+
 class _SurahScreenState extends State<SurahScreen> {
   final ScrollController _scrollController = ScrollController();
   List<GlobalKey> _itemKeys = [];
   bool _showScrollToTop = false;
+  bool _isInitialDeepLinkPending = false;
 
   /// Cached provider references — safe to use in dispose().
   late SurahProvider _surahProv;
@@ -80,10 +85,6 @@ class _SurahScreenState extends State<SurahScreen> {
   int? _lastSurahIndex;
 
   bool _surahTransitionPending = false;
-
-  /// True while [_advanceToNextSurah] is transitioning to the next surah.
-  /// Prevents [didChangeDependencies] from stopping audio during auto-advance.
-  bool _isAutoAdvancing = false;
 
   /// Whether the current surah has a preface in the database.
   bool _hasPreface = false;
@@ -118,8 +119,8 @@ class _SurahScreenState extends State<SurahScreen> {
     // translationList, then reset scroll to top.
     // Skip stopAudio during auto-advance so continuous playback isn't killed.
     if (_lastSurahIndex != null && _lastSurahIndex != _surahProv.index) {
-      if (!_isAutoAdvancing) {
-        Provider.of<AudioProvider>(context, listen: false).stopAudio();
+      if (!newAudioProv.isProgrammaticSurahTransition) {
+        newAudioProv.stopAudio();
       }
       _lastKnownAyahStart = null;
       _lastVisibleAyahEnd = null;
@@ -128,7 +129,7 @@ class _SurahScreenState extends State<SurahScreen> {
       _checkPrefaceAvailability();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
-        if (_scrollController.hasClients) {
+        if (widget.scrollToAyahId == null && _scrollController.hasClients) {
           _scrollController.jumpTo(0);
         }
       });
@@ -155,6 +156,7 @@ class _SurahScreenState extends State<SurahScreen> {
   @override
   void initState() {
     super.initState();
+    _isInitialDeepLinkPending = widget.scrollToAyahId != null;
     _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
@@ -202,28 +204,22 @@ class _SurahScreenState extends State<SurahScreen> {
         }
       };
 
-      // Scroll to the bookmarked / last-read ayah after the list has been
-      // built and laid out. One post-frame callback is enough when the data
-      // was pre-loaded; the retry loop inside _scrollToBookmarkedAyah handles
-      // any remaining layout latency.
+      // Deep-link opens should stay hidden until the target ayah has been
+      // positioned, otherwise large surahs briefly paint at offset 0 and then
+      // visibly catch up to the target ayah.
       if (widget.scrollToAyahId != null && mounted) {
-        final blocks = surahProv.arabicBlockList;
-        var targetIdx = blocks.indexWhere(
-          (block) => block.verseFrom == widget.scrollToAyahId,
+        await WidgetsBinding.instance.endOfFrame;
+        if (!mounted) return;
+        final result = await _scrollToBookmarkedAyah(
+          widget.scrollToAyahId!,
+          animated: false,
         );
-        // Fallback: find the block whose range contains the ayah
-        if (targetIdx < 0) {
-          targetIdx = blocks.indexWhere((block) {
-            final start = block.verseFrom ?? 0;
-            final end = block.verseTo ?? 0;
-            return start <= widget.scrollToAyahId! &&
-                widget.scrollToAyahId! <= end;
-          });
+        if (!mounted) return;
+        if (result != _InitialAyahScrollResult.unresolved) {
+          setState(() => _isInitialDeepLinkPending = false);
         }
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!mounted) return;
-          _scrollToBookmarkedAyah(widget.scrollToAyahId!);
-        });
+      } else if (_isInitialDeepLinkPending && mounted) {
+        setState(() => _isInitialDeepLinkPending = false);
       }
 
       // Run an initial visibility scan so short surahs that fit on one
@@ -314,31 +310,29 @@ class _SurahScreenState extends State<SurahScreen> {
     // No next surah available (last surah in the list).
     if (surahProv.index >= surahProv.surahList.length - 1) return;
 
-    _isAutoAdvancing = true;
-    // Navigate to the next surah (onSwipe(false) increments the index).
-    await surahProv.onSwipe(false);
-
-    final blocks = surahProv.arabicBlockList;
-    if (blocks.isEmpty) {
-      _isAutoAdvancing = false;
-      return;
-    }
-
-    final newSurahNumber =
-        surahProv.surahList[surahProv.index].surahNumber;
-    final firstBlock = blocks[0];
-    final ayaStart = firstBlock.verseFrom ?? 1;
-    final ayaEnd = firstBlock.verseTo ?? ayaStart;
-
-    audioProv.playAyah(
-      surahNumber: newSurahNumber,
-      ayahId: ayaStart,
-      ayahEndId: ayaEnd,
-      translationIndex: 0,
-      reciterFolder: playSettings.selectedReciter.folderName,
-      playbackSpeed: playSettings.playbackSpeed,
+    await runSurahAutoAdvance(
+      navigateToNextSurah: () => surahProv.onSwipe(false),
+      readBlocks: () => surahProv.arabicBlockList,
+      readSurahNumber: () => surahProv.surahList[surahProv.index].surahNumber,
+      startPlayback: ({
+        required int surahNumber,
+        required int ayahStart,
+        required int ayahEnd,
+        required int translationIndex,
+      }) {
+        return audioProv.playAyah(
+          surahNumber: surahNumber,
+          ayahId: ayahStart,
+          ayahEndId: ayahEnd,
+          translationIndex: translationIndex,
+          reciterFolder: playSettings.selectedReciter.folderName,
+          playbackSpeed: playSettings.playbackSpeed,
+        );
+      },
+      setAutoAdvancing: (isAutoAdvancing) {
+        audioProv.setProgrammaticSurahTransition(isAutoAdvancing);
+      },
     );
-    _isAutoAdvancing = false;
   }
 
   void _handleContinuousModeSwipe(DragEndDetails details) {
@@ -482,55 +476,105 @@ class _SurahScreenState extends State<SurahScreen> {
   /// key's render context becomes available.
   static const int _maxScrollRetries = 20;
 
-  void _scrollToBookmarkedAyah(int ayaStart, {int attempt = 0}) {
-    if (attempt >= _maxScrollRetries) return;
-
-    final blocks = Provider.of<SurahProvider>(
-      context,
-      listen: false,
-    ).arabicBlockList;
+  int _findAyahBlockIndex(List<ArabicBlockModel> blocks, int ayaStart) {
     var idx = blocks.indexWhere((block) => block.verseFrom == ayaStart);
-    // Fallback: find the block whose range contains the ayah
-    if (idx < 0) {
-      idx = blocks.indexWhere((block) {
-        final start = block.verseFrom ?? 0;
-        final end = block.verseTo ?? 0;
-        return start <= ayaStart && ayaStart <= end;
-      });
+    if (idx >= 0) return idx;
+    return blocks.indexWhere((block) {
+      final start = block.verseFrom ?? 0;
+      final end = block.verseTo ?? 0;
+      return start <= ayaStart && ayaStart <= end;
+    });
+  }
+
+  double? _estimateScrollOffsetForIndex(int idx) {
+    if (!_scrollController.hasClients) return null;
+
+    double measuredExtentSum = 0;
+    int measuredCount = 0;
+    int? nearestMeasuredIndex;
+    double? nearestMeasuredOffset;
+
+    for (int i = 0; i < _itemKeys.length; i++) {
+      final ctx = _itemKeys[i].currentContext;
+      if (ctx == null) continue;
+      final box = ctx.findRenderObject() as RenderBox?;
+      if (box == null || !box.attached) continue;
+
+      measuredExtentSum += box.size.height;
+      measuredCount++;
+
+      final viewport = RenderAbstractViewport.of(box);
+      final revealOffset = viewport.getOffsetToReveal(box, 0.0).offset;
+      if (nearestMeasuredIndex == null ||
+          (i - idx).abs() < (nearestMeasuredIndex - idx).abs()) {
+        nearestMeasuredIndex = i;
+        nearestMeasuredOffset = revealOffset;
+      }
     }
 
-    // Block data or keys not ready yet — retry.
+    if (measuredCount == 0 ||
+        nearestMeasuredIndex == null ||
+        nearestMeasuredOffset == null) {
+      return null;
+    }
+
+    final averageExtent = measuredExtentSum / measuredCount;
+    final estimatedOffset =
+        nearestMeasuredOffset + ((idx - nearestMeasuredIndex) * averageExtent);
+    final maxExtent = _scrollController.position.maxScrollExtent;
+    return estimatedOffset.clamp(0.0, maxExtent).toDouble();
+  }
+
+  Future<_InitialAyahScrollResult> _scrollToBookmarkedAyah(
+    int ayaStart, {
+    bool animated = true,
+  }) async {
+    final blocks = Provider.of<SurahProvider>(context, listen: false).arabicBlockList;
+    final idx = _findAyahBlockIndex(blocks, ayaStart);
     if (idx < 0 || idx >= _itemKeys.length) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _scrollToBookmarkedAyah(ayaStart, attempt: attempt + 1);
-      });
-      return;
+      return _InitialAyahScrollResult.targetMissing;
     }
 
-    final key = _itemKeys[idx];
-    if (key.currentContext != null) {
-      // Item is in the render tree — scroll precisely to it.
-      Scrollable.ensureVisible(
-        key.currentContext!,
-        alignment: 0.0,
-        duration: const Duration(milliseconds: 450),
-        curve: Curves.easeInOut,
-      );
-    } else {
-      // Item is outside the viewport and not mounted yet.
-      // Do a rough proportional jump to pull the item into the render tree,
-      // then retry ensureVisible on the next frame.
-      if (_scrollController.hasClients) {
+    for (int attempt = 0; attempt < _maxScrollRetries; attempt++) {
+      if (!mounted) return _InitialAyahScrollResult.unresolved;
+      if (!_scrollController.hasClients) {
+        await WidgetsBinding.instance.endOfFrame;
+        continue;
+      }
+
+      final key = _itemKeys[idx];
+      if (key.currentContext != null) {
+        await Scrollable.ensureVisible(
+          key.currentContext!,
+          alignment: 0.0,
+          duration: animated ? const Duration(milliseconds: 450) : Duration.zero,
+          curve: Curves.easeInOut,
+        );
+        return _InitialAyahScrollResult.aligned;
+      }
+
+      final estimatedOffset = _estimateScrollOffsetForIndex(idx);
+      if (estimatedOffset != null) {
+        final delta = (_scrollController.offset - estimatedOffset).abs();
+        if (delta > 1) {
+          _scrollController.jumpTo(estimatedOffset);
+        }
+      } else {
         final maxExtent = _scrollController.position.maxScrollExtent;
         if (maxExtent > 0) {
           final fraction = idx / blocks.length;
-          _scrollController.jumpTo((fraction * maxExtent).clamp(0, maxExtent));
+          final roughOffset = (fraction * maxExtent).clamp(0.0, maxExtent);
+          final delta = (_scrollController.offset - roughOffset).abs();
+          if (delta > 1) {
+            _scrollController.jumpTo(roughOffset);
+          }
         }
       }
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _scrollToBookmarkedAyah(ayaStart, attempt: attempt + 1);
-      });
+
+      await WidgetsBinding.instance.endOfFrame;
     }
+
+    return _InitialAyahScrollResult.unresolved;
   }
 
   void _showJumpTo(
@@ -1497,11 +1541,14 @@ class _SurahScreenState extends State<SurahScreen> {
                           final hPad = ResponsiveHelper.horizontalPadding(
                             context,
                           );
-                          return Padding(
+                          final content = Padding(
                             padding: EdgeInsets.fromLTRB(hPad, 10, hPad, 0),
                             child: TweenAnimationBuilder<double>(
                               key: ValueKey(controller.index),
-                              tween: Tween(begin: 0.0, end: 1.0),
+                              tween: Tween(
+                                begin: widget.scrollToAyahId != null ? 1.0 : 0.0,
+                                end: 1.0,
+                              ),
                               duration: const Duration(milliseconds: 400),
                               curve: Curves.easeInOut,
                               builder: (context, opacity, child) {
@@ -1853,6 +1900,20 @@ class _SurahScreenState extends State<SurahScreen> {
                                 ),
                               ),
                             ),
+                          );
+
+                          if (!_isInitialDeepLinkPending) {
+                            return content;
+                          }
+
+                          return Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              IgnorePointer(
+                                child: Opacity(opacity: 0, child: content),
+                              ),
+                              const Center(child: CircularProgressIndicator()),
+                            ],
                           );
                         },
                       ),

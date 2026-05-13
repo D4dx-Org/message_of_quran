@@ -211,13 +211,10 @@ class _HomeScreenState extends State<HomeScreen>
 
     return InkWell(
       onTap: available
-          ? () {
+          ? () async {
               final surahProv = context.read<SurahProvider>();
-              final idx = surahProv.surahList.indexWhere(
-                (s) => s.surahNumber == juz.surahNumber,
-              );
-              if (idx < 0) return;
-              surahProv.assignIndex(idx);
+              await surahProv.selectSurahByNumber(juz.surahNumber);
+              if (!context.mounted) return;
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -302,13 +299,10 @@ class _HomeScreenState extends State<HomeScreen>
 
     return InkWell(
       onTap: available
-          ? () {
+          ? () async {
               final surahProv = context.read<SurahProvider>();
-              final idx = surahProv.surahList.indexWhere(
-                (s) => s.surahNumber == hizb.surahNumber,
-              );
-              if (idx < 0) return;
-              surahProv.assignIndex(idx);
+              await surahProv.selectSurahByNumber(hizb.surahNumber);
+              if (!context.mounted) return;
               Navigator.push(
                 context,
                 MaterialPageRoute(

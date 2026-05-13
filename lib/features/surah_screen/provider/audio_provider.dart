@@ -1,57 +1,29 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:audio_session/audio_session.dart';
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:the_message_of_the_quran/core/services/audio_handler.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/providers/play_settings_provider.dart';
+import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_audio_skip.dart';
+import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
 class AudioProvider extends ChangeNotifier {
-  AudioPlayer _player = AudioPlayer(
-    androidApplyAudioAttributes: false,
-    handleAudioSessionActivation: false,
-  );
+  final QuranAudioHandler _handler;
+  AudioPlayer get _player => _handler.player;
+
   StreamSubscription? _playerStateSub;
   StreamSubscription? _indexSub;
   bool _isDisposed = false;
 
-  AudioProvider() {
-    _configureAudioSession();
-  }
-
-  /// Sets up an audio session suitable for music/Quran recitation so that
-  /// playback continues when the screen is locked or the app is backgrounded.
-  Future<void> _configureAudioSession() async {
-    try {
-      final session = await AudioSession.instance;
-      await session.configure(const AudioSessionConfiguration(
-        avAudioSessionCategory: AVAudioSessionCategory.playback,
-        avAudioSessionCategoryOptions: AVAudioSessionCategoryOptions.mixWithOthers,
-        avAudioSessionMode: AVAudioSessionMode.defaultMode,
-        avAudioSessionRouteSharingPolicy:
-            AVAudioSessionRouteSharingPolicy.defaultPolicy,
-        avAudioSessionSetActiveOptions: AVAudioSessionSetActiveOptions.none,
-        androidAudioAttributes: AndroidAudioAttributes(
-          contentType: AndroidAudioContentType.music,
-          flags: AndroidAudioFlags.none,
-          usage: AndroidAudioUsage.media,
-        ),
-        androidAudioFocusGainType: AndroidAudioFocusGainType.gain,
-        androidWillPauseWhenDucked: false,
-      ));
-    } catch (e) {
-      // Audio session configuration is best-effort; playback still works
-      // without it on most devices.
-      debugPrint('AudioProvider: audio session config failed — $e');
-    }
-  }
-
-  AudioPlayer _createPlayer() => AudioPlayer(
-        androidApplyAudioAttributes: false,
-        handleAudioSessionActivation: false,
-      );
+  AudioProvider(this._handler);
 
   int _playGeneration = 0;
+  SurahProvider? _surahProvider;
+  PlaySettingsProvider? _playSettingsProvider;
+  bool _isProgrammaticSurahTransition = false;
 
   int? _currentSurahNumber;
   int? _currentAyahId;       // first ayah of block (ayaStart)
@@ -70,15 +42,42 @@ class AudioProvider extends ChangeNotifier {
   bool get isPaused => _isPaused;
   bool get isLoading => _isLoading;
   bool get isActive => _isPlaying || _isPaused || _isLoading;
+  bool get isProgrammaticSurahTransition => _isProgrammaticSurahTransition;
 
   /// Called when all ayahs in the block finish.
   /// Receives (surahNumber, completedTranslationIndex).
   void Function(int surahNumber, int translationIndex)? onAyahComplete;
 
+  void attachDependencies({
+    required SurahProvider surahProvider,
+    required PlaySettingsProvider playSettings,
+  }) {
+    _surahProvider = surahProvider;
+    _playSettingsProvider = playSettings;
+  }
+
+  void setProgrammaticSurahTransition(bool value) {
+    _isProgrammaticSurahTransition = value;
+  }
+
   static String buildUrl(String folderName, int surahNumber, int ayahId) {
     final surah = surahNumber.toString().padLeft(3, '0');
     final ayah = ayahId.toString().padLeft(3, '0');
     return 'https://everyayah.com/data/$folderName/$surah$ayah.mp3';
+  }
+
+  /// Updates the media notification with current track info.
+  void _updateMediaItem({
+    required int surahNumber,
+    required int ayahId,
+    String? reciterName,
+  }) {
+    _handler.mediaItem.add(MediaItem(
+      id: 'surah_${surahNumber}_ayah_$ayahId',
+      album: 'The Message of the Quran',
+      title: 'Surah $surahNumber - Ayah $ayahId',
+      artist: reciterName ?? 'Quran Recitation',
+    ));
   }
 
   Future<void> playAyah({
@@ -88,6 +87,7 @@ class AudioProvider extends ChangeNotifier {
     required int translationIndex,
     required String reciterFolder,
     double playbackSpeed = 1.0,
+    String? reciterName,
   }) async {
     final gen = ++_playGeneration;
 
@@ -108,12 +108,17 @@ class AudioProvider extends ChangeNotifier {
     _isPaused = false;
     notifyListeners();
 
-    // Do NOT call stop() here.  stop() transitions ExoPlayer to idle which
-    // internally fires _setPlatformActive(false).  That races with the
-    // _setPlatformActive(true) from setAudioSource below and causes
-    // PlatformException(abort, "Loading interrupted").
-    // setAudioSource() on its own correctly interrupts and replaces the
-    // current source.
+    // Update media notification
+    _handler.setSkipDelegate(
+      owner: this,
+      onNext: skipToNextBlock,
+      onPrevious: skipToPreviousBlock,
+    );
+    _updateMediaItem(
+      surahNumber: surahNumber,
+      ayahId: ayahId,
+      reciterName: reciterName,
+    );
 
     // Build a playlist for every individual ayah in the range.
     final count = (ayahEndId - ayahId).abs() + 1;
@@ -135,14 +140,12 @@ class AudioProvider extends ChangeNotifier {
       // Subscribe AFTER setAudioSource so the BehaviorSubject replays
       // "ready" state instead of stale "completed" from the previous
       // playlist.  This prevents onAyahComplete from re-firing.
-      _setupStreamListeners(gen, ayahId);
+      _setupStreamListeners(gen, ayahId, reciterName);
 
       log('AudioProvider: calling play()');
       _player.play(); // intentionally NOT awaited
     } catch (e) {
       log('AudioProvider: playAyah ERROR – $e');
-      // Only reset state if this is still the active generation.
-      // Otherwise a newer playAyah() already set the correct state.
       if (gen != _playGeneration) return;
       _isLoading = false;
       _isPlaying = false;
@@ -154,10 +157,7 @@ class AudioProvider extends ChangeNotifier {
     }
   }
 
-  /// Sets up playerStateStream and currentIndexStream listeners for the
-  /// given generation.  Called after setAudioSource so BehaviorSubject
-  /// replays "ready" instead of stale "completed".
-  void _setupStreamListeners(int gen, int baseAyahId) {
+  void _setupStreamListeners(int gen, int baseAyahId, String? reciterName) {
     // Track which individual ayah within the block is currently playing.
     _indexSub = _player.currentIndexStream.listen((idx) {
       if (gen != _playGeneration) return;
@@ -165,6 +165,14 @@ class AudioProvider extends ChangeNotifier {
         final newAyah = baseAyahId + idx;
         if (_playingAyahId != newAyah) {
           _playingAyahId = newAyah;
+          // Update media notification with current ayah
+          if (_currentSurahNumber != null) {
+            _updateMediaItem(
+              surahNumber: _currentSurahNumber!,
+              ayahId: newAyah,
+              reciterName: reciterName,
+            );
+          }
           // ignore: deprecated_member_use
           SemanticsService.announce(
             'Now playing Ayah $newAyah',
@@ -217,7 +225,10 @@ class AudioProvider extends ChangeNotifier {
         final capturedSurah = _currentSurahNumber;
         final capturedIndex = _currentTranslationIndex;
         if (capturedSurah != null && capturedIndex != null) {
-          onAyahComplete?.call(capturedSurah, capturedIndex);
+          Future.microtask(() {
+            if (gen != _playGeneration) return;
+            onAyahComplete?.call(capturedSurah, capturedIndex);
+          });
         }
       }
     }, onError: (e) {
@@ -232,44 +243,39 @@ class AudioProvider extends ChangeNotifier {
     });
   }
 
-  /// Tries [setAudioSource] on the existing player.  If it fails (stale
-  /// ExoPlayer state), disposes the player, creates a fresh one, and retries
-  /// once.  This avoids the normal dispose→new→setAudioSource race while
-  /// still recovering from genuinely broken player instances.
   Future<void> _setAudioSourceWithFallback(AudioSource source) async {
     try {
       await _player.setAudioSource(source);
     } catch (e) {
-      log('AudioProvider: setAudioSource failed, recreating player – $e');
-      // Cancel stale subscriptions before recreating.
+      log('AudioProvider: setAudioSource failed – $e');
+
+      try {
+        log('AudioProvider: trying seek(0) + retry');
+        await _player.seek(Duration.zero, index: 0);
+        await _player.setAudioSource(source);
+        return;
+      } catch (e2) {
+        log('AudioProvider: seek+retry failed – $e2');
+      }
+
+      // ── Fallback 2: recreate player via handler ──
+      log('AudioProvider: recreating player via handler');
       await _playerStateSub?.cancel();
       await _indexSub?.cancel();
       _playerStateSub = null;
       _indexSub = null;
 
-      // Dispose the old player first and wait for native resources to release
-      // fully before creating a new one.
-      try { await _player.dispose(); } catch (_) {}
-      await Future<void>.delayed(const Duration(milliseconds: 500));
-
-      // Create a new player and let its internal _setPlatformActive(false)
-      // settle before calling setAudioSource (which triggers
-      // _setPlatformActive(true)).  Without this gap the two futures race
-      // and just_audio hits "Cannot complete a future with itself".
-      _player = _createPlayer();
-      await Future<void>.delayed(const Duration(milliseconds: 300));
-
-      try {
+      final completer = Completer<void>();
+      runZonedGuarded(() async {
+        _handler.recreatePlayer();
+        await Future<void>.delayed(const Duration(milliseconds: 100));
         await _player.setAudioSource(source);
-      } catch (e2) {
-        log('AudioProvider: retry setAudioSource also failed – $e2');
-        // Last resort: one more dispose-recreate cycle.
-        try { await _player.dispose(); } catch (_) {}
-        await Future<void>.delayed(const Duration(milliseconds: 500));
-        _player = _createPlayer();
-        await Future<void>.delayed(const Duration(milliseconds: 300));
-        await _player.setAudioSource(source);
-      }
+        if (!completer.isCompleted) completer.complete();
+      }, (error, stack) {
+        log('AudioProvider: guarded zone caught – $error');
+        if (!completer.isCompleted) completer.completeError(error, stack);
+      });
+      await completer.future;
     }
   }
 
@@ -278,7 +284,8 @@ class AudioProvider extends ChangeNotifier {
     await _indexSub?.cancel();
     _playerStateSub = null;
     _indexSub = null;
-    try { await _player.stop(); } catch (e) { debugPrint('AudioProvider: stop failed — $e'); }
+    try { await _handler.stop(); } catch (e) { debugPrint('AudioProvider: stop failed — $e'); }
+    _handler.clearSkipDelegate(owner: this);
     _isPlaying = false;
     _isPaused = false;
     _isLoading = false;
@@ -293,19 +300,19 @@ class AudioProvider extends ChangeNotifier {
 
   Future<void> togglePlayPause() async {
     if (_isPlaying) {
-      await _player.pause();
+      await _handler.pause();
       // ignore: deprecated_member_use
       SemanticsService.announce('Audio paused', TextDirection.ltr);
     } else if (_isPaused) {
       // ignore: deprecated_member_use
       SemanticsService.announce('Audio resumed', TextDirection.ltr);
-      _player.play(); // not awaited
+      _handler.play(); // not awaited
     }
   }
 
   /// Changes playback speed on-the-fly (works while playing or paused).
   Future<void> setSpeed(double speed) async {
-    try { await _player.setSpeed(speed); } catch (e) { debugPrint('AudioProvider: setSpeed failed — $e'); }
+    try { await _handler.setSpeed(speed); } catch (e) { debugPrint('AudioProvider: setSpeed failed — $e'); }
   }
 
   bool isCurrentAyah(int surahNumber, int ayahId) {
@@ -314,12 +321,147 @@ class AudioProvider extends ChangeNotifier {
         isActive;
   }
 
+  Future<void> skipToNextBlock() async {
+    await _skipWithinSurahAudio(SurahAudioSkipDirection.next);
+  }
+
+  Future<void> skipToPreviousBlock() async {
+    await _skipWithinSurahAudio(SurahAudioSkipDirection.previous);
+  }
+
+  Future<void> _skipWithinSurahAudio(SurahAudioSkipDirection direction) async {
+    final surahProv = _surahProvider;
+    final playSettings = _playSettingsProvider;
+    final currentSurahNumber = _currentSurahNumber;
+    if (surahProv == null || playSettings == null || currentSurahNumber == null) {
+      return;
+    }
+
+    if (surahProv.surahList.isEmpty) {
+      await surahProv.getAllSurah();
+    }
+
+    final targetSurahIndex = surahProv.surahList.indexWhere(
+      (surah) => surah.surahNumber == currentSurahNumber,
+    );
+    if (targetSurahIndex < 0) {
+      return;
+    }
+
+    if (surahProv.index != targetSurahIndex || surahProv.arabicBlockList.isEmpty) {
+      surahProv.assignIndex(targetSurahIndex);
+      await surahProv.getAyasForCurrentSurah();
+    }
+
+    var blocks = surahProv.arabicBlockList;
+    final currentBlockIndex = _resolveCurrentBlockIndex(blocks);
+    if (currentBlockIndex == null) {
+      return;
+    }
+
+    final hasAdjacentSurah = direction == SurahAudioSkipDirection.next
+        ? targetSurahIndex < surahProv.surahList.length - 1
+        : targetSurahIndex > 0;
+    final target = resolveSurahAudioSkipTarget(
+      currentBlockIndex: currentBlockIndex,
+      blockCount: blocks.length,
+      direction: direction,
+      hasAdjacentSurah: hasAdjacentSurah,
+    );
+    if (target == null) {
+      return;
+    }
+
+    var resolvedSurahIndex = targetSurahIndex;
+    var resolvedBlockIndex = target.blockIndex;
+    if (target.boundaryMove != SurahAudioBoundaryMove.stay) {
+      resolvedSurahIndex +=
+          target.boundaryMove == SurahAudioBoundaryMove.nextSurah ? 1 : -1;
+      await _runProgrammaticSurahTransition(() async {
+        surahProv.assignIndex(resolvedSurahIndex);
+        await surahProv.getAyasForCurrentSurah();
+      });
+      blocks = surahProv.arabicBlockList;
+      if (blocks.isEmpty) {
+        return;
+      }
+      if (resolvedBlockIndex < 0) {
+        resolvedBlockIndex = blocks.length - 1;
+      }
+    }
+
+    if (resolvedBlockIndex < 0 || resolvedBlockIndex >= blocks.length) {
+      return;
+    }
+
+    await _playBlock(
+      surahNumber: surahProv.surahList[resolvedSurahIndex].surahNumber,
+      block: blocks[resolvedBlockIndex],
+      translationIndex: resolvedBlockIndex,
+      playSettings: playSettings,
+    );
+  }
+
+  int? _resolveCurrentBlockIndex(List<dynamic> blocks) {
+    final translationIndex = _currentTranslationIndex;
+    if (translationIndex != null &&
+        translationIndex >= 0 &&
+        translationIndex < blocks.length) {
+      return translationIndex;
+    }
+
+    final playingAyah = _playingAyahId ?? _currentAyahId;
+    if (playingAyah == null) {
+      return null;
+    }
+
+    for (int i = 0; i < blocks.length; i++) {
+      final block = blocks[i];
+      final start = block.verseFrom ?? 0;
+      final end = block.verseTo ?? start;
+      if (start <= playingAyah && playingAyah <= end) {
+        return i;
+      }
+    }
+    return null;
+  }
+
+  Future<void> _playBlock({
+    required int surahNumber,
+    required dynamic block,
+    required int translationIndex,
+    required PlaySettingsProvider playSettings,
+  }) {
+    final ayahStart = block.verseFrom ?? 1;
+    final ayahEnd = block.verseTo ?? ayahStart;
+    return playAyah(
+      surahNumber: surahNumber,
+      ayahId: ayahStart,
+      ayahEndId: ayahEnd,
+      translationIndex: translationIndex,
+      reciterFolder: playSettings.selectedReciter.folderName,
+      playbackSpeed: playSettings.playbackSpeed,
+    );
+  }
+
+  Future<void> _runProgrammaticSurahTransition(
+    Future<void> Function() action,
+  ) async {
+    setProgrammaticSurahTransition(true);
+    try {
+      await action();
+    } finally {
+      setProgrammaticSurahTransition(false);
+    }
+  }
+
   @override
   void dispose() {
     _isDisposed = true;
     _playerStateSub?.cancel();
     _indexSub?.cancel();
-    _player.dispose();
+    _handler.clearSkipDelegate(owner: this);
+    // Don't dispose the player – it's shared via the handler
     super.dispose();
   }
 
