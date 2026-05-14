@@ -84,6 +84,9 @@ class _AuthorScreenState extends State<AuthorScreen> {
                               margin: Margins.zero,
                               padding: HtmlPaddings.zero,
                             ),
+                            'h2': Style(
+                              textAlign: TextAlign.center,
+                            ),
                             'a': Style(
                               textDecoration: TextDecoration.none,
                             ),

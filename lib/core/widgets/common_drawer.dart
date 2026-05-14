@@ -11,6 +11,7 @@ import 'package:the_message_of_the_quran/features/contact_us_screen/presentation
 import 'package:the_message_of_the_quran/features/help_screen/help_screen.dart';
 import 'package:the_message_of_the_quran/features/library/presentation/appendix_screen.dart';
 import 'package:the_message_of_the_quran/features/library/presentation/foreword_screen.dart';
+import 'package:the_message_of_the_quran/features/library/presentation/works_of_reference_screen.dart';
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -167,6 +168,19 @@ class CommonDrawer extends StatelessWidget {
                       icon: Icons.local_library_outlined,
                       children: [
                         _DrawerSubTile(
+                          title: 'Foreword',
+                          icon: Icons.description_outlined,
+                          onTap: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const ForewordScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                        _DrawerSubTile(
                           title: 'Appendix',
                           icon: Icons.article_outlined,
                           onTap: () {
@@ -180,14 +194,14 @@ class CommonDrawer extends StatelessWidget {
                           },
                         ),
                         _DrawerSubTile(
-                          title: 'Foreword',
-                          icon: Icons.description_outlined,
+                          title: 'Works of Reference',
+                          icon: Icons.menu_book_outlined,
                           onTap: () {
                             Navigator.pop(context);
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const ForewordScreen(),
+                                builder: (_) => const WorksOfReferenceScreen(),
                               ),
                             );
                           },

@@ -115,12 +115,14 @@ class DbConstants {
   // ═══════════════════════════════════════════════════════════════════════════
   static const String quranAsadDbName = "quran_asad.sqlite";
   static const String quranAsadDbVersionKey = 'quran_asad_db_version';
-  static const int quranAsadDbVersion = 7;
+  static const int quranAsadDbVersion = 9;
 
   // ─── Table names (quran_asad.sqlite) ───
   static const String asadSurahsTable = "surahs";
   static const String asadVersesTable = "verses";
   static const String asadFootnotesTable = "footnotes";
+  static const String asadAuthorsTable = "authors";
+  static const String worksOfReferenceTable = "worksofreference";
 
   // ─── surahs columns (quran_asad.sqlite → surahs) ───
   static const String asadSurahNumber = "number";
@@ -143,6 +145,20 @@ class DbConstants {
   static const String asadFootnoteSurahNumber = "surah_number";
   static const String asadFootnoteNumber = "footnote_number";
   static const String asadFootnoteText = "text";
+
+  // ─── authors columns (quran_asad.sqlite → authors) ───
+  static const String asadAuthorId = "id";
+  static const String asadAuthorHtmlContent = "html_content";
+  static const String asadAuthorCreatedBy = "created_by";
+  static const String asadAuthorCreatedByRole = "created_by_role";
+  static const String asadAuthorIsVerified = "is_verified";
+
+  // ─── works of reference columns (quran_asad.sqlite → worksofreference) ───
+  static const String worksOfReferenceId = "id";
+  static const String worksOfReferenceHtmlContent = "html_content";
+  static const String worksOfReferenceCreatedBy = "created_by";
+  static const String worksOfReferenceCreatedByRole = "created_by_role";
+  static const String worksOfReferenceIsVerified = "is_verified";
 
   // ─── quranayas (quran_asad.sqlite → quranayas) ───
   static const String quranAyasTable = "quranayas";
