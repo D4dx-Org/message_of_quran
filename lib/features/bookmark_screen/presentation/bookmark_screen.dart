@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/ayah_bookmark_model.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/mushaf/screens/mushaf_reader_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_card.dart';
@@ -10,6 +11,8 @@ import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_pr
 
 class BookmarkScreen extends StatelessWidget {
   const BookmarkScreen({super.key});
+
+  static const Object _clearBookmarkLabelAction = Object();
 
   bool _isMushafBookmark(AyahBookmarkModel bookmark) {
     return bookmark.navigationTarget == BookmarkNavigationTarget.mushaf;
@@ -78,9 +81,40 @@ class BookmarkScreen extends StatelessWidget {
     );
   }
 
+  Future<void> _showEditLabelDialog(
+    BuildContext context,
+    AyahBookmarkModel bookmark,
+  ) async {
+    final surahProvider = Provider.of<SurahProvider>(context, listen: false);
+
+    final result = await showDialog<Object?>(
+      context: context,
+      builder: (_) => _BookmarkLabelDialog(
+        initialLabel: bookmark.label?.trim(),
+      ),
+    );
+
+    if (result == null) return;
+
+    final label = identical(result, _clearBookmarkLabelAction)
+        ? null
+        : (result as String).trim();
+
+    await surahProvider.updateBookmarkLabel(
+      bookmark.surahNumber,
+      bookmark.ayahId,
+      label == null || label.isEmpty ? null : label,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final accentColor = appBarAccentColor(context);
+    final deleteAccentColor = theme.brightness == Brightness.dark
+        ? accentColor
+        : AppTheme.appThemePrimary;
+
     return BaseScreenLayout(
       child: CustomScrollView(
         slivers: [
@@ -110,7 +144,8 @@ class BookmarkScreen extends StatelessWidget {
                                   button: true,
                                   label:
                                       '${bookmark.surahName ?? 'Surah ${bookmark.surahNumber}'}, Ayah ${bookmark.ayahId}${bookmark.label != null && bookmark.label!.isNotEmpty ? ', ${bookmark.label}' : ''}',
-                                  hint: 'Double tap to open, swipe to delete',
+                                  hint:
+                                      'Double tap to open. Use the action buttons to edit or delete.',
                                   child: SettingsScreenCard(
                                     child: InkWell(
                                       borderRadius: BorderRadius.circular(16),
@@ -134,7 +169,7 @@ class BookmarkScreen extends StatelessWidget {
                                               ),
                                               child: Icon(
                                                 _bookmarkIcon(bookmark),
-                                                color: AppTheme.appIconTheme,
+                                                color: accentColor,
                                                 size: 24,
                                               ),
                                             ),
@@ -155,11 +190,9 @@ class BookmarkScreen extends StatelessWidget {
                                                               vertical: 4,
                                                             ),
                                                         decoration: BoxDecoration(
-                                                          color: AppTheme
-                                                              .appIconTheme
-                                                              .withValues(
-                                                                alpha: 0.12,
-                                                              ),
+                                                          color: appBarAccentFillColor(
+                                                            context,
+                                                          ),
                                                           borderRadius:
                                                               BorderRadius.circular(
                                                                 999,
@@ -173,8 +206,7 @@ class BookmarkScreen extends StatelessWidget {
                                                               .textTheme
                                                               .labelSmall
                                                               ?.copyWith(
-                                                                color: AppTheme
-                                                                    .appIconTheme,
+                                                              color: accentColor,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w700,
@@ -184,30 +216,56 @@ class BookmarkScreen extends StatelessWidget {
                                                         ),
                                                       ),
                                                       const Spacer(),
-                                                      Semantics(
-                                                        button: true,
-                                                        label:
-                                                            'Remove bookmark for Ayah ${bookmark.ayahId}',
-                                                        child: IconButton(
-                                                          onPressed: () {
-                                                            Provider.of<
-                                                                  SurahProvider
-                                                                >(
-                                                                  context,
-                                                                  listen: false,
-                                                                )
-                                                                .onBookMarkRemoveByIndex(
-                                                                  index,
-                                                                );
-                                                          },
-                                                          icon: const Icon(
-                                                            Icons
-                                                                .delete_outline,
-                                                            color: AppTheme
-                                                                .appThemePrimary,
+                                                          Row(
+                                                            mainAxisSize:
+                                                                MainAxisSize.min,
+                                                            children: [
+                                                              Semantics(
+                                                                button: true,
+                                                                label:
+                                                                    'Edit label for Ayah ${bookmark.ayahId}',
+                                                                child: IconButton(
+                                                                  tooltip:
+                                                                      'Edit label',
+                                                                  onPressed: () =>
+                                                                      _showEditLabelDialog(
+                                                                        context,
+                                                                        bookmark,
+                                                                      ),
+                                                                  icon: const Icon(
+                                                                    Icons.edit_outlined,
+                                                                    color: AppTheme
+                                                                        .appThemePrimary,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              Semantics(
+                                                                button: true,
+                                                                label:
+                                                                    'Remove bookmark for Ayah ${bookmark.ayahId}',
+                                                                child: IconButton(
+                                                                  tooltip:
+                                                                      'Delete bookmark',
+                                                                  onPressed: () {
+                                                                    Provider.of<
+                                                                          SurahProvider
+                                                                        >(
+                                                                          context,
+                                                                          listen:
+                                                                              false,
+                                                                        )
+                                                                        .onBookMarkRemoveByIndex(
+                                                                          index,
+                                                                        );
+                                                                  },
+                                                                  icon: Icon(
+                                                                    Icons.delete_outline,
+                                                                    color: deleteAccentColor,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
                                                           ),
-                                                        ),
-                                                      ),
                                                     ],
                                                   ),
                                                   Text(
@@ -268,6 +326,64 @@ class BookmarkScreen extends StatelessWidget {
             ),
           ],
         ),
+    );
+  }
+}
+
+class _BookmarkLabelDialog extends StatefulWidget {
+  const _BookmarkLabelDialog({this.initialLabel});
+
+  final String? initialLabel;
+
+  @override
+  State<_BookmarkLabelDialog> createState() => _BookmarkLabelDialogState();
+}
+
+class _BookmarkLabelDialogState extends State<_BookmarkLabelDialog> {
+  late final TextEditingController _textController;
+
+  @override
+  void initState() {
+    super.initState();
+    _textController = TextEditingController(text: widget.initialLabel);
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Edit bookmark label'),
+      content: TextField(
+        controller: _textController,
+        autofocus: true,
+        decoration: const InputDecoration(
+          hintText: 'Enter a label',
+          border: OutlineInputBorder(),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(
+            context,
+          ).pop(BookmarkScreen._clearBookmarkLabelAction),
+          child: const Text('Clear'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(
+            context,
+          ).pop(_textController.text.trim()),
+          child: const Text('Save'),
+        ),
+      ],
     );
   }
 }

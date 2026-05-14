@@ -78,7 +78,7 @@ class AppendixDetailScreen extends StatelessWidget {
                           color: accentColor.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.description_outlined,
                           color: accentColor,
                           size: 22,
@@ -88,7 +88,7 @@ class AppendixDetailScreen extends StatelessWidget {
                       Expanded(
                         child: Text(
                           appendix.title.toUpperCase(),
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
                             color: accentColor,

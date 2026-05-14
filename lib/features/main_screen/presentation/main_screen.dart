@@ -231,6 +231,7 @@ class _MainScreenState extends State<MainScreen> {
         clipBehavior: Clip.none,
         // height: 80,
         decoration: BoxDecoration(
+          // color: Colors.red,
           color: navBg,
           boxShadow: [
             BoxShadow(

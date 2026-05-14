@@ -15,6 +15,7 @@ import 'package:the_message_of_the_quran/core/utils/cross_reference_parser.dart'
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
+import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/interpretation_note_marker.dart';
 
 /// A self-contained bottom sheet that displays the Arabic text and translation
 /// of a referenced Quranic verse (surah:ayah).
@@ -317,20 +318,19 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
       }
       // Tappable (N)
       final num = int.tryParse(match.group(1)!);
-      spans.add(TextSpan(
-        text: '(${match.group(1)})',
-        recognizer: TapGestureRecognizer()
-          ..onTap = () {
-            if (num != null) {
-              _showNestedInterpretation(context, num);
-            }
-          },
-        style: const TextStyle(
-          fontSize: 9,
-          fontWeight: FontWeight.bold,
-          color: AppTheme.appIconTheme,
-        ),
-      ));
+      if (num == null) {
+        spans.add(TextSpan(
+          text: match.group(0),
+          style: AppTextTheme.surahMalayalamStyle(context),
+        ));
+      } else {
+        spans.add(
+          buildInterpretationNoteMarkerSpan(
+            number: num,
+            onTap: () => _showNestedInterpretation(context, num),
+          ),
+        );
+      }
       lastEnd = match.end;
     }
 

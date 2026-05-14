@@ -2,8 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+const Color _lightAppBarTitleAccent = Color.fromRGBO(255, 232, 187, 1);
+const Color _darkAppBarTitleAccent = Color(0xFFF2F2F7);
+
 bool isDarkMode({required BuildContext context}) {
   return Theme.of(context).brightness == Brightness.dark;
+}
+
+Color appBarTitleMatchedAccentColor(BuildContext context) {
+  final theme = Theme.of(context);
+  return theme.appBarTheme.titleTextStyle?.color ??
+      (theme.brightness == Brightness.dark
+          ? _darkAppBarTitleAccent
+          : _lightAppBarTitleAccent);
+}
+
+Color appBarAccentColor(BuildContext context) {
+  return isDarkMode(context: context)
+      ? appBarTitleMatchedAccentColor(context)
+      : AppTheme.appIconTheme;
+}
+
+Color appBarAccentFillColor(
+  BuildContext context, {
+  double alpha = 0.12,
+}) {
+  final clampedAlpha = alpha.clamp(0.0, 1.0).toDouble();
+  return appBarAccentColor(context).withValues(alpha: clampedAlpha);
 }
 
 class ThemeProvider extends ChangeNotifier {

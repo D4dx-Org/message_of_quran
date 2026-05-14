@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
@@ -12,12 +11,6 @@ String _placeArabic(String place) => _isMeccan(place) ? 'مكية' : 'مدنية
 String _toArabicNumerals(int value) {
   const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
   return value.toString().split('').map((d) => arabicDigits[int.parse(d)]).join();
-}
-
-String _getPlaceIcon(String place) {
-  return _isMeccan(place)
-      ? 'assets/icons/revamp/makkah_icon.svg'
-      : 'assets/icons/revamp/madeena_icon.svg';
 }
 
 /// Compact, attractive surah info strip with gradient, number badge, and nav arrows.
@@ -87,16 +80,6 @@ class SurahInfoStrip extends StatelessWidget {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          SvgPicture.asset(
-                            _getPlaceIcon(place),
-                            width: 12,
-                            height: 12,
-                            colorFilter: const ColorFilter.mode(
-                              Color(0xFF8789A3),
-                              BlendMode.srcIn,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
                           Text(
                             '${_placeArabic(place)}،  آياتها  ${_toArabicNumerals(ayahCount)}',
                             style: TextStyle(

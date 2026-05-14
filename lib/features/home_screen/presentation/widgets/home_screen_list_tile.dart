@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
+import 'package:the_message_of_the_quran/features/mushaf/utils/surah_unicode.dart';
 import 'package:the_message_of_the_quran/features/mushaf/widgets/star_number.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
@@ -29,10 +30,17 @@ class HomeScreenListTile extends StatelessWidget {
     final lastReadSurah = context.watch<LastReadProvider>().surahNumber;
 
     final scale = ResponsiveHelper.scaleFactor(context);
+    final arabicGlyph = SurahUnicodeData.getSurahNameUnicode(surah.surahNumber);
+    final arabicLabel = arabicGlyph.isNotEmpty ? arabicGlyph : surah.arabicName;
+    final arabicFontFamily = arabicGlyph.isNotEmpty ? 'sura_names' : 'Amiri';
+    final arabicFontSize = arabicGlyph.isNotEmpty ? 28 * scale : 18 * scale;
     final placeName = isMl
         ? (_isMeccan(surah.place) ? 'മക്ക' : 'മദീന')
         : (_isMeccan(surah.place) ? 'MEKKAH' : 'MADINAH');
     final placeType = _isMeccan(surah.place) ? 'Meccan' : 'Medinan';
+    final dividerColor = isDarkMode
+        ? Colors.white.withValues(alpha: 0.08)
+        : const Color.fromRGBO(124, 58, 40, 1).withValues(alpha: 0.12);
 
     return Semantics(
       button: true,
@@ -43,59 +51,75 @@ class HomeScreenListTile extends StatelessWidget {
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-          child: Row(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              StarNumber(
-                number: surah.surahNumber,
-                outlineOnly: true,
-                isHighlighted: lastReadSurah == surah.surahNumber,
-                size: 42,
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      isMl && surah.malayalamName.isNotEmpty ? surah.malayalamName : surah.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.poppins(
-                        color: textColor,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12 * scale,
-                      ),
+              Row(
+                children: [
+                  StarNumber(
+                    number: surah.surahNumber,
+                    outlineOnly: true,
+                    isHighlighted: lastReadSurah == surah.surahNumber,
+                    size: 42,
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          isMl && surah.malayalamName.isNotEmpty ? surah.malayalamName : surah.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.poppins(
+                            color: textColor,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12 * scale,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          isMl
+                              ? '$placeName  •  ${surah.ayathCount} ആയത്ത്'
+                              : '$placeName  •  ${surah.ayathCount} AYAT',
+                          style: GoogleFonts.poppins(
+                            fontSize: 11 * scale,
+                            color: subColor,
+                            fontWeight: FontWeight.w400,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      isMl
-                          ? '$placeName  •  ${surah.ayathCount} ആയത്ത്'
-                          : '$placeName  •  ${surah.ayathCount} AYAT',
-                      style: GoogleFonts.poppins(
-                        fontSize: 11 * scale,
-                        color: subColor,
-                        fontWeight: FontWeight.w400,
-                        letterSpacing: 0.3,
-                      ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    arabicLabel,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: isDarkMode
+                          ? Colors.white.withValues(alpha: 0.87)
+                          : const Color.fromRGBO(124, 58, 40, 1),
+                      fontFamily: arabicFontFamily,
+                      fontSize: arabicFontSize,
+                      fontWeight: arabicGlyph.isNotEmpty
+                          ? FontWeight.w500
+                          : FontWeight.w700,
+                      height: arabicGlyph.isNotEmpty ? 1.1 : null,
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 8),
+                ],
               ),
-              const SizedBox(width: 8),
-              Text(
-                surah.arabicName,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: isDarkMode
-                      ? Colors.white.withValues(alpha: 0.87)
-                      : const Color.fromRGBO(124, 58, 40, 1),
-                  fontFamily: 'Amiri',
-                  fontSize: 18 * scale,
-                  fontWeight: FontWeight.w700,
-                ),
+              const SizedBox(height: 10),
+              Divider(
+                height: 1,
+                thickness: 1,
+                indent: 56,
+                endIndent: 8,
+                color: dividerColor,
               ),
-              const SizedBox(width: 8),
             ],
           ),
         ),

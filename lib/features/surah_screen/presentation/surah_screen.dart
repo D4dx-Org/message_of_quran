@@ -24,6 +24,7 @@ import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/core/widgets/scroll_to_top_button.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/surah_screen_app_bar.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/cross_reference_sheet.dart';
+import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/interpretation_note_marker.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_auto_advance.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/play_settings_provider.dart';
@@ -61,6 +62,7 @@ class _SurahScreenState extends State<SurahScreen> {
   final ScrollController _scrollController = ScrollController();
   List<GlobalKey> _itemKeys = [];
   bool _showScrollToTop = false;
+  bool _showBottomNavOverlay = false;
   double? _deepLinkCacheExtent;
 
   /// Cached provider references — safe to use in dispose().
@@ -124,6 +126,7 @@ class _SurahScreenState extends State<SurahScreen> {
       _lastKnownAyahStart = null;
       _lastVisibleAyahEnd = null;
       _lastScrolledPlayingAyahId = null;
+      _showBottomNavOverlay = false;
       _surahTransitionPending = false;
       _checkPrefaceAvailability();
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -228,16 +231,21 @@ class _SurahScreenState extends State<SurahScreen> {
   /// on-screen, caching the result for use in [_saveLastRead].
   /// Also updates the scroll-to-top FAB visibility.
   void _onScroll() {
-    // Update scroll-to-top visibility.
-    if (_scrollController.hasClients) {
-      final show = _scrollController.offset > 200;
-      if (show != _showScrollToTop) {
-        setState(() => _showScrollToTop = show);
+    final hasClients = _scrollController.hasClients;
+    final showScrollToTop = hasClients && _scrollController.offset > 200;
+    final blocks = _surahProv.arabicBlockList;
+
+    if (blocks.isEmpty) {
+      if (showScrollToTop != _showScrollToTop || _showBottomNavOverlay) {
+        setState(() {
+          _showScrollToTop = showScrollToTop;
+          _showBottomNavOverlay = false;
+        });
       }
+      return;
     }
 
     // Track the first fully-visible ayah and the last visible ayah.
-    final blocks = _surahProv.arabicBlockList;
     final screenHeight = MediaQuery.of(context).size.height;
     bool foundFirst = false;
     int? lastEnd;
@@ -256,6 +264,22 @@ class _SurahScreenState extends State<SurahScreen> {
       }
       if (topY >= screenHeight) break;
     }
+
+    final totalAyahEnd = blocks.last.verseTo ?? blocks.length;
+    final showBottomNavOverlay =
+        hasClients &&
+        lastEnd != null &&
+        lastEnd >= totalAyahEnd &&
+        _scrollController.position.extentAfter <= 12;
+
+    if (showScrollToTop != _showScrollToTop ||
+        showBottomNavOverlay != _showBottomNavOverlay) {
+      setState(() {
+        _showScrollToTop = showScrollToTop;
+        _showBottomNavOverlay = showBottomNavOverlay;
+      });
+    }
+
     if (lastEnd != null && lastEnd != _lastVisibleAyahEnd) {
       _lastVisibleAyahEnd = lastEnd;
       // Update reading progress in real-time during scroll.
@@ -291,6 +315,106 @@ class _SurahScreenState extends State<SurahScreen> {
     if (_surahProv.index == currentIndex) {
       _surahTransitionPending = false;
     }
+  }
+
+  Widget _buildBottomSurahNavButton({
+    required BuildContext context,
+    required IconData icon,
+    required String tooltip,
+    required VoidCallback onPressed,
+  }) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final navButtonColor = isDarkMode
+        ? Theme.of(context).cardColor
+        : const Color.fromRGBO(255, 250, 234, 1);
+    final iconColor = isDarkMode ? Colors.white : AppTheme.appIconTheme;
+    final borderColor = isDarkMode
+        ? Colors.white.withValues(alpha: 0.18)
+        : AppTheme.appIconTheme.withValues(alpha: 0.24);
+
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: navButtonColor,
+        elevation: 6,
+        shadowColor: Colors.black.withValues(alpha: 0.12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: borderColor),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: onPressed,
+          child: SizedBox(
+            width: 34,
+            height: 34,
+            child: Icon(icon, color: iconColor, size: 18),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFinalAyahNavSection(BuildContext context) {
+    final canGoNext = _canNavigateToAdjacentSurah(false);
+    final canGoPrevious = _canNavigateToAdjacentSurah(true);
+
+    return Column(
+      children: [
+        SizedBox(
+          height: 46,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              const Positioned(
+                left: 0,
+                right: 0,
+                child: Divider(thickness: 0.5, height: 1),
+              ),
+              if (canGoNext || canGoPrevious)
+                IgnorePointer(
+                  ignoring: !_showBottomNavOverlay,
+                  child: AnimatedSlide(
+                    duration: const Duration(milliseconds: 220),
+                    curve: Curves.easeOutCubic,
+                    offset: _showBottomNavOverlay
+                        ? Offset.zero
+                        : const Offset(0, 0.2),
+                    child: AnimatedOpacity(
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeOut,
+                      opacity: _showBottomNavOverlay ? 1 : 0,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (canGoNext)
+                            _buildBottomSurahNavButton(
+                              context: context,
+                              icon: Icons.chevron_left_rounded,
+                              tooltip: 'Next surah',
+                              onPressed: () => _navigateToAdjacentSurah(false),
+                            ),
+                          if (canGoNext && canGoPrevious)
+                            const SizedBox(width: 10),
+                          if (canGoPrevious)
+                            _buildBottomSurahNavButton(
+                              context: context,
+                              icon: Icons.chevron_right_rounded,
+                              tooltip: 'Previous surah',
+                              onPressed: () => _navigateToAdjacentSurah(true),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 18),
+      ],
+    );
   }
 
   /// Advances to the next surah and starts playing its first block.
@@ -970,21 +1094,15 @@ class _SurahScreenState extends State<SurahScreen> {
                   surahNumber,
                 ),
               );
-              final num = block.translationNo;
+              final num = block.translationNo!;
               spans.add(
-                TextSpan(
-                  text: ' ($num)',
-                  recognizer: TapGestureRecognizer()
-                    ..onTap = () => _showInterpretationSheet(
-                      context,
-                      controller,
-                      blockAyah,
-                      pageNumber: num,
-                    ),
-                  style: const TextStyle(
-                    fontSize: 9,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.appIconTheme,
+                buildInterpretationNoteMarkerSpan(
+                  number: num,
+                  onTap: () => _showInterpretationSheet(
+                    context,
+                    controller,
+                    blockAyah,
+                    pageNumber: num,
                   ),
                 ),
               );
@@ -1006,23 +1124,26 @@ class _SurahScreenState extends State<SurahScreen> {
                   );
                 }
                 final num = int.tryParse(match.group(1)!);
-                spans.add(
-                  TextSpan(
-                    text: '(${match.group(1)})',
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () => _showInterpretationSheet(
+                if (num == null) {
+                  spans.add(
+                    TextSpan(
+                      text: match.group(0),
+                      style: AppTextTheme.surahMalayalamStyle(context),
+                    ),
+                  );
+                } else {
+                  spans.add(
+                    buildInterpretationNoteMarkerSpan(
+                      number: num,
+                      onTap: () => _showInterpretationSheet(
                         context,
                         controller,
                         blockAyah,
                         pageNumber: num,
                       ),
-                    style: const TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.appIconTheme,
                     ),
-                  ),
-                );
+                  );
+                }
                 lastEnd = match.end;
               }
               if (found && lastEnd < cleaned.length) {
@@ -1048,19 +1169,13 @@ class _SurahScreenState extends State<SurahScreen> {
                 // since Malayalam translations don't have embedded (N) refs.
                 if (isMl) {
                   spans.add(
-                    TextSpan(
-                      text: ' ($blockAyah) ',
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () => _showInterpretationSheet(
-                          context,
-                          controller,
-                          blockAyah,
-                          pageNumber: blockAyah,
-                        ),
-                      style: const TextStyle(
-                        fontSize: 9,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.appIconTheme,
+                    buildInterpretationNoteMarkerSpan(
+                      number: blockAyah,
+                      onTap: () => _showInterpretationSheet(
+                        context,
+                        controller,
+                        blockAyah,
+                        pageNumber: blockAyah,
                       ),
                     ),
                   );
@@ -1444,37 +1559,6 @@ class _SurahScreenState extends State<SurahScreen> {
     );
   }
 
-  void _showLabelDialog(
-    BuildContext context,
-    SurahProvider controller,
-    int surahNumber,
-    int ayaStart, {
-    String? surahName,
-    String? ayaText,
-    String? surahArabicName,
-  }) {
-    final isBookmarked = controller.isAyahBookmarked(surahNumber, ayaStart);
-    final matches = controller.bookmarkedList.where(
-      (b) => b.surahNumber == surahNumber && b.ayahId == ayaStart,
-    );
-    final initialLabel = matches.isNotEmpty ? matches.first.label ?? '' : '';
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) => _LabelDialog(
-        initialLabel: initialLabel,
-        isBookmarked: isBookmarked,
-        controller: controller,
-        surahNumber: surahNumber,
-        ayaStart: ayaStart,
-        surahName: surahName,
-        ayaText: ayaText,
-        surahArabicName: surahArabicName,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<SurahProvider>(context);
@@ -1575,6 +1659,8 @@ class _SurahScreenState extends State<SurahScreen> {
                             final ayaStart = block.verseFrom ?? index + 1;
                             final ayaEnd = block.verseTo ?? index + 1;
                             final arabicText = block.arabicText ?? '';
+                            final isLastBlock =
+                                index == controller.arabicBlockList.length - 1;
                             final ayahRange = ayaStart == ayaEnd
                                 ? 'Ayah ${_toArabicNumerals(ayaStart)}'
                                 : 'Ayahs ${_toArabicNumerals(ayaStart)} to ${_toArabicNumerals(ayaEnd)}';
@@ -1687,100 +1773,6 @@ class _SurahScreenState extends State<SurahScreen> {
                                             const translationText = '';
                                             return Row(
                                                   children: [
-                                                    // Bookmark
-                                                    IconButton(
-                                                      tooltip: isBookmarked
-                                                          ? 'Remove bookmark'
-                                                          : 'Bookmark',
-                                                      onPressed: () {
-                                                        if (isBookmarked) {
-                                                          controller
-                                                              .onBookMarkRemoveByAyah(
-                                                                surahNumber,
-                                                                ayaStart,
-                                                              );
-                                                        } else {
-                                                          final surah =
-                                                              controller
-                                                                  .surahList[controller
-                                                                  .index];
-                                                          controller.onBookMarkAdd(
-                                                            surahNumber,
-                                                            ayaStart,
-                                                            surahName:
-                                                                surah.name,
-                                                            ayaText:
-                                                                arabicText
-                                                                    .isNotEmpty
-                                                                ? arabicText
-                                                                : null,
-                                                            surahArabicName:
-                                                                surah
-                                                                    .arabicName,
-                                                          );
-                                                        }
-                                                      },
-                                                      icon: Icon(
-                                                        isBookmarked
-                                                            ? Icons.bookmark
-                                                            : Icons
-                                                                  .bookmark_border_outlined,
-                                                        color: AppTheme.appIconTheme,
-                                                      ),
-                                                    ),
-                                                    // Label
-                                                    IconButton(
-                                                      tooltip: 'Label',
-                                                      onPressed: () {
-                                                        final surah =
-                                                            controller
-                                                                .surahList[controller
-                                                                .index];
-                                                        _showLabelDialog(
-                                                          context,
-                                                          controller,
-                                                          surahNumber,
-                                                          ayaStart,
-                                                          surahName: surah.name,
-                                                          ayaText:
-                                                              arabicText
-                                                                  .isNotEmpty
-                                                              ? arabicText
-                                                              : null,
-                                                          surahArabicName:
-                                                              surah.arabicName,
-                                                        );
-                                                      },
-                                                      icon: const Icon(
-                                                        Icons.label_outline,
-                                                        color: AppTheme.appIconTheme,
-                                                      ),
-                                                    ),
-                                                    // Share
-                                                    IconButton(
-                                                      tooltip: 'Share',
-                                                      onPressed: () async {
-                                                        final surah =
-                                                            controller
-                                                                .surahList[controller
-                                                                .index];
-                                                        final shareText =
-                                                            '${surah.name} – Ayah ${_toArabicNumerals(ayaStart)}\n\n'
-                                                            '${arabicText.isNotEmpty ? '$arabicText\n\n' : ''}'
-                                                            '$translationText';
-                                                        if (shareText
-                                                            .trim()
-                                                            .isNotEmpty) {
-                                                          await Share.share(
-                                                            shareText,
-                                                          );
-                                                        }
-                                                      },
-                                                      icon: const Icon(
-                                                        Icons.share_outlined,
-                                                        color: AppTheme.appIconTheme,
-                                                      ),
-                                                    ),
                                                     // Play / Stop
                                                     Consumer<AudioProvider>(
                                                       builder: (ctx, audio, _) {
@@ -1846,11 +1838,80 @@ class _SurahScreenState extends State<SurahScreen> {
                                                         );
                                                       },
                                                     ),
+                                                    // Bookmark
+                                                    IconButton(
+                                                      tooltip: isBookmarked
+                                                          ? 'Remove bookmark'
+                                                          : 'Bookmark',
+                                                      onPressed: () {
+                                                        if (isBookmarked) {
+                                                          controller
+                                                              .onBookMarkRemoveByAyah(
+                                                                surahNumber,
+                                                                ayaStart,
+                                                              );
+                                                        } else {
+                                                          final surah =
+                                                              controller
+                                                                  .surahList[controller
+                                                                  .index];
+                                                          controller.onBookMarkAdd(
+                                                            surahNumber,
+                                                            ayaStart,
+                                                            surahName:
+                                                                surah.name,
+                                                            ayaText:
+                                                                arabicText
+                                                                    .isNotEmpty
+                                                                ? arabicText
+                                                                : null,
+                                                            surahArabicName:
+                                                                surah
+                                                                    .arabicName,
+                                                          );
+                                                        }
+                                                      },
+                                                      icon: Icon(
+                                                        isBookmarked
+                                                            ? Icons.bookmark
+                                                            : Icons
+                                                                  .bookmark_border_outlined,
+                                                        color: AppTheme.appIconTheme,
+                                                      ),
+                                                    ),
+                                                    // Share
+                                                    IconButton(
+                                                      tooltip: 'Share',
+                                                      onPressed: () async {
+                                                        final surah =
+                                                            controller
+                                                                .surahList[controller
+                                                                .index];
+                                                        final shareText =
+                                                            '${surah.name} – Ayah ${_toArabicNumerals(ayaStart)}\n\n'
+                                                            '${arabicText.isNotEmpty ? '$arabicText\n\n' : ''}'
+                                                            '$translationText';
+                                                        if (shareText
+                                                            .trim()
+                                                            .isNotEmpty) {
+                                                          await Share.share(
+                                                            shareText,
+                                                          );
+                                                        }
+                                                      },
+                                                      icon: const Icon(
+                                                        Icons.share_outlined,
+                                                        color: AppTheme.appIconTheme,
+                                                      ),
+                                                    ),
                                                   ],
                                                 );
                                           },
                                         ),
-                                        const Divider(thickness: 0.5),
+                                        if (isLastBlock)
+                                          _buildFinalAyahNavSection(context)
+                                        else
+                                          const Divider(thickness: 0.5),
                                       ],
                                     ),
                                   );
@@ -1859,46 +1920,6 @@ class _SurahScreenState extends State<SurahScreen> {
                             );
                           },
                           childCount: controller.arabicBlockList.length,
-                                        ),
-                                      ),
-                                      // ── Bottom surah navigation arrows ──
-                                      SliverToBoxAdapter(
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 4,
-                                            vertical: 16,
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              if (_canNavigateToAdjacentSurah(false))
-                                                IconButton(
-                                                  tooltip: 'Next surah',
-                                                  onPressed: () =>
-                                                      _navigateToAdjacentSurah(false),
-                                                  icon: const Icon(
-                                                    Icons.arrow_back_ios_new,
-                                                    color: AppTheme.appIconTheme,
-                                                  ),
-                                                )
-                                              else
-                                                const SizedBox(width: 48),
-                                              const Spacer(),
-                                              if (_canNavigateToAdjacentSurah(true))
-                                                IconButton(
-                                                  tooltip: 'Previous surah',
-                                                  onPressed: () =>
-                                                      _navigateToAdjacentSurah(true),
-                                                  icon: const Icon(
-                                                    Icons.arrow_forward_ios_rounded,
-                                                    color: AppTheme.appIconTheme,
-                                                  ),
-                                                )
-                                              else
-                                                const SizedBox(width: 48),
-                                            ],
-                                          ),
                                         ),
                                       ),
                                     ],
@@ -2179,103 +2200,6 @@ class _SurahScreenState extends State<SurahScreen> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _LabelDialog extends StatefulWidget {
-  final String initialLabel;
-  final bool isBookmarked;
-  final SurahProvider controller;
-  final int surahNumber;
-  final int ayaStart;
-  final String? surahName;
-  final String? ayaText;
-  final String? surahArabicName;
-
-  const _LabelDialog({
-    required this.initialLabel,
-    required this.isBookmarked,
-    required this.controller,
-    required this.surahNumber,
-    required this.ayaStart,
-    this.surahName,
-    this.ayaText,
-    this.surahArabicName,
-  });
-
-  @override
-  State<_LabelDialog> createState() => _LabelDialogState();
-}
-
-class _LabelDialogState extends State<_LabelDialog> {
-  late final TextEditingController _textController;
-
-  @override
-  void initState() {
-    super.initState();
-    _textController = TextEditingController(text: widget.initialLabel);
-  }
-
-  @override
-  void dispose() {
-    _textController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Label Ayah'),
-      content: TextField(
-        controller: _textController,
-        autofocus: true,
-        decoration: const InputDecoration(
-          hintText: 'Enter a label…',
-          border: OutlineInputBorder(),
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            if (widget.isBookmarked) {
-              widget.controller.updateBookmarkLabel(
-                widget.surahNumber,
-                widget.ayaStart,
-                null,
-              );
-            }
-            Navigator.pop(context);
-          },
-          child: const Text('Clear'),
-        ),
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
-        ),
-        FilledButton(
-          onPressed: () async {
-            final label = _textController.text.trim();
-            if (!widget.isBookmarked) {
-              await widget.controller.onBookMarkAdd(
-                widget.surahNumber,
-                widget.ayaStart,
-                surahName: widget.surahName,
-                ayaText: widget.ayaText,
-                surahArabicName: widget.surahArabicName,
-              );
-            }
-            widget.controller.updateBookmarkLabel(
-              widget.surahNumber,
-              widget.ayaStart,
-              label.isEmpty ? null : label,
-            );
-            if (!context.mounted) return;
-            Navigator.pop(context);
-          },
-          child: const Text('Save'),
-        ),
-      ],
     );
   }
 }

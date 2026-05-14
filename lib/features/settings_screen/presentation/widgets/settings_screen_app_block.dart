@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_card.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_list_tile.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/reminder_provider.dart';
@@ -12,6 +12,9 @@ class SettingsScreenAppBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final wakelockProvider = context.watch<WakelockProvider>();
+    final accentColor = appBarAccentColor(context);
+    final accentTrackColor = appBarAccentFillColor(context, alpha: 0.35);
+
     return Consumer<ReminderProvider>(
       builder: (context, provider, _) {
         return SettingsScreenCard(
@@ -23,7 +26,8 @@ class SettingsScreenAppBlock extends StatelessWidget {
                 icon: Icons.light_mode_outlined,
                 trailing: Switch.adaptive(
                   value: wakelockProvider.keepScreenOn,
-                  activeThumbColor: AppTheme.appIconTheme,
+                  activeThumbColor: accentColor,
+                  activeTrackColor: accentTrackColor,
                   onChanged: (value) {
                     wakelockProvider.toggleKeepScreenOn(value);
                   },
@@ -35,7 +39,8 @@ class SettingsScreenAppBlock extends StatelessWidget {
                 icon: Icons.notifications_outlined,
                 trailing: Switch.adaptive(
                   value: provider.isEnabled,
-                  activeThumbColor: AppTheme.appIconTheme,
+                  activeThumbColor: accentColor,
+                  activeTrackColor: accentTrackColor,
                   onChanged: (value) async {
                     final success = await provider.toggleReminder(value);
                     if (!success && context.mounted) {
@@ -63,13 +68,13 @@ class SettingsScreenAppBlock extends StatelessWidget {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: AppTheme.appIconTheme.withValues(alpha: 0.12),
+                        color: appBarAccentFillColor(context),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         provider.time.format(context),
-                        style:const TextStyle(
-                          color: AppTheme.appIconTheme,
+                        style: TextStyle(
+                          color: accentColor,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -88,6 +93,8 @@ class SettingsScreenAppBlock extends StatelessWidget {
     BuildContext context,
     ReminderProvider provider,
   ) async {
+    final timePickerAccentColor = appBarTitleMatchedAccentColor(context);
+
     final picked = await showTimePicker(
       context: context,
       initialTime: provider.time,
@@ -95,7 +102,7 @@ class SettingsScreenAppBlock extends StatelessWidget {
         return Theme(
           data: Theme.of(context).copyWith(
             timePickerTheme: TimePickerThemeData(
-              dayPeriodColor: AppTheme.appIconTheme,
+              dayPeriodColor: timePickerAccentColor,
               dayPeriodTextColor: WidgetStateColor.resolveWith((states) {
                 if (states.contains(WidgetState.selected)) {
                   return Colors.white;
