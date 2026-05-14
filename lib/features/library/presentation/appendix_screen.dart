@@ -189,6 +189,9 @@ class _AppendixAccordionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final cardColor = isDark ? const Color(0xFF2C2C2E) : Colors.white;
+    final numeral = appendix.romanNumeral.isEmpty
+        ? appendix.number.toString()
+        : appendix.romanNumeral.toUpperCase();
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -216,7 +219,32 @@ class _AppendixAccordionTile extends StatelessWidget {
                   key: titleKey,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Animated icon inside colored box
+                    SizedBox(
+                      width: 28,
+                      child: Text(
+                        numeral,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          height: 1.2,
+                          color: accentColor,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        appendix.title.toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          height: 1.3,
+                          color: accentColor,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
@@ -230,19 +258,6 @@ class _AppendixAccordionTile extends StatelessWidget {
                           Icons.expand_more,
                           color: accentColor,
                           size: 20,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    // Title
-                    Expanded(
-                      child: Text(
-                        appendix.title.toUpperCase(),
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          height: 1.3,
-                          color: accentColor,
                         ),
                       ),
                     ),
