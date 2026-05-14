@@ -77,16 +77,24 @@ class SettingsScreenTajweedBlock extends StatelessWidget {
                 if (tajweed.isExtracting) ...[
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                    child: Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                        LinearProgressIndicator(
+                          value: tajweed.extractTotalFiles > 0
+                              ? tajweed.extractProgress
+                              : null,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.surfaceContainerHighest,
+                          color: AppTheme.appIconTheme,
+                          borderRadius: BorderRadius.circular(4),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(height: 6),
                         Text(
-                          'Extracting images …',
+                          tajweed.extractTotalFiles > 0
+                              ? 'Extracting images ... '
+                                  '${(tajweed.extractProgress * 100).toStringAsFixed(0)}%'
+                              : 'Extracting images ...',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 color: Theme.of(context).colorScheme.outline,
                               ),

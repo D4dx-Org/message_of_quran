@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:archive/archive_io.dart';
 import 'package:flutter/foundation.dart';
@@ -21,9 +22,20 @@ class TajweedProvider extends ChangeNotifier {
   double _downloadProgress = 0.0;
   bool _downloadComplete = false;
   bool _isExtracting = false;
+  double _extractProgress = 0.0;
+  int _extractFilesDone = 0;
+  int _extractTotalFiles = 0;
   String? _downloadError;
   int _currentGeneration = 0;
   http.Client? _httpClient;
+  Isolate? _extractIsolate;
+  Completer<void>? _extractCompleter;
+  ReceivePort? _extractProgressPort;
+  ReceivePort? _extractErrorPort;
+  ReceivePort? _extractExitPort;
+  StreamSubscription<dynamic>? _extractProgressSubscription;
+  StreamSubscription<dynamic>? _extractErrorSubscription;
+  StreamSubscription<dynamic>? _extractExitSubscription;
 
   bool get enabled => _enabled;
   bool get isDownloading => _isDownloading;
@@ -31,6 +43,9 @@ class TajweedProvider extends ChangeNotifier {
   double get downloadProgress => _downloadProgress;
   bool get downloadComplete => _downloadComplete;
   bool get isExtracting => _isExtracting;
+  double get extractProgress => _extractProgress;
+  int get extractFilesDone => _extractFilesDone;
+  int get extractTotalFiles => _extractTotalFiles;
   String? get downloadError => _downloadError;
 
   // ── Static helpers for resolving local image paths ──────────────────
@@ -69,6 +84,15 @@ class TajweedProvider extends ChangeNotifier {
     _load();
   }
 
+  @override
+  void dispose() {
+    _currentGeneration++;
+    _httpClient?.close();
+    _httpClient = null;
+    _stopExtraction();
+    super.dispose();
+  }
+
   Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
     _enabled = prefs.getBool(_enabledKey) ?? false;
@@ -88,10 +112,12 @@ class TajweedProvider extends ChangeNotifier {
       _currentGeneration++;
       _httpClient?.close();
       _httpClient = null;
+      _stopExtraction();
       _isDownloading = false;
       _isExtracting = false;
       _downloadPaused = false;
       _downloadProgress = 0.0;
+      _downloadError = null;
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_enabledKey, value);
       notifyListeners();
@@ -143,6 +169,7 @@ class TajweedProvider extends ChangeNotifier {
     _isExtracting = false;
     _downloadPaused = false;
     _downloadProgress = 0.0;
+    _resetExtractionProgress();
     _downloadError = null;
     notifyListeners();
 
@@ -164,7 +191,7 @@ class TajweedProvider extends ChangeNotifier {
       await Future.delayed(Duration.zero);
 
       await imagesDir.create(recursive: true);
-      await compute(_extractZip, _ExtractArgs(tempZip.path, baseDir));
+      await _extractZipInIsolate(tempZip.path, baseDir, myGen);
       if (_currentGeneration != myGen) return;
 
       // Clean up temp ZIP.
@@ -177,6 +204,8 @@ class TajweedProvider extends ChangeNotifier {
       }
 
       _isExtracting = false;
+      _extractProgress = 1.0;
+      _extractFilesDone = _extractTotalFiles;
       _downloadComplete = true;
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_downloadCompleteKey, true);
@@ -189,6 +218,141 @@ class TajweedProvider extends ChangeNotifier {
       _downloadError = 'Download failed. Tap to retry.';
       notifyListeners();
     }
+  }
+
+  void _resetExtractionProgress() {
+    _extractProgress = 0.0;
+    _extractFilesDone = 0;
+    _extractTotalFiles = 0;
+  }
+
+  void _completeExtraction([Object? error, StackTrace? stackTrace]) {
+    final completer = _extractCompleter;
+    _extractCompleter = null;
+    if (completer == null || completer.isCompleted) return;
+    if (error != null) {
+      completer.completeError(error, stackTrace);
+      return;
+    }
+    completer.complete();
+  }
+
+  void _disposeExtractionResources() {
+    _extractProgressSubscription?.cancel();
+    _extractProgressSubscription = null;
+    _extractErrorSubscription?.cancel();
+    _extractErrorSubscription = null;
+    _extractExitSubscription?.cancel();
+    _extractExitSubscription = null;
+    _extractProgressPort?.close();
+    _extractProgressPort = null;
+    _extractErrorPort?.close();
+    _extractErrorPort = null;
+    _extractExitPort?.close();
+    _extractExitPort = null;
+    _extractIsolate = null;
+  }
+
+  void _stopExtraction() {
+    _extractIsolate?.kill(priority: Isolate.immediate);
+    _disposeExtractionResources();
+    _completeExtraction();
+    _resetExtractionProgress();
+  }
+
+  Future<void> _extractZipInIsolate(
+    String zipPath,
+    String outDir,
+    int myGen,
+  ) async {
+    _disposeExtractionResources();
+
+    final progressPort = ReceivePort();
+    final errorPort = ReceivePort();
+    final exitPort = ReceivePort();
+    final completer = Completer<void>();
+
+    _extractProgressPort = progressPort;
+    _extractErrorPort = errorPort;
+    _extractExitPort = exitPort;
+    _extractCompleter = completer;
+
+    void finish([Object? error, StackTrace? stackTrace]) {
+      _completeExtraction(error, stackTrace);
+      _disposeExtractionResources();
+    }
+
+    _extractProgressSubscription = progressPort.listen((message) {
+      if (message is! Map) return;
+      if (_currentGeneration != myGen) return;
+
+      final type = message['type'];
+      if (type == 'count') {
+        _extractTotalFiles = message['total'] as int? ?? 0;
+        notifyListeners();
+        return;
+      }
+
+      if (type == 'progress') {
+        _extractFilesDone = message['done'] as int? ?? 0;
+        if (_extractTotalFiles > 0) {
+          _extractProgress = _extractFilesDone / _extractTotalFiles;
+        }
+        notifyListeners();
+        return;
+      }
+
+      if (type == 'done') {
+        _extractFilesDone = _extractTotalFiles;
+        _extractProgress = _extractTotalFiles == 0 ? 0.0 : 1.0;
+        notifyListeners();
+        finish();
+        return;
+      }
+
+      if (type == 'error') {
+        finish(Exception(message['message'] ?? 'Tajweed extraction failed.'));
+      }
+    });
+
+    _extractErrorSubscription = errorPort.listen((dynamic errorData) {
+      final Object error;
+      StackTrace? stackTrace;
+
+      if (errorData is List && errorData.isNotEmpty) {
+        error = Exception('${errorData.first}');
+        if (errorData.length > 1 && errorData[1] is String) {
+          stackTrace = StackTrace.fromString(errorData[1] as String);
+        }
+      } else {
+        error = Exception('$errorData');
+      }
+
+      finish(error, stackTrace);
+    });
+
+    _extractExitSubscription = exitPort.listen((_) {
+      if (_extractCompleter == null) return;
+      if (_currentGeneration != myGen) {
+        finish();
+        return;
+      }
+      finish(Exception('Tajweed extraction ended unexpectedly.'));
+    });
+
+    _extractIsolate = await Isolate.spawn<Map<String, Object?>>(
+      _extractZipEntryPoint,
+      {
+        'zipPath': zipPath,
+        'outDir': outDir,
+        'sendPort': progressPort.sendPort,
+      },
+      onError: errorPort.sendPort,
+      onExit: exitPort.sendPort,
+      errorsAreFatal: true,
+    );
+
+    await completer.future;
   }
 
   Future<void> _downloadZipWithRetry(File tempZip, int myGen) async {
@@ -254,20 +418,53 @@ class TajweedProvider extends ChangeNotifier {
     }
   }
 
-  /// Extracts the ZIP in an isolate to avoid blocking the UI thread.
-  static Future<void> _extractZip(_ExtractArgs args) async {
-    final bytes = await File(args.zipPath).readAsBytes();
-    final archive = ZipDecoder().decodeBytes(bytes);
+  /// Extracts the ZIP in an isolate using file-backed streams to reduce memory use.
+  static void _extractZipEntryPoint(Map<String, Object?> message) {
+    final sendPort = message['sendPort'] as SendPort;
+    final zipPath = message['zipPath'] as String;
+    final outDir = message['outDir'] as String;
 
-    for (final entry in archive) {
-      if (!entry.isFile) continue;
-      final name = entry.name;
-      if (!name.toLowerCase().endsWith('.png')) continue;
+    InputFileStream? inputStream;
+    try {
+      inputStream = InputFileStream(zipPath);
+      final archive = ZipDecoder().decodeStream(inputStream);
+      final pngEntries = archive
+          .where(
+            (entry) => entry.isFile && entry.name.toLowerCase().endsWith('.png'),
+          )
+          .toList(growable: false);
 
-      final outFile = File('${args.outDir}/$name');
-      await outFile.parent.create(recursive: true);
-      final data = entry.content as List<int>;
-      await outFile.writeAsBytes(data, flush: true);
+      sendPort.send({'type': 'count', 'total': pngEntries.length});
+
+      var extracted = 0;
+      for (final entry in pngEntries) {
+        final outFile = File('$outDir/${entry.name}');
+        outFile.parent.createSync(recursive: true);
+
+        final outputStream = OutputFileStream(outFile.path);
+        try {
+          entry.writeContent(outputStream);
+        } finally {
+          outputStream.closeSync();
+        }
+
+        extracted++;
+        if (extracted == pngEntries.length || extracted % 25 == 0) {
+          sendPort.send({'type': 'progress', 'done': extracted});
+        }
+      }
+
+      sendPort.send({'type': 'done'});
+    } catch (e, stackTrace) {
+      sendPort.send(
+        {
+          'type': 'error',
+          'message': '$e',
+          'stackTrace': '$stackTrace',
+        },
+      );
+    } finally {
+      inputStream?.closeSync();
     }
   }
 
@@ -282,11 +479,4 @@ class TajweedProvider extends ChangeNotifier {
     }
     return true;
   }
-}
-
-/// Arguments passed to the isolate for ZIP extraction.
-class _ExtractArgs {
-  final String zipPath;
-  final String outDir;
-  const _ExtractArgs(this.zipPath, this.outDir);
 }
