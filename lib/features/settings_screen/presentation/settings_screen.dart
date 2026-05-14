@@ -11,7 +11,6 @@ import 'package:the_message_of_the_quran/features/settings_screen/presentation/w
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_tajweed_block.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
-import 'package:the_message_of_the_quran/features/settings_screen/providers/play_settings_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
 class SettingsScreen extends StatelessWidget {
