@@ -7,6 +7,22 @@ class JuzHizbProvider extends ChangeNotifier {
   List<JuzHizbModel> hizbList = [];
   bool isLoading = false;
 
+  Future<void> loadJuz() async {
+    if (juzList.isNotEmpty) return;
+    isLoading = true;
+    notifyListeners();
+
+    try {
+      juzList = await JuzHizbDbHelper.getAllJuz();
+    } catch (e) {
+      debugPrint('JuzHizbProvider: juz load failed - $e');
+      juzList = [];
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> loadAll() async {
     if (juzList.isNotEmpty && hizbList.isNotEmpty) return;
     isLoading = true;

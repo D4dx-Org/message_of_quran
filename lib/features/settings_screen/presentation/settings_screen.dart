@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
-import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_app_block.dart';
@@ -89,6 +88,9 @@ class _ThemeLanguageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accentColor = appBarAccentColor(context);
+    final accentTrackColor = appBarAccentFillColor(context, alpha: 0.35);
+
     return SettingsScreenCard(
       child: Column(
         children: [
@@ -100,13 +102,16 @@ class _ThemeLanguageCard extends StatelessWidget {
               builder: (context, provider, child) {
                 return Switch.adaptive(
                   value: provider.isDarkMode,
-                  activeThumbColor: AppTheme.appIconTheme,
+                  activeThumbColor: accentColor,
+                  activeTrackColor: accentTrackColor,
                   thumbIcon: WidgetStatePropertyAll(
                     Icon(
                       provider.isDarkMode
                           ? Icons.dark_mode
                           : Icons.light_mode,
-                      color: Colors.white,
+                      color: provider.isDarkMode
+                          ? Theme.of(context).scaffoldBackgroundColor
+                          : Colors.white,
                     ),
                   ),
                   onChanged: (value) {
@@ -125,7 +130,7 @@ class _ThemeLanguageCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.language, color: AppTheme.appIconTheme),
+                    Icon(Icons.language, color: accentColor),
                     const SizedBox(width: 16),
                     Text(
                       'Language',
@@ -186,7 +191,9 @@ class _FontSettingsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accentColor = appBarAccentColor(context);
     final controller = Provider.of<FontSizeChangerProvider>(context);
+
     return SettingsScreenCard(
       child: Column(
         children: [
@@ -198,9 +205,9 @@ class _FontSettingsCard extends StatelessWidget {
               trailing: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
                   value: value.fontType,
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.arrow_drop_down,
-                    color: AppTheme.appIconTheme,
+                    color: accentColor,
                   ),
                   style: TextStyle(
                     fontSize: 13,
@@ -219,10 +226,10 @@ class _FontSettingsCard extends StatelessWidget {
                         child: Text(
                           FontSizeChangerProvider.fontDisplayNames[font] ??
                               font,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: AppTheme.appIconTheme,
+                            color: accentColor,
                           ),
                         ),
                       );
@@ -245,7 +252,7 @@ class _FontSettingsCard extends StatelessWidget {
                                   ? FontWeight.w600
                                   : FontWeight.w400,
                               color: isSelected
-                                  ? AppTheme.appIconTheme
+                                  ? accentColor
                                   : Theme.of(context)
                                       .textTheme
                                       .bodyMedium
@@ -254,10 +261,10 @@ class _FontSettingsCard extends StatelessWidget {
                           ),
                           if (isSelected) ...[
                             const SizedBox(width: 6),
-                            const Icon(
+                            Icon(
                               Icons.check,
                               size: 16,
-                              color: AppTheme.appIconTheme,
+                              color: accentColor,
                             ),
                           ],
                         ],
@@ -285,7 +292,7 @@ class _FontSettingsCard extends StatelessWidget {
                     return Text(
                       '${value.quranFontSize}',
                       style: AppTextTheme.surahTitle.copyWith(
-                        color: AppTheme.appIconTheme,
+                        color: accentColor,
                       ),
                     );
                   },
@@ -314,7 +321,7 @@ class _FontSettingsCard extends StatelessWidget {
                     return Text(
                       '${value.quranTransaltionFontSize}',
                       style: AppTextTheme.surahTitle.copyWith(
-                        color: AppTheme.appIconTheme,
+                        color: accentColor,
                       ),
                     );
                   },
@@ -343,7 +350,7 @@ class _FontSettingsCard extends StatelessWidget {
                     return Text(
                       '${value.interpretationFontSize}',
                       style: AppTextTheme.surahTitle.copyWith(
-                        color: AppTheme.appIconTheme,
+                        color: accentColor,
                       ),
                     );
                   },
@@ -368,6 +375,9 @@ class _LayoutSettingsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accentColor = appBarAccentColor(context);
+    final accentTrackColor = appBarAccentFillColor(context, alpha: 0.35);
+
     return SettingsScreenCard(
       child: Column(
         children: [
@@ -377,7 +387,8 @@ class _LayoutSettingsCard extends StatelessWidget {
               icon: Icons.format_align_justify,
               trailing: Switch(
                 value: value.translationJustify,
-                activeThumbColor: AppTheme.appIconTheme,
+                activeThumbColor: accentColor,
+                activeTrackColor: accentTrackColor,
                 onChanged: value.setTranslationJustify,
               ),
             ),
@@ -389,7 +400,8 @@ class _LayoutSettingsCard extends StatelessWidget {
               icon: Icons.notes,
               trailing: Switch(
                 value: value.interpretationJustify,
-                activeThumbColor: AppTheme.appIconTheme,
+                activeThumbColor: accentColor,
+                activeTrackColor: accentTrackColor,
                 onChanged: value.setInterpretationJustify,
               ),
             ),
@@ -401,7 +413,8 @@ class _LayoutSettingsCard extends StatelessWidget {
               icon: Icons.auto_stories_outlined,
               trailing: Switch(
                 value: value.quranJustify,
-                activeThumbColor: AppTheme.appIconTheme,
+                activeThumbColor: accentColor,
+                activeTrackColor: accentTrackColor,
                 onChanged: value.setQuranJustify,
               ),
             ),
@@ -428,17 +441,18 @@ class _LanguageChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accentColor = appBarAccentColor(context);
+    final accentFillColor = appBarAccentFillColor(context);
+
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
         decoration: BoxDecoration(
-          color: selected
-              ? AppTheme.appIconTheme.withValues(alpha: 0.12)
-              : Colors.transparent,
+          color: selected ? accentFillColor : Colors.transparent,
           border: Border.all(
-            color: selected ? AppTheme.appIconTheme : Colors.grey.shade400,
+            color: selected ? accentColor : Colors.grey.shade400,
             width: selected ? 1.5 : 1,
           ),
           borderRadius: BorderRadius.circular(10),
@@ -451,7 +465,7 @@ class _LanguageChip extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
-                color: selected ? AppTheme.appIconTheme : Colors.grey,
+                color: selected ? accentColor : Colors.grey,
               ),
             ),
           ],

@@ -35,9 +35,6 @@ import 'package:the_message_of_the_quran/features/settings_screen/providers/lang
 import 'package:the_message_of_the_quran/features/surah_screen/provider/audio_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
-bool _isMeccan(String place) =>
-    place.contains('مكية') || place.toLowerCase().contains('mecca');
-
 String _toArabicNumerals(int value) {
   const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
   return value
@@ -858,9 +855,7 @@ class _SurahScreenState extends State<SurahScreen> {
                 children: [
                   _infoChip(
                     isMl ? 'അവതരണം :' : 'Revelation :',
-                    _isMeccan(surah.place)
-                        ? (isMl ? 'മക്ക' : 'Makkah')
-                        : (isMl ? 'മദീന' : 'Madinah'),
+                    surah.place.trim(),
                   ),
                   _infoChip(
                     isMl ? 'സൂക്തങ്ങൾ :' : 'Verses :',
@@ -1325,7 +1320,6 @@ class _SurahScreenState extends State<SurahScreen> {
       ),
       builder: (_) => Consumer<SurahProvider>(
         builder: (ctx, ctrl, _) {
-          final isMl = ctx.read<LanguageProvider>().isMalayalam;
           final fontSettings = Provider.of<FontSizeChangerProvider>(ctx);
           final isLoading = ctrl.currentInterpretationNumber == -1;
           final hasBounds =
@@ -1337,18 +1331,29 @@ class _SurahScreenState extends State<SurahScreen> {
           final canNext =
               hasBounds &&
               ctrl.currentInterpretationNumber < ctrl.maxInterpretationNumber;
+          final hasSurah =
+              ctrl.surahList.isNotEmpty &&
+              ctrl.index >= 0 &&
+              ctrl.index < ctrl.surahList.length;
+          final surah = hasSurah ? ctrl.surahList[ctrl.index] : null;
+            final headerAyah =
+              ctrl.interpretationList.isNotEmpty &&
+                ctrl.interpretationList.first.ayaRangeStart > 0
+              ? ctrl.interpretationList.first.ayaRangeStart
+              : null;
+            final headerTitle = surah == null
+              ? ''
+              : headerAyah == null
+              ? surah.name
+              : '${surah.name} : $headerAyah';
 
           // Build combined text for copy/share
           String combinedText() {
-            if (ctrl.surahList.isEmpty) return '';
-            final surah = ctrl.surahList[ctrl.index];
-            final header = hasBounds
-                ? '${surah.name} — ${ctrl.interpretationList.isNotEmpty ? '(${ctrl.interpretationList.first.interpretationNumber})' : ''}'
-                : surah.name;
+            if (headerTitle.isEmpty) return '';
             final body = ctrl.interpretationList
                 .map((e) => e.interpretationText)
                 .join('\n\n');
-            return '$header\n\n$body';
+            return body.trim().isEmpty ? headerTitle : '$headerTitle\n\n$body';
           }
 
           return ConstrainedBox(
@@ -1372,28 +1377,20 @@ class _SurahScreenState extends State<SurahScreen> {
                     ),
                   ),
                 ),
-                // Header row: title + page counter
+                // Header title
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    children: [
-                      Text(
-                        isMl ? 'വിശദീകരണം' : 'Explanation',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      headerTitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
                       ),
-                      const Spacer(),
-                      if (!isLoading && hasBounds)
-                        Text(
-                          '${ctrl.currentInterpretationNumber} / ${ctrl.maxInterpretationNumber}',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 13,
-                          ),
-                        ),
-                    ],
+                    ),
                   ),
                 ),
                 const Divider(height: 16),
@@ -1412,46 +1409,15 @@ class _SurahScreenState extends State<SurahScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: ctrl.interpretationList.map((item) {
-                                final rangeLabel =
-                                    item.ayaRangeStart == item.ayaRangeEnd
-                                    ? '${item.ayaRangeStart}'
-                                    : '${item.ayaRangeStart}–${item.ayaRangeEnd}';
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 16),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                          vertical: 4,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Theme.of(ctx).textTheme.bodyLarge?.color ?? const Color.fromRGBO(124, 58, 40, 1),
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          '($rangeLabel)',
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 13,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      _buildInterpretationCrossRefText(
-                                        ctx,
-                                        item.interpretationText,
-                                        ctrl.surahList.isNotEmpty
-                                            ? ctrl.surahList[ctrl.index].surahNumber
-                                            : 0,
-                                        fontSettings.interpretationJustify,
-                                      ),
-                                    ],
+                                  child: _buildInterpretationCrossRefText(
+                                    ctx,
+                                    item.interpretationText,
+                                    ctrl.surahList.isNotEmpty
+                                        ? ctrl.surahList[ctrl.index].surahNumber
+                                        : 0,
+                                    fontSettings.interpretationJustify,
                                   ),
                                 );
                               }).toList(),

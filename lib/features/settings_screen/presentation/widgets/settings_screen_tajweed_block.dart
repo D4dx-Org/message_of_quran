@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_card.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_list_tile.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/tajweed_provider.dart';
@@ -10,6 +10,9 @@ class SettingsScreenTajweedBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accentColor = appBarAccentColor(context);
+    final accentTrackColor = appBarAccentFillColor(context, alpha: 0.35);
+
     return Consumer<TajweedProvider>(
       builder: (context, tajweed, _) {
         return SettingsScreenCard(
@@ -22,7 +25,8 @@ class SettingsScreenTajweedBlock extends StatelessWidget {
                 icon: Icons.color_lens_outlined,
                 trailing: Switch(
                   value: tajweed.enabled,
-                  activeThumbColor: AppTheme.appIconTheme,
+                  activeThumbColor: accentColor,
+                  activeTrackColor: accentTrackColor,
                   onChanged: (v) {
                     // Turning OFF while a download is active or paused → ask the user.
                     if (!v && (tajweed.isDownloading || tajweed.isDownloadPaused)) {
@@ -86,7 +90,7 @@ class SettingsScreenTajweedBlock extends StatelessWidget {
                               : null,
                           backgroundColor:
                               Theme.of(context).colorScheme.surfaceContainerHighest,
-                          color: AppTheme.appIconTheme,
+                          color: accentColor,
                           borderRadius: BorderRadius.circular(4),
                         ),
                         const SizedBox(height: 6),
@@ -112,7 +116,7 @@ class SettingsScreenTajweedBlock extends StatelessWidget {
                           value: tajweed.downloadProgress,
                           backgroundColor:
                               Theme.of(context).colorScheme.surfaceContainerHighest,
-                          color: AppTheme.appIconTheme,
+                          color: accentColor,
                           borderRadius: BorderRadius.circular(4),
                         ),
                         const SizedBox(height: 6),
@@ -150,7 +154,7 @@ class SettingsScreenTajweedBlock extends StatelessWidget {
                         TextButton(
                           onPressed: tajweed.resumeDownload,
                           style: TextButton.styleFrom(
-                            foregroundColor: AppTheme.appIconTheme,
+                            foregroundColor: accentColor,
                             textStyle: const TextStyle(
                               fontWeight: FontWeight.w600,
                             ),
@@ -165,16 +169,16 @@ class SettingsScreenTajweedBlock extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                     child: Row(
                       children: [
-                       const Icon(
+                        Icon(
                           Icons.check_circle_outline,
                           size: 16,
-                          color: AppTheme.appIconTheme,
+                          color: accentColor,
                         ),
                         const SizedBox(width: 6),
                         Text(
                           'Tajweed Enabled',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: AppTheme.appIconTheme,
+                                color: accentColor,
                               ),
                         ),
                       ],

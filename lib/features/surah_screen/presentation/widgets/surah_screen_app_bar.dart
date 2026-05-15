@@ -3,21 +3,104 @@ import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
-bool _isMeccan(String place) =>
-    place.contains('مكية') || place.toLowerCase().contains('mecca');
-
-String _placeArabic(String place) => _isMeccan(place) ? 'مكية' : 'مدنية';
-
-String _toArabicNumerals(int value) {
-  const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-  return value.toString().split('').map((d) => arabicDigits[int.parse(d)]).join();
+String _periodLabel(String place) {
+  final normalizedPlace = place.trim();
+  if (normalizedPlace.isEmpty) {
+    return 'Period';
+  }
+  return '$normalizedPlace Period';
 }
 
-/// Compact, attractive surah info strip with gradient, number badge, and nav arrows.
+String _resolveOrdinalLabel(String ordinalLabel, int surahNumber) {
+  final trimmed = ordinalLabel.trim();
+  if (trimmed.isNotEmpty) {
+    return trimmed;
+  }
+  return _ordinalWord(surahNumber);
+}
+
+String _ordinalWord(int value) {
+  if (value <= 0) {
+    return value.toString();
+  }
+
+  const firstOrdinals = <String>[
+    '',
+    'First',
+    'Second',
+    'Third',
+    'Fourth',
+    'Fifth',
+    'Sixth',
+    'Seventh',
+    'Eighth',
+    'Ninth',
+    'Tenth',
+    'Eleventh',
+    'Twelfth',
+    'Thirteenth',
+    'Fourteenth',
+    'Fifteenth',
+    'Sixteenth',
+    'Seventeenth',
+    'Eighteenth',
+    'Nineteenth',
+  ];
+  const tensWords = <int, String>{
+    20: 'Twenty',
+    30: 'Thirty',
+    40: 'Forty',
+    50: 'Fifty',
+    60: 'Sixty',
+    70: 'Seventy',
+    80: 'Eighty',
+    90: 'Ninety',
+  };
+  const tensOrdinals = <int, String>{
+    20: 'Twentieth',
+    30: 'Thirtieth',
+    40: 'Fortieth',
+    50: 'Fiftieth',
+    60: 'Sixtieth',
+    70: 'Seventieth',
+    80: 'Eightieth',
+    90: 'Ninetieth',
+  };
+
+  if (value < firstOrdinals.length) {
+    return firstOrdinals[value];
+  }
+  if (value < 100) {
+    final tens = (value ~/ 10) * 10;
+    final units = value % 10;
+    if (units == 0) {
+      return tensOrdinals[tens] ?? value.toString();
+    }
+    return '${tensWords[tens]}-${firstOrdinals[units]}';
+  }
+  if (value == 100) {
+    return 'One Hundredth';
+  }
+  if (value < 200) {
+    return 'One Hundred ${_ordinalWord(value - 100)}';
+  }
+  return value.toString();
+}
+
+String _surahNameLine(String surahName, String surahTranslation) {
+  final trimmedTranslation = surahTranslation.trim();
+  if (trimmedTranslation.isEmpty) {
+    return surahName;
+  }
+  return '$surahName ($trimmedTranslation)';
+}
+
+/// Surah info strip with book-style content ordering and nav arrows.
 class SurahInfoStrip extends StatelessWidget {
-  final String arabicName;
+  final String surahName;
+  final String surahTranslation;
   final String place;
-  final int ayahCount;
+  final String ordinalLabel;
   final int surahNumber;
   final VoidCallback? onPrevious;
   final VoidCallback? onNext;
@@ -26,9 +109,10 @@ class SurahInfoStrip extends StatelessWidget {
 
   const SurahInfoStrip({
     super.key,
-    required this.arabicName,
+    required this.surahName,
+    required this.surahTranslation,
     required this.place,
-    required this.ayahCount,
+    required this.ordinalLabel,
     required this.surahNumber,
     this.onPrevious,
     this.onNext,
@@ -38,9 +122,12 @@ class SurahInfoStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final headerTitle = 'The ${_resolveOrdinalLabel(ordinalLabel, surahNumber)} Surah';
+    final nameLine = _surahNameLine(surahName, surahTranslation);
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [AppTheme.appThemePrimary, Color(0xFF7E3A24)],
@@ -61,38 +148,55 @@ class SurahInfoStrip extends StatelessWidget {
           _navBtn(Icons.arrow_back_ios_new, showPrevious, onPrevious),
           const SizedBox(width: 4),
           Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        arabicName,
+            child: LayoutBuilder(
+              builder: (context, constraints) => Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    headerTitle,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white.withValues(alpha: 0.88),
+                      letterSpacing: 0.4,
+                      height: 1.2,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 4),
+                  SizedBox(
+                    width: constraints.maxWidth,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.center,
+                      child: Text(
+                        nameLine,
                         style: const TextStyle(
-                          fontFamily: 'Amiri',
-                          fontSize: 20,
+                          fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: Colors.white,
-                          height: 1.2,
+                          height: 1.15,
                         ),
+                        textAlign: TextAlign.center,
                         maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        softWrap: false,
                       ),
-                      const SizedBox(height: 2),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            '${_placeArabic(place)}،  آياتها  ${_toArabicNumerals(ayahCount)}',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.white.withValues(alpha: 0.85),
-                              letterSpacing: 0.3,
-                            ),
-                            textDirection: TextDirection.rtl,
-                          ),
-                        ],
-                      ),
-              ],
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    _periodLabel(place),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white.withValues(alpha: 0.85),
+                      letterSpacing: 0.2,
+                      height: 1.2,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(width: 4),
@@ -143,10 +247,11 @@ class SurahScreenAppBar extends StatelessWidget {
           }
           final surah = sp.surahList[sp.index];
           return SurahInfoStrip(
-            arabicName: surah.arabicName,
+            surahName: surah.name,
+            surahTranslation: surah.description,
             place: surah.place,
-            ayahCount: surah.ayathCount,
-            surahNumber: sp.index + 1,
+            ordinalLabel: surah.ordinalLabel,
+            surahNumber: surah.surahNumber,
             showPrevious: sp.index < sp.surahList.length - 1,
             showNext: sp.index > 0,
             onPrevious: () => sp.onSwipe(false),

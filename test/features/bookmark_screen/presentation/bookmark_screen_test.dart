@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/ayah_bookmark_model.dart';
 import 'package:the_message_of_the_quran/features/bookmark_screen/presentation/bookmark_screen.dart';
@@ -14,6 +15,15 @@ class _TestSurahProvider extends SurahProvider {
         surahName: 'Al-Baqarah',
         label: 'Old label',
         navigationTarget: BookmarkNavigationTarget.surah,
+      ),
+    );
+    bookmarkedList.add(
+      AyahBookmarkModel(
+        surahNumber: 108,
+        ayahId: 1,
+        surahName: 'Al-Kawthar',
+        ayaText: 'Indeed, We have granted you abundance.',
+        navigationTarget: BookmarkNavigationTarget.mushaf,
       ),
     );
   }
@@ -65,7 +75,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byIcon(Icons.edit_outlined));
+    await tester.tap(find.byIcon(Icons.edit_outlined).first);
     await tester.pumpAndSettle();
 
     await tester.enterText(find.byType(TextField), 'Study later');
@@ -75,5 +85,23 @@ void main() {
     expect(provider.lastUpdatedLabel, 'Study later');
     expect(find.text('Study later'), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('renders the same bookmark svg for all bookmark tiles', (
+    WidgetTester tester,
+  ) async {
+    final provider = _TestSurahProvider();
+
+    await tester.pumpWidget(
+      ChangeNotifierProvider<SurahProvider>.value(
+        value: provider,
+        child: const MaterialApp(home: BookmarkScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SvgPicture), findsNWidgets(provider.bookmarkedList.length));
+    expect(find.byIcon(Icons.book_outlined), findsNothing);
+    expect(find.byIcon(Icons.menu_book_rounded), findsNothing);
   });
 }

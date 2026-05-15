@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
-import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_card.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_list_tile.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/play_settings_provider.dart';
@@ -11,6 +11,9 @@ class SettingsScreenAudioBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accentColor = appBarAccentColor(context);
+    final accentTrackColor = appBarAccentFillColor(context, alpha: 0.35);
+
     return Consumer<PlaySettingsProvider>(
       builder: (context, playSettings, _) {
         return SettingsScreenCard(
@@ -26,8 +29,7 @@ class SettingsScreenAudioBlock extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.person,
-                            color: AppTheme.appIconTheme, size: 22),
+                        Icon(Icons.person, color: accentColor, size: 22),
                         const SizedBox(width: 16),
                         Text(
                           'Reciter',
@@ -88,7 +90,8 @@ class SettingsScreenAudioBlock extends StatelessWidget {
                 icon: Icons.translate,
                 trailing: Switch(
                   value: playSettings.showTranslation,
-                  activeThumbColor: AppTheme.appIconTheme,
+                  activeThumbColor: accentColor,
+                  activeTrackColor: accentTrackColor,
                   onChanged: (v) => playSettings.setShowTranslation(v),
                 ),
               ),
@@ -102,8 +105,7 @@ class SettingsScreenAudioBlock extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.speed,
-                            color: AppTheme.appIconTheme, size: 22),
+                        Icon(Icons.speed, color: accentColor, size: 22),
                         const SizedBox(width: 16),
                         Text(
                           'Playback Speed',
@@ -143,8 +145,7 @@ class SettingsScreenAudioBlock extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.queue_music,
-                            color: AppTheme.appIconTheme, size: 22),
+                        Icon(Icons.queue_music, color: accentColor, size: 22),
                         const SizedBox(width: 16),
                         Text(
                           'Play Mode',
@@ -205,17 +206,18 @@ class _ModeChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accentColor = appBarAccentColor(context);
+    final accentFillColor = appBarAccentFillColor(context);
+
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
         decoration: BoxDecoration(
-          color: selected
-              ? AppTheme.appIconTheme.withValues(alpha: 0.12)
-              : Colors.transparent,
+          color: selected ? accentFillColor : Colors.transparent,
           border: Border.all(
-            color: selected ? AppTheme.appIconTheme : Colors.grey.shade400,
+            color: selected ? accentColor : Colors.grey.shade400,
             width: selected ? 1.5 : 1,
           ),
           borderRadius: BorderRadius.circular(10),
@@ -225,7 +227,7 @@ class _ModeChip extends StatelessWidget {
           children: [
             Icon(icon,
                 size: 18,
-                color: selected ? AppTheme.appIconTheme : Colors.grey),
+                color: selected ? accentColor : Colors.grey),
             const SizedBox(width: 6),
             Flexible(
               child: Text(
@@ -234,7 +236,7 @@ class _ModeChip extends StatelessWidget {
                   fontSize: 12,
                   fontWeight:
                       selected ? FontWeight.w600 : FontWeight.normal,
-                  color: selected ? AppTheme.appIconTheme : Colors.grey,
+                  color: selected ? accentColor : Colors.grey,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),

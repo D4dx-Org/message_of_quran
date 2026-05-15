@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:the_message_of_the_quran/features/progression_tracker/provider/progression_tracker_provider.dart';
-import 'package:the_message_of_the_quran/features/progression_tracker/screens/progression_tracker_screen.dart';
 
 import '../../../core/utils/responsive_helper.dart';
 import '../../../core/widgets/base_screen_layout.dart';
@@ -631,8 +629,6 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
               fontWeight: FontWeight.w600,
             ),
           ),
-          SizedBox(height: isLandscape ? 4 : 6),
-          _buildProgressTrackerCard(context, isDarkMode, isLandscape),
           SizedBox(height: isLandscape ? 6 : 8),
           _buildQuickAccessWrap(context, isDarkMode, isLandscape),
           SizedBox(height: isLandscape ? 6 : 8),
@@ -707,174 +703,6 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildProgressTrackerCard(
-    BuildContext context,
-    bool isDarkMode,
-    bool isLandscape,
-  ) {
-    final textColor = isDarkMode ? Colors.white : Colors.black;
-    final subColor = isDarkMode ? Colors.white70 : Colors.black54;
-    final cardBg = isDarkMode ? _kGrey3C : Colors.white;
-
-    return Consumer<ProgressionTrackerProvider>(
-      builder: (context, progressionProv, _) {
-        final activeProgression = progressionProv.activeProgression;
-        final hasProgression = activeProgression != null;
-
-        String subtitle;
-        String percentText;
-        double progressValue;
-
-        if (hasProgression) {
-          final completedAyahs = progressionProv.completedAyahsFor(activeProgression.id!);
-          final pct = activeProgression.totalAyahs > 0
-              ? (completedAyahs / activeProgression.totalAyahs * 100).round()
-              : 0;
-          subtitle = activeProgression.arabicName.isNotEmpty
-              ? activeProgression.arabicName
-              : activeProgression.surahName;
-          percentText = '$completedAyahs/${activeProgression.totalAyahs}';
-          progressValue = pct / 100;
-        } else {
-          subtitle = 'Tap to add your first progression';
-          percentText = '';
-          progressValue = 0;
-        }
-
-        final cardLabel = hasProgression
-            ? 'Progress Tracker: ${activeProgression.surahName}'
-            : 'Start your progression tracker.';
-
-        return Semantics(
-          button: true,
-          label: cardLabel,
-          excludeSemantics: true,
-          child: GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const ProgressionTrackerScreen(),
-                ),
-              ).then((_) => progressionProv.loadProgressions());
-            },
-            child: Container(
-              padding: EdgeInsets.all(isLandscape ? 8 : 10),
-              decoration: BoxDecoration(
-                color: cardBg,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: isDarkMode
-                      ? Colors.white.withValues(alpha: 0.08)
-                      : Colors.grey.withValues(alpha: 0.18),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: isDarkMode
-                        ? Colors.black.withValues(alpha: 0.24)
-                        : AppTheme.appIconTheme.withValues(alpha: 0.08),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: isLandscape ? 32 : 36,
-                    height: isLandscape ? 32 : 36,
-                    decoration: BoxDecoration(
-                      color: AppTheme.appIconTheme.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(
-                      Icons.auto_graph_rounded,
-                      color: AppTheme.appIconTheme,
-                      size: isLandscape ? 16 : 18,
-                    ),
-                  ),
-                  SizedBox(width: isLandscape ? 8 : 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Progress Tracker',
-                          style: TextStyle(
-                            color: textColor,
-                            fontSize: isLandscape ? 12 : 14,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          subtitle,
-                          style: TextStyle(
-                            color: subColor,
-                            fontSize: isLandscape ? 10 : 11,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        if (progressValue > 0) ...[
-                          SizedBox(height: isLandscape ? 4 : 6),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(999),
-                            child: LinearProgressIndicator(
-                              value: progressValue,
-                              minHeight: isLandscape ? 4 : 5,
-                              backgroundColor: isDarkMode
-                                  ? Colors.white.withValues(alpha: 0.12)
-                                  : Colors.black.withValues(alpha: 0.08),
-                              valueColor: const AlwaysStoppedAnimation<Color>(
-                                AppTheme.appIconTheme,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  SizedBox(width: isLandscape ? 8 : 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      if (percentText.isNotEmpty)
-                        Text(
-                          percentText,
-                          style: TextStyle(
-                            color: AppTheme.appIconTheme,
-                            fontSize: isLandscape ? 14 : 16,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      if (hasProgression) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          '${(progressValue * 100).round()}%',
-                          style: TextStyle(
-                            color: AppTheme.appIconTheme,
-                            fontSize: isLandscape ? 10 : 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                      SizedBox(height: isLandscape ? 4 : 6),
-                      Icon(
-                        Icons.chevron_right_rounded,
-                        color: subColor,
-                        size: isLandscape ? 16 : 18,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/features/author_screen/author_screen.dart';
 import 'package:the_message_of_the_quran/features/ayah_of_the_day/presentation/ayah_of_the_day_screen.dart';
@@ -165,11 +166,11 @@ class CommonDrawer extends StatelessWidget {
                     ),
                     _DrawerExpansionTile(
                       title: 'Library',
-                      icon: Icons.local_library_outlined,
+                        icon: Icons.auto_stories_outlined,
                       children: [
                         _DrawerSubTile(
                           title: 'Foreword',
-                          icon: Icons.description_outlined,
+                            icon: Icons.history_edu_outlined,
                           onTap: () {
                             Navigator.pop(context);
                             Navigator.push(
@@ -182,7 +183,7 @@ class CommonDrawer extends StatelessWidget {
                         ),
                         _DrawerSubTile(
                           title: 'Appendix',
-                          icon: Icons.article_outlined,
+                            icon: Icons.note_alt_outlined,
                           onTap: () {
                             Navigator.pop(context);
                             Navigator.push(
@@ -195,7 +196,7 @@ class CommonDrawer extends StatelessWidget {
                         ),
                         _DrawerSubTile(
                           title: 'Works of Reference',
-                          icon: Icons.menu_book_outlined,
+                            icon: Icons.library_books_outlined,
                           onTap: () {
                             Navigator.pop(context);
                             Navigator.push(
@@ -215,23 +216,6 @@ class CommonDrawer extends StatelessWidget {
                         controller.changeIndex(3);
                         Navigator.pop(context);
                         Navigator.popUntil(context, (r) => r.isFirst);
-                      },
-                    ),
-                    _DrawerTile(
-                      title: 'Buy Printed Edition',
-                      icon: Icons.book_outlined,
-                      onTap: () {
-                        Navigator.pop(context);
-                        try {
-                          launchUrl(
-                            Uri.parse(
-                              'https://bookplus.co.in/books/vishudha-quran-vivarthanam/',
-                            ),
-                            mode: LaunchMode.externalApplication,
-                          );
-                        } catch (e) {
-                          debugPrint('Drawer: failed to launch bookplus URL — $e');
-                        }
                       },
                     ),
                     _DrawerTile(
@@ -337,9 +321,11 @@ class _DrawerTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scale = ResponsiveHelper.scaleFactor(context);
+    final accentColor = appBarAccentColor(context);
+
     return ListTile(
       onTap: onTap,
-      leading: Icon(icon, color: AppTheme.appIconTheme, size: 22 * scale),
+      leading: Icon(icon, color: accentColor, size: 22 * scale),
       title: Text(
         title,
         style: theme.textTheme.bodyMedium?.copyWith(
@@ -369,8 +355,10 @@ class _DrawerExpansionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scale = ResponsiveHelper.scaleFactor(context);
+    final accentColor = appBarAccentColor(context);
+
     return ExpansionTile(
-      leading: Icon(icon, color: AppTheme.appIconTheme, size: 22 * scale),
+      leading: Icon(icon, color: accentColor, size: 22 * scale),
       title: Text(
         title,
         style: theme.textTheme.bodyMedium?.copyWith(
@@ -381,8 +369,8 @@ class _DrawerExpansionTile extends StatelessWidget {
       ),
       tilePadding: EdgeInsets.symmetric(horizontal: 20 * scale, vertical: 0),
       childrenPadding: EdgeInsets.zero,
-      iconColor: AppTheme.appIconTheme,
-      collapsedIconColor: theme.colorScheme.outline,
+      iconColor: accentColor,
+      collapsedIconColor: accentColor,
       shape: const Border(),
       collapsedShape: const Border(),
       children: children,
@@ -404,9 +392,11 @@ class _DrawerSubTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scale = ResponsiveHelper.scaleFactor(context);
+    final accentColor = appBarAccentColor(context);
+
     return ListTile(
       onTap: onTap,
-      leading: Icon(icon, color: AppTheme.appIconTheme, size: 20 * scale),
+      leading: Icon(icon, color: accentColor, size: 20 * scale),
       title: Text(
         title,
         style: theme.textTheme.bodyMedium?.copyWith(

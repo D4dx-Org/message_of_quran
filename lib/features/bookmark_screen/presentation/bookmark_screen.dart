@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/ayah_bookmark_model.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
@@ -13,15 +14,21 @@ class BookmarkScreen extends StatelessWidget {
   const BookmarkScreen({super.key});
 
   static const Object _clearBookmarkLabelAction = Object();
+  static const String _bookmarkIconAsset =
+      'assets/icons/revamp/bookmarks_page.svg';
+  static const double _bookmarkIconSize = 24;
 
   bool _isMushafBookmark(AyahBookmarkModel bookmark) {
     return bookmark.navigationTarget == BookmarkNavigationTarget.mushaf;
   }
 
-  IconData _bookmarkIcon(AyahBookmarkModel bookmark) {
-    return _isMushafBookmark(bookmark)
-        ? Icons.menu_book_rounded
-        : Icons.book_outlined;
+  Widget _buildBookmarkIcon(Color color) {
+    return SvgPicture.asset(
+      _bookmarkIconAsset,
+      width: _bookmarkIconSize,
+      height: _bookmarkIconSize,
+      colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+    );
   }
 
   String _bookmarkChipLabel(AyahBookmarkModel bookmark) {
@@ -167,10 +174,8 @@ class BookmarkScreen extends StatelessWidget {
                                                 top: 34,
                                                 right: 14,
                                               ),
-                                              child: Icon(
-                                                _bookmarkIcon(bookmark),
-                                                color: accentColor,
-                                                size: 24,
+                                              child: _buildBookmarkIcon(
+                                                accentColor,
                                               ),
                                             ),
                                             Expanded(
@@ -232,10 +237,9 @@ class BookmarkScreen extends StatelessWidget {
                                                                         context,
                                                                         bookmark,
                                                                       ),
-                                                                  icon: const Icon(
+                                                                  icon: Icon(
                                                                     Icons.edit_outlined,
-                                                                    color: AppTheme
-                                                                        .appThemePrimary,
+                                                                    color: accentColor,
                                                                   ),
                                                                 ),
                                                               ),

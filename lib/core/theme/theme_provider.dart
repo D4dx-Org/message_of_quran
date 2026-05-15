@@ -103,7 +103,7 @@ class ThemeProvider extends ChangeNotifier {
       elevation: 0,
       iconTheme: IconThemeData(color: Colors.white),
       titleTextStyle: TextStyle(
-        color: Color.fromRGBO(255, 232, 187, 1),
+        color: _lightAppBarTitleAccent,
         fontSize: 18,
         fontWeight: FontWeight.w600,
       ),
@@ -152,12 +152,12 @@ class ThemeProvider extends ChangeNotifier {
       ),
     ),
     appBarTheme: const AppBarTheme(
-      backgroundColor: darkBackgroundColor,
-      surfaceTintColor: darkBackgroundColor,
+      backgroundColor: AppTheme.appThemePrimary,
+      surfaceTintColor: AppTheme.appThemePrimary,
       elevation: 0,
-      iconTheme: IconThemeData(color: Color(0xFFF2F2F7)),
+      iconTheme: IconThemeData(color: Colors.white),
       titleTextStyle: TextStyle(
-        color: Color(0xFFF2F2F7),
+        color: _darkAppBarTitleAccent,
         fontSize: 18,
         fontWeight: FontWeight.w600,
       ),

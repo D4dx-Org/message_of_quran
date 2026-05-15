@@ -3,6 +3,7 @@ import 'package:the_message_of_the_quran/core/constants/db_constants.dart';
 class SurahModel {
   final String id;
   final int surahNumber;
+  final String ordinalLabel;
   final String name;
   final String searchName;
   final String arabicName;
@@ -18,6 +19,7 @@ class SurahModel {
   SurahModel({
     required this.id,
     required this.surahNumber,
+    this.ordinalLabel = '',
     required this.name,
     required this.searchName,
     required this.arabicName,
@@ -37,6 +39,7 @@ class SurahModel {
     return SurahModel(
       id: (json[DbConstants.id] ?? '').toString(),
       surahNumber: (json[DbConstants.suraNumber] as int?) ?? 0,
+      ordinalLabel: (json[DbConstants.asadSurahOrdinalLabel] ?? '').toString(),
       name: malName,
       searchName: searchName,
       arabicName: (json[DbConstants.suraArabicName] ?? '').toString(),
@@ -62,6 +65,7 @@ class SurahModel {
     return SurahModel(
       id: (asadRow[DbConstants.asadSurahNumber] ?? '').toString(),
       surahNumber: (asadRow[DbConstants.asadSurahNumber] as int?) ?? 0,
+      ordinalLabel: (asadRow[DbConstants.asadSurahOrdinalLabel] ?? '').toString(),
       name: name,
       searchName: searchName,
       arabicName: arabicName,

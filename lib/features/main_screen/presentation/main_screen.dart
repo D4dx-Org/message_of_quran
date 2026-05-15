@@ -30,6 +30,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  static const double _navIconSize = 24;
 
   static const List<({String icon, String label})> _navItems = [
     (icon: 'assets/icons/revamp/home_icons.svg', label: 'Home'),
@@ -83,6 +84,31 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  double _navItemSize(int index) {
+    return switch (index) {
+      0 || 1 => _navIconSize - 1,
+      _ => _navIconSize,
+    };
+  }
+
+  Widget _buildNavItemIcon({
+    required int index,
+    required Color color,
+    required double size,
+  }) {
+    final item = _navItems[index];
+    if (item.icon.isEmpty) {
+      return Icon(Icons.info_outline_rounded, size: size, color: color);
+    }
+
+    return SvgPicture.asset(
+      item.icon,
+      width: size,
+      height: size,
+      colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<HomeProvider>(context);
@@ -129,8 +155,8 @@ class _MainScreenState extends State<MainScreen> {
         },
         child: SvgPicture.asset(
           _navItems[2].icon,
-          width: 30,
-          height: 30,
+          width: _navIconSize,
+          height: _navIconSize,
           colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
         ),
       ),
@@ -145,11 +171,11 @@ class _MainScreenState extends State<MainScreen> {
               labelType: NavigationRailLabelType.all,
               selectedIconTheme: IconThemeData(
                 color: AppTheme.appIconTheme,
-                size: 26 * scale,
+                size: _navIconSize * scale,
               ),
               unselectedIconTheme: IconThemeData(
                 color: inactiveColor,
-                size: 24 * scale,
+                size: _navIconSize * scale,
               ),
               selectedLabelTextStyle: TextStyle(
                 color: AppTheme.appIconTheme,
@@ -161,36 +187,24 @@ class _MainScreenState extends State<MainScreen> {
                 fontSize: 11 * scale,
                 fontWeight: FontWeight.w400,
               ),
-              destinations: _navItems.map((item) {
+              destinations: List.generate(_navItems.length, (index) {
+                final item = _navItems[index];
                 return NavigationRailDestination(
-                  icon: item.icon.isEmpty
-                      ? const Icon(Icons.info_outline_rounded)
-                      : SvgPicture.asset(
-                          item.icon,
-                          width: 24 * scale,
-                          height: 24 * scale,
-                          colorFilter: ColorFilter.mode(
-                            inactiveColor,
-                            BlendMode.srcIn,
-                          ),
-                        ),
-                  selectedIcon: item.icon.isEmpty
-                      ? const Icon(
-                          Icons.info_outline_rounded,
+                  icon: _buildNavItemIcon(
+                    index: index,
+                    color: inactiveColor,
+                    size: _navItemSize(index) * scale,
+                  ),
+                  selectedIcon: item.label.isEmpty
+                      ? SizedBox.square(dimension: _navItemSize(index) * scale)
+                      : _buildNavItemIcon(
+                          index: index,
                           color: AppTheme.appIconTheme,
-                        )
-                      : item.label==""? const SizedBox.shrink() : SvgPicture.asset(
-                          item.icon,
-                          width: 24 * scale,
-                          height: 24 * scale,
-                          colorFilter: const ColorFilter.mode(
-                            AppTheme.appIconTheme,
-                            BlendMode.srcIn,
-                          ),
+                          size: _navItemSize(index) * scale,
                         ),
                   label: Text(item.label),
                 );
-              }).toList(),
+              }),
             ),
             const VerticalDivider(thickness: 1, width: 1),
             Expanded(child: pageBody),
@@ -217,8 +231,8 @@ class _MainScreenState extends State<MainScreen> {
           },
           child: SvgPicture.asset(
             _navItems[2].icon,
-            width: 30,
-            height: 30,
+            width: _navIconSize,
+            height: _navIconSize,
             colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
           ),
         ),
@@ -293,22 +307,22 @@ class _MainScreenState extends State<MainScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 if (item.icon.isEmpty)
-                                  Icon(
-                                    Icons.info_outline_rounded,
-                                    size: 24,
+                                  _buildNavItemIcon(
+                                    index: index,
                                     color: color,
+                                    size: _navItemSize(index),
                                   )
                                 else
-                             if(item.label.isEmpty)     const SizedBox.shrink()
-                             else     SvgPicture.asset(
-                                    item.icon,
-                                    width: 24,
-                                    height: 24,
-                                    colorFilter: ColorFilter.mode(
-                                      color,
-                                      BlendMode.srcIn,
+                                  if (item.label.isEmpty)
+                                    SizedBox.square(
+                                      dimension: _navItemSize(index),
+                                    )
+                                  else
+                                    _buildNavItemIcon(
+                                      index: index,
+                                      color: color,
+                                      size: _navItemSize(index),
                                     ),
-                                  ),
                                 const SizedBox(height: 3),
                                 Text(
                                   item.label,

@@ -3,13 +3,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
-import 'package:the_message_of_the_quran/features/mushaf/utils/surah_unicode.dart';
 import 'package:the_message_of_the_quran/features/mushaf/widgets/star_number.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
-bool _isMeccan(String place) =>
-    place.contains('مكية') || place.toLowerCase().contains('mecca');
+String _ayahLabel(int ayahCount, {required bool isMalayalam}) {
+  return isMalayalam ? '$ayahCount ആയത്ത്' : '$ayahCount Ayahs';
+}
 
 class HomeScreenListTile extends StatelessWidget {
   const HomeScreenListTile({super.key, required this.index, this.onTap});
@@ -28,23 +28,24 @@ class HomeScreenListTile extends StatelessWidget {
     final textColor = isDarkMode ? Colors.white : const Color.fromRGBO(124, 58, 40, 1);
     final subColor = isDarkMode ? Colors.white54 : Colors.grey[600]!;
     final lastReadSurah = context.watch<LastReadProvider>().surahNumber;
-
+    final dividerColor = DividerTheme.of(context).color;
     final scale = ResponsiveHelper.scaleFactor(context);
-    final arabicGlyph = SurahUnicodeData.getSurahNameUnicode(surah.surahNumber);
-    final arabicLabel = arabicGlyph.isNotEmpty ? arabicGlyph : surah.arabicName;
-    final arabicFontFamily = arabicGlyph.isNotEmpty ? 'sura_names' : 'Amiri';
-    final arabicFontSize = arabicGlyph.isNotEmpty ? 28 * scale : 18 * scale;
-    final placeName = isMl
-        ? (_isMeccan(surah.place) ? 'മക്ക' : 'മദീന')
-        : (_isMeccan(surah.place) ? 'MEKKAH' : 'MADINAH');
-    final placeType = _isMeccan(surah.place) ? 'Meccan' : 'Medinan';
-    final dividerColor = isDarkMode
-        ? Colors.white.withValues(alpha: 0.08)
-        : const Color.fromRGBO(124, 58, 40, 1).withValues(alpha: 0.12);
+    final displayName =
+        isMl && surah.malayalamName.isNotEmpty ? surah.malayalamName : surah.name;
+    final description = surah.description.trim();
+    final placeName = surah.place.trim();
+    final ayahLabel = _ayahLabel(surah.ayathCount, isMalayalam: isMl);
+    final semanticsParts = [
+      'Surah $displayName',
+      if (description.isNotEmpty) description,
+      'number ${surah.surahNumber}',
+      '${surah.ayathCount} ayahs',
+      if (placeName.isNotEmpty) placeName,
+    ];
 
     return Semantics(
       button: true,
-      label: 'Surah ${surah.name}, number ${surah.surahNumber}, ${surah.ayathCount} ayahs, $placeType',
+      label: semanticsParts.join(', '),
       hint: 'Double tap to open',
       excludeSemantics: true,
       child: InkWell(
@@ -66,9 +67,10 @@ class HomeScreenListTile extends StatelessWidget {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          isMl && surah.malayalamName.isNotEmpty ? surah.malayalamName : surah.name,
+                          displayName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: GoogleFonts.poppins(
@@ -77,36 +79,55 @@ class HomeScreenListTile extends StatelessWidget {
                             fontSize: 12 * scale,
                           ),
                         ),
+                        if (description.isNotEmpty) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            description,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.poppins(
+                              fontSize: 11 * scale,
+                              color: subColor,
+                              fontWeight: FontWeight.w400,
+                              letterSpacing: 0.2,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 12 * scale),
+                  SizedBox(
+                    width: 96 * scale,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          placeName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.right,
+                          style: GoogleFonts.poppins(
+                            color: textColor,
+                            fontSize: 11 * scale,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                         const SizedBox(height: 2),
                         Text(
-                          isMl
-                              ? '$placeName  •  ${surah.ayathCount} ആയത്ത്'
-                              : '$placeName  •  ${surah.ayathCount} AYAT',
+                          ayahLabel,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.right,
                           style: GoogleFonts.poppins(
-                            fontSize: 11 * scale,
+                            fontSize: 10.5 * scale,
                             color: subColor,
-                            fontWeight: FontWeight.w400,
+                            fontWeight: FontWeight.w500,
                             letterSpacing: 0.3,
                           ),
                         ),
                       ],
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    arabicLabel,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: isDarkMode
-                          ? Colors.white.withValues(alpha: 0.87)
-                          : const Color.fromRGBO(124, 58, 40, 1),
-                      fontFamily: arabicFontFamily,
-                      fontSize: arabicFontSize,
-                      fontWeight: arabicGlyph.isNotEmpty
-                          ? FontWeight.w500
-                          : FontWeight.w700,
-                      height: arabicGlyph.isNotEmpty ? 1.1 : null,
                     ),
                   ),
                   const SizedBox(width: 8),

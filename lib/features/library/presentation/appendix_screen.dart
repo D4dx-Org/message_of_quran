@@ -3,6 +3,7 @@ import 'package:the_message_of_the_quran/core/models/appendix_model.dart';
 import 'package:the_message_of_the_quran/core/services/database/appendix_db_helper.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 
 class AppendixScreen extends StatefulWidget {
@@ -87,7 +88,9 @@ class _AppendixScreenState extends State<AppendixScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const accentColor = AppTheme.appThemePrimary;
+    final accentColor = Theme.of(context).brightness == Brightness.dark
+        ? appBarTitleMatchedAccentColor(context)
+        : AppTheme.appThemePrimary;
 
     return BaseScreenLayout(
       appBar: AppBar(

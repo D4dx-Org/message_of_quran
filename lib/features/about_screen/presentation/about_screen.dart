@@ -47,7 +47,17 @@ class _AboutScreenState extends State<AboutScreen> {
             return const Center(child: CircularProgressIndicator());
           }
           if (provider.aboutList.isEmpty) {
-            return const Center(child: Text('No information available'));
+            return Center(
+              child: Text(
+                'No Data',
+                textAlign: TextAlign.center,
+                style: AppTextTheme.subTitleblack.copyWith(
+                  fontSize: 14,
+                  color: Colors.grey.shade500,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            );
           }
           return Padding(
             padding: const EdgeInsets.fromLTRB(16.0, 20.0, 16.0, 0),

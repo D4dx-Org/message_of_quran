@@ -47,23 +47,11 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return const Scaffold(
       backgroundColor: AppTheme.appThemePrimary,
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              "The Message of the Quran",
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              style: TextStyle(
-                color: AppTheme.appThemeSecondary,
-                fontSize: 28,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 1.2,
-              ),
-            ),
-          ),
+      body: SizedBox.expand(
+        child: Image(
+          image: AssetImage('assets/images/splash-img.png'),
+          fit: BoxFit.cover,
+          alignment: Alignment.topCenter,
         ),
       ),
     );
