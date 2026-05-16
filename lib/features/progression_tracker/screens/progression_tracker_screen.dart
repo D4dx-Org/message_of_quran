@@ -29,7 +29,7 @@ class ProgressionTrackerScreen extends StatelessWidget {
             fontWeight: FontWeight.w700,
           ),
         ),
-        centerTitle: true,
+        centerTitle: false,
         elevation: 0,
         backgroundColor: AppTheme.appThemePrimary,
       ),
@@ -137,7 +137,9 @@ class ProgressionTrackerScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              p.arabicName.isNotEmpty ? p.arabicName : p.surahName,
+                              p.arabicName.isNotEmpty
+                                  ? p.arabicName
+                                  : p.surahName,
                               style: TextStyle(
                                 color: textColor,
                                 fontWeight: FontWeight.w600,
@@ -147,10 +149,7 @@ class ProgressionTrackerScreen extends StatelessWidget {
                             const SizedBox(height: 2),
                             Text(
                               'Days Completed : $completedDays/${p.totalDays}',
-                              style: TextStyle(
-                                color: subColor,
-                                fontSize: 12,
-                              ),
+                              style: TextStyle(color: subColor, fontSize: 12),
                             ),
                           ],
                         ),

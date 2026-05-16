@@ -3,9 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
+import 'package:the_message_of_the_quran/core/widgets/d4dx_branding_footer.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_app_block.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_audio_block.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_card.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_layout_block.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_list_tile.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_tajweed_block.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
@@ -36,7 +38,7 @@ class SettingsScreen extends StatelessWidget {
           // ── Layout ───────────────────────────────────────────
           _SectionLabel('Layout'),
           SizedBox(height: 8),
-          _LayoutSettingsCard(),
+          SettingsScreenLayoutBlock(),
           SizedBox(height: 24),
 
           // ── Tajweed ──────────────────────────────────────────
@@ -55,7 +57,7 @@ class SettingsScreen extends StatelessWidget {
           _SectionLabel('General'),
           SizedBox(height: 8),
           SettingsScreenAppBlock(),
-          SizedBox(height: 32),
+          D4dxBrandingFooter(showTopBorder: true),
         ],
       ),
     );
@@ -73,10 +75,10 @@ class _SectionLabel extends StatelessWidget {
     return Text(
       label.toUpperCase(),
       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: Theme.of(context).colorScheme.outline,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.8,
-          ),
+        color: Theme.of(context).colorScheme.outline,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.8,
+      ),
     );
   }
 }
@@ -106,9 +108,7 @@ class _ThemeLanguageCard extends StatelessWidget {
                   activeTrackColor: accentTrackColor,
                   thumbIcon: WidgetStatePropertyAll(
                     Icon(
-                      provider.isDarkMode
-                          ? Icons.dark_mode
-                          : Icons.light_mode,
+                      provider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
                       color: provider.isDarkMode
                           ? Theme.of(context).scaffoldBackgroundColor
                           : Colors.white,
@@ -134,8 +134,10 @@ class _ThemeLanguageCard extends StatelessWidget {
                     const SizedBox(width: 16),
                     Text(
                       'Language',
-                      style: AppTextTheme.drawerStyle
-                          .copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
+                      style: AppTextTheme.drawerStyle.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ],
                 ),
@@ -147,13 +149,12 @@ class _ThemeLanguageCard extends StatelessWidget {
                         Expanded(
                           child: _LanguageChip(
                             label: 'English',
-                            selected: provider.currentLanguage ==
+                            selected:
+                                provider.currentLanguage ==
                                 LanguageProvider.english,
                             onTap: () {
                               provider.setLanguage(LanguageProvider.english);
-                              context
-                                  .read<SurahProvider>()
-                                  .setMalayalam(false);
+                              context.read<SurahProvider>().setMalayalam(false);
                             },
                           ),
                         ),
@@ -161,13 +162,12 @@ class _ThemeLanguageCard extends StatelessWidget {
                         Expanded(
                           child: _LanguageChip(
                             label: 'മലയാ\u200dളം',
-                            selected: provider.currentLanguage ==
+                            selected:
+                                provider.currentLanguage ==
                                 LanguageProvider.malayalam,
                             onTap: () {
                               provider.setLanguage(LanguageProvider.malayalam);
-                              context
-                                  .read<SurahProvider>()
-                                  .setMalayalam(true);
+                              context.read<SurahProvider>().setMalayalam(true);
                             },
                           ),
                         ),
@@ -205,10 +205,7 @@ class _FontSettingsCard extends StatelessWidget {
               trailing: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
                   value: value.fontType,
-                  icon: Icon(
-                    Icons.arrow_drop_down,
-                    color: accentColor,
-                  ),
+                  icon: Icon(Icons.arrow_drop_down, color: accentColor),
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
@@ -235,8 +232,7 @@ class _FontSettingsCard extends StatelessWidget {
                       );
                     }).toList();
                   },
-                  items:
-                      FontSizeChangerProvider.availableFonts.map((font) {
+                  items: FontSizeChangerProvider.availableFonts.map((font) {
                     final isSelected = value.fontType == font;
                     return DropdownMenuItem<String>(
                       value: font,
@@ -253,19 +249,14 @@ class _FontSettingsCard extends StatelessWidget {
                                   : FontWeight.w400,
                               color: isSelected
                                   ? accentColor
-                                  : Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
-                                      ?.color,
+                                  : Theme.of(
+                                      context,
+                                    ).textTheme.bodyMedium?.color,
                             ),
                           ),
                           if (isSelected) ...[
                             const SizedBox(width: 6),
-                            Icon(
-                              Icons.check,
-                              size: 16,
-                              color: accentColor,
-                            ),
+                            Icon(Icons.check, size: 16, color: accentColor),
                           ],
                         ],
                       ),
@@ -368,64 +359,6 @@ class _FontSettingsCard extends StatelessWidget {
   }
 }
 
-// ─── Layout Settings Card ────────────────────────────────────────────────────
-
-class _LayoutSettingsCard extends StatelessWidget {
-  const _LayoutSettingsCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final accentColor = appBarAccentColor(context);
-    final accentTrackColor = appBarAccentFillColor(context, alpha: 0.35);
-
-    return SettingsScreenCard(
-      child: Column(
-        children: [
-          Consumer<FontSizeChangerProvider>(
-            builder: (context, value, _) => SettingsScreenListTile(
-              title: 'Justify Translation',
-              icon: Icons.format_align_justify,
-              trailing: Switch(
-                value: value.translationJustify,
-                activeThumbColor: accentColor,
-                activeTrackColor: accentTrackColor,
-                onChanged: value.setTranslationJustify,
-              ),
-            ),
-          ),
-          const Divider(height: 1, indent: 16, endIndent: 16),
-          Consumer<FontSizeChangerProvider>(
-            builder: (context, value, _) => SettingsScreenListTile(
-              title: 'Justify Interpretation',
-              icon: Icons.notes,
-              trailing: Switch(
-                value: value.interpretationJustify,
-                activeThumbColor: accentColor,
-                activeTrackColor: accentTrackColor,
-                onChanged: value.setInterpretationJustify,
-              ),
-            ),
-          ),
-          const Divider(height: 1, indent: 16, endIndent: 16),
-          Consumer<FontSizeChangerProvider>(
-            builder: (context, value, _) => SettingsScreenListTile(
-              title: 'Justify Quran Ayahs & Tajweed',
-              icon: Icons.auto_stories_outlined,
-              trailing: Switch(
-                value: value.quranJustify,
-                activeThumbColor: accentColor,
-                activeTrackColor: accentTrackColor,
-                onChanged: value.setQuranJustify,
-              ),
-            ),
-          ),
-
-        ],
-      ),
-    );
-  }
-}
-
 // ─── Language Chip ───────────────────────────────────────────────────────────
 
 class _LanguageChip extends StatelessWidget {
@@ -474,4 +407,3 @@ class _LanguageChip extends StatelessWidget {
     );
   }
 }
-

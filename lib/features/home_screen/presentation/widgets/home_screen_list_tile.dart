@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
+import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
+import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
 import 'package:the_message_of_the_quran/features/mushaf/widgets/star_number.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
-
-String _ayahLabel(int ayahCount, {required bool isMalayalam}) {
-  return isMalayalam ? '$ayahCount ആയത്ത്' : '$ayahCount Ayahs';
-}
 
 class HomeScreenListTile extends StatelessWidget {
   const HomeScreenListTile({super.key, required this.index, this.onTap});
@@ -25,16 +23,32 @@ class HomeScreenListTile extends StatelessWidget {
     final surah = controller.surahList[index];
     final isMl = context.watch<LanguageProvider>().isMalayalam;
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDarkMode ? Colors.white : const Color.fromRGBO(124, 58, 40, 1);
+    final textColor = isDarkMode
+        ? Colors.white
+        : const Color.fromRGBO(124, 58, 40, 1);
     final subColor = isDarkMode ? Colors.white54 : Colors.grey[600]!;
     final lastReadSurah = context.watch<LastReadProvider>().surahNumber;
     final dividerColor = DividerTheme.of(context).color;
     final scale = ResponsiveHelper.scaleFactor(context);
-    final displayName =
-        isMl && surah.malayalamName.isNotEmpty ? surah.malayalamName : surah.name;
-    final description = surah.description.trim();
-    final placeName = surah.place.trim();
-    final ayahLabel = _ayahLabel(surah.ayathCount, isMalayalam: isMl);
+    final displayText = formatSurahListDisplayText(
+      isMalayalam: isMl,
+      surahName: surah.name,
+      surahTranslation: surah.description,
+      malayalamName: surah.malayalamName,
+      surahNumber: surah.surahNumber,
+    );
+    final displayName = displayText.title;
+    final description = displayText.subtitle;
+    final placeName = localizeSurahMadinahDisplayLabel(
+      surah.place,
+      isMalayalam: isMl,
+      surahNumber: surah.surahNumber,
+      fallback: localizeSurahPlace(surah.place, isMalayalam: isMl),
+    );
+    final ayahLabel = formatAyahCountLabel(
+      surah.ayathCount,
+      isMalayalam: isMl,
+    );
     final semanticsParts = [
       'Surah $displayName',
       if (description.isNotEmpty) description,
@@ -51,7 +65,7 @@ class HomeScreenListTile extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -133,7 +147,7 @@ class HomeScreenListTile extends StatelessWidget {
                   const SizedBox(width: 8),
                 ],
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 6),
               Divider(
                 height: 1,
                 thickness: 1,

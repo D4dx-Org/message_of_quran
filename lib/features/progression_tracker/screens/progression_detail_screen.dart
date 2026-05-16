@@ -75,8 +75,7 @@ class _ProgressionDetailScreenState extends State<ProgressionDetailScreen> {
           builder: (ctx, setDialogState) {
             final isDark = Theme.of(ctx).brightness == Brightness.dark;
             final textColor = isDark ? Colors.white : Colors.black;
-            final cardBg =
-                isDark ? const Color(0xFF3C3C3C) : Colors.white;
+            final cardBg = isDark ? const Color(0xFF3C3C3C) : Colors.white;
             final borderColor = isDark
                 ? Colors.white.withValues(alpha: 0.08)
                 : Colors.grey.withValues(alpha: 0.18);
@@ -87,7 +86,13 @@ class _ProgressionDetailScreenState extends State<ProgressionDetailScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Time', style: TextStyle(fontWeight: FontWeight.w600, color: textColor)),
+                  Text(
+                    'Time',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: textColor,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   GestureDetector(
                     onTap: () async {
@@ -111,7 +116,11 @@ class _ProgressionDetailScreenState extends State<ProgressionDetailScreen> {
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.access_time, size: 18, color: textColor.withValues(alpha: 0.5)),
+                          Icon(
+                            Icons.access_time,
+                            size: 18,
+                            color: textColor.withValues(alpha: 0.5),
+                          ),
                           const SizedBox(width: 8),
                           Text(selectedTime.format(ctx)),
                         ],
@@ -119,57 +128,56 @@ class _ProgressionDetailScreenState extends State<ProgressionDetailScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text('Days', style: TextStyle(fontWeight: FontWeight.w600, color: textColor)),
+                  Text(
+                    'Days',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: textColor,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 6,
                     runSpacing: 6,
-                    children: [
-                      'Mon',
-                      'Tue',
-                      'Wed',
-                      'Thu',
-                      'Fri',
-                      'Sat',
-                      'Sun',
-                    ].map((day) {
-                      final sel = selectedDays.contains(day);
-                      return GestureDetector(
-                        onTap: () {
-                          setDialogState(() {
-                            if (sel) {
-                              selectedDays.remove(day);
-                            } else {
-                              selectedDays.add(day);
-                            }
-                          });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color:
-                                sel ? AppTheme.appIconTheme : cardBg,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: sel
-                                  ? AppTheme.appIconTheme
-                                  : borderColor,
+                    children: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                        .map((day) {
+                          final sel = selectedDays.contains(day);
+                          return GestureDetector(
+                            onTap: () {
+                              setDialogState(() {
+                                if (sel) {
+                                  selectedDays.remove(day);
+                                } else {
+                                  selectedDays.add(day);
+                                }
+                              });
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: sel ? AppTheme.appIconTheme : cardBg,
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: sel
+                                      ? AppTheme.appIconTheme
+                                      : borderColor,
+                                ),
+                              ),
+                              child: Text(
+                                day,
+                                style: TextStyle(
+                                  color: sel ? Colors.white : textColor,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
-                          ),
-                          child: Text(
-                            day,
-                            style: TextStyle(
-                              color: sel ? Colors.white : textColor,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
+                          );
+                        })
+                        .toList(),
                   ),
                 ],
               ),
@@ -224,7 +232,7 @@ class _ProgressionDetailScreenState extends State<ProgressionDetailScreen> {
             fontWeight: FontWeight.w700,
           ),
         ),
-        centerTitle: true,
+        centerTitle: false,
         elevation: 0,
         backgroundColor: AppTheme.appThemePrimary,
         actions: [
@@ -243,10 +251,11 @@ class _ProgressionDetailScreenState extends State<ProgressionDetailScreen> {
           final p = detail.progression!;
           final percent = detail.progressPercentInt;
           final reminderDays = detail.reminderDaysList;
-          final reminderSchedule = ProgressionNotificationService.formatSchedule(
-            p.reminderTime,
-            reminderDays,
-          );
+          final reminderSchedule =
+              ProgressionNotificationService.formatSchedule(
+                p.reminderTime,
+                reminderDays,
+              );
 
           return SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -274,7 +283,9 @@ class _ProgressionDetailScreenState extends State<ProgressionDetailScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              p.arabicName.isNotEmpty ? p.arabicName : p.surahName,
+                              p.arabicName.isNotEmpty
+                                  ? p.arabicName
+                                  : p.surahName,
                               style: const TextStyle(
                                 color: AppTheme.appIconTheme,
                                 fontWeight: FontWeight.w700,
@@ -284,10 +295,7 @@ class _ProgressionDetailScreenState extends State<ProgressionDetailScreen> {
                             const SizedBox(height: 4),
                             Text(
                               '${detail.completedDayCount}/ ${p.totalDays}',
-                              style: TextStyle(
-                                color: subColor,
-                                fontSize: 14,
-                              ),
+                              style: TextStyle(color: subColor, fontSize: 14),
                             ),
                           ],
                         ),
@@ -305,10 +313,7 @@ class _ProgressionDetailScreenState extends State<ProgressionDetailScreen> {
                           ),
                           Text(
                             'Completed',
-                            style: TextStyle(
-                              color: subColor,
-                              fontSize: 12,
-                            ),
+                            style: TextStyle(color: subColor, fontSize: 12),
                           ),
                         ],
                       ),
@@ -366,10 +371,7 @@ class _ProgressionDetailScreenState extends State<ProgressionDetailScreen> {
                             const SizedBox(height: 2),
                             Text(
                               reminderSchedule,
-                              style: TextStyle(
-                                color: subColor,
-                                fontSize: 11,
-                              ),
+                              style: TextStyle(color: subColor, fontSize: 11),
                             ),
                           ],
                         ),
@@ -438,10 +440,12 @@ class _ProgressionDetailScreenState extends State<ProgressionDetailScreen> {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: isCompleted
-                                  ? AppTheme.appIconTheme.withValues(alpha: 0.15)
+                                  ? AppTheme.appIconTheme.withValues(
+                                      alpha: 0.15,
+                                    )
                                   : isReading
-                                      ? AppTheme.appIconTheme.withValues(alpha: 0.1)
-                                      : Colors.grey.withValues(alpha: 0.1),
+                                  ? AppTheme.appIconTheme.withValues(alpha: 0.1)
+                                  : Colors.grey.withValues(alpha: 0.1),
                             ),
                             alignment: Alignment.center,
                             child: Text(
@@ -493,14 +497,14 @@ class _ProgressionDetailScreenState extends State<ProgressionDetailScreen> {
                                   isCompleted
                                       ? 'Completed'
                                       : isReading
-                                          ? 'Reading'
-                                          : 'Pending',
+                                      ? 'Reading'
+                                      : 'Pending',
                                   style: TextStyle(
                                     color: isCompleted
                                         ? Colors.green
                                         : isReading
-                                            ? AppTheme.appIconTheme
-                                            : Colors.grey,
+                                        ? AppTheme.appIconTheme
+                                        : Colors.grey,
                                     fontWeight: FontWeight.w600,
                                     fontSize: 12,
                                   ),
@@ -516,9 +520,7 @@ class _ProgressionDetailScreenState extends State<ProgressionDetailScreen> {
                             )
                           else
                             Icon(
-                              isCompleted
-                                  ? Icons.check_circle
-                                  : Icons.adjust,
+                              isCompleted ? Icons.check_circle : Icons.adjust,
                               color: isCompleted
                                   ? Colors.green
                                   : AppTheme.appIconTheme,

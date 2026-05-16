@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/provider/progression_tracker_provider.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/services/progression_notification_service.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
-import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 
 class AddProgressionScreen extends StatefulWidget {
   const AddProgressionScreen({super.key});
@@ -92,6 +94,7 @@ class _AddProgressionScreenState extends State<AddProgressionScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     final textColor = isDark ? Colors.white : Colors.black;
     final cardBg = isDark ? const Color(0xFF3C3C3C) : Colors.white;
     final borderColor = isDark
@@ -112,7 +115,7 @@ class _AddProgressionScreenState extends State<AddProgressionScreen> {
             fontWeight: FontWeight.w700,
           ),
         ),
-        centerTitle: true,
+        centerTitle: false,
         elevation: 0,
         backgroundColor: AppTheme.appThemePrimary,
       ),
@@ -172,8 +175,16 @@ class _AddProgressionScreenState extends State<AddProgressionScreen> {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      'Total Ayah : ${_selectedSurah!.ayathCount} Ayat   |   ${_selectedSurah!.place}',
-                      style: TextStyle(color: textColor.withValues(alpha: 0.7), fontSize: 13),
+                      'Total Ayah : ${_selectedSurah!.ayathCount} Ayat   |   ${localizeSurahMadinahDisplayLabel(
+                        _selectedSurah!.place,
+                        isMalayalam: isMalayalam,
+                        surahNumber: _selectedSurah!.surahNumber,
+                        fallback: localizeSurahPlace(_selectedSurah!.place, isMalayalam: isMalayalam),
+                      )}',
+                      style: TextStyle(
+                        color: textColor.withValues(alpha: 0.7),
+                        fontSize: 13,
+                      ),
                     ),
                   ],
                 ),
@@ -206,7 +217,9 @@ class _AddProgressionScreenState extends State<AddProgressionScreen> {
                       isExpanded: true,
                       hint: Text(
                         'Select Surah',
-                        style: TextStyle(color: textColor.withValues(alpha: 0.5)),
+                        style: TextStyle(
+                          color: textColor.withValues(alpha: 0.5),
+                        ),
                       ),
                       value: _selectedSurah?.surahNumber,
                       dropdownColor: cardBg,
@@ -351,14 +364,10 @@ class _AddProgressionScreenState extends State<AddProgressionScreen> {
                       vertical: 10,
                     ),
                     decoration: BoxDecoration(
-                      color: selected
-                          ? AppTheme.appIconTheme
-                          : cardBg,
+                      color: selected ? AppTheme.appIconTheme : cardBg,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: selected
-                            ? AppTheme.appIconTheme
-                            : borderColor,
+                        color: selected ? AppTheme.appIconTheme : borderColor,
                       ),
                     ),
                     child: Text(
@@ -378,15 +387,17 @@ class _AddProgressionScreenState extends State<AddProgressionScreen> {
             // Start Learning button
             Center(
               child: ElevatedButton(
-                onPressed: (_selectedSurah != null &&
+                onPressed:
+                    (_selectedSurah != null &&
                         _selectedDays != null &&
                         !_isSaving)
                     ? _startLearning
                     : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.appIconTheme,
-                  disabledBackgroundColor:
-                      AppTheme.appIconTheme.withValues(alpha: 0.4),
+                  disabledBackgroundColor: AppTheme.appIconTheme.withValues(
+                    alpha: 0.4,
+                  ),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 40,
                     vertical: 14,

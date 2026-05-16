@@ -4,7 +4,9 @@ import 'package:the_message_of_the_quran/core/services/database/database_helper.
 
 class TranslationBlockDbHelper {
   static Future<List<TranslationBlockModel>> getTranslationBlocksBySurah(
-      int surahNumber, {bool malayalam = false}) async {
+    int surahNumber, {
+    bool malayalam = false,
+  }) async {
     if (malayalam) {
       return _getTranslationBlocksThafeemMalayalam(surahNumber);
     }
@@ -12,7 +14,8 @@ class TranslationBlockDbHelper {
   }
 
   static Future<List<TranslationBlockModel>> _getTranslationBlocksAsad(
-      int surahNumber) async {
+    int surahNumber,
+  ) async {
     final db = DatabaseHelper.quranAsadDb;
     if (db == null) return [];
 
@@ -25,28 +28,37 @@ class TranslationBlockDbHelper {
       );
 
       return rows
-          .map((row) => TranslationBlockModel.fromAsadJson(Map<String, dynamic>.from(row)))
+          .map(
+            (row) => TranslationBlockModel.fromAsadJson(
+              Map<String, dynamic>.from(row),
+            ),
+          )
           .toList();
     } catch (e) {
       return [];
     }
   }
 
-  static Future<List<TranslationBlockModel>> _getTranslationBlocksThafeemMalayalam(
-      int surahNumber) async {
+  static Future<List<TranslationBlockModel>>
+  _getTranslationBlocksThafeemMalayalam(int surahNumber) async {
     final db = DatabaseHelper.quranAsadDb;
     if (db == null) return [];
 
     try {
       final rows = await db.query(
         DbConstants.malayalamDummyDatasTable,
-        where: '${DbConstants.malayalamDummySurahId} = ? AND ${DbConstants.malayalamDummyAyahId} IS NOT NULL',
+        where:
+            '${DbConstants.malayalamDummySurahId} = ? AND ${DbConstants.malayalamDummyAyahId} IS NOT NULL',
         whereArgs: [surahNumber],
         orderBy: '${DbConstants.malayalamDummyAyahId} ASC',
       );
 
       return rows
-          .map((row) => TranslationBlockModel.fromMalayalamJson(Map<String, dynamic>.from(row)))
+          .map(
+            (row) => TranslationBlockModel.fromMalayalamJson(
+              Map<String, dynamic>.from(row),
+            ),
+          )
           .toList();
     } catch (e) {
       return [];
@@ -55,7 +67,10 @@ class TranslationBlockDbHelper {
 
   /// Returns a single [TranslationBlockModel] for [surahNumber]:[ayahNumber].
   static Future<TranslationBlockModel?> getTranslationBlockByVerse(
-      int surahNumber, int ayahNumber, {bool malayalam = false}) async {
+    int surahNumber,
+    int ayahNumber, {
+    bool malayalam = false,
+  }) async {
     final db = DatabaseHelper.quranAsadDb;
     if (db == null) return null;
 
@@ -70,7 +85,8 @@ class TranslationBlockDbHelper {
         );
         if (rows.isEmpty) return null;
         return TranslationBlockModel.fromMalayalamJson(
-            Map<String, dynamic>.from(rows.first));
+          Map<String, dynamic>.from(rows.first),
+        );
       } else {
         final rows = await db.query(
           DbConstants.asadVersesTable,
@@ -81,10 +97,46 @@ class TranslationBlockDbHelper {
         );
         if (rows.isEmpty) return null;
         return TranslationBlockModel.fromAsadJson(
-            Map<String, dynamic>.from(rows.first));
+          Map<String, dynamic>.from(rows.first),
+        );
       }
     } catch (e) {
       return null;
+    }
+  }
+
+  /// Returns the verse numbers in [surahNumber] that reference [footnoteNumber].
+  static Future<List<int>> getVerseNumbersForFootnote(
+    int surahNumber,
+    int footnoteNumber, {
+    bool malayalam = false,
+  }) async {
+    if (footnoteNumber <= 0) return [];
+
+    if (malayalam) {
+      return [footnoteNumber];
+    }
+
+    final db = DatabaseHelper.quranAsadDb;
+    if (db == null) return [];
+
+    try {
+      final marker = '($footnoteNumber)';
+      final rows = await db.query(
+        DbConstants.asadVersesTable,
+        columns: [DbConstants.asadVerseNumber],
+        where:
+            '${DbConstants.asadVerseSurahNumber} = ? AND ${DbConstants.asadVerseText} LIKE ?',
+        whereArgs: [surahNumber, '%$marker%'],
+        orderBy: '${DbConstants.asadVerseNumber} ASC',
+      );
+
+      return rows
+          .map((row) => (row[DbConstants.asadVerseNumber] as int?) ?? -1)
+          .where((verseNumber) => verseNumber > 0)
+          .toList();
+    } catch (e) {
+      return [];
     }
   }
 }

@@ -108,7 +108,7 @@ class _AyahReadingScreenState extends State<AyahReadingScreen> {
             fontWeight: FontWeight.w700,
           ),
         ),
-        centerTitle: true,
+        centerTitle: false,
         elevation: 0,
         backgroundColor: AppTheme.appThemePrimary,
       ),
@@ -120,8 +120,9 @@ class _AyahReadingScreenState extends State<AyahReadingScreen> {
 
           final p = detail.progression!;
           final ayah = detail.currentAyah!;
-          final currentDay =
-              detail.days.where((d) => d.id == widget.dayId).firstOrNull;
+          final currentDay = detail.days
+              .where((d) => d.id == widget.dayId)
+              .firstOrNull;
           final ayahs = detail.currentDayAyahs;
 
           // Find current ayah index in the list
@@ -130,8 +131,9 @@ class _AyahReadingScreenState extends State<AyahReadingScreen> {
           final hasNext = currentIndex < ayahs.length - 1;
 
           final arabicText = _textLoaded ? _getArabicText(ayah.ayahNumber) : '';
-          final translationText =
-              _textLoaded ? _getTranslationText(ayah.ayahNumber) : '';
+          final translationText = _textLoaded
+              ? _getTranslationText(ayah.ayahNumber)
+              : '';
 
           return SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -214,7 +216,10 @@ class _AyahReadingScreenState extends State<AyahReadingScreen> {
                           IconButton(
                             onPressed: hasPrev
                                 ? () => _navigateToAyah(
-                                    detail, ayahs, currentIndex - 1)
+                                    detail,
+                                    ayahs,
+                                    currentIndex - 1,
+                                  )
                                 : null,
                             icon: Icon(
                               Icons.chevron_left,
@@ -234,7 +239,10 @@ class _AyahReadingScreenState extends State<AyahReadingScreen> {
                           IconButton(
                             onPressed: hasNext
                                 ? () => _navigateToAyah(
-                                    detail, ayahs, currentIndex + 1)
+                                    detail,
+                                    ayahs,
+                                    currentIndex + 1,
+                                  )
                                 : null,
                             icon: Icon(
                               Icons.chevron_right,
@@ -310,7 +318,9 @@ class _AyahReadingScreenState extends State<AyahReadingScreen> {
               await detail.markAyahStatus(ayah.id!, statuses[i]);
               // Update current ayah reference
               final updatedAyahs = detail.currentDayAyahs;
-              final updated = updatedAyahs.where((a) => a.id == ayah.id).firstOrNull;
+              final updated = updatedAyahs
+                  .where((a) => a.id == ayah.id)
+                  .firstOrNull;
               if (updated != null) {
                 detail.setCurrentAyah(updated);
               }

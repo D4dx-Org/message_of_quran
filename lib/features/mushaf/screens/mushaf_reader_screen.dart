@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/ayah_bookmark_model.dart';
 import 'package:the_message_of_the_quran/core/services/audio_handler.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:the_message_of_the_quran/features/bookmark_screen/presentation/bookmark_conflict_dialog.dart';
 
 import '../../../core/utils/responsive_helper.dart';
 import '../provider/mushaf_reader_provider.dart';
@@ -292,9 +293,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _buildActionButton(
-            icon: _p.isPlaying
-                ? Icons.pause_rounded
-                : Icons.play_arrow_rounded,
+            icon: _p.isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
             onPressed: () => _p.onPlayPressed(),
           ),
           const SizedBox(width: 4),
@@ -364,9 +363,14 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
   ) async {
     final messenger = ScaffoldMessenger.of(context);
     final surahProvider = context.read<SurahProvider>();
+    const navigationTarget = BookmarkNavigationTarget.mushaf;
 
     if (isMushafBookmarked) {
-      await surahProvider.onBookMarkRemoveByAyah(suraNo, ayaNo);
+      await surahProvider.onBookMarkRemoveByAyah(
+        suraNo,
+        ayaNo,
+        navigationTarget: navigationTarget,
+      );
       if (!mounted) return;
       messenger
         ..clearSnackBars()
@@ -377,6 +381,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
     if (surahProvider.surahList.isEmpty) {
       await surahProvider.getAllSurah();
     }
+    if (!mounted) return;
     dynamic surah;
     for (final item in surahProvider.surahList) {
       if (item.surahNumber == suraNo) {
@@ -385,18 +390,40 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
       }
     }
 
-    await surahProvider.onBookMarkAdd(
+    var replaceSameSurah = false;
+    if (surahProvider.hasSurahBookmarkConflict(
+      suraNo,
+      ayaNo,
+      navigationTarget: navigationTarget,
+    )) {
+      final resolution = await showBookmarkConflictDialog(
+        context,
+        navigationTarget: navigationTarget,
+        surahName: surah?.name as String?,
+      );
+      if (!mounted || resolution == null) return;
+      replaceSameSurah = resolution == BookmarkConflictResolution.replace;
+    }
+
+    final didAdd = await surahProvider.onBookMarkAdd(
       suraNo,
       ayaNo,
       surahName: surah?.name as String?,
       surahArabicName: surah?.arabicName as String?,
-      navigationTarget: BookmarkNavigationTarget.mushaf,
+      navigationTarget: navigationTarget,
+      replaceSameSurah: replaceSameSurah,
     );
 
-    if (!mounted) return;
+    if (!mounted || !didAdd) return;
     messenger
       ..clearSnackBars()
-      ..showSnackBar(const SnackBar(content: Text('Bookmark added')));
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            replaceSameSurah ? 'Bookmark replaced' : 'Bookmark added',
+          ),
+        ),
+      );
   }
 
   // ─── Build ────────────────────────────────────────────────────────────────
@@ -534,14 +561,19 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
             onPressed: () => Navigator.of(context).pop(),
           ),
           Expanded(
-            child: Text(
-              'Quran — Page ${_p.currentPage}',
-              style: const TextStyle(
-                color: textColor,
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Quran — Page ${_p.currentPage}',
+                style: const TextStyle(
+                  color: textColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.left,
               ),
-              textAlign: TextAlign.center,
             ),
           ),
           IconButton(

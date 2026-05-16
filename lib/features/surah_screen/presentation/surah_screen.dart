@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/gestures.dart';
@@ -7,6 +7,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:the_message_of_the_quran/core/models/ayah_bookmark_model.dart';
 import 'package:the_message_of_the_quran/core/models/arabic_block_model.dart';
 import 'package:the_message_of_the_quran/core/models/tajweed_word_model.dart';
 import 'package:the_message_of_the_quran/core/models/translation_block_model.dart';
@@ -15,13 +16,17 @@ import 'package:the_message_of_the_quran/core/services/database/preface_db_helpe
 import 'package:the_message_of_the_quran/core/services/database/tajweed_db_helper.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/cross_reference_parser.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
+import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
+import 'package:the_message_of_the_quran/core/utils/translation_alignment.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
 import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/core/widgets/scroll_to_top_button.dart';
+import 'package:the_message_of_the_quran/features/bookmark_screen/presentation/bookmark_conflict_dialog.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/surah_screen_app_bar.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/cross_reference_sheet.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/interpretation_note_marker.dart';
@@ -32,6 +37,8 @@ import 'package:the_message_of_the_quran/features/settings_screen/providers/tajw
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/reading_progress_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
+import 'package:the_message_of_the_quran/features/main_screen/presentation/main_screen.dart';
+import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/audio_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
@@ -59,8 +66,13 @@ class _SurahScreenState extends State<SurahScreen> {
   final ScrollController _scrollController = ScrollController();
   List<GlobalKey> _itemKeys = [];
   bool _showScrollToTop = false;
-  bool _showBottomNavOverlay = false;
+  bool _showBottomSurahNavOverlay = false;
+  bool _showActionDock = true;
   double? _deepLinkCacheExtent;
+
+  static const double _surahActionDockHeight = 56;
+  static const double _surahActionDockBottomOffset = 16;
+  static const double _surahActionDockSidePadding = 24;
 
   /// Cached provider references — safe to use in dispose().
   late SurahProvider _surahProv;
@@ -86,6 +98,9 @@ class _SurahScreenState extends State<SurahScreen> {
 
   /// Whether the current surah has a preface in the database.
   bool _hasPreface = false;
+
+  int? _temporarilyHighlightedAyahId;
+  Timer? _temporaryAyahHighlightTimer;
 
   @override
   void didChangeDependencies() {
@@ -123,7 +138,9 @@ class _SurahScreenState extends State<SurahScreen> {
       _lastKnownAyahStart = null;
       _lastVisibleAyahEnd = null;
       _lastScrolledPlayingAyahId = null;
-      _showBottomNavOverlay = false;
+      _resetTemporaryJumpHighlight(rebuild: false);
+      _showBottomSurahNavOverlay = false;
+      _showActionDock = true;
       _surahTransitionPending = false;
       _checkPrefaceAvailability();
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -145,10 +162,93 @@ class _SurahScreenState extends State<SurahScreen> {
     }
     final surahNumber = _surahProv.surahList[_surahProv.index].surahNumber;
     final isMl = context.read<LanguageProvider>().isMalayalam;
-    final prefaces = await PrefaceDbHelper.getPrefaceBySurahId(surahNumber, malayalam: isMl);
+    final prefaces = await PrefaceDbHelper.getPrefaceBySurahId(
+      surahNumber,
+      malayalam: isMl,
+    );
     if (!mounted) return;
     setState(() {
       _hasPreface = prefaces.isNotEmpty;
+    });
+  }
+
+  Future<void> _toggleSurahBookmark({
+    required BuildContext context,
+    required SurahProvider controller,
+    required int surahNumber,
+    required int ayahId,
+    required bool isBookmarked,
+    String? ayaText,
+  }) async {
+    const navigationTarget = BookmarkNavigationTarget.surah;
+
+    if (isBookmarked) {
+      await controller.onBookMarkRemoveByAyah(
+        surahNumber,
+        ayahId,
+        navigationTarget: navigationTarget,
+      );
+      return;
+    }
+
+    final surah = controller.surahList[controller.index];
+    var replaceSameSurah = false;
+
+    if (controller.hasSurahBookmarkConflict(
+      surahNumber,
+      ayahId,
+      navigationTarget: navigationTarget,
+    )) {
+      final resolution = await showBookmarkConflictDialog(
+        context,
+        navigationTarget: navigationTarget,
+        surahName: surah.name,
+      );
+      if (!mounted || resolution == null) return;
+      replaceSameSurah = resolution == BookmarkConflictResolution.replace;
+    }
+
+    await controller.onBookMarkAdd(
+      surahNumber,
+      ayahId,
+      surahName: surah.name,
+      ayaText: ayaText,
+      surahArabicName: surah.arabicName,
+      navigationTarget: navigationTarget,
+      replaceSameSurah: replaceSameSurah,
+    );
+  }
+
+  void _resetTemporaryJumpHighlight({bool rebuild = true}) {
+    _temporaryAyahHighlightTimer?.cancel();
+    _temporaryAyahHighlightTimer = null;
+
+    if (_temporarilyHighlightedAyahId == null) return;
+
+    if (rebuild && mounted) {
+      setState(() {
+        _temporarilyHighlightedAyahId = null;
+      });
+      return;
+    }
+
+    _temporarilyHighlightedAyahId = null;
+  }
+
+  void _showTemporaryJumpHighlight(int ayahId) {
+    if (!mounted) return;
+
+    _temporaryAyahHighlightTimer?.cancel();
+    setState(() {
+      _temporarilyHighlightedAyahId = ayahId;
+    });
+
+    _temporaryAyahHighlightTimer = Timer(const Duration(seconds: 3), () {
+      if (!mounted) return;
+      setState(() {
+        _temporarilyHighlightedAyahId = null;
+        _temporaryAyahHighlightTimer = null;
+      });
     });
   }
 
@@ -233,10 +333,10 @@ class _SurahScreenState extends State<SurahScreen> {
     final blocks = _surahProv.arabicBlockList;
 
     if (blocks.isEmpty) {
-      if (showScrollToTop != _showScrollToTop || _showBottomNavOverlay) {
+      if (showScrollToTop != _showScrollToTop || _showBottomSurahNavOverlay) {
         setState(() {
           _showScrollToTop = showScrollToTop;
-          _showBottomNavOverlay = false;
+          _showBottomSurahNavOverlay = false;
         });
       }
       return;
@@ -263,17 +363,17 @@ class _SurahScreenState extends State<SurahScreen> {
     }
 
     final totalAyahEnd = blocks.last.verseTo ?? blocks.length;
-    final showBottomNavOverlay =
+    final showBottomSurahNavOverlay =
         hasClients &&
         lastEnd != null &&
         lastEnd >= totalAyahEnd &&
         _scrollController.position.extentAfter <= 12;
 
     if (showScrollToTop != _showScrollToTop ||
-        showBottomNavOverlay != _showBottomNavOverlay) {
+        showBottomSurahNavOverlay != _showBottomSurahNavOverlay) {
       setState(() {
         _showScrollToTop = showScrollToTop;
-        _showBottomNavOverlay = showBottomNavOverlay;
+        _showBottomSurahNavOverlay = showBottomSurahNavOverlay;
       });
     }
 
@@ -353,6 +453,224 @@ class _SurahScreenState extends State<SurahScreen> {
     );
   }
 
+  double _surahActionDockBottomPadding(BuildContext context) {
+    return MediaQuery.of(context).padding.bottom + _surahActionDockBottomOffset;
+  }
+
+  double _surahActionDockClearance(BuildContext context) {
+    return _surahActionDockBottomPadding(context) + _surahActionDockHeight + 12;
+  }
+
+  bool _onScrollNotification(ScrollNotification notification) {
+    if (!_showActionDock) return false;
+
+    if (notification is ScrollStartNotification ||
+        notification is ScrollUpdateNotification ||
+        notification is OverscrollNotification) {
+      _hideActionDock();
+    }
+
+    if (notification is UserScrollNotification &&
+        notification.direction != ScrollDirection.idle) {
+      _hideActionDock();
+    }
+
+    return false;
+  }
+
+  void _toggleActionDock() {
+    if (!mounted || _surahProv.arabicBlockList.isEmpty) return;
+    setState(() {
+      _showActionDock = !_showActionDock;
+    });
+  }
+
+  void _hideActionDock() {
+    if (!_showActionDock || !mounted) return;
+    setState(() {
+      _showActionDock = false;
+    });
+  }
+
+  Future<void> _navigateToMainTab(int tabIndex) async {
+    if (!mounted) return;
+
+    _saveLastRead();
+    context.read<AudioProvider>().stopAudio();
+    context.read<HomeProvider>().changeIndex(tabIndex);
+
+    await Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const MainScreen()),
+      (route) => false,
+    );
+  }
+
+  Future<void> _restartSurahPlayback() async {
+    if (!mounted ||
+        _surahProv.surahList.isEmpty ||
+        _surahProv.index < 0 ||
+        _surahProv.index >= _surahProv.surahList.length ||
+        _surahProv.arabicBlockList.isEmpty) {
+      return;
+    }
+
+    final firstBlock = _surahProv.arabicBlockList.first;
+    final ayahStart = firstBlock.verseFrom ?? 1;
+    final ayahEnd = firstBlock.verseTo ?? ayahStart;
+    final surahNumber = _surahProv.surahList[_surahProv.index].surahNumber;
+    final playSettings = context.read<PlaySettingsProvider>();
+
+    await context.read<AudioProvider>().playAyah(
+      surahNumber: surahNumber,
+      ayahId: ayahStart,
+      ayahEndId: ayahEnd,
+      translationIndex: 0,
+      reciterFolder: playSettings.selectedReciter.folderName,
+      playbackSpeed: playSettings.playbackSpeed,
+    );
+  }
+
+  Widget _buildSurahActionDockButton(
+    BuildContext context, {
+    required String tooltip,
+    required IconData icon,
+    required VoidCallback onPressed,
+  }) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final iconColor = isDarkMode ? Colors.white : AppTheme.appIconTheme;
+
+    return Expanded(
+      child: Semantics(
+        button: true,
+        label: tooltip,
+        excludeSemantics: true,
+        child: Tooltip(
+          message: tooltip,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(14),
+            onTap: onPressed,
+            child: SizedBox(
+              height: _surahActionDockHeight,
+              child: Icon(icon, color: iconColor, size: 24),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSurahActionDock(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final dockBg = isDarkMode
+        ? const Color(0xFF1C1C1E)
+        : const Color.fromRGBO(255, 248, 235, 1);
+    final borderColor = isDarkMode
+        ? Colors.white.withValues(alpha: 0.12)
+        : AppTheme.appIconTheme.withValues(alpha: 0.16);
+    final dividerColor = isDarkMode
+        ? Colors.white.withValues(alpha: 0.10)
+        : theme.colorScheme.outlineVariant;
+
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: IgnorePointer(
+        ignoring: !_showActionDock,
+        child: AnimatedSlide(
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOutCubic,
+          offset: _showActionDock ? Offset.zero : const Offset(0, 0.35),
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 180),
+            curve: Curves.easeOut,
+            opacity: _showActionDock ? 1 : 0,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(
+                _surahActionDockSidePadding,
+                0,
+                _surahActionDockSidePadding,
+                _surahActionDockBottomPadding(context),
+              ),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 296),
+                child: GestureDetector(
+                  onTap: () {},
+                  behavior: HitTestBehavior.opaque,
+                  child: Semantics(
+                    container: true,
+                    label: 'Surah quick actions',
+                    child: Material(
+                      color: dockBg,
+                      elevation: 10,
+                      shadowColor: Colors.black.withValues(alpha: 0.16),
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: borderColor),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildSurahActionDockButton(
+                              context,
+                              tooltip: 'Home',
+                              icon: Icons.home_outlined,
+                              onPressed: () => _navigateToMainTab(0),
+                            ),
+                            Container(
+                              width: 1,
+                              height: 24,
+                              color: dividerColor,
+                            ),
+                            _buildSurahActionDockButton(
+                              context,
+                              tooltip: 'Jump to Ayah',
+                              icon: Icons.format_list_numbered,
+                              onPressed: () {
+                                _hideActionDock();
+                                _showJumpTo(
+                                  context,
+                                  _surahProv.arabicBlockList,
+                                );
+                              },
+                            ),
+                            Container(
+                              width: 1,
+                              height: 24,
+                              color: dividerColor,
+                            ),
+                            _buildSurahActionDockButton(
+                              context,
+                              tooltip: 'Play from beginning',
+                              icon: Icons.play_circle_outline_rounded,
+                              onPressed: _restartSurahPlayback,
+                            ),
+                            Container(
+                              width: 1,
+                              height: 24,
+                              color: dividerColor,
+                            ),
+                            _buildSurahActionDockButton(
+                              context,
+                              tooltip: 'Settings',
+                              icon: Icons.settings_outlined,
+                              onPressed: () => _navigateToMainTab(3),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildFinalAyahNavSection(BuildContext context) {
     final canGoNext = _canNavigateToAdjacentSurah(false);
     final canGoPrevious = _canNavigateToAdjacentSurah(true);
@@ -371,17 +689,17 @@ class _SurahScreenState extends State<SurahScreen> {
               ),
               if (canGoNext || canGoPrevious)
                 IgnorePointer(
-                  ignoring: !_showBottomNavOverlay,
+                  ignoring: !_showBottomSurahNavOverlay,
                   child: AnimatedSlide(
                     duration: const Duration(milliseconds: 220),
                     curve: Curves.easeOutCubic,
-                    offset: _showBottomNavOverlay
+                    offset: _showBottomSurahNavOverlay
                         ? Offset.zero
                         : const Offset(0, 0.2),
                     child: AnimatedOpacity(
                       duration: const Duration(milliseconds: 200),
                       curve: Curves.easeOut,
-                      opacity: _showBottomNavOverlay ? 1 : 0,
+                      opacity: _showBottomSurahNavOverlay ? 1 : 0,
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -429,21 +747,22 @@ class _SurahScreenState extends State<SurahScreen> {
       navigateToNextSurah: () => surahProv.onSwipe(false),
       readBlocks: () => surahProv.arabicBlockList,
       readSurahNumber: () => surahProv.surahList[surahProv.index].surahNumber,
-      startPlayback: ({
-        required int surahNumber,
-        required int ayahStart,
-        required int ayahEnd,
-        required int translationIndex,
-      }) {
-        return audioProv.playAyah(
-          surahNumber: surahNumber,
-          ayahId: ayahStart,
-          ayahEndId: ayahEnd,
-          translationIndex: translationIndex,
-          reciterFolder: playSettings.selectedReciter.folderName,
-          playbackSpeed: playSettings.playbackSpeed,
-        );
-      },
+      startPlayback:
+          ({
+            required int surahNumber,
+            required int ayahStart,
+            required int ayahEnd,
+            required int translationIndex,
+          }) {
+            return audioProv.playAyah(
+              surahNumber: surahNumber,
+              ayahId: ayahStart,
+              ayahEndId: ayahEnd,
+              translationIndex: translationIndex,
+              reciterFolder: playSettings.selectedReciter.folderName,
+              playbackSpeed: playSettings.playbackSpeed,
+            );
+          },
       setAutoAdvancing: (isAutoAdvancing) {
         audioProv.setProgrammaticSurahTransition(isAutoAdvancing);
       },
@@ -579,6 +898,7 @@ class _SurahScreenState extends State<SurahScreen> {
 
   @override
   void dispose() {
+    _temporaryAyahHighlightTimer?.cancel();
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _listeningAudioProv?.removeListener(_onAudioProviderChanged);
@@ -655,7 +975,10 @@ class _SurahScreenState extends State<SurahScreen> {
     final idx = _findAyahBlockIndex(blocks, ayaStart);
     if (idx < 0 || idx >= _itemKeys.length) return;
 
+    var shouldHighlightTargetAyah = false;
+
     try {
+      shouldHighlightTargetAyah = true;
       if (_deepLinkCacheExtent != 120000.0) {
         setState(() => _deepLinkCacheExtent = 120000.0);
       }
@@ -696,12 +1019,14 @@ class _SurahScreenState extends State<SurahScreen> {
         curve: Curves.easeOutCubic,
       );
     } finally {
+      if (mounted && shouldHighlightTargetAyah) {
+        _showTemporaryJumpHighlight(ayaStart);
+      }
       if (mounted && _deepLinkCacheExtent != null) {
         setState(() => _deepLinkCacheExtent = null);
       }
     }
   }
-
 
   void _showJumpTo(
     BuildContext context,
@@ -855,7 +1180,15 @@ class _SurahScreenState extends State<SurahScreen> {
                 children: [
                   _infoChip(
                     isMl ? 'അവതരണം :' : 'Revelation :',
-                    surah.place.trim(),
+                    localizeSurahMadinahDisplayLabel(
+                      surah.place,
+                      isMalayalam: isMl,
+                      surahNumber: surah.surahNumber,
+                      fallback: localizeSurahPlace(
+                        surah.place,
+                        isMalayalam: isMl,
+                      ),
+                    ),
                   ),
                   _infoChip(
                     isMl ? 'സൂക്തങ്ങൾ :' : 'Verses :',
@@ -868,7 +1201,10 @@ class _SurahScreenState extends State<SurahScreen> {
             // Preface sections
             Expanded(
               child: FutureBuilder(
-                future: PrefaceDbHelper.getPrefaceBySurahId(surah.surahNumber, malayalam: isMl),
+                future: PrefaceDbHelper.getPrefaceBySurahId(
+                  surah.surahNumber,
+                  malayalam: isMl,
+                ),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -963,6 +1299,21 @@ class _SurahScreenState extends State<SurahScreen> {
   /// returns a list of [TextSpan]s where only the segment belonging to
   /// [playingAyahId] is coloured with [highlightColor].
   /// Selected ayahs (via [controller]) get a background highlight.
+  Color? _ayahBackgroundColor({
+    required int ayahNumber,
+    required SurahProvider controller,
+  }) {
+    if (_temporarilyHighlightedAyahId == ayahNumber) {
+      return appBarAccentFillColor(context, alpha: 0.22);
+    }
+
+    if (controller.isAyahSelected(ayahNumber)) {
+      return const Color(0xFF338FCC).withValues(alpha: 0.25);
+    }
+
+    return null;
+  }
+
   List<TextSpan> _buildArabicSpans(
     String arabicText,
     int verseFrom,
@@ -977,15 +1328,15 @@ class _SurahScreenState extends State<SurahScreen> {
 
     if (matches.isEmpty) {
       final isPlaying = playingAyahId == verseFrom;
-      final isSelected = controller.isAyahSelected(verseFrom);
       return [
         TextSpan(
           text: arabicText,
           style: baseStyle.copyWith(
             color: isPlaying ? highlightColor : null,
-            backgroundColor: isSelected
-                ? const Color(0xFF338FCC).withValues(alpha: 0.25)
-                : null,
+            backgroundColor: _ayahBackgroundColor(
+              ayahNumber: verseFrom,
+              controller: controller,
+            ),
           ),
           recognizer: TapGestureRecognizer()
             ..onTap = () => controller.onAyahTap(verseFrom),
@@ -1001,16 +1352,16 @@ class _SurahScreenState extends State<SurahScreen> {
       final segment =
           '${arabicText.substring(pos, match.start)} ${arabicText.substring(match.start, match.end)} ';
       final isPlaying = playingAyahId == currentAyah;
-      final isSelected = controller.isAyahSelected(currentAyah);
       final ayahNum = currentAyah;
       spans.add(
         TextSpan(
           text: segment,
           style: baseStyle.copyWith(
             color: isPlaying ? highlightColor : null,
-            backgroundColor: isSelected
-                ? const Color(0xFF338FCC).withValues(alpha: 0.25)
-                : null,
+            backgroundColor: _ayahBackgroundColor(
+              ayahNumber: ayahNum,
+              controller: controller,
+            ),
           ),
           recognizer: TapGestureRecognizer()
             ..onTap = () => controller.onAyahTap(ayahNum),
@@ -1182,9 +1533,10 @@ class _SurahScreenState extends State<SurahScreen> {
             padding: const EdgeInsets.only(bottom: 8),
             child: Text.rich(
               TextSpan(children: spans),
-              textAlign: fontSettings.translationJustify
-                  ? TextAlign.justify
-                  : TextAlign.start,
+              textAlign: resolveTranslationTextAlign(
+                isMalayalam: isMl,
+                justifyTranslation: fontSettings.translationJustify,
+              ),
             ),
           );
         }).toList(),
@@ -1220,29 +1572,15 @@ class _SurahScreenState extends State<SurahScreen> {
     for (final seg in segments) {
       if (seg.isCrossReference) {
         final ref = seg.crossReference!;
-        spans.add(TextSpan(
-          text: seg.text,
-          style: linkStyle,
-          recognizer: TapGestureRecognizer()
-            ..onTap = () {
-              if (ref.ayahNumber != null) {
-                CrossReferenceSheet.show(
-                  context,
-                  surahNumber: ref.surahNumber,
-                  ayahNumber: ref.ayahNumber!,
-                  noteNumber: ref.noteNumber,
-                );
-              } else if (ref.noteNumber != null) {
-                // Same-surah note reference — show interpretation
-                CrossReferenceSheet.show(
-                  context,
-                  surahNumber: ref.surahNumber,
-                  ayahNumber: 1, // fallback
-                  noteNumber: ref.noteNumber,
-                );
-              }
-            },
-        ));
+        spans.add(
+          TextSpan(
+            text: seg.text,
+            style: linkStyle,
+            recognizer: TapGestureRecognizer()
+              ..onTap = () =>
+                  CrossReferenceSheet.showParsedReference(context, ref),
+          ),
+        );
       } else {
         spans.add(TextSpan(text: seg.text, style: baseStyle));
       }
@@ -1281,16 +1619,8 @@ class _SurahScreenState extends State<SurahScreen> {
           text: seg.text,
           style: linkStyle,
           recognizer: TapGestureRecognizer()
-            ..onTap = () {
-              if (ref.ayahNumber != null) {
-                CrossReferenceSheet.show(
-                  context,
-                  surahNumber: ref.surahNumber,
-                  ayahNumber: ref.ayahNumber!,
-                  noteNumber: ref.noteNumber,
-                );
-              }
-            },
+            ..onTap = () =>
+                CrossReferenceSheet.showParsedReference(context, ref),
         );
       }
       return TextSpan(text: seg.text, style: style);
@@ -1321,6 +1651,7 @@ class _SurahScreenState extends State<SurahScreen> {
       builder: (_) => Consumer<SurahProvider>(
         builder: (ctx, ctrl, _) {
           final fontSettings = Provider.of<FontSizeChangerProvider>(ctx);
+          final isMalayalam = ctx.watch<LanguageProvider>().isMalayalam;
           final isLoading = ctrl.currentInterpretationNumber == -1;
           final hasBounds =
               ctrl.minInterpretationNumber != -1 &&
@@ -1336,24 +1667,38 @@ class _SurahScreenState extends State<SurahScreen> {
               ctrl.index >= 0 &&
               ctrl.index < ctrl.surahList.length;
           final surah = hasSurah ? ctrl.surahList[ctrl.index] : null;
-            final headerAyah =
-              ctrl.interpretationList.isNotEmpty &&
-                ctrl.interpretationList.first.ayaRangeStart > 0
-              ? ctrl.interpretationList.first.ayaRangeStart
-              : null;
-            final headerTitle = surah == null
-              ? ''
-              : headerAyah == null
-              ? surah.name
-              : '${surah.name} : $headerAyah';
+            final headerSurahNumber = surah?.surahNumber ?? (ctrl.index + 1);
+          final headerInterpretationNumber =
+              ctrl.currentInterpretationNumber > 0
+              ? ctrl.currentInterpretationNumber
+              : (pageNumber ?? -1);
+          final surahTitle = formatInterpretationSheetSurahTitle(
+            isMalayalam: isMalayalam,
+            surah: surah,
+          );
+          final metadataLabel = headerInterpretationNumber > 0
+              ? formatInterpretationMetadataLabel(
+                  isMalayalam: isMalayalam,
+                  surahNumber: headerSurahNumber,
+                  interpretationNumber: headerInterpretationNumber,
+                  ayahNumbers: ctrl.currentInterpretationAyahNumbers,
+                )
+              : (isMalayalam
+                    ? 'സൂറത്ത് $headerSurahNumber'
+                    : 'Surah $headerSurahNumber');
 
           // Build combined text for copy/share
           String combinedText() {
-            if (headerTitle.isEmpty) return '';
             final body = ctrl.interpretationList
                 .map((e) => e.interpretationText)
                 .join('\n\n');
-            return body.trim().isEmpty ? headerTitle : '$headerTitle\n\n$body';
+            final headerLines = <String>[
+              if (surahTitle != null && surahTitle.isNotEmpty) surahTitle,
+              if (metadataLabel.trim().isNotEmpty) metadataLabel,
+            ];
+            final headerText = headerLines.join('\n').trim();
+            if (headerText.isEmpty) return body;
+            return body.trim().isEmpty ? headerText : '$headerText\n\n$body';
           }
 
           return ConstrainedBox(
@@ -1377,23 +1722,12 @@ class _SurahScreenState extends State<SurahScreen> {
                     ),
                   ),
                 ),
-                // Header title
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      headerTitle,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
+                InterpretationSheetHeader(
+                  surahTitle: surahTitle,
+                  metadataLabel: metadataLabel,
+                  onClose: () => Navigator.of(ctx).pop(),
                 ),
-                const Divider(height: 16),
+                const Divider(height: 1),
                 // Content
                 Flexible(
                   child: isLoading
@@ -1405,7 +1739,7 @@ class _SurahScreenState extends State<SurahScreen> {
                           duration: const Duration(milliseconds: 300),
                           child: SingleChildScrollView(
                             key: ValueKey(ctrl.currentInterpretationNumber),
-                            padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                            padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: ctrl.interpretationList.map((item) {
@@ -1540,6 +1874,7 @@ class _SurahScreenState extends State<SurahScreen> {
       child: BaseScreenLayout(
         appBar: CommonAppBar.appBar(
           context,
+          showBrandLogo: true,
           onSurahInfoTap: _hasPreface
               ? () => _showSurahInfo(context, controller)
               : null,
@@ -1556,17 +1891,6 @@ class _SurahScreenState extends State<SurahScreen> {
                 curve: Curves.easeInOut,
               ),
             ),
-            if (controller.arabicBlockList.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              FloatingActionButton(
-                heroTag: 'jumpToAyah',
-                mini: true,
-                tooltip: 'Jump to Ayah',
-                onPressed: () =>
-                    _showJumpTo(context, controller.arabicBlockList),
-                child: const Icon(Icons.format_list_numbered),
-              ),
-            ],
           ],
         ),
         child: Column(
@@ -1581,326 +1905,373 @@ class _SurahScreenState extends State<SurahScreen> {
                   }
                   if (controller.isSelectionActive) {
                     controller.clearSelection();
+                    return;
                   }
+                  _toggleActionDock();
                 },
-                child: controller.arabicBlockList.isEmpty
-                    ? const Center(child: CircularProgressIndicator())
-                    : Builder(
-                        builder: (_) {
-                          final surahNumber = controller.surahList.isNotEmpty
-                              ? controller.surahList[controller.index].surahNumber
-                              : 0;
-                          final surahName = controller.surahList.isNotEmpty
-                              ? controller.surahList[controller.index].name
-                              : 'Surah';
-                          final hPad = ResponsiveHelper.horizontalPadding(
-                            context,
-                          );
-                          final content = Padding(
-                            padding: EdgeInsets.fromLTRB(hPad, 10, hPad, 0),
-                            child: TweenAnimationBuilder<double>(
-                              key: ValueKey(controller.index),
-                              tween: Tween(
-                                begin: widget.scrollToAyahId != null ? 1.0 : 0.0,
-                                end: 1.0,
-                              ),
-                              duration: const Duration(milliseconds: 400),
-                              curve: Curves.easeInOut,
-                              builder: (context, opacity, child) {
-                                return Opacity(opacity: opacity, child: child);
-                              },
-                              child: GestureDetector(
-                                behavior: HitTestBehavior.translucent,
-                                onHorizontalDragEnd: _handleContinuousModeSwipe,
-                                child: ResponsiveContentWrapper(
-                                  child: CustomScrollView(
-                                    controller: _scrollController,
-                                    cacheExtent: _deepLinkCacheExtent,
-                                    slivers: [
-                                      const SurahScreenAppBar(),
-                                      SliverList(
-                                        delegate: SliverChildBuilderDelegate(
-                                          (context, index) {
-                            final block = controller.arabicBlockList[index];
-                            final ayaStart = block.verseFrom ?? index + 1;
-                            final ayaEnd = block.verseTo ?? index + 1;
-                            final arabicText = block.arabicText ?? '';
-                            final isLastBlock =
-                                index == controller.arabicBlockList.length - 1;
-                            final ayahRange = ayaStart == ayaEnd
-                                ? 'Ayah ${_toArabicNumerals(ayaStart)}'
-                                : 'Ayahs ${_toArabicNumerals(ayaStart)} to ${_toArabicNumerals(ayaEnd)}';
-
-                            return Semantics(
-                              label: '$surahName, $ayahRange',
-                              child: Consumer<AudioProvider>(
-                                key: _itemKeys[index],
-                                builder: (highlightCtx, audio, _) {
-                                  // Null when audio is inactive or playing a
-                                  // different surah; otherwise the individual
-                                  // ayah number currently being played.
-                                  final effectivePlayingAyahId =
-                                      audio.isActive &&
-                                          surahNumber > 0 &&
-                                          audio.currentSurahNumber ==
-                                              surahNumber
-                                      ? audio.playingAyahId
-                                      : null;
-                                  return Padding(
-                                    key: ValueKey(index),
-                                    padding: const EdgeInsets.fromLTRB(
-                                      4,
-                                      8,
-                                      4,
-                                      4,
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: controller.arabicBlockList.isEmpty
+                          ? const Center(child: CircularProgressIndicator())
+                          : Builder(
+                              builder: (_) {
+                                final surahNumber =
+                                    controller.surahList.isNotEmpty
+                                    ? controller
+                                          .surahList[controller.index]
+                                          .surahNumber
+                                    : 0;
+                                final surahName =
+                                    controller.surahList.isNotEmpty
+                                    ? controller
+                                          .surahList[controller.index]
+                                          .name
+                                    : 'Surah';
+                                final hPad = ResponsiveHelper.horizontalPadding(
+                                  context,
+                                );
+                                final content = Padding(
+                                  padding: EdgeInsets.fromLTRB(
+                                    hPad,
+                                    10,
+                                    hPad,
+                                    0,
+                                  ),
+                                  child: TweenAnimationBuilder<double>(
+                                    key: ValueKey(controller.index),
+                                    tween: Tween(
+                                      begin: widget.scrollToAyahId != null
+                                          ? 1.0
+                                          : 0.0,
+                                      end: 1.0,
                                     ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
-                                      children: [
-                                        if (arabicText.isNotEmpty)
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                              bottom: 8.0,
-                                            ),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.stretch,
-                                              children: [
-                                                Consumer<TajweedProvider>(
-                                                  builder: (ctx, tajweed, _) {
-                                                    final quranJustify =
-                                                        Provider.of<
-                                                              FontSizeChangerProvider
-                                                            >(ctx)
-                                                            .quranJustify;
-                                                    if (tajweed.enabled &&
-                                                        tajweed
-                                                            .downloadComplete) {
-                                                      return _TajweedWordRow(
-                                                        surahNo: surahNumber,
-                                                        verseFrom: ayaStart,
-                                                        verseTo: ayaEnd,
-                                                        playingAyahId:
-                                                            effectivePlayingAyahId,
-                                                      );
-                                                    }
-                                                    return Text.rich(
-                                                      TextSpan(
-                                                        children: _buildArabicSpans(
-                                                          arabicText,
-                                                          ayaStart,
-                                                          effectivePlayingAyahId,
-                                                          AppTextTheme.surahArabiStyle(
-                                                            context,
-                                                          ),
-                                                          AppTheme.appIconTheme,
-                                                          controller,
-                                                        ),
+                                    duration: const Duration(milliseconds: 400),
+                                    curve: Curves.easeInOut,
+                                    builder: (context, opacity, child) {
+                                      return Opacity(
+                                        opacity: opacity,
+                                        child: child,
+                                      );
+                                    },
+                                    child: GestureDetector(
+                                      behavior: HitTestBehavior.translucent,
+                                      onHorizontalDragEnd:
+                                          _handleContinuousModeSwipe,
+                                      child: ResponsiveContentWrapper(
+                                        child: NotificationListener<ScrollNotification>(
+                                          onNotification: _onScrollNotification,
+                                          child: CustomScrollView(
+                                            controller: _scrollController,
+                                            cacheExtent: _deepLinkCacheExtent,
+                                            slivers: [
+                                              const SurahScreenAppBar(),
+                                              SliverList(
+                                                delegate: SliverChildBuilderDelegate(
+                                                  (context, index) {
+                                                    final block = controller
+                                                        .arabicBlockList[index];
+                                                    final ayaStart =
+                                                        block.verseFrom ??
+                                                        index + 1;
+                                                    final ayaEnd =
+                                                        block.verseTo ??
+                                                        index + 1;
+                                                    final arabicText =
+                                                        block.arabicText ?? '';
+                                                    final isLastBlock =
+                                                        index ==
+                                                        controller
+                                                                .arabicBlockList
+                                                                .length -
+                                                            1;
+                                                    final ayahRange =
+                                                        ayaStart == ayaEnd
+                                                        ? 'Ayah ${_toArabicNumerals(ayaStart)}'
+                                                        : 'Ayahs ${_toArabicNumerals(ayaStart)} to ${_toArabicNumerals(ayaEnd)}';
+
+                                                    return Semantics(
+                                                      label:
+                                                          '$surahName, $ayahRange',
+                                                      child: Consumer<AudioProvider>(
+                                                        key: _itemKeys[index],
+                                                        builder: (highlightCtx, audio, _) {
+                                                          final effectivePlayingAyahId =
+                                                              audio.isActive &&
+                                                                  surahNumber >
+                                                                      0 &&
+                                                                  audio.currentSurahNumber ==
+                                                                      surahNumber
+                                                              ? audio
+                                                                    .playingAyahId
+                                                              : null;
+                                                          return Padding(
+                                                            key: ValueKey(
+                                                              index,
+                                                            ),
+                                                            padding:
+                                                                const EdgeInsets.fromLTRB(
+                                                                  4,
+                                                                  8,
+                                                                  4,
+                                                                  4,
+                                                                ),
+                                                            child: Column(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .stretch,
+                                                              children: [
+                                                                if (arabicText
+                                                                    .isNotEmpty)
+                                                                  Padding(
+                                                                    padding:
+                                                                        const EdgeInsets.only(
+                                                                          bottom:
+                                                                              8.0,
+                                                                        ),
+                                                                    child: Column(
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .stretch,
+                                                                      children: [
+                                                                        Consumer<
+                                                                          TajweedProvider
+                                                                        >(
+                                                                          builder:
+                                                                              (
+                                                                                ctx,
+                                                                                tajweed,
+                                                                                _,
+                                                                              ) {
+                                                                                final quranJustify =
+                                                                                    Provider.of<
+                                                                                          FontSizeChangerProvider
+                                                                                        >(
+                                                                                          ctx,
+                                                                                        )
+                                                                                        .quranJustify;
+                                                                                if (tajweed.enabled &&
+                                                                                    tajweed.downloadComplete) {
+                                                                                  return _TajweedWordRow(
+                                                                                    surahNo: surahNumber,
+                                                                                    verseFrom: ayaStart,
+                                                                                    verseTo: ayaEnd,
+                                                                                    playingAyahId: effectivePlayingAyahId,
+                                                                                  );
+                                                                                }
+                                                                                return Text.rich(
+                                                                                  TextSpan(
+                                                                                    children: _buildArabicSpans(
+                                                                                      arabicText,
+                                                                                      ayaStart,
+                                                                                      effectivePlayingAyahId,
+                                                                                      AppTextTheme.surahArabiStyle(
+                                                                                        context,
+                                                                                      ),
+                                                                                      AppTheme.appIconTheme,
+                                                                                      controller,
+                                                                                    ),
+                                                                                  ),
+                                                                                  textHeightBehavior: const TextHeightBehavior(
+                                                                                    applyHeightToFirstAscent: false,
+                                                                                    applyHeightToLastDescent: false,
+                                                                                  ),
+                                                                                  textDirection: TextDirection.rtl,
+                                                                                  textAlign: quranJustify
+                                                                                      ? TextAlign.justify
+                                                                                      : TextAlign.start,
+                                                                                );
+                                                                              },
+                                                                        ),
+                                                                        const SizedBox(
+                                                                          height:
+                                                                              10,
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                if (controller
+                                                                    .translationBlockList
+                                                                    .isNotEmpty)
+                                                                  _buildTranslationBlocks(
+                                                                    context,
+                                                                    controller
+                                                                        .translationBlockList,
+                                                                    ayaStart,
+                                                                    ayaEnd,
+                                                                    surahNumber,
+                                                                    controller,
+                                                                  ),
+                                                                Builder(
+                                                                  builder: (context) {
+                                                                    final isBookmarked =
+                                                                        controller.isAyahBookmarked(
+                                                                          surahNumber,
+                                                                          ayaStart,
+                                                                        );
+                                                                    const translationText =
+                                                                        '';
+                                                                    return Row(
+                                                                      children: [
+                                                                        Consumer<
+                                                                          AudioProvider
+                                                                        >(
+                                                                          builder:
+                                                                              (
+                                                                                ctx,
+                                                                                audio,
+                                                                                _,
+                                                                              ) {
+                                                                                final isThis = audio.isCurrentAyah(
+                                                                                  surahNumber,
+                                                                                  ayaStart,
+                                                                                );
+                                                                                final isLoadingThis =
+                                                                                    audio.isLoading &&
+                                                                                    isThis;
+                                                                                return IconButton(
+                                                                                  tooltip: isThis
+                                                                                      ? 'Stop'
+                                                                                      : 'Play',
+                                                                                  onPressed: () {
+                                                                                    if (isThis) {
+                                                                                      audio.stopAudio();
+                                                                                    } else {
+                                                                                      final ps =
+                                                                                          Provider.of<
+                                                                                            PlaySettingsProvider
+                                                                                          >(
+                                                                                            ctx,
+                                                                                            listen: false,
+                                                                                          );
+                                                                                      audio.playAyah(
+                                                                                        surahNumber: surahNumber,
+                                                                                        ayahId: ayaStart,
+                                                                                        ayahEndId: ayaEnd,
+                                                                                        translationIndex: index,
+                                                                                        reciterFolder: ps.selectedReciter.folderName,
+                                                                                        playbackSpeed: ps.playbackSpeed,
+                                                                                      );
+                                                                                    }
+                                                                                  },
+                                                                                  icon: isLoadingThis
+                                                                                      ? const SizedBox(
+                                                                                          width: 20,
+                                                                                          height: 20,
+                                                                                          child: CircularProgressIndicator(
+                                                                                            strokeWidth: 2,
+                                                                                            color: AppTheme.appIconTheme,
+                                                                                          ),
+                                                                                        )
+                                                                                      : Icon(
+                                                                                          isThis
+                                                                                              ? Icons.stop_circle
+                                                                                              : Icons.play_circle_outline,
+                                                                                          color: AppTheme.appIconTheme,
+                                                                                        ),
+                                                                                );
+                                                                              },
+                                                                        ),
+                                                                        IconButton(
+                                                                          tooltip:
+                                                                              isBookmarked
+                                                                              ? 'Remove bookmark'
+                                                                              : 'Bookmark',
+                                                                          onPressed: () => _toggleSurahBookmark(
+                                                                            context:
+                                                                                context,
+                                                                            controller:
+                                                                                controller,
+                                                                            surahNumber:
+                                                                                surahNumber,
+                                                                            ayahId:
+                                                                                ayaStart,
+                                                                            isBookmarked:
+                                                                                isBookmarked,
+                                                                            ayaText:
+                                                                                arabicText.isNotEmpty
+                                                                                ? arabicText
+                                                                                : null,
+                                                                          ),
+                                                                          icon: Icon(
+                                                                            isBookmarked
+                                                                                ? Icons.bookmark
+                                                                                : Icons.bookmark_border_outlined,
+                                                                            color:
+                                                                                AppTheme.appIconTheme,
+                                                                          ),
+                                                                        ),
+                                                                        IconButton(
+                                                                          tooltip:
+                                                                              'Share',
+                                                                          onPressed: () async {
+                                                                            final surah =
+                                                                                controller.surahList[controller.index];
+                                                                            final shareText =
+                                                                                '${surah.name} – Ayah ${_toArabicNumerals(ayaStart)}\n\n'
+                                                                                '${arabicText.isNotEmpty ? '$arabicText\n\n' : ''}'
+                                                                                '$translationText';
+                                                                            if (shareText.trim().isNotEmpty) {
+                                                                              await Share.share(
+                                                                                shareText,
+                                                                              );
+                                                                            }
+                                                                          },
+                                                                          icon: const Icon(
+                                                                            Icons.share_outlined,
+                                                                            color:
+                                                                                AppTheme.appIconTheme,
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    );
+                                                                  },
+                                                                ),
+                                                                if (isLastBlock)
+                                                                  _buildFinalAyahNavSection(
+                                                                    context,
+                                                                  )
+                                                                else
+                                                                  const Divider(
+                                                                    thickness:
+                                                                        0.5,
+                                                                  ),
+                                                              ],
+                                                            ),
+                                                          );
+                                                        },
                                                       ),
-                                                      textHeightBehavior:
-                                                          const TextHeightBehavior(
-                                                            applyHeightToFirstAscent:
-                                                                false,
-                                                            applyHeightToLastDescent:
-                                                                false,
-                                                          ),
-                                                      textDirection:
-                                                          TextDirection.rtl,
-                                                      textAlign: quranJustify
-                                                          ? TextAlign.justify
-                                                          : TextAlign.start,
                                                     );
                                                   },
+                                                  childCount: controller
+                                                      .arabicBlockList
+                                                      .length,
                                                 ),
-                                                const SizedBox(height: 10),
-                                              ],
-                                            ),
-                                          ),
-                                        if (controller
-                                            .translationBlockList
-                                            .isNotEmpty)
-                                          _buildTranslationBlocks(
-                                            context,
-                                            controller.translationBlockList,
-                                            ayaStart,
-                                            ayaEnd,
-                                            surahNumber,
-                                            controller,
-                                          ),
-                                        // ── Action row: Bookmark | Share | Play ──
-                                        Builder(
-                                          builder: (context) {
-                                            final isBookmarked = controller
-                                                .isAyahBookmarked(
-                                                  surahNumber,
-                                                  ayaStart,
-                                                );
-                                            const translationText = '';
-                                            return Row(
-                                                  children: [
-                                                    // Play / Stop
-                                                    Consumer<AudioProvider>(
-                                                      builder: (ctx, audio, _) {
-                                                        final isThis = audio
-                                                            .isCurrentAyah(
-                                                              surahNumber,
-                                                              ayaStart,
-                                                            );
-                                                        final isLoadingThis =
-                                                            audio.isLoading &&
-                                                            isThis;
-                                                        return IconButton(
-                                                          tooltip: isThis
-                                                              ? 'Stop'
-                                                              : 'Play',
-                                                          onPressed: () {
-                                                            if (isThis) {
-                                                              audio.stopAudio();
-                                                            } else {
-                                                              final ps =
-                                                                  Provider.of<
-                                                                    PlaySettingsProvider
-                                                                  >(
-                                                                    ctx,
-                                                                    listen:
-                                                                        false,
-                                                                  );
-                                                              audio.playAyah(
-                                                                surahNumber:
-                                                                    surahNumber,
-                                                                ayahId:
-                                                                    ayaStart,
-                                                                ayahEndId:
-                                                                    ayaEnd,
-                                                                translationIndex:
-                                                                    index,
-                                                                reciterFolder: ps
-                                                                    .selectedReciter
-                                                                    .folderName,
-                                                                playbackSpeed: ps
-                                                                    .playbackSpeed,
-                                                              );
-                                                            }
-                                                          },
-                                                          icon: isLoadingThis
-                                                              ? const SizedBox(
-                                                                  width: 20,
-                                                                  height: 20,
-                                                                  child: CircularProgressIndicator(
-                                                                    strokeWidth:
-                                                                        2,
-                                                                    color: AppTheme.appIconTheme,
-                                                                  ),
-                                                                )
-                                                              : Icon(
-                                                                  isThis
-                                                                      ? Icons
-                                                                            .stop_circle
-                                                                      : Icons
-                                                                            .play_circle_outline,
-                                                                  color: AppTheme.appIconTheme,
-                                                                ),
-                                                        );
-                                                      },
-                                                    ),
-                                                    // Bookmark
-                                                    IconButton(
-                                                      tooltip: isBookmarked
-                                                          ? 'Remove bookmark'
-                                                          : 'Bookmark',
-                                                      onPressed: () {
-                                                        if (isBookmarked) {
-                                                          controller
-                                                              .onBookMarkRemoveByAyah(
-                                                                surahNumber,
-                                                                ayaStart,
-                                                              );
-                                                        } else {
-                                                          final surah =
-                                                              controller
-                                                                  .surahList[controller
-                                                                  .index];
-                                                          controller.onBookMarkAdd(
-                                                            surahNumber,
-                                                            ayaStart,
-                                                            surahName:
-                                                                surah.name,
-                                                            ayaText:
-                                                                arabicText
-                                                                    .isNotEmpty
-                                                                ? arabicText
-                                                                : null,
-                                                            surahArabicName:
-                                                                surah
-                                                                    .arabicName,
-                                                          );
-                                                        }
-                                                      },
-                                                      icon: Icon(
-                                                        isBookmarked
-                                                            ? Icons.bookmark
-                                                            : Icons
-                                                                  .bookmark_border_outlined,
-                                                        color: AppTheme.appIconTheme,
+                                              ),
+                                              SliverToBoxAdapter(
+                                                child: SizedBox(
+                                                  height:
+                                                      _surahActionDockClearance(
+                                                        context,
                                                       ),
-                                                    ),
-                                                    // Share
-                                                    IconButton(
-                                                      tooltip: 'Share',
-                                                      onPressed: () async {
-                                                        final surah =
-                                                            controller
-                                                                .surahList[controller
-                                                                .index];
-                                                        final shareText =
-                                                            '${surah.name} – Ayah ${_toArabicNumerals(ayaStart)}\n\n'
-                                                            '${arabicText.isNotEmpty ? '$arabicText\n\n' : ''}'
-                                                            '$translationText';
-                                                        if (shareText
-                                                            .trim()
-                                                            .isNotEmpty) {
-                                                          await Share.share(
-                                                            shareText,
-                                                          );
-                                                        }
-                                                      },
-                                                      icon: const Icon(
-                                                        Icons.share_outlined,
-                                                        color: AppTheme.appIconTheme,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                );
-                                          },
-                                        ),
-                                        if (isLastBlock)
-                                          _buildFinalAyahNavSection(context)
-                                        else
-                                          const Divider(thickness: 0.5),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                          childCount: controller.arabicBlockList.length,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ],
+                                    ),
                                   ),
-                                ),
-                              ),
-                            ),
-                          );
+                                );
 
-                          // Loading overlay removed: deep-link opens just
-                          // show the surah and scroll to the target ayah
-                          // when ready. See initState for details.
-                          return content;
-                        },
-                      ),
+                                return content;
+                              },
+                            ),
+                    ),
+                    if (controller.arabicBlockList.isNotEmpty)
+                      _buildSurahActionDock(context),
+                  ],
+                ),
               ),
             ),
 
@@ -2020,7 +2391,10 @@ class _SurahScreenState extends State<SurahScreen> {
                                     );
                                   }
                                 : null,
-                            icon: const Icon(Icons.skip_previous, color: AppTheme.appIconTheme),
+                            icon: const Icon(
+                              Icons.skip_previous,
+                              color: AppTheme.appIconTheme,
+                            ),
                           ),
                           // Play / Pause
                           IconButton(
@@ -2035,7 +2409,10 @@ class _SurahScreenState extends State<SurahScreen> {
                           IconButton(
                             tooltip: 'Stop',
                             onPressed: () => audio.stopAudio(),
-                            icon: const Icon(Icons.stop, color: AppTheme.appIconTheme),
+                            icon: const Icon(
+                              Icons.stop,
+                              color: AppTheme.appIconTheme,
+                            ),
                           ),
                           // Next
                           IconButton(
@@ -2066,7 +2443,10 @@ class _SurahScreenState extends State<SurahScreen> {
                                     );
                                   }
                                 : null,
-                            icon: const Icon(Icons.skip_next, color: AppTheme.appIconTheme),
+                            icon: const Icon(
+                              Icons.skip_next,
+                              color: AppTheme.appIconTheme,
+                            ),
                           ),
                           // Speed
                           Consumer<PlaySettingsProvider>(

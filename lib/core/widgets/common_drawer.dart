@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
-import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
+import 'package:the_message_of_the_quran/core/widgets/d4dx_branding_footer.dart';
 import 'package:the_message_of_the_quran/features/author_screen/author_screen.dart';
 import 'package:the_message_of_the_quran/features/ayah_of_the_day/presentation/ayah_of_the_day_screen.dart';
 import 'package:the_message_of_the_quran/features/contact_us_screen/presentation/contact_us_screen.dart';
@@ -14,6 +14,9 @@ import 'package:the_message_of_the_quran/features/library/presentation/appendix_
 import 'package:the_message_of_the_quran/features/library/presentation/foreword_screen.dart';
 import 'package:the_message_of_the_quran/features/library/presentation/works_of_reference_screen.dart';
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
+import 'package:the_message_of_the_quran/features/common_email/presentation/feedback_screen.dart';
+import 'package:the_message_of_the_quran/features/common_email/presentation/feature_request_screen.dart';
+import 'package:the_message_of_the_quran/features/prostration_verses/presentation/prostration_verses_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -24,7 +27,7 @@ class CommonDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<HomeProvider>(context, listen: false);
-    final isMl = context.watch<LanguageProvider>().isMalayalam;
+    final isMalayalam = Provider.of<LanguageProvider>(context).isMalayalam;
     final theme = Theme.of(context);
     final scale = ResponsiveHelper.scaleFactor(context);
     final isTablet = ResponsiveHelper.isTablet(context);
@@ -33,286 +36,363 @@ class CommonDrawer extends StatelessWidget {
     return SizedBox(
       width: drawerWidth,
       child: Drawer(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      child: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Donation Card
-            Padding(
-              padding: EdgeInsets.fromLTRB(20 * scale, 16 * scale, 20 * scale, 0),
-              child: Material(
-                borderRadius: BorderRadius.circular(14),
-                clipBehavior: Clip.antiAlias,
-                color: Colors.transparent,
-                child: Ink(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(14),
-                    gradient: const LinearGradient(
-                      colors: [
-                        Color(0xFFA85A3A),
-                        AppTheme.appThemePrimary,
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(14),
-                    onTap: () {
-                      try {
-                        launchUrl(
-                          Uri.parse('https://buymeacoffee.com/donateus'),
-                          mode: LaunchMode.externalApplication,
-                        );
-                      } catch (e) {
-                        debugPrint('Drawer: failed to launch donate URL — $e');
-                      }
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 18 * scale,
-                        vertical: 16 * scale,
+        backgroundColor: theme.scaffoldBackgroundColor,
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _DrawerBrandHeader(
+                onSupportTap: () async {
+                  try {
+                    await launchUrl(
+                      Uri.parse('https://buymeacoffee.com/donateus'),
+                      mode: LaunchMode.externalApplication,
+                    );
+                  } catch (e) {
+                    debugPrint('Drawer: failed to launch donate URL - $e');
+                  }
+                },
+              ),
+              SizedBox(height: 2 * scale),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.only(top: 4 * scale, bottom: 8 * scale),
+                  child: Column(
+                    children: [
+                      _DrawerTile(
+                        title: 'Home',
+                        icon: Icons.home_outlined,
+                        onTap: () {
+                          controller.changeIndex(0);
+                          Navigator.pop(context);
+                          Navigator.popUntil(context, (route) => route.isFirst);
+                        },
                       ),
-                      child: Row(
+                      _DrawerTile(
+                        title: 'Ayah of the Day',
+                        icon: Icons.auto_awesome_outlined,
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const AyahOfTheDayScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                      _DrawerTile(
+                        title: 'About Author',
+                        icon: Icons.person_outline,
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const AuthorScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                      _DrawerTile(
+                        title: isMalayalam
+                            ? 'സുജൂദിന്റെ ആയത്തുകൾ'
+                            : 'Prostration Verses',
+                        icon: Icons.mosque_outlined,
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ProstrationVersesScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                      _DrawerExpansionTile(
+                        title: 'Library',
+                        icon: Icons.auto_stories_outlined,
                         children: [
-                          Container(
-                            padding: EdgeInsets.all(10 * scale),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Icon(
-                              Icons.favorite_rounded,
-                              color: Colors.white,
-                              size: 24 * scale,
-                            ),
-                          ),
-                          SizedBox(width: 14 * scale),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Support Us',
-                                  style: theme.textTheme.titleSmall?.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w700,
-                                  ),
+                          _DrawerSubTile(
+                            title: isMalayalam ? 'മുഖവുര' : 'Foreword',
+                            icon: Icons.history_edu_outlined,
+                            onTap: () {
+                              Navigator.pop(context);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const ForewordScreen(),
                                 ),
-                                const SizedBox(height: 3),
-                                Text(
-                                  'Contribute for Sadaqah Jariyah',
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: Colors.white70,
-                                  ),
-                                ),
-                              ],
-                            ),
+                              );
+                            },
                           ),
-                          const Icon(
-                            Icons.arrow_forward_ios_rounded,
-                            color: Colors.white54,
-                            size: 16,
+                          _DrawerSubTile(
+                            title: 'Appendix',
+                            icon: Icons.note_alt_outlined,
+                            onTap: () {
+                              Navigator.pop(context);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const AppendixScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          _DrawerSubTile(
+                            title: 'Works of Reference',
+                            icon: Icons.library_books_outlined,
+                            onTap: () {
+                              Navigator.pop(context);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      const WorksOfReferenceScreen(),
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),
+                      _DrawerTile(
+                        title: 'Settings',
+                        icon: Icons.settings_outlined,
+                        onTap: () {
+                          controller.changeIndex(3);
+                          Navigator.pop(context);
+                          Navigator.popUntil(context, (route) => route.isFirst);
+                        },
+                      ),
+                      _DrawerTile(
+                        title: 'Contact Us',
+                        icon: Icons.chat_bubble_outline,
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ContactUsScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                      _DrawerTile(
+                        title: 'Help & Support',
+                        icon: Icons.help_outline,
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const HelpScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                      _DrawerTile(
+                        title: 'Privacy',
+                        icon: Icons.shield_outlined,
+                        onTap: () {
+                          try {
+                            launchUrl(Uri.parse(ApiConstants.privacyPolicyUrl));
+                          } catch (e) {
+                            debugPrint(
+                              'Drawer: failed to launch privacy URL — $e',
+                            );
+                          }
+                        },
+                      ),
+                      _DrawerTile(
+                        title: 'Feedback',
+                        icon: Icons.mail_outline,
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const FeedbackScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                      _DrawerTile(
+                        title: 'Feature Request',
+                        icon: Icons.lightbulb_outline,
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const FeatureRequestScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                      _DrawerTile(
+                        title: 'Share App',
+                        icon: Icons.share_outlined,
+                        onTap: () async {
+                          Navigator.pop(context);
+                          await Future.delayed(
+                            const Duration(milliseconds: 300),
+                          );
+                          final link = Platform.isIOS
+                              ? 'https://apps.apple.com/us/app/vishudha-quran/id6761527985'
+                              : 'https://play.google.com/store/apps/details?id=com.d4dx.quran';
+                          await Share.share(
+                            'Check out The Message of The Quran – a beautiful Quran reader with Malayalam translation.\n$link',
+                          );
+                        },
+                      ),
+                      SizedBox(height: 6 * scale),
+                      const _DrawerFooter(),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DrawerBrandHeader extends StatelessWidget {
+  const _DrawerBrandHeader({required this.onSupportTap});
+
+  final VoidCallback onSupportTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scale = ResponsiveHelper.scaleFactor(context);
+    final headerColor =
+        theme.appBarTheme.backgroundColor ?? theme.colorScheme.secondary;
+    final headerAccent = appBarTitleMatchedAccentColor(context);
+    final borderRadius = BorderRadius.circular(28 * scale);
+    final shadowColor = isDarkMode(context: context)
+        ? Colors.black.withValues(alpha: 0.2)
+        : Colors.black.withValues(alpha: 0.08);
+    return Padding(
+      padding: EdgeInsets.fromLTRB(14 * scale, 0, 14 * scale, 6 * scale),
+      child: Container(
+        key: const ValueKey('drawer-brand-header'),
+        decoration: BoxDecoration(
+          color: headerColor,
+          borderRadius: borderRadius,
+          boxShadow: [
+            BoxShadow(
+              color: shadowColor,
+              blurRadius: 24 * scale,
+              offset: Offset(0, 10 * scale),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: borderRadius,
+          child: Stack(
+            children: [
+              Positioned(
+                top: -20 * scale,
+                right: -24 * scale,
+                child: IgnorePointer(
+                  child: Opacity(
+                    opacity: isDarkMode(context: context) ? 0.16 : 0.12,
+                    child: Image.asset(
+                      'assets/images/home_side_image.png',
+                      width: 118 * scale,
+                      fit: BoxFit.contain,
+                      color: headerAccent,
+                      colorBlendMode: BlendMode.srcIn,
                     ),
                   ),
                 ),
               ),
-            ),
-            SizedBox(height: 8 * scale),
-            // Navigation items
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(vertical: 8),
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                  18 * scale,
+                  16 * scale,
+                  18 * scale,
+                  18 * scale,
+                ),
                 child: Column(
                   children: [
-                    _DrawerTile(
-                      title: isMl ? 'ഹോം' : 'Home',
-                      icon: Icons.home_outlined,
-                      onTap: () {
-                        controller.changeIndex(0);
-                        Navigator.pop(context);
-                        Navigator.popUntil(context, (r) => r.isFirst);
-                      },
+                    Center(
+                      key: const ValueKey('drawer-brand-logo-box'),
+                      child: Image.asset(
+                        'assets/images/Group-logo.png',
+                        height: 44 * scale,
+                        fit: BoxFit.contain,
+                        semanticLabel: 'The Message of the Quran logo',
+                      ),
                     ),
-                    _DrawerTile(
-                      title: 'Ayah of the Day',
-                      icon: Icons.auto_awesome_outlined,
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const AyahOfTheDayScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                    _DrawerTile(
-                      title: isMl ? 'രചയിതാവ്' : 'About Author',
-                      icon: Icons.person_outline,
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const AuthorScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                    _DrawerExpansionTile(
-                      title: 'Library',
-                        icon: Icons.auto_stories_outlined,
-                      children: [
-                        _DrawerSubTile(
-                          title: 'Foreword',
-                            icon: Icons.history_edu_outlined,
-                          onTap: () {
-                            Navigator.pop(context);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const ForewordScreen(),
-                              ),
-                            );
-                          },
+                    SizedBox(height: 14 * scale),
+                    SizedBox(
+                      key: const ValueKey('drawer-support-button-box'),
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: onSupportTap,
+                        icon: Icon(
+                          Icons.volunteer_activism_outlined,
+                          size: 18 * scale,
                         ),
-                        _DrawerSubTile(
-                          title: 'Appendix',
-                            icon: Icons.note_alt_outlined,
-                          onTap: () {
-                            Navigator.pop(context);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const AppendixScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                        _DrawerSubTile(
-                          title: 'Works of Reference',
-                            icon: Icons.library_books_outlined,
-                          onTap: () {
-                            Navigator.pop(context);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const WorksOfReferenceScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                    _DrawerTile(
-                      title: 'Settings',
-                      icon: Icons.settings_outlined,
-                      onTap: () {
-                        controller.changeIndex(3);
-                        Navigator.pop(context);
-                        Navigator.popUntil(context, (r) => r.isFirst);
-                      },
-                    ),
-                    _DrawerTile(
-                      title: 'Contact Us',
-                      icon: Icons.chat_bubble_outline,
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const ContactUsScreen(),
+                        label: Text(
+                          'Support Us',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: headerAccent,
+                            fontWeight: FontWeight.w600,
                           ),
-                        );
-                      },
-                    ),
-                    _DrawerTile(
-                      title: 'Help & Support',
-                      icon: Icons.help_outline,
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const HelpScreen(),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: headerAccent,
+                          backgroundColor: Colors.white.withValues(
+                            alpha: isDarkMode(context: context) ? 0.04 : 0.02,
                           ),
-                        );
-                      },
-                    ),
-                    _DrawerTile(
-                      title: 'Privacy',
-                      icon: Icons.shield_outlined,
-                      onTap: () {
-                        try {
-                          launchUrl(Uri.parse(ApiConstants.privacyPolicyUrl));
-                        } catch (e) {
-                          debugPrint('Drawer: failed to launch privacy URL — $e');
-                        }
-                      },
-                    ),
-                    _DrawerTile(
-                      title: isMl ? 'അഭിപ്രായം അറിയിക്കുക' : 'Send Feedback',
-                      icon: Icons.mail_outline,
-                      onTap: () {
-                        try {
-                          launchUrl(
-                            Uri(
-                              scheme: 'mailto',
-                              path: 'our.email@gmail.com',
-                              queryParameters: {'subject': ''},
-                            ),
-                          );
-                        } catch (e) {
-                          debugPrint('Drawer: failed to launch email — $e');
-                        }
-                      },
-                    ),
-                    _DrawerTile(
-                      title: 'Share App',
-                      icon: Icons.share_outlined,
-                      onTap: () async {
-                        Navigator.pop(context);
-                        await Future.delayed(const Duration(milliseconds: 300));
-                        final link = Platform.isIOS
-                            ? 'https://apps.apple.com/us/app/vishudha-quran/id6761527985'
-                            : 'https://play.google.com/store/apps/details?id=com.d4dx.quran';
-                        await Share.share(
-                          'Check out The Message of The Quran \u2013 a beautiful Quran reader with Malayalam translation.\n$link',
-                        );
-                      },
+                          side: BorderSide(
+                            color: headerAccent.withValues(alpha: 0.92),
+                            width: 1.5,
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 20 * scale,
+                            vertical: 12 * scale,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          textStyle: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20 * scale, vertical: 12 * scale),
-              child: Text(
-                'Version 1.0.0',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.outline,
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
+    );
+  }
+}
+
+class _DrawerFooter extends StatelessWidget {
+  const _DrawerFooter();
+
+  @override
+  Widget build(BuildContext context) {
+    return const D4dxBrandingFooter(
+      key: ValueKey('drawer-footer'),
+      versionLabel: 'Version 1.0.0',
+      showTopBorder: true,
     );
   }
 }
 
 class _DrawerTile extends StatelessWidget {
-  const _DrawerTile({
-    required this.title,
-    required this.icon,
-    this.onTap,
-  });
+  const _DrawerTile({required this.title, required this.icon, this.onTap});
   final String title;
   final IconData icon;
   final VoidCallback? onTap;
@@ -334,7 +414,10 @@ class _DrawerTile extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
-      contentPadding: EdgeInsets.symmetric(horizontal: 20 * scale, vertical: 2 * scale),
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: 20 * scale,
+        vertical: 2 * scale,
+      ),
       minLeadingWidth: 24 * scale,
       horizontalTitleGap: 14 * scale,
     );
@@ -379,11 +462,7 @@ class _DrawerExpansionTile extends StatelessWidget {
 }
 
 class _DrawerSubTile extends StatelessWidget {
-  const _DrawerSubTile({
-    required this.title,
-    required this.icon,
-    this.onTap,
-  });
+  const _DrawerSubTile({required this.title, required this.icon, this.onTap});
   final String title;
   final IconData icon;
   final VoidCallback? onTap;
@@ -413,4 +492,3 @@ class _DrawerSubTile extends StatelessWidget {
     );
   }
 }
-

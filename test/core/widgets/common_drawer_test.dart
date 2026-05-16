@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
+import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
@@ -18,7 +19,20 @@ void main() {
   Future<void> pumpDrawer(
     WidgetTester tester, {
     required ThemeMode themeMode,
+    String? savedLanguage,
+    Size? surfaceSize,
+    double topInset = 0,
   }) async {
+    if (surfaceSize != null) {
+      tester.view.physicalSize = surfaceSize;
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+    }
+
+    SharedPreferences.setMockInitialValues({
+      if (savedLanguage != null) 'app_language': savedLanguage,
+    });
     final themeProvider = ThemeProvider();
 
     await tester.pumpWidget(
@@ -27,11 +41,23 @@ void main() {
           ChangeNotifierProvider(create: (_) => HomeProvider()),
           ChangeNotifierProvider(create: (_) => LanguageProvider()),
         ],
-        child: MaterialApp(
-          theme: themeProvider.lightTheme,
-          darkTheme: themeProvider.darkTheme,
-          themeMode: themeMode,
-          home: const Scaffold(body: CommonDrawer()),
+        child: Builder(
+          builder: (context) {
+            final baseMediaQuery = MediaQueryData.fromView(tester.view);
+
+            return MediaQuery(
+              data: baseMediaQuery.copyWith(
+                padding: EdgeInsets.only(top: topInset),
+                viewPadding: EdgeInsets.only(top: topInset),
+              ),
+              child: MaterialApp(
+                theme: themeProvider.lightTheme,
+                darkTheme: themeProvider.darkTheme,
+                themeMode: themeMode,
+                home: const Scaffold(body: CommonDrawer()),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -47,10 +73,14 @@ void main() {
     final drawerContext = tester.element(find.byType(CommonDrawer));
     final expectedAccentColor = appBarAccentColor(drawerContext);
 
-    final homeIcon = tester.widget<Icon>(find.byIcon(Icons.home_outlined).first);
+    final homeIcon = tester.widget<Icon>(
+      find.byIcon(Icons.home_outlined).first,
+    );
     expect(homeIcon.color, expectedAccentColor);
 
-    final libraryTile = tester.widget<ExpansionTile>(find.byType(ExpansionTile));
+    final libraryTile = tester.widget<ExpansionTile>(
+      find.byType(ExpansionTile),
+    );
     expect(libraryTile.iconColor, expectedAccentColor);
     expect(libraryTile.collapsedIconColor, expectedAccentColor);
 
@@ -65,14 +95,8 @@ void main() {
   testWidgets('drawer icons follow the active theme accent', (
     WidgetTester tester,
   ) async {
-    await expectDrawerIconsUseThemeAccent(
-      tester,
-      themeMode: ThemeMode.light,
-    );
-    await expectDrawerIconsUseThemeAccent(
-      tester,
-      themeMode: ThemeMode.dark,
-    );
+    await expectDrawerIconsUseThemeAccent(tester, themeMode: ThemeMode.light);
+    await expectDrawerIconsUseThemeAccent(tester, themeMode: ThemeMode.dark);
   });
 
   testWidgets('drawer does not show printed edition entry', (
@@ -81,5 +105,119 @@ void main() {
     await pumpDrawer(tester, themeMode: ThemeMode.light);
 
     expect(find.text('Buy Printed Edition'), findsNothing);
+  });
+
+  testWidgets('drawer brand header uses the app bar theme color', (
+    WidgetTester tester,
+  ) async {
+    for (final themeMode in [ThemeMode.light, ThemeMode.dark]) {
+      await pumpDrawer(tester, themeMode: themeMode);
+
+      final headerFinder = find.byKey(const ValueKey('drawer-brand-header'));
+      final headerContext = tester.element(headerFinder);
+      final header = tester.widget<Container>(headerFinder);
+      final decoration = header.decoration! as BoxDecoration;
+
+      expect(
+        decoration.color,
+        Theme.of(headerContext).appBarTheme.backgroundColor,
+      );
+      expect(
+        find.bySemanticsLabel('The Message of the Quran logo'),
+        findsOneWidget,
+      );
+    }
+  });
+
+  testWidgets('drawer brand header uses tighter insets and spacing', (
+    WidgetTester tester,
+  ) async {
+    const topInset = 36.0;
+
+    await pumpDrawer(
+      tester,
+      themeMode: ThemeMode.light,
+      surfaceSize: const Size(390, 844),
+      topInset: topInset,
+    );
+
+    final drawerContext = tester.element(find.byType(CommonDrawer));
+    final scale = ResponsiveHelper.scaleFactor(drawerContext);
+    final isTablet = ResponsiveHelper.isTablet(drawerContext);
+    final expectedDrawerWidth = isTablet ? 360.0 : 304.0;
+    const expectedTop = topInset;
+
+    final headerRect = tester.getRect(
+      find.byKey(const ValueKey('drawer-brand-header')),
+    );
+    final logoRect = tester.getRect(
+      find.byKey(const ValueKey('drawer-brand-logo-box')),
+    );
+    final supportButtonRect = tester.getRect(
+      find.byKey(const ValueKey('drawer-support-button-box')),
+    );
+
+    expect(headerRect.left, moreOrLessEquals(14 * scale, epsilon: 0.01));
+    expect(headerRect.top, moreOrLessEquals(expectedTop, epsilon: 0.01));
+    expect(
+      headerRect.width,
+      moreOrLessEquals(expectedDrawerWidth - (28 * scale), epsilon: 0.01),
+    );
+    expect(logoRect.height, moreOrLessEquals(44 * scale, epsilon: 0.01));
+    expect(
+      supportButtonRect.width,
+      moreOrLessEquals(headerRect.width - (36 * scale), epsilon: 0.01),
+    );
+    expect(
+      supportButtonRect.top - logoRect.bottom,
+      moreOrLessEquals(14 * scale, epsilon: 0.01),
+    );
+  });
+
+  testWidgets('drawer footer appears after scrolling on short screens', (
+    WidgetTester tester,
+  ) async {
+    await pumpDrawer(
+      tester,
+      themeMode: ThemeMode.light,
+      surfaceSize: const Size(390, 520),
+    );
+
+    final footerFinder = find.byKey(const ValueKey('drawer-footer'));
+    final screenHeight =
+        tester.view.physicalSize.height / tester.view.devicePixelRatio;
+    final footerRectBeforeScroll = tester.getRect(footerFinder);
+
+    expect(find.text('Powered by'), findsOneWidget);
+    expect(footerRectBeforeScroll.top, greaterThan(screenHeight));
+
+    await tester.scrollUntilVisible(
+      footerFinder,
+      240,
+      scrollable: find.byType(Scrollable),
+    );
+    await tester.pumpAndSettle();
+
+    final footerRectAfterScroll = tester.getRect(footerFinder);
+
+    expect(footerRectAfterScroll.bottom, lessThanOrEqualTo(screenHeight));
+  });
+
+  testWidgets('drawer labels stay in English when Malayalam is selected', (
+    WidgetTester tester,
+  ) async {
+    await pumpDrawer(
+      tester,
+      themeMode: ThemeMode.light,
+      savedLanguage: LanguageProvider.malayalam,
+    );
+
+    expect(find.text('Home'), findsOneWidget);
+    expect(find.text('About Author'), findsOneWidget);
+    expect(find.text('Feedback'), findsOneWidget);
+
+    expect(find.text('ഹോം'), findsNothing);
+    expect(find.text('രചയിതാവ്'), findsNothing);
+    expect(find.text('അഭിപ്രായം അറിയിക്കുക'), findsNothing);
   });
 }

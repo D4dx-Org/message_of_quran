@@ -16,6 +16,7 @@ class AppTheme {
     appBarTheme: const AppBarTheme(
       backgroundColor: appThemePrimary,
       foregroundColor: Colors.white,
+      centerTitle: false,
       elevation: 0,
     ),
   );
@@ -27,6 +28,7 @@ class AppTheme {
     appBarTheme: const AppBarTheme(
       backgroundColor: appThemePrimary,
       foregroundColor: Colors.white,
+      centerTitle: false,
       elevation: 0,
     ),
   );

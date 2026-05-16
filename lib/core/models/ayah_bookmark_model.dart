@@ -7,6 +7,10 @@ class BookmarkNavigationTarget {
   static bool isValid(String? value) {
     return value == surah || value == mushaf;
   }
+
+  static String normalize(String? value) {
+    return value == mushaf ? mushaf : surah;
+  }
 }
 
 class AyahBookmarkModel {
@@ -17,7 +21,7 @@ class AyahBookmarkModel {
   final String? surahArabicName;
   final String? surahArabicNumber;
   final String? label;
-  final String? navigationTarget;
+  final String navigationTarget;
 
   AyahBookmarkModel({
     required this.surahNumber,
@@ -27,8 +31,8 @@ class AyahBookmarkModel {
     this.surahArabicName,
     this.surahArabicNumber,
     this.label,
-    this.navigationTarget,
-  });
+    String? navigationTarget,
+  }) : navigationTarget = BookmarkNavigationTarget.normalize(navigationTarget);
 
   Map<String, dynamic> toMap() {
     return {
@@ -44,8 +48,6 @@ class AyahBookmarkModel {
   }
 
   factory AyahBookmarkModel.fromMap(Map<String, dynamic> map) {
-    final navigationTarget =
-        map[DbConstants.bookmarkNavigationTarget] as String?;
     return AyahBookmarkModel(
       surahNumber: map[DbConstants.bookmarkSurahNumber] as int? ?? 0,
       ayahId: map[DbConstants.bookmarkAyahId] as int? ?? 0,
@@ -54,9 +56,7 @@ class AyahBookmarkModel {
       surahArabicName: map[DbConstants.bookmarkSurahArabicName] as String?,
       surahArabicNumber: map[DbConstants.bookmarkSurahArabicNumber] as String?,
       label: map[DbConstants.bookmarkLabel] as String?,
-      navigationTarget: BookmarkNavigationTarget.isValid(navigationTarget)
-          ? navigationTarget
-          : null,
+      navigationTarget: map[DbConstants.bookmarkNavigationTarget] as String?,
     );
   }
 
@@ -66,8 +66,9 @@ class AyahBookmarkModel {
       other is AyahBookmarkModel &&
           runtimeType == other.runtimeType &&
           surahNumber == other.surahNumber &&
-          ayahId == other.ayahId;
+          ayahId == other.ayahId &&
+          navigationTarget == other.navigationTarget;
 
   @override
-  int get hashCode => Object.hash(surahNumber, ayahId);
+  int get hashCode => Object.hash(surahNumber, ayahId, navigationTarget);
 }

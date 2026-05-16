@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
+import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/juz_hizb_provider.dart';
 import 'package:the_message_of_the_quran/features/mushaf/widgets/star_number.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
@@ -34,9 +37,7 @@ class JuzColumn extends StatelessWidget {
 
         if (provider.juzList.isEmpty) {
           return Center(
-            child: Text(
-              isMalayalam ? 'ജുസ് ലഭ്യമല്ല' : 'No Juz available',
-            ),
+            child: Text(isMalayalam ? 'ജുസ് ലഭ്യമല്ല' : 'No Juz available'),
           );
         }
 
@@ -49,27 +50,35 @@ class JuzColumn extends StatelessWidget {
               (s) => s.surahNumber == juz.surahNumber,
             );
             final available = surahIndex >= 0;
-            final targetSurah =
-                available ? surahProvider.surahList[surahIndex] : null;
+            final targetSurah = available
+                ? surahProvider.surahList[surahIndex]
+                : null;
             final primaryColor = available
                 ? textColor
                 : Colors.grey.withValues(alpha: 0.6);
             final secondaryColor = available
                 ? subColor
                 : Colors.grey.withValues(alpha: 0.5);
-            final startSurahLabel = targetSurah == null
-                ? (isMalayalam
-                      ? 'സൂറത്ത് ${juz.surahNumber}'
-                      : 'Surah ${juz.surahNumber}')
-                : isMalayalam && targetSurah.malayalamName.isNotEmpty
-                ? targetSurah.malayalamName
-                : targetSurah.name;
-            final title = startSurahLabel;
-            final description = targetSurah?.description.trim() ?? '';
-            final subtitle = description;
-            final startAyahLabel = isMalayalam
-                ? 'ആയത്ത് ${juz.ayahNumber}'
-                : 'AYAH ${juz.ayahNumber}';
+            final displayText = targetSurah == null
+                ? SurahListDisplayText(
+                    title: isMalayalam
+                        ? 'സൂറത്ത് ${juz.surahNumber}'
+                        : 'Surah ${juz.surahNumber}',
+                    subtitle: '',
+                  )
+                : formatSurahListDisplayText(
+                    isMalayalam: isMalayalam,
+                    surahName: targetSurah.name,
+                    surahTranslation: targetSurah.description,
+                    malayalamName: targetSurah.malayalamName,
+                    surahNumber: targetSurah.surahNumber,
+                  );
+            final title = displayText.title;
+            final subtitle = displayText.subtitle;
+            final startAyahLabel = formatAyahReferenceLabel(
+              juz.ayahNumber,
+              isMalayalam: isMalayalam,
+            );
             final semanticsParts = [
               title,
               if (subtitle.isNotEmpty) subtitle,
@@ -84,6 +93,7 @@ class JuzColumn extends StatelessWidget {
               child: InkWell(
                 onTap: available
                     ? () {
+                        unawaited(provider.selectJuz(juz.number));
                         surahProvider.assignIndex(surahIndex);
                         Navigator.push(
                           context,
@@ -107,7 +117,8 @@ class JuzColumn extends StatelessWidget {
                           StarNumber(
                             number: juz.number,
                             outlineOnly: true,
-                            isHighlighted: false,
+                            isHighlighted:
+                                provider.selectedJuzNumber == juz.number,
                             size: 42,
                           ),
                           const SizedBox(width: 14),
@@ -157,8 +168,9 @@ class JuzColumn extends StatelessWidget {
                                   textAlign: TextAlign.right,
                                   style: GoogleFonts.poppins(
                                     color: secondaryColor,
-                                    fontSize: 11 * scale,
-                                    fontWeight: FontWeight.w600,
+                                    fontSize: 10.5 * scale,
+                                    fontWeight: FontWeight.w500,
+                                    letterSpacing: 0.3,
                                   ),
                                 ),
                               ],

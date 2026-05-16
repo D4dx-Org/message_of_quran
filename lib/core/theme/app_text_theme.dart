@@ -7,7 +7,7 @@ import 'package:the_message_of_the_quran/features/settings_screen/providers/font
 class AppTextTheme {
   AppTextTheme._();
 
-  static const _malayalamFont = GoogleFonts.notoSansMalayalam;
+  static const _malayalamFont = GoogleFonts.notoSerifMalayalam;
   static const _englishFont = GoogleFonts.poppins;
 
   //////////////////// English fonts ////////////////////

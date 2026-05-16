@@ -34,18 +34,19 @@ class _AyahOfTheDayScreenState extends State<AyahOfTheDayScreen> {
           header: true,
           child: Text(
             'Ayah of the Day',
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 18),
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w600,
+              fontSize: 18,
+            ),
           ),
         ),
-        centerTitle: true,
+        centerTitle: false,
       ),
       child: Consumer<AyahOfTheDayProvider>(
         builder: (context, provider, _) {
           if (provider.isLoading) {
             return const Center(
-              child: CircularProgressIndicator(
-                color: AppTheme.appIconTheme,
-              ),
+              child: CircularProgressIndicator(color: AppTheme.appIconTheme),
             );
           }
 
@@ -57,7 +58,11 @@ class _AyahOfTheDayScreenState extends State<AyahOfTheDayScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const ExcludeSemantics(
-                      child: Icon(Icons.error_outline, size: 48, color: Colors.grey),
+                      child: Icon(
+                        Icons.error_outline,
+                        size: 48,
+                        color: Colors.grey,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     Text(
@@ -92,9 +97,7 @@ class _AyahOfTheDayScreenState extends State<AyahOfTheDayScreen> {
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: theme.colorScheme.outlineVariant,
-                    ),
+                    border: Border.all(color: theme.colorScheme.outlineVariant),
                     boxShadow: [
                       BoxShadow(
                         color: AppTheme.appIconTheme.withValues(alpha: 0.08),
@@ -136,7 +139,10 @@ class _AyahOfTheDayScreenState extends State<AyahOfTheDayScreen> {
                                 color: Colors.white,
                               ),
                             )
-                          : const Icon(Icons.image_outlined, color: Colors.white),
+                          : const Icon(
+                              Icons.image_outlined,
+                              color: Colors.white,
+                            ),
                       label: Text(
                         provider.isSharing ? 'Preparing...' : 'Share as Poster',
                         style: const TextStyle(
@@ -146,8 +152,8 @@ class _AyahOfTheDayScreenState extends State<AyahOfTheDayScreen> {
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.appIconTheme,
-                        disabledBackgroundColor:
-                            AppTheme.appIconTheme.withValues(alpha: 0.6),
+                        disabledBackgroundColor: AppTheme.appIconTheme
+                            .withValues(alpha: 0.6),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         elevation: 0,
                         shape: RoundedRectangleBorder(

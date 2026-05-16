@@ -9,11 +9,16 @@ import 'package:the_message_of_the_quran/features/home_screen/presentation/widge
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_screen_list_tile.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/juz_hizb_provider.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
+import 'package:the_message_of_the_quran/features/mushaf/widgets/star_number.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  Finder findJuzStar(int number) => find.byWidgetPredicate(
+    (widget) => widget is StarNumber && widget.number == number,
+  );
 
   setUp(() {
     SharedPreferences.setMockInitialValues({});
@@ -24,9 +29,7 @@ void main() {
     String languageCode = LanguageProvider.english,
     int index = 0,
   }) async {
-    SharedPreferences.setMockInitialValues({
-      'app_language': languageCode,
-    });
+    SharedPreferences.setMockInitialValues({'app_language': languageCode});
     final surahProvider = _TestSurahProvider(_sampleSurahs);
 
     await tester.pumpWidget(
@@ -37,9 +40,7 @@ void main() {
           ChangeNotifierProvider(create: (_) => LastReadProvider()),
         ],
         child: MaterialApp(
-          home: Scaffold(
-            body: HomeScreenListTile(index: index),
-          ),
+          home: Scaffold(body: HomeScreenListTile(index: index)),
         ),
       ),
     );
@@ -50,8 +51,10 @@ void main() {
   Future<void> pumpHomeScreen(
     WidgetTester tester, {
     String languageCode = LanguageProvider.english,
+    Map<String, Object> initialPreferences = const {},
   }) async {
     SharedPreferences.setMockInitialValues({
+      ...initialPreferences,
       'app_language': languageCode,
     });
     final surahProvider = _TestSurahProvider(_sampleSurahs);
@@ -66,9 +69,7 @@ void main() {
           ChangeNotifierProvider(create: (_) => LanguageProvider()),
           ChangeNotifierProvider(create: (_) => LastReadProvider()),
         ],
-        child: const MaterialApp(
-          home: HomeScreen(),
-        ),
+        child: const MaterialApp(home: HomeScreen()),
       ),
     );
 
@@ -99,6 +100,40 @@ void main() {
   );
 
   testWidgets(
+    'home screen applies an elevated shadow to the outer rounded content card',
+    (tester) async {
+      await pumpHomeScreen(tester);
+
+      final cardContainer = tester.widget<Container>(
+        find.byWidgetPredicate((widget) {
+          if (widget is! Container) {
+            return false;
+          }
+          final decoration = widget.decoration;
+          if (decoration is! BoxDecoration) {
+            return false;
+          }
+          final borderRadius = decoration.borderRadius;
+          if (borderRadius is! BorderRadius) {
+            return false;
+          }
+
+          return borderRadius.topLeft == const Radius.circular(70) &&
+              borderRadius.topRight == const Radius.circular(70) &&
+              decoration.boxShadow?.length == 1;
+        }),
+      );
+      final decoration = cardContainer.decoration! as BoxDecoration;
+      final shadow = decoration.boxShadow!.single;
+
+      expect(shadow.offset, const Offset(0, -3));
+      expect(shadow.blurRadius, 16);
+      expect(shadow.spreadRadius, 1);
+      expect(shadow.color.opacity, closeTo(0.10, 0.01));
+    },
+  );
+
+  testWidgets(
     'home screen switches to the Juz tab and shows Juz list content',
     (tester) async {
       await pumpHomeScreen(tester);
@@ -110,46 +145,102 @@ void main() {
 
       expect(find.text('Al-Fatihah'), findsOneWidget);
       expect(find.text('The Opening'), findsOneWidget);
-      expect(find.text('AYAH 1'), findsOneWidget);
+      expect(find.text('Ayah 1'), findsOneWidget);
       expect(find.text('7 Ayahs'), findsNothing);
       expect(find.text('Makkah'), findsNothing);
-      expect(find.text('SURAH 1  •  AYAH 1'), findsNothing);
+      expect(find.text('SURAH 1  •  Ayah 1'), findsNothing);
     },
   );
 
   testWidgets(
-    'home screen Juz tab uses the same ayah color as Surah tile metadata',
+    'home screen Juz tab uses the same ayah text style as Surah tile metadata',
     (tester) async {
       await pumpHomeTile(tester);
 
       final homeAyahText = tester.widget<Text>(find.text('7 Ayahs'));
-      final expectedAyahColor = homeAyahText.style?.color;
+      final expectedAyahStyle = homeAyahText.style;
 
-      expect(expectedAyahColor, isNotNull);
+      expect(expectedAyahStyle, isNotNull);
 
       await pumpHomeScreen(tester);
       await tester.tap(find.text("Juz'e"));
       await tester.pumpAndSettle();
 
-      final juzAyahText = tester.widget<Text>(find.text('AYAH 1'));
+      final juzAyahText = tester.widget<Text>(find.text('Ayah 1'));
+      final actualAyahStyle = juzAyahText.style;
 
-      expect(juzAyahText.style?.color, expectedAyahColor);
+      expect(actualAyahStyle, isNotNull);
+      expect(actualAyahStyle?.color, expectedAyahStyle?.color);
+      expect(actualAyahStyle?.fontSize, expectedAyahStyle?.fontSize);
+      expect(actualAyahStyle?.fontWeight, expectedAyahStyle?.fontWeight);
+      expect(
+        actualAyahStyle?.letterSpacing,
+        expectedAyahStyle?.letterSpacing,
+      );
+    },
+  );
+
+  testWidgets('home screen Juz tab fills the persisted selected Juz', (
+    tester,
+  ) async {
+    await pumpHomeScreen(
+      tester,
+      initialPreferences: const {'selected_juz_number': 2},
+    );
+
+    await tester.tap(find.text("Juz'e"));
+    await tester.pumpAndSettle();
+
+    expect(findJuzStar(1), findsOneWidget);
+    expect(findJuzStar(2), findsOneWidget);
+    expect(tester.widget<StarNumber>(findJuzStar(1)).isHighlighted, isFalse);
+    expect(tester.widget<StarNumber>(findJuzStar(2)).isHighlighted, isTrue);
+  });
+
+  testWidgets(
+    'home screen Juz tap updates the selected filled tile and persists it',
+    (tester) async {
+      await pumpHomeScreen(
+        tester,
+        initialPreferences: const {'selected_juz_number': 1},
+      );
+
+      await tester.tap(find.text("Juz'e"));
+      await tester.pumpAndSettle();
+
+      expect(tester.widget<StarNumber>(findJuzStar(1)).isHighlighted, isTrue);
+      expect(tester.widget<StarNumber>(findJuzStar(2)).isHighlighted, isFalse);
+
+      await tester.tap(find.text('Al-Baqarah'));
+      await tester.idle();
+
+      final juzProvider = Provider.of<JuzHizbProvider>(
+        tester.element(find.byType(HomeScreen)),
+        listen: false,
+      );
+      final prefs = await SharedPreferences.getInstance();
+
+      expect(juzProvider.selectedJuzNumber, 2);
+      expect(prefs.getInt('selected_juz_number'), 2);
     },
   );
 
   testWidgets(
     'home screen Juz tab keeps the surah-style metadata layout in Malayalam',
     (tester) async {
-      await pumpHomeScreen(
-        tester,
-        languageCode: LanguageProvider.malayalam,
-      );
+      await pumpHomeScreen(tester, languageCode: LanguageProvider.malayalam);
 
       await tester.tap(find.text('ജുസ്'));
       await tester.pumpAndSettle();
 
       expect(find.text('അല്\u200d-ഫാതിഹ'), findsOneWidget);
-      expect(find.text('The Opening'), findsOneWidget);
+      expect(find.text('പ്രാരംഭം'), findsOneWidget);
+      expect(find.text('അല്\u200d-ഫാതിഹ (പ്രാരംഭം)'), findsNothing);
+      expect(find.text('അല്‍-ബഖറ'), findsOneWidget);
+      expect(find.text('പശു'), findsOneWidget);
+      expect(find.text('അല്‍-ബഖറ (പശു)'), findsNothing);
+      expect(find.text('The Opening'), findsNothing);
+      expect(find.text('The Cow'), findsNothing);
       expect(find.text('ആയത്ത് 1'), findsOneWidget);
       expect(find.text('7 ആയത്ത്'), findsNothing);
       expect(find.text('Makkah'), findsNothing);
@@ -169,8 +260,47 @@ void main() {
     },
   );
 
+  testWidgets('home tile uses tighter vertical spacing around the divider', (
+    tester,
+  ) async {
+    await pumpHomeTile(tester);
+
+    final tilePaddingFinder = find.descendant(
+      of: find.byType(HomeScreenListTile),
+      matching: find.byWidgetPredicate(
+        (widget) =>
+            widget is Padding &&
+            widget.padding ==
+                const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+      ),
+    );
+    final dividerGapFinder = find.descendant(
+      of: find.byType(HomeScreenListTile),
+      matching: find.byWidgetPredicate(
+        (widget) => widget is SizedBox && widget.height == 6,
+      ),
+    );
+
+    expect(tilePaddingFinder, findsOneWidget);
+    expect(dividerGapFinder, findsOneWidget);
+  });
+
   testWidgets(
-    'home tile keeps Malayalam labels while showing the translation meaning',
+    'home tile shows the Malayalam translation on a second line for Surah 1',
+    (tester) async {
+      await pumpHomeTile(tester, languageCode: LanguageProvider.malayalam);
+
+      expect(find.text('അല്‍-ഫാതിഹ'), findsOneWidget);
+      expect(find.text('പ്രാരംഭം'), findsOneWidget);
+      expect(find.text('അല്‍-ഫാതിഹ (പ്രാരംഭം)'), findsNothing);
+      expect(find.text('മക്ക'), findsOneWidget);
+      expect(find.text('7 ആയത്ത്'), findsOneWidget);
+      expect(find.text('The Opening'), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'home tile shows the Malayalam translation on a second line for Surah 2',
     (tester) async {
       await pumpHomeTile(
         tester,
@@ -179,10 +309,29 @@ void main() {
       );
 
       expect(find.text('അല്‍-ബഖറ'), findsOneWidget);
-      expect(find.text('The Cow'), findsOneWidget);
-      expect(find.text('Madinah'), findsOneWidget);
+      expect(find.text('പശു'), findsOneWidget);
+      expect(find.text('അല്‍-ബഖറ (പശു)'), findsNothing);
+      expect(find.text('The Cow'), findsNothing);
+      expect(find.text('മദീന'), findsOneWidget);
       expect(find.text('286 ആയത്ത്'), findsOneWidget);
       expect(find.text('البقرة'), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'home tile hides later-surah translation subtitles in Malayalam',
+    (tester) async {
+      await pumpHomeTile(
+        tester,
+        languageCode: LanguageProvider.malayalam,
+        index: 2,
+      );
+
+      expect(find.text('ആലു ഇംറാൻ'), findsOneWidget);
+      expect(find.text('Family of Imran'), findsNothing);
+      expect(find.text('ആലു ഇംറാൻ (Family of Imran)'), findsNothing);
+      expect(find.text('മദീനാ കാലഘട്ടം'), findsOneWidget);
+      expect(find.text('200 ആയത്ത്'), findsOneWidget);
     },
   );
 }
@@ -226,19 +375,23 @@ final List<SurahModel> _sampleSurahs = [
     createdByRole: '',
     isVerified: true,
   ),
+  SurahModel(
+    id: '3',
+    surahNumber: 3,
+    name: 'Aal-e-Imran',
+    searchName: 'aal-e-imran',
+    arabicName: 'آل عمران',
+    malayalamName: 'ആലു ഇംറാൻ',
+    description: 'Family of Imran',
+    ayathCount: 200,
+    place: 'Madinah',
+    createdBy: '',
+    createdByRole: '',
+    isVerified: true,
+  ),
 ];
 
 final List<JuzHizbModel> _sampleJuz = [
-  JuzHizbModel(
-    id: 1,
-    number: 1,
-    surahNumber: 1,
-    ayahNumber: 1,
-  ),
-  JuzHizbModel(
-    id: 2,
-    number: 2,
-    surahNumber: 2,
-    ayahNumber: 142,
-  ),
+  JuzHizbModel(id: 1, number: 1, surahNumber: 1, ayahNumber: 1),
+  JuzHizbModel(id: 2, number: 2, surahNumber: 2, ayahNumber: 142),
 ];

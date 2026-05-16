@@ -32,12 +32,21 @@ class _MainScreenState extends State<MainScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   static const double _navIconSize = 24;
 
-  static const List<({String icon, String label})> _navItems = [
-    (icon: 'assets/icons/revamp/home_icons.svg', label: 'Home'),
-    (icon: 'assets/icons/revamp/bookmarks_page.svg', label: 'Bookmarks'),
-    (icon: 'assets/icons/revamp/mushaf_page.svg', label: ''),
-    (icon: 'assets/icons/revamp/settings_icon.svg', label: 'Settings'),
-    (icon: '', label: 'About'),
+  static const List<({String label, IconData? iconData, String? assetPath})>
+  _navItems = [
+    (label: 'Home', iconData: Icons.home_outlined, assetPath: null),
+    (
+      label: 'Bookmarks',
+      iconData: Icons.bookmark_border_outlined,
+      assetPath: null,
+    ),
+    (
+      label: '',
+      iconData: null,
+      assetPath: 'assets/icons/revamp/mushaf_page.svg',
+    ),
+    (label: 'Settings', iconData: Icons.settings_outlined, assetPath: null),
+    (label: 'About', iconData: Icons.info_outline_rounded, assetPath: null),
   ];
 
   static const List<Widget> _pages = [
@@ -97,12 +106,14 @@ class _MainScreenState extends State<MainScreen> {
     required double size,
   }) {
     final item = _navItems[index];
-    if (item.icon.isEmpty) {
-      return Icon(Icons.info_outline_rounded, size: size, color: color);
+    final iconData = item.iconData;
+    if (iconData != null) {
+      return Icon(iconData, size: size, color: color);
     }
 
+    final assetPath = item.assetPath!;
     return SvgPicture.asset(
-      item.icon,
+      assetPath,
       width: size,
       height: size,
       colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
@@ -128,6 +139,7 @@ class _MainScreenState extends State<MainScreen> {
         ? CommonAppBar.homeAppBar(context)
         : CommonAppBar.appBar(
             context,
+            centerTitle: true,
             isActionsNeeded: displayIndex != 4 && displayIndex != 3,
             showLeading: displayIndex != 4,
             title: const [
@@ -147,70 +159,76 @@ class _MainScreenState extends State<MainScreen> {
           if (!didPop) _onItemTapped(0);
         },
         child: Scaffold(
-        key: _scaffoldKey,
-        appBar: appBar,
-        floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _onItemTapped(2);
-        },
-        child: SvgPicture.asset(
-          _navItems[2].icon,
-          width: _navIconSize,
-          height: _navIconSize,
-          colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        drawer: const CommonDrawer(),
-        body: Row(
-          children: [
-            NavigationRail(
-              selectedIndex: displayIndex,
-              onDestinationSelected: _onItemTapped,
-              backgroundColor: navBg,
-              labelType: NavigationRailLabelType.all,
-              selectedIconTheme: IconThemeData(
-                color: AppTheme.appIconTheme,
-                size: _navIconSize * scale,
+          key: _scaffoldKey,
+          appBar: appBar,
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              _onItemTapped(2);
+            },
+            child: SvgPicture.asset(
+              _navItems[2].assetPath!,
+              width: _navIconSize,
+              height: _navIconSize,
+              colorFilter: const ColorFilter.mode(
+                Colors.white,
+                BlendMode.srcIn,
               ),
-              unselectedIconTheme: IconThemeData(
-                color: inactiveColor,
-                size: _navIconSize * scale,
-              ),
-              selectedLabelTextStyle: TextStyle(
-                color: AppTheme.appIconTheme,
-                fontSize: 11 * scale,
-                fontWeight: FontWeight.w700,
-              ),
-              unselectedLabelTextStyle: TextStyle(
-                color: inactiveColor,
-                fontSize: 11 * scale,
-                fontWeight: FontWeight.w400,
-              ),
-              destinations: List.generate(_navItems.length, (index) {
-                final item = _navItems[index];
-                return NavigationRailDestination(
-                  icon: _buildNavItemIcon(
-                    index: index,
-                    color: inactiveColor,
-                    size: _navItemSize(index) * scale,
-                  ),
-                  selectedIcon: item.label.isEmpty
-                      ? SizedBox.square(dimension: _navItemSize(index) * scale)
-                      : _buildNavItemIcon(
-                          index: index,
-                          color: AppTheme.appIconTheme,
-                          size: _navItemSize(index) * scale,
-                        ),
-                  label: Text(item.label),
-                );
-              }),
             ),
-            const VerticalDivider(thickness: 1, width: 1),
-            Expanded(child: pageBody),
-          ],
+          ),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
+          drawer: const CommonDrawer(),
+          body: Row(
+            children: [
+              NavigationRail(
+                selectedIndex: displayIndex,
+                onDestinationSelected: _onItemTapped,
+                backgroundColor: navBg,
+                labelType: NavigationRailLabelType.all,
+                selectedIconTheme: IconThemeData(
+                  color: AppTheme.appIconTheme,
+                  size: _navIconSize * scale,
+                ),
+                unselectedIconTheme: IconThemeData(
+                  color: inactiveColor,
+                  size: _navIconSize * scale,
+                ),
+                selectedLabelTextStyle: TextStyle(
+                  color: AppTheme.appIconTheme,
+                  fontSize: 11 * scale,
+                  fontWeight: FontWeight.w700,
+                ),
+                unselectedLabelTextStyle: TextStyle(
+                  color: inactiveColor,
+                  fontSize: 11 * scale,
+                  fontWeight: FontWeight.w400,
+                ),
+                destinations: List.generate(_navItems.length, (index) {
+                  final item = _navItems[index];
+                  return NavigationRailDestination(
+                    icon: _buildNavItemIcon(
+                      index: index,
+                      color: inactiveColor,
+                      size: _navItemSize(index) * scale,
+                    ),
+                    selectedIcon: item.label.isEmpty
+                        ? SizedBox.square(
+                            dimension: _navItemSize(index) * scale,
+                          )
+                        : _buildNavItemIcon(
+                            index: index,
+                            color: AppTheme.appIconTheme,
+                            size: _navItemSize(index) * scale,
+                          ),
+                    label: Text(item.label),
+                  );
+                }),
+              ),
+              const VerticalDivider(thickness: 1, width: 1),
+              Expanded(child: pageBody),
+            ],
+          ),
         ),
-      ),
       );
     }
 
@@ -221,98 +239,94 @@ class _MainScreenState extends State<MainScreen> {
         if (!didPop) _onItemTapped(0);
       },
       child: Scaffold(
-      key: _scaffoldKey,
-      appBar: appBar,
-      floatingActionButton: Transform.translate(
-        offset: const Offset(0, 10),
-        child: FloatingActionButton(
-          onPressed: () {
-            _onItemTapped(2);
-          },
-          child: SvgPicture.asset(
-            _navItems[2].icon,
-            width: _navIconSize,
-            height: _navIconSize,
-            colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+        key: _scaffoldKey,
+        appBar: appBar,
+        floatingActionButton: Transform.translate(
+          offset: const Offset(0, 10),
+          child: FloatingActionButton(
+            onPressed: () {
+              _onItemTapped(2);
+            },
+            child: SvgPicture.asset(
+              _navItems[2].assetPath!,
+              width: _navIconSize,
+              height: _navIconSize,
+              colorFilter: const ColorFilter.mode(
+                Colors.white,
+                BlendMode.srcIn,
+              ),
+            ),
           ),
         ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
-      drawer: const CommonDrawer(),
-      body: pageBody,
-      bottomNavigationBar: Container(
-        clipBehavior: Clip.none,
-        // height: 80,
-        decoration: BoxDecoration(
-          // color: Colors.red,
-          color: navBg,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
-              blurRadius: 8,
-              offset: const Offset(0, -1),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: List.generate(_navItems.length, (index) {
-                    final item = _navItems[index];
-                    final isSelected = displayIndex == index;
-                    final isMushaf = index == 2;
+        drawer: const CommonDrawer(),
+        body: pageBody,
+        bottomNavigationBar: Container(
+          clipBehavior: Clip.none,
+          // height: 80,
+          decoration: BoxDecoration(
+            // color: Colors.red,
+            color: navBg,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 8,
+                offset: const Offset(0, -1),
+              ),
+            ],
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: List.generate(_navItems.length, (index) {
+                      final item = _navItems[index];
+                      final isSelected = displayIndex == index;
+                      final isMushaf = index == 2;
 
-                    final color = isMushaf
-                        ? Colors.white
-                        : isSelected
-                        ? AppTheme.appIconTheme
-                        : inactiveColor;
+                      final color = isMushaf
+                          ? Colors.white
+                          : isSelected
+                          ? AppTheme.appIconTheme
+                          : inactiveColor;
 
-                    // Other items: active gets a filled container, inactive stays plain
-                    return Expanded(
-                      child: Semantics(
-                        button: true,
-                        label:
-                            '${item.label} tab${isSelected ? ', selected' : ''}',
-                        excludeSemantics: true,
-                        child: InkWell(
-                          onTap: () => _onItemTapped(index),
-                          borderRadius: BorderRadius.circular(10),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 4,
-                            ),
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            // decoration: 
-                            //     ? BoxDecoration(
-                            //         color: isDarkMode
-                            //             ? Colors.white.withValues(alpha: 0.12)
-                            //             : const Color.fromRGBO(
-                            //                 255,
-                            //                 234,
-                            //                 191,
-                            //                 1,
-                            //               ),
-                            //         borderRadius: BorderRadius.circular(10),
-                            //       )
-                            //     : null,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (item.icon.isEmpty)
-                                  _buildNavItemIcon(
-                                    index: index,
-                                    color: color,
-                                    size: _navItemSize(index),
-                                  )
-                                else
+                      // Other items: active gets a filled container, inactive stays plain
+                      return Expanded(
+                        child: Semantics(
+                          button: true,
+                          label:
+                              '${item.label} tab${isSelected ? ', selected' : ''}',
+                          excludeSemantics: true,
+                          child: InkWell(
+                            onTap: () => _onItemTapped(index),
+                            borderRadius: BorderRadius.circular(10),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 4,
+                              ),
+                              margin: const EdgeInsets.symmetric(horizontal: 4),
+                              // decoration:
+                              //     ? BoxDecoration(
+                              //         color: isDarkMode
+                              //             ? Colors.white.withValues(alpha: 0.12)
+                              //             : const Color.fromRGBO(
+                              //                 255,
+                              //                 234,
+                              //                 191,
+                              //                 1,
+                              //               ),
+                              //         borderRadius: BorderRadius.circular(10),
+                              //       )
+                              //     : null,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
                                   if (item.label.isEmpty)
                                     SizedBox.square(
                                       dimension: _navItemSize(index),
@@ -323,30 +337,30 @@ class _MainScreenState extends State<MainScreen> {
                                       color: color,
                                       size: _navItemSize(index),
                                     ),
-                                const SizedBox(height: 3),
-                                Text(
-                                  item.label,
-                                  style: TextStyle(
-                                    color: color,
-                                    fontSize: 10,
-                                    fontWeight: isSelected
-                                        ? FontWeight.w700
-                                        : FontWeight.w400,
+                                  const SizedBox(height: 3),
+                                  Text(
+                                    item.label,
+                                    style: TextStyle(
+                                      color: color,
+                                      fontSize: 10,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w700
+                                          : FontWeight.w400,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    );
-                  }),
-                ),
-              ],
+                      );
+                    }),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-      ),
       ),
     );
   }

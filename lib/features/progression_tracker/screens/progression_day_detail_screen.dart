@@ -56,7 +56,7 @@ class _ProgressionDayDetailScreenState
             fontWeight: FontWeight.w700,
           ),
         ),
-        centerTitle: true,
+        centerTitle: false,
         elevation: 0,
         backgroundColor: AppTheme.appThemePrimary,
       ),
@@ -68,7 +68,9 @@ class _ProgressionDayDetailScreenState
 
           final p = detail.progression!;
           // Find current day info
-          final currentDay = detail.days.where((d) => d.id == widget.dayId).firstOrNull;
+          final currentDay = detail.days
+              .where((d) => d.id == widget.dayId)
+              .firstOrNull;
           final ayahs = detail.currentDayAyahs;
 
           return SingleChildScrollView(
@@ -95,10 +97,7 @@ class _ProgressionDayDetailScreenState
                     children: [
                       Text(
                         p.arabicName,
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: textColor,
-                        ),
+                        style: TextStyle(fontSize: 18, color: textColor),
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -114,10 +113,7 @@ class _ProgressionDayDetailScreenState
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            _badge(
-                              'Day ${currentDay.dayNumber}',
-                              isDark,
-                            ),
+                            _badge('Day ${currentDay.dayNumber}', isDark),
                             const SizedBox(width: 8),
                             _badge(
                               'Ayah ${currentDay.startAyah} - ${currentDay.endAyah}',
@@ -134,10 +130,11 @@ class _ProgressionDayDetailScreenState
                 ...() {
                   int nextPendingIdx = -1;
                   for (int i = 0; i < ayahs.length; i++) {
-                    if (ayahs[i].status == 'pending' || ayahs[i].status == 'locked') {
-                      final allPriorDone = ayahs.sublist(0, i).every(
-                        (a) => a.status == 'completed',
-                      );
+                    if (ayahs[i].status == 'pending' ||
+                        ayahs[i].status == 'locked') {
+                      final allPriorDone = ayahs
+                          .sublist(0, i)
+                          .every((a) => a.status == 'completed');
                       if (allPriorDone) nextPendingIdx = i;
                       break;
                     }
@@ -201,8 +198,10 @@ class _ProgressionDayDetailScreenState
                                 color: isCompleted
                                     ? Colors.green.withValues(alpha: 0.15)
                                     : isActive
-                                        ? AppTheme.appIconTheme.withValues(alpha: 0.15)
-                                        : Colors.grey.withValues(alpha: 0.1),
+                                    ? AppTheme.appIconTheme.withValues(
+                                        alpha: 0.15,
+                                      )
+                                    : Colors.grey.withValues(alpha: 0.1),
                               ),
                               alignment: Alignment.center,
                               child: Text(
@@ -211,8 +210,8 @@ class _ProgressionDayDetailScreenState
                                   color: isCompleted
                                       ? Colors.green
                                       : isActive
-                                          ? AppTheme.appIconTheme
-                                          : subColor,
+                                      ? AppTheme.appIconTheme
+                                      : subColor,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 13,
                                 ),
@@ -246,26 +245,24 @@ class _ProgressionDayDetailScreenState
                                         isCompleted
                                             ? Icons.check_circle
                                             : isActive
-                                                ? Icons.chrome_reader_mode
-                                                : Icons.hourglass_empty,
+                                            ? Icons.chrome_reader_mode
+                                            : Icons.hourglass_empty,
                                         size: 13,
                                         color: isCompleted
                                             ? Colors.green
                                             : isActive
-                                                ? AppTheme.appIconTheme
-                                                : Colors.grey,
+                                            ? AppTheme.appIconTheme
+                                            : Colors.grey,
                                       ),
                                       const SizedBox(width: 4),
                                       Text(
-                                        isCompleted
-                                            ? 'Completed'
-                                            : 'Pending',
+                                        isCompleted ? 'Completed' : 'Pending',
                                         style: TextStyle(
                                           color: isCompleted
                                               ? Colors.green
                                               : isActive
-                                                  ? AppTheme.appIconTheme
-                                                  : Colors.grey,
+                                              ? AppTheme.appIconTheme
+                                              : Colors.grey,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 12,
                                         ),

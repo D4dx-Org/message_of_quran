@@ -5,7 +5,6 @@ import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/help_screen/provider/help_provider.dart';
 
-
 class HelpScreen extends StatefulWidget {
   const HelpScreen({super.key});
 
@@ -27,14 +26,12 @@ class _HelpScreenState extends State<HelpScreen> {
     return BaseScreenLayout(
       appBar: AppBar(
         title: Text('FAQ', style: AppTextTheme.titleRegular),
-        centerTitle: true,
+        centerTitle: false,
       ),
       child: Consumer<HelpProvider>(
         builder: (context, helpProvider, child) {
           if (helpProvider.isHelpLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
           if (helpProvider.helpList.isEmpty) {
             return Center(
@@ -52,10 +49,17 @@ class _HelpScreenState extends State<HelpScreen> {
             itemCount: helpProvider.helpList.length,
             itemBuilder: (context, index) {
               return ExpansionTile(
-                tilePadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
-                childrenPadding: const EdgeInsets.fromLTRB(4, 0, 4, 16),  
-                  collapsedShape: const BorderDirectional(bottom: BorderSide(color:Colors.black12)),
-                shape:const BorderDirectional(bottom: BorderSide(color:Colors.black)),
+                tilePadding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 4,
+                ),
+                childrenPadding: const EdgeInsets.fromLTRB(4, 0, 4, 16),
+                collapsedShape: const BorderDirectional(
+                  bottom: BorderSide(color: Colors.black12),
+                ),
+                shape: const BorderDirectional(
+                  bottom: BorderSide(color: Colors.black),
+                ),
                 iconColor: AppTheme.appIconTheme,
                 collapsedIconColor: AppTheme.appIconTheme,
                 title: Text(
@@ -69,7 +73,8 @@ class _HelpScreenState extends State<HelpScreen> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      helpProvider.helpList[index].description ?? 'Description Unavailable',
+                      helpProvider.helpList[index].description ??
+                          'Description Unavailable',
                       style: AppTextTheme.popinsDefault(
                         fontSize: 14,
                         color: Colors.grey,
@@ -79,13 +84,10 @@ class _HelpScreenState extends State<HelpScreen> {
                   ),
                 ],
               );
-              
-              
             },
-            
           );
         },
-    ),
+      ),
     );
   }
 }

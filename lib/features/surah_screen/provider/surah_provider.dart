@@ -17,6 +17,7 @@ class SurahProvider extends ChangeNotifier {
 
   List<SurahModel> surahList = [];
   List<InterpretationModel> interpretationList = [];
+  List<int> currentInterpretationAyahNumbers = [];
   int currentInterpretationNumber = -1;
   int minInterpretationNumber = -1;
   int maxInterpretationNumber = -1;
@@ -263,6 +264,7 @@ class SurahProvider extends ChangeNotifier {
 
   void _resetInterpretationState() {
     interpretationList.clear();
+    currentInterpretationAyahNumbers.clear();
     currentInterpretationNumber = -1;
     minInterpretationNumber = -1;
     maxInterpretationNumber = -1;
@@ -316,17 +318,61 @@ class SurahProvider extends ChangeNotifier {
   }
   ///////////////////////////////// bookmarks /////////////////////////////////
 
-  AyahBookmarkModel? getBookmark(int surahNumber, int ayahId) {
+  AyahBookmarkModel? getBookmark(
+    int surahNumber,
+    int ayahId, {
+    String navigationTarget = BookmarkNavigationTarget.surah,
+  }) {
+    final normalizedTarget = BookmarkNavigationTarget.normalize(
+      navigationTarget,
+    );
     for (final bookmark in bookmarkedList) {
-      if (bookmark.surahNumber == surahNumber && bookmark.ayahId == ayahId) {
+      if (bookmark.surahNumber == surahNumber &&
+          bookmark.ayahId == ayahId &&
+          bookmark.navigationTarget == normalizedTarget) {
         return bookmark;
       }
     }
     return null;
   }
 
-  bool isAyahBookmarked(int surahNumber, int ayahId) {
-    return getBookmark(surahNumber, ayahId) != null;
+  List<AyahBookmarkModel> getBookmarksForSurah(
+    int surahNumber, {
+    required String navigationTarget,
+  }) {
+    final normalizedTarget = BookmarkNavigationTarget.normalize(
+      navigationTarget,
+    );
+    return bookmarkedList.where((bookmark) {
+      return bookmark.surahNumber == surahNumber &&
+          bookmark.navigationTarget == normalizedTarget;
+    }).toList();
+  }
+
+  bool hasSurahBookmarkConflict(
+    int surahNumber,
+    int ayahId, {
+    required String navigationTarget,
+  }) {
+    final bookmarks = getBookmarksForSurah(
+      surahNumber,
+      navigationTarget: navigationTarget,
+    );
+    if (bookmarks.isEmpty) return false;
+    return bookmarks.any((bookmark) => bookmark.ayahId != ayahId);
+  }
+
+  bool isAyahBookmarked(
+    int surahNumber,
+    int ayahId, {
+    String navigationTarget = BookmarkNavigationTarget.surah,
+  }) {
+    return getBookmark(
+          surahNumber,
+          ayahId,
+          navigationTarget: navigationTarget,
+        ) !=
+        null;
   }
 
   bool isAyahBookmarkedForTarget(
@@ -334,11 +380,14 @@ class SurahProvider extends ChangeNotifier {
     int ayahId,
     String navigationTarget,
   ) {
-    final bookmark = getBookmark(surahNumber, ayahId);
-    return bookmark?.navigationTarget == navigationTarget;
+    return isAyahBookmarked(
+      surahNumber,
+      ayahId,
+      navigationTarget: navigationTarget,
+    );
   }
 
-  Future<void> onBookMarkAdd(
+  Future<bool> onBookMarkAdd(
     int surahNumber,
     int ayahId, {
     String? surahName,
@@ -346,40 +395,85 @@ class SurahProvider extends ChangeNotifier {
     String? surahArabicName,
     String? surahArabicNumber,
     String? navigationTarget,
+    bool replaceSameSurah = false,
   }) async {
-    final existingBookmark = getBookmark(surahNumber, ayahId);
-    if (existingBookmark != null &&
-        existingBookmark.navigationTarget == navigationTarget) {
-      return;
+    final normalizedTarget = BookmarkNavigationTarget.normalize(
+      navigationTarget,
+    );
+    final existingBookmark = getBookmark(
+      surahNumber,
+      ayahId,
+      navigationTarget: normalizedTarget,
+    );
+    if (existingBookmark != null) {
+      return false;
     }
+
+    final sameSurahBookmarks = getBookmarksForSurah(
+      surahNumber,
+      navigationTarget: normalizedTarget,
+    );
+    final metadataSource = sameSurahBookmarks.isNotEmpty
+        ? sameSurahBookmarks.first
+        : null;
+
     final bookmark = AyahBookmarkModel(
       surahNumber: surahNumber,
       ayahId: ayahId,
-      surahName: surahName ?? existingBookmark?.surahName,
-      ayaText: ayaText ?? existingBookmark?.ayaText,
-      surahArabicName: surahArabicName ?? existingBookmark?.surahArabicName,
-      surahArabicNumber:
-          surahArabicNumber ?? existingBookmark?.surahArabicNumber,
-      label: existingBookmark?.label,
-      navigationTarget: navigationTarget,
+      surahName: surahName ?? metadataSource?.surahName,
+      ayaText: ayaText ?? metadataSource?.ayaText,
+      surahArabicName: surahArabicName ?? metadataSource?.surahArabicName,
+      surahArabicNumber: surahArabicNumber ?? metadataSource?.surahArabicNumber,
+      navigationTarget: normalizedTarget,
     );
     try {
+      if (replaceSameSurah && sameSurahBookmarks.isNotEmpty) {
+        await BookmarkDbHelper.deleteBySurah(
+          surahNumber,
+          navigationTarget: normalizedTarget,
+        );
+        bookmarkedList.removeWhere(
+          (bookmark) =>
+              bookmark.surahNumber == surahNumber &&
+              bookmark.navigationTarget == normalizedTarget,
+        );
+      }
+
       await BookmarkDbHelper.insert(bookmark);
       bookmarkedList.removeWhere(
-        (b) => b.surahNumber == surahNumber && b.ayahId == ayahId,
+        (b) =>
+            b.surahNumber == surahNumber &&
+            b.ayahId == ayahId &&
+            b.navigationTarget == normalizedTarget,
       );
       bookmarkedList.insert(0, bookmark);
       notifyListeners();
+      return true;
     } catch (e) {
       // don't add to list if DB insert failed
+      return false;
     }
   }
 
-  Future<void> onBookMarkRemoveByAyah(int surahNumber, int ayahId) async {
+  Future<void> onBookMarkRemoveByAyah(
+    int surahNumber,
+    int ayahId, {
+    String navigationTarget = BookmarkNavigationTarget.surah,
+  }) async {
+    final normalizedTarget = BookmarkNavigationTarget.normalize(
+      navigationTarget,
+    );
     try {
-      await BookmarkDbHelper.deleteBySurahAndAyah(surahNumber, ayahId);
+      await BookmarkDbHelper.deleteBySurahAndAyah(
+        surahNumber,
+        ayahId,
+        navigationTarget: normalizedTarget,
+      );
       bookmarkedList.removeWhere(
-        (b) => b.surahNumber == surahNumber && b.ayahId == ayahId,
+        (b) =>
+            b.surahNumber == surahNumber &&
+            b.ayahId == ayahId &&
+            b.navigationTarget == normalizedTarget,
       );
       notifyListeners();
     } catch (e) {
@@ -390,12 +484,24 @@ class SurahProvider extends ChangeNotifier {
   Future<void> updateBookmarkLabel(
     int surahNumber,
     int ayahId,
-    String? label,
-  ) async {
+    String? label, {
+    String navigationTarget = BookmarkNavigationTarget.surah,
+  }) async {
+    final normalizedTarget = BookmarkNavigationTarget.normalize(
+      navigationTarget,
+    );
     try {
-      await BookmarkDbHelper.updateLabel(surahNumber, ayahId, label);
+      await BookmarkDbHelper.updateLabel(
+        surahNumber,
+        ayahId,
+        label,
+        navigationTarget: normalizedTarget,
+      );
       final idx = bookmarkedList.indexWhere(
-        (b) => b.surahNumber == surahNumber && b.ayahId == ayahId,
+        (b) =>
+            b.surahNumber == surahNumber &&
+            b.ayahId == ayahId &&
+            b.navigationTarget == normalizedTarget,
       );
       if (idx >= 0) {
         final old = bookmarkedList[idx];
@@ -407,7 +513,7 @@ class SurahProvider extends ChangeNotifier {
           surahArabicName: old.surahArabicName,
           surahArabicNumber: old.surahArabicNumber,
           label: label,
-          navigationTarget: old.navigationTarget,
+          navigationTarget: normalizedTarget,
         );
         notifyListeners();
       }
@@ -441,6 +547,7 @@ class SurahProvider extends ChangeNotifier {
       await BookmarkDbHelper.deleteBySurahAndAyah(
         item.surahNumber,
         item.ayahId,
+        navigationTarget: item.navigationTarget,
       );
       bookmarkedList.removeAt(index);
       notifyListeners();
@@ -504,8 +611,15 @@ class SurahProvider extends ChangeNotifier {
         interpretationNumber: interpretationNumber,
         malayalam: _isMalayalam,
       );
+      currentInterpretationAyahNumbers =
+          await TranslationBlockDbHelper.getVerseNumbersForFootnote(
+            surahList[index].surahNumber,
+            interpretationNumber,
+            malayalam: _isMalayalam,
+          );
     } catch (e) {
       interpretationList = [];
+      currentInterpretationAyahNumbers = [];
     }
     notifyListeners();
   }
@@ -559,7 +673,10 @@ class SurahProvider extends ChangeNotifier {
     try {
       final results = await Future.wait([
         ArabicBlockDbHelper.getArabicBlocksBySurah(surahNumber),
-        TranslationBlockDbHelper.getTranslationBlocksBySurah(surahNumber, malayalam: _isMalayalam),
+        TranslationBlockDbHelper.getTranslationBlocksBySurah(
+          surahNumber,
+          malayalam: _isMalayalam,
+        ),
       ]);
       arabicBlockList = results[0] as List<ArabicBlockModel>;
       translationBlockList = results[1] as List<TranslationBlockModel>;

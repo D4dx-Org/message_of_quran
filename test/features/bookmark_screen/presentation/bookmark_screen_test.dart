@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/ayah_bookmark_model.dart';
 import 'package:the_message_of_the_quran/features/bookmark_screen/presentation/bookmark_screen.dart';
@@ -29,6 +28,7 @@ class _TestSurahProvider extends SurahProvider {
   }
 
   String? lastUpdatedLabel;
+  String? lastUpdatedNavigationTarget;
 
   @override
   Future<void> loadBookmarks() async {}
@@ -37,12 +37,16 @@ class _TestSurahProvider extends SurahProvider {
   Future<void> updateBookmarkLabel(
     int surahNumber,
     int ayahId,
-    String? label,
-  ) async {
+    String? label, {
+    String navigationTarget = BookmarkNavigationTarget.surah,
+  }) async {
     lastUpdatedLabel = label;
+    lastUpdatedNavigationTarget = navigationTarget;
     final bookmarkIndex = bookmarkedList.indexWhere(
       (bookmark) =>
-          bookmark.surahNumber == surahNumber && bookmark.ayahId == ayahId,
+          bookmark.surahNumber == surahNumber &&
+          bookmark.ayahId == ayahId &&
+          bookmark.navigationTarget == navigationTarget,
     );
     if (bookmarkIndex < 0) return;
 
@@ -83,11 +87,15 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(provider.lastUpdatedLabel, 'Study later');
+    expect(
+      provider.lastUpdatedNavigationTarget,
+      BookmarkNavigationTarget.surah,
+    );
     expect(find.text('Study later'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('renders the same bookmark svg for all bookmark tiles', (
+  testWidgets('passes the bookmark section when editing a mushaf label', (
     WidgetTester tester,
   ) async {
     final provider = _TestSurahProvider();
@@ -100,7 +108,38 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byType(SvgPicture), findsNWidgets(provider.bookmarkedList.length));
+    await tester.tap(find.byIcon(Icons.edit_outlined).last);
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField), 'Mushaf note');
+    await tester.tap(find.widgetWithText(FilledButton, 'Save'));
+    await tester.pumpAndSettle();
+
+    expect(provider.lastUpdatedLabel, 'Mushaf note');
+    expect(
+      provider.lastUpdatedNavigationTarget,
+      BookmarkNavigationTarget.mushaf,
+    );
+    expect(find.text('Mushaf note'), findsOneWidget);
+  });
+
+  testWidgets('renders the navbar bookmark icon for all bookmark tiles', (
+    WidgetTester tester,
+  ) async {
+    final provider = _TestSurahProvider();
+
+    await tester.pumpWidget(
+      ChangeNotifierProvider<SurahProvider>.value(
+        value: provider,
+        child: const MaterialApp(home: BookmarkScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byIcon(Icons.bookmark_border_outlined),
+      findsNWidgets(provider.bookmarkedList.length),
+    );
     expect(find.byIcon(Icons.book_outlined), findsNothing);
     expect(find.byIcon(Icons.menu_book_rounded), findsNothing);
   });

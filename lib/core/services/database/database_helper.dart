@@ -8,10 +8,23 @@ import 'package:the_message_of_the_quran/features/progression_tracker/data/progr
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 
-import 'db_io_utils_stub.dart'
-    if (dart.library.io) 'db_io_utils.dart' as db_io;
+import 'db_io_utils_stub.dart' if (dart.library.io) 'db_io_utils.dart' as db_io;
 
 class DatabaseHelper {
+  static const String _createBookmarksTableSql =
+      'CREATE TABLE IF NOT EXISTS bookmarks ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+      'surah_number INTEGER NOT NULL, '
+      'ayah_id INTEGER NOT NULL, '
+      'surah_name TEXT, '
+      'aya_text TEXT, '
+      'surah_arabic_name TEXT, '
+      'surah_arabic_number TEXT, '
+      'label TEXT, '
+      'navigation_target TEXT NOT NULL, '
+      'UNIQUE(surah_number, ayah_id, navigation_target)'
+      ')';
+
   factory DatabaseHelper() => _instance;
   DatabaseHelper._internal();
   static final DatabaseHelper _instance = DatabaseHelper._internal();
@@ -69,14 +82,12 @@ class DatabaseHelper {
     final userDbPath = join(databasesPath, DbConstants.userDbName);
     userDatabase = await openDatabase(
       userDbPath,
-      version: 4,
+      version: 5,
       onConfigure: (db) async {
         await db.rawQuery('PRAGMA journal_mode=WAL');
       },
       onCreate: (db, version) async {
-        await db.execute(
-          'CREATE TABLE IF NOT EXISTS bookmarks (id INTEGER PRIMARY KEY AUTOINCREMENT, surah_number INTEGER NOT NULL, ayah_id INTEGER NOT NULL, surah_name TEXT, aya_text TEXT, surah_arabic_name TEXT, surah_arabic_number TEXT, label TEXT, navigation_target TEXT, UNIQUE(surah_number, ayah_id))',
-        );
+        await db.execute(_createBookmarksTableSql);
         await db.execute(ProgressionDbHelper.createProgressionsTable);
         await db.execute(ProgressionDbHelper.createProgressionDaysTable);
         await db.execute(ProgressionDbHelper.createProgressionAyahsTable);
@@ -94,6 +105,33 @@ class DatabaseHelper {
           await db.execute(ProgressionDbHelper.createProgressionsTable);
           await db.execute(ProgressionDbHelper.createProgressionDaysTable);
           await db.execute(ProgressionDbHelper.createProgressionAyahsTable);
+        }
+        if (oldVersion < 5) {
+          await db.execute('ALTER TABLE bookmarks RENAME TO bookmarks_legacy');
+          await db.execute(_createBookmarksTableSql);
+          await db.execute(
+            'INSERT OR REPLACE INTO bookmarks ('
+            'surah_number, '
+            'ayah_id, '
+            'surah_name, '
+            'aya_text, '
+            'surah_arabic_name, '
+            'surah_arabic_number, '
+            'label, '
+            'navigation_target'
+            ') '
+            'SELECT '
+            'surah_number, '
+            'ayah_id, '
+            'surah_name, '
+            'aya_text, '
+            'surah_arabic_name, '
+            'surah_arabic_number, '
+            'label, '
+            "COALESCE(NULLIF(navigation_target, ''), 'surah') "
+            'FROM bookmarks_legacy',
+          );
+          await db.execute('DROP TABLE bookmarks_legacy');
         }
       },
     );

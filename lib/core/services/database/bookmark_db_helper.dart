@@ -33,23 +33,59 @@ class BookmarkDbHelper {
     }
   }
 
-  static Future<void> deleteBySurahAndAyah(int surahNumber, int ayahId) async {
+  static Future<void> deleteBySurahAndAyah(
+    int surahNumber,
+    int ayahId, {
+    required String navigationTarget,
+  }) async {
     final db = DatabaseHelper.userDatabase;
     if (db == null) return;
     try {
       await db.delete(
         DbConstants.bookmarksTableName,
         where:
-            '${DbConstants.bookmarkSurahNumber} = ? AND ${DbConstants.bookmarkAyahId} = ?',
-        whereArgs: [surahNumber, ayahId],
+            '${DbConstants.bookmarkSurahNumber} = ? AND '
+            '${DbConstants.bookmarkAyahId} = ? AND '
+            '${DbConstants.bookmarkNavigationTarget} = ?',
+        whereArgs: [
+          surahNumber,
+          ayahId,
+          BookmarkNavigationTarget.normalize(navigationTarget),
+        ],
       );
     } catch (e) {
       debugPrint('BookmarkDbHelper: delete failed — $e');
     }
   }
 
+  static Future<void> deleteBySurah(
+    int surahNumber, {
+    required String navigationTarget,
+  }) async {
+    final db = DatabaseHelper.userDatabase;
+    if (db == null) return;
+    try {
+      await db.delete(
+        DbConstants.bookmarksTableName,
+        where:
+            '${DbConstants.bookmarkSurahNumber} = ? AND '
+            '${DbConstants.bookmarkNavigationTarget} = ?',
+        whereArgs: [
+          surahNumber,
+          BookmarkNavigationTarget.normalize(navigationTarget),
+        ],
+      );
+    } catch (e) {
+      debugPrint('BookmarkDbHelper: deleteBySurah failed — $e');
+    }
+  }
+
   static Future<void> updateLabel(
-      int surahNumber, int ayahId, String? label) async {
+    int surahNumber,
+    int ayahId,
+    String? label, {
+    required String navigationTarget,
+  }) async {
     final db = DatabaseHelper.userDatabase;
     if (db == null) return;
     try {
@@ -57,8 +93,14 @@ class BookmarkDbHelper {
         DbConstants.bookmarksTableName,
         {DbConstants.bookmarkLabel: label},
         where:
-            '${DbConstants.bookmarkSurahNumber} = ? AND ${DbConstants.bookmarkAyahId} = ?',
-        whereArgs: [surahNumber, ayahId],
+            '${DbConstants.bookmarkSurahNumber} = ? AND '
+            '${DbConstants.bookmarkAyahId} = ? AND '
+            '${DbConstants.bookmarkNavigationTarget} = ?',
+        whereArgs: [
+          surahNumber,
+          ayahId,
+          BookmarkNavigationTarget.normalize(navigationTarget),
+        ],
       );
     } catch (e) {
       debugPrint('BookmarkDbHelper: updateLabel failed — $e');

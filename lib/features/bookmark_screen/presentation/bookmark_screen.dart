@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/ayah_bookmark_model.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
@@ -14,8 +13,6 @@ class BookmarkScreen extends StatelessWidget {
   const BookmarkScreen({super.key});
 
   static const Object _clearBookmarkLabelAction = Object();
-  static const String _bookmarkIconAsset =
-      'assets/icons/revamp/bookmarks_page.svg';
   static const double _bookmarkIconSize = 24;
 
   bool _isMushafBookmark(AyahBookmarkModel bookmark) {
@@ -23,11 +20,10 @@ class BookmarkScreen extends StatelessWidget {
   }
 
   Widget _buildBookmarkIcon(Color color) {
-    return SvgPicture.asset(
-      _bookmarkIconAsset,
-      width: _bookmarkIconSize,
-      height: _bookmarkIconSize,
-      colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+    return Icon(
+      Icons.bookmark_border_outlined,
+      size: _bookmarkIconSize,
+      color: color,
     );
   }
 
@@ -57,10 +53,7 @@ class BookmarkScreen extends StatelessWidget {
     return null;
   }
 
-  void _openBookmark(
-    BuildContext context,
-    AyahBookmarkModel bookmark,
-  ) {
+  void _openBookmark(BuildContext context, AyahBookmarkModel bookmark) {
     final nav = Navigator.of(context);
     final surahProv = Provider.of<SurahProvider>(context, listen: false);
 
@@ -96,9 +89,8 @@ class BookmarkScreen extends StatelessWidget {
 
     final result = await showDialog<Object?>(
       context: context,
-      builder: (_) => _BookmarkLabelDialog(
-        initialLabel: bookmark.label?.trim(),
-      ),
+      builder: (_) =>
+          _BookmarkLabelDialog(initialLabel: bookmark.label?.trim()),
     );
 
     if (result == null) return;
@@ -111,6 +103,7 @@ class BookmarkScreen extends StatelessWidget {
       bookmark.surahNumber,
       bookmark.ayahId,
       label == null || label.isEmpty ? null : label,
+      navigationTarget: bookmark.navigationTarget,
     );
   }
 
@@ -125,211 +118,206 @@ class BookmarkScreen extends StatelessWidget {
     return BaseScreenLayout(
       child: CustomScrollView(
         slivers: [
-            Consumer<SurahProvider>(
-              builder: (context, value, child) {
-                return value.bookmarkedList.isEmpty
-                    ? SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: Center(
-                          child: Semantics(
-                            label: 'No bookmarks saved',
-                            child: const Text("No Bookmark Added"),
-                          ),
+          Consumer<SurahProvider>(
+            builder: (context, value, child) {
+              return value.bookmarkedList.isEmpty
+                  ? SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(
+                        child: Semantics(
+                          label: 'No bookmarks saved',
+                          child: const Text("No Bookmark Added"),
                         ),
-                      )
-                    : SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(10, 20, 10, 10),
-                        sliver: SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                            childCount: value.bookmarkedList.length,
-                            (context, index) {
-                              final bookmark = value.bookmarkedList[index];
-                              final bodyText = _bookmarkBody(bookmark);
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 8),
-                                child: Semantics(
-                                  button: true,
-                                  label:
-                                      '${bookmark.surahName ?? 'Surah ${bookmark.surahNumber}'}, Ayah ${bookmark.ayahId}${bookmark.label != null && bookmark.label!.isNotEmpty ? ', ${bookmark.label}' : ''}',
-                                  hint:
-                                      'Double tap to open. Use the action buttons to edit or delete.',
-                                  child: SettingsScreenCard(
-                                    child: InkWell(
-                                      borderRadius: BorderRadius.circular(16),
-                                      onTap: () =>
-                                          _openBookmark(context, bookmark),
-                                      child: Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                          16,
-                                          14,
-                                          8,
-                                          14,
+                      ),
+                    )
+                  : SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(10, 20, 10, 10),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(childCount: value.bookmarkedList.length, (
+                          context,
+                          index,
+                        ) {
+                          final bookmark = value.bookmarkedList[index];
+                          final bodyText = _bookmarkBody(bookmark);
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Semantics(
+                              button: true,
+                              label:
+                                  '${bookmark.surahName ?? 'Surah ${bookmark.surahNumber}'}, Ayah ${bookmark.ayahId}${bookmark.label != null && bookmark.label!.isNotEmpty ? ', ${bookmark.label}' : ''}',
+                              hint:
+                                  'Double tap to open. Use the action buttons to edit or delete.',
+                              child: SettingsScreenCard(
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(16),
+                                  onTap: () => _openBookmark(context, bookmark),
+                                  child: Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                      16,
+                                      14,
+                                      8,
+                                      14,
+                                    ),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                            top: 34,
+                                            right: 14,
+                                          ),
+                                          child: _buildBookmarkIcon(
+                                            accentColor,
+                                          ),
                                         ),
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                top: 34,
-                                                right: 14,
-                                              ),
-                                              child: _buildBookmarkIcon(
-                                                accentColor,
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: Column(
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  Row(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Container(
-                                                        padding:
-                                                            const EdgeInsets.symmetric(
-                                                              horizontal: 10,
-                                                              vertical: 4,
-                                                            ),
-                                                        decoration: BoxDecoration(
-                                                          color: appBarAccentFillColor(
+                                                  Container(
+                                                    padding:
+                                                        const EdgeInsets.symmetric(
+                                                          horizontal: 10,
+                                                          vertical: 4,
+                                                        ),
+                                                    decoration: BoxDecoration(
+                                                      color:
+                                                          appBarAccentFillColor(
                                                             context,
                                                           ),
-                                                          borderRadius:
-                                                              BorderRadius.circular(
-                                                                999,
-                                                              ),
-                                                        ),
-                                                        child: Text(
-                                                          _bookmarkChipLabel(
-                                                            bookmark,
-                                                          ),
-                                                          style: theme
-                                                              .textTheme
-                                                              .labelSmall
-                                                              ?.copyWith(
-                                                              color: accentColor,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w700,
-                                                                letterSpacing:
-                                                                    0.2,
-                                                              ),
-                                                        ),
-                                                      ),
-                                                      const Spacer(),
-                                                          Row(
-                                                            mainAxisSize:
-                                                                MainAxisSize.min,
-                                                            children: [
-                                                              Semantics(
-                                                                button: true,
-                                                                label:
-                                                                    'Edit label for Ayah ${bookmark.ayahId}',
-                                                                child: IconButton(
-                                                                  tooltip:
-                                                                      'Edit label',
-                                                                  onPressed: () =>
-                                                                      _showEditLabelDialog(
-                                                                        context,
-                                                                        bookmark,
-                                                                      ),
-                                                                  icon: Icon(
-                                                                    Icons.edit_outlined,
-                                                                    color: accentColor,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              Semantics(
-                                                                button: true,
-                                                                label:
-                                                                    'Remove bookmark for Ayah ${bookmark.ayahId}',
-                                                                child: IconButton(
-                                                                  tooltip:
-                                                                      'Delete bookmark',
-                                                                  onPressed: () {
-                                                                    Provider.of<
-                                                                          SurahProvider
-                                                                        >(
-                                                                          context,
-                                                                          listen:
-                                                                              false,
-                                                                        )
-                                                                        .onBookMarkRemoveByIndex(
-                                                                          index,
-                                                                        );
-                                                                  },
-                                                                  icon: Icon(
-                                                                    Icons.delete_outline,
-                                                                    color: deleteAccentColor,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                    ],
-                                                  ),
-                                                  Text(
-                                                    _bookmarkTitle(bookmark),
-                                                    softWrap: true,
-                                                    style: theme
-                                                        .textTheme
-                                                        .titleMedium
-                                                        ?.copyWith(
-                                                          fontWeight:
-                                                              FontWeight.w700,
-                                                        ),
-                                                  ),
-                                                  if (bodyText != null) ...[
-                                                    const SizedBox(height: 4),
-                                                    Text(
-                                                      bodyText,
-                                                      softWrap: true,
-                                                      style: theme
-                                                          .textTheme
-                                                          .bodyMedium
-                                                          ?.copyWith(
-                                                            color: theme
-                                                                .colorScheme
-                                                                .onSurface,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            999,
                                                           ),
                                                     ),
-                                                  ],
-                                                  const SizedBox(height: 6),
-                                                  Text(
-                                                    _bookmarkDetails(bookmark),
-                                                    softWrap: true,
-                                                    style: theme
-                                                        .textTheme
-                                                        .bodySmall
-                                                        ?.copyWith(
-                                                          fontSize: 12,
-                                                          color: theme
-                                                              .colorScheme
-                                                              .onSurfaceVariant,
+                                                    child: Text(
+                                                      _bookmarkChipLabel(
+                                                        bookmark,
+                                                      ),
+                                                      style: theme
+                                                          .textTheme
+                                                          .labelSmall
+                                                          ?.copyWith(
+                                                            color: accentColor,
+                                                            fontWeight:
+                                                                FontWeight.w700,
+                                                            letterSpacing: 0.2,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                  const Spacer(),
+                                                  Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      Semantics(
+                                                        button: true,
+                                                        label:
+                                                            'Edit label for Ayah ${bookmark.ayahId}',
+                                                        child: IconButton(
+                                                          tooltip: 'Edit label',
+                                                          onPressed: () =>
+                                                              _showEditLabelDialog(
+                                                                context,
+                                                                bookmark,
+                                                              ),
+                                                          icon: Icon(
+                                                            Icons.edit_outlined,
+                                                            color: accentColor,
+                                                          ),
                                                         ),
+                                                      ),
+                                                      Semantics(
+                                                        button: true,
+                                                        label:
+                                                            'Remove bookmark for Ayah ${bookmark.ayahId}',
+                                                        child: IconButton(
+                                                          tooltip:
+                                                              'Delete bookmark',
+                                                          onPressed: () {
+                                                            Provider.of<
+                                                                  SurahProvider
+                                                                >(
+                                                                  context,
+                                                                  listen: false,
+                                                                )
+                                                                .onBookMarkRemoveByIndex(
+                                                                  index,
+                                                                );
+                                                          },
+                                                          icon: Icon(
+                                                            Icons
+                                                                .delete_outline,
+                                                            color:
+                                                                deleteAccentColor,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ],
                                               ),
-                                            ),
-                                          ],
+                                              Text(
+                                                _bookmarkTitle(bookmark),
+                                                softWrap: true,
+                                                style: theme
+                                                    .textTheme
+                                                    .titleMedium
+                                                    ?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                    ),
+                                              ),
+                                              if (bodyText != null) ...[
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  bodyText,
+                                                  softWrap: true,
+                                                  style: theme
+                                                      .textTheme
+                                                      .bodyMedium
+                                                      ?.copyWith(
+                                                        color: theme
+                                                            .colorScheme
+                                                            .onSurface,
+                                                      ),
+                                                ),
+                                              ],
+                                              const SizedBox(height: 6),
+                                              Text(
+                                                _bookmarkDetails(bookmark),
+                                                softWrap: true,
+                                                style: theme.textTheme.bodySmall
+                                                    ?.copyWith(
+                                                      fontSize: 12,
+                                                      color: theme
+                                                          .colorScheme
+                                                          .onSurfaceVariant,
+                                                    ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
+                                      ],
                                     ),
                                   ),
                                 ),
-                              );
-                            },
-                          ),
-                        ),
-                      );
-              },
-            ),
-          ],
-        ),
+                              ),
+                            ),
+                          );
+                        }),
+                      ),
+                    );
+            },
+          ),
+        ],
+      ),
     );
   }
 }
@@ -382,9 +370,8 @@ class _BookmarkLabelDialogState extends State<_BookmarkLabelDialog> {
           child: const Text('Cancel'),
         ),
         FilledButton(
-          onPressed: () => Navigator.of(
-            context,
-          ).pop(_textController.text.trim()),
+          onPressed: () =>
+              Navigator.of(context).pop(_textController.text.trim()),
           child: const Text('Save'),
         ),
       ],

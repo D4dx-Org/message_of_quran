@@ -4,14 +4,29 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:the_message_of_the_quran/core/constants/app_constants.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
+import 'package:the_message_of_the_quran/core/widgets/app_bar_language_button.dart';
 import 'package:the_message_of_the_quran/core/widgets/app_bar_model_sheet.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_screen_svg.dart';
 import 'package:the_message_of_the_quran/features/search_screen/presentation/search_screen.dart';
+
 class CommonAppBar {
   CommonAppBar._();
 
+  static Widget _brandLogo(double scale) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Image.asset(
+        'assets/images/Group-logo.png',
+        height: 36 * scale,
+        fit: BoxFit.contain,
+        semanticLabel: 'The Message of the Quran logo',
+      ),
+    );
+  }
+
   /// Brown-themed app bar for the home screen matching the screenshot design.
   static PreferredSizeWidget homeAppBar(BuildContext ctx) {
+    final scale = ResponsiveHelper.scaleFactor(ctx);
     return AppBar(
       automaticallyImplyLeading: false,
       backgroundColor: AppTheme.appThemePrimary,
@@ -34,15 +49,9 @@ class CommonAppBar {
           ),
         ],
       ),
-      title: Text(
-        'The Message of the Quran',
-        style: GoogleFonts.poppins(
-          color: const Color.fromRGBO(255, 232, 187, 1),
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-      centerTitle: true,
+      titleSpacing: 4 * scale,
+      title: _brandLogo(scale),
+      centerTitle: false,
       leading: Builder(
         builder: (context) => Semantics(
           button: true,
@@ -55,6 +64,8 @@ class CommonAppBar {
         ),
       ),
       actions: [
+        const AppBarLanguageButton(),
+        const SizedBox(width: 8),
         IconButton(
           icon: const Icon(Icons.search, color: Colors.white),
           tooltip: 'Search',
@@ -74,6 +85,8 @@ class CommonAppBar {
     BuildContext ctx, {
     bool isActionsNeeded = true,
     bool showLeading = true,
+    bool showBrandLogo = false,
+    bool centerTitle = false,
     String? title,
     Widget? titleWidget,
     VoidCallback? onSurahInfoTap,
@@ -83,20 +96,26 @@ class CommonAppBar {
       automaticallyImplyLeading: false,
       backgroundColor: AppTheme.appThemePrimary,
       elevation: 0,
-      title: titleWidget ??
-          (title != null
-              ? Text(
-                  title,
-                  style: GoogleFonts.poppins(
-                    fontSize: 18 * scale,
-                    fontWeight: FontWeight.w600,
-                    color: const Color.fromRGBO(255, 232, 187, 1),
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                )
-              : null),
-      centerTitle: true,
+      titleSpacing: showBrandLogo
+          ? 4 * scale
+          : NavigationToolbar.kMiddleSpacing,
+      title:
+          titleWidget ??
+          (showBrandLogo
+              ? _brandLogo(scale)
+              : (title != null
+                    ? Text(
+                        title,
+                        style: GoogleFonts.poppins(
+                          fontSize: 18 * scale,
+                          fontWeight: FontWeight.w600,
+                          color: const Color.fromRGBO(255, 232, 187, 1),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      )
+                    : null)),
+      centerTitle: showBrandLogo ? false : centerTitle,
       leading: showLeading
           ? Builder(
               builder: (context) => Semantics(
@@ -130,20 +149,14 @@ class CommonAppBar {
                   onPressed: onSurahInfoTap,
                 ),
               IconButton(
-                icon: const HomeScreenSvg(
-                  icon: 'jump',
-                  color: Colors.white,
-                ),
+                icon: const HomeScreenSvg(icon: 'jump', color: Colors.white),
                 tooltip: 'Jump to Surah',
                 padding: EdgeInsets.zero,
                 visualDensity: VisualDensity.compact,
                 onPressed: () => AppBarModelSheet.modelSheet(ctx),
               ),
               IconButton(
-                icon: const HomeScreenSvg(
-                  icon: 'search',
-                  color: Colors.white,
-                ),
+                icon: const HomeScreenSvg(icon: 'search', color: Colors.white),
                 tooltip: 'Search',
                 padding: EdgeInsets.zero,
                 visualDensity: VisualDensity.compact,
@@ -158,4 +171,3 @@ class CommonAppBar {
     );
   }
 }
-

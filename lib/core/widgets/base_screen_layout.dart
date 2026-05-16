@@ -13,6 +13,7 @@ class BaseScreenLayout extends StatelessWidget {
     required this.child,
     this.appBar,
     this.headerContent,
+    this.contentCardBoxShadows,
     this.floatingActionButton,
     this.drawer,
     this.useScaffold = true,
@@ -30,6 +31,9 @@ class BaseScreenLayout extends StatelessWidget {
   /// Optional content displayed in the brown area above the rounded card
   /// (e.g. chip rows, section headers).
   final Widget? headerContent;
+
+  /// Optional shadow override for the rounded content card.
+  final List<BoxShadow>? contentCardBoxShadows;
 
   /// Optional floating action button.
   final Widget? floatingActionButton;
@@ -94,13 +98,15 @@ class BaseScreenLayout extends StatelessWidget {
                           ],
                         ),
                   color: isDarkMode ? const Color(0xFF1C1C1E) : null,
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color.fromRGBO(0, 0, 0, 0.25),
-                      blurRadius: 4,
-                      offset: Offset(0, -2),
-                    ),
-                  ],
+                  boxShadow:
+                      contentCardBoxShadows ??
+                      const [
+                        BoxShadow(
+                          color: Color.fromRGBO(0, 0, 0, 0.25),
+                          blurRadius: 4,
+                          offset: Offset(0, -2),
+                        ),
+                      ],
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: child,

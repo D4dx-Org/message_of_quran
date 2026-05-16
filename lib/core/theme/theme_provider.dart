@@ -23,10 +23,7 @@ Color appBarAccentColor(BuildContext context) {
       : AppTheme.appIconTheme;
 }
 
-Color appBarAccentFillColor(
-  BuildContext context, {
-  double alpha = 0.12,
-}) {
+Color appBarAccentFillColor(BuildContext context, {double alpha = 0.12}) {
   final clampedAlpha = alpha.clamp(0.0, 1.0).toDouble();
   return appBarAccentColor(context).withValues(alpha: clampedAlpha);
 }
@@ -100,6 +97,7 @@ class ThemeProvider extends ChangeNotifier {
     appBarTheme: const AppBarTheme(
       backgroundColor: AppTheme.appThemePrimary,
       surfaceTintColor: AppTheme.appThemePrimary,
+      centerTitle: false,
       elevation: 0,
       iconTheme: IconThemeData(color: Colors.white),
       titleTextStyle: TextStyle(
@@ -148,12 +146,17 @@ class ThemeProvider extends ChangeNotifier {
         IconThemeData(color: Colors.white),
       ),
       labelTextStyle: const WidgetStatePropertyAll(
-        TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: Color(0xFFAEAEB2)),
+        TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w500,
+          color: Color(0xFFAEAEB2),
+        ),
       ),
     ),
     appBarTheme: const AppBarTheme(
       backgroundColor: AppTheme.appThemePrimary,
       surfaceTintColor: AppTheme.appThemePrimary,
+      centerTitle: false,
       elevation: 0,
       iconTheme: IconThemeData(color: Colors.white),
       titleTextStyle: TextStyle(

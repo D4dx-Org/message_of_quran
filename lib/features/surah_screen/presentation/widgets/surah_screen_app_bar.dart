@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
+import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
-
-String _periodLabel(String place) {
-  final normalizedPlace = place.trim();
-  if (normalizedPlace.isEmpty) {
-    return 'Period';
-  }
-  return '$normalizedPlace Period';
-}
 
 String _resolveOrdinalLabel(String ordinalLabel, int surahNumber) {
   final trimmed = ordinalLabel.trim();
@@ -87,21 +82,67 @@ String _ordinalWord(int value) {
   return value.toString();
 }
 
-String _surahNameLine(String surahName, String surahTranslation) {
-  final trimmedTranslation = surahTranslation.trim();
-  if (trimmedTranslation.isEmpty) {
-    return surahName;
+String _surahHeaderTitle({
+  required bool isMalayalam,
+  required String ordinalLabel,
+  required int surahNumber,
+}) {
+  if (isMalayalam) {
+    return 'അധ്യായം $surahNumber';
   }
-  return '$surahName ($trimmedTranslation)';
+
+  return 'The ${_resolveOrdinalLabel(ordinalLabel, surahNumber)} Surah';
+}
+
+String _surahDisplayNameLine({
+  required bool isMalayalam,
+  required String surahName,
+  required String surahTranslation,
+  required String malayalamName,
+  required int surahNumber,
+}) {
+  return formatSurahDisplayNameLine(
+    isMalayalam: isMalayalam,
+    surahName: surahName,
+    surahTranslation: surahTranslation,
+    malayalamName: malayalamName,
+    surahNumber: surahNumber,
+  );
+}
+
+String _surahPlaceLine(
+  String place, {
+  required bool isMalayalam,
+  required int surahNumber,
+}) {
+  if (!isMalayalam) {
+    return localizeSurahPeriodLabel(place, isMalayalam: false);
+  }
+
+  switch (resolveSurahPlaceKind(place)) {
+    case SurahPlaceKind.makkah:
+      return 'മക്കാ കാലഘട്ടം';
+    case SurahPlaceKind.madinah:
+      return localizeSurahMadinahDisplayLabel(
+        place,
+        isMalayalam: true,
+        surahNumber: surahNumber,
+        fallback: 'അവതരണം മദീനയിൽ',
+      );
+    case null:
+      return localizeSurahPeriodLabel(place, isMalayalam: true);
+  }
 }
 
 /// Surah info strip with book-style content ordering and nav arrows.
 class SurahInfoStrip extends StatelessWidget {
   final String surahName;
   final String surahTranslation;
+  final String malayalamName;
   final String place;
   final String ordinalLabel;
   final int surahNumber;
+  final bool isMalayalam;
   final VoidCallback? onPrevious;
   final VoidCallback? onNext;
   final bool showPrevious;
@@ -111,9 +152,11 @@ class SurahInfoStrip extends StatelessWidget {
     super.key,
     required this.surahName,
     required this.surahTranslation,
+    this.malayalamName = '',
     required this.place,
     required this.ordinalLabel,
     required this.surahNumber,
+    this.isMalayalam = false,
     this.onPrevious,
     this.onNext,
     this.showPrevious = true,
@@ -122,8 +165,23 @@ class SurahInfoStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final headerTitle = 'The ${_resolveOrdinalLabel(ordinalLabel, surahNumber)} Surah';
-    final nameLine = _surahNameLine(surahName, surahTranslation);
+    final headerTitle = _surahHeaderTitle(
+      isMalayalam: isMalayalam,
+      ordinalLabel: ordinalLabel,
+      surahNumber: surahNumber,
+    );
+    final nameLine = _surahDisplayNameLine(
+      isMalayalam: isMalayalam,
+      surahName: surahName,
+      surahTranslation: surahTranslation,
+      malayalamName: malayalamName,
+      surahNumber: surahNumber,
+    );
+    final placeLine = _surahPlaceLine(
+      place,
+      isMalayalam: isMalayalam,
+      surahNumber: surahNumber,
+    );
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -185,7 +243,7 @@ class SurahInfoStrip extends StatelessWidget {
                   ),
                   const SizedBox(height: 3),
                   Text(
-                    _periodLabel(place),
+                    placeLine,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -222,7 +280,9 @@ class SurahInfoStrip extends StatelessWidget {
           color: Colors.white.withValues(alpha: 0.9),
           style: IconButton.styleFrom(
             shape: CircleBorder(
-              side: BorderSide(color: AppTheme.appIconTheme.withValues(alpha: 0.4)),
+              side: BorderSide(
+                color: AppTheme.appIconTheme.withValues(alpha: 0.4),
+              ),
             ),
             backgroundColor: Colors.white.withValues(alpha: 0.08),
           ),
@@ -239,6 +299,7 @@ class SurahScreenAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     return SliverToBoxAdapter(
       child: Consumer<SurahProvider>(
         builder: (context, sp, _) {
@@ -249,9 +310,11 @@ class SurahScreenAppBar extends StatelessWidget {
           return SurahInfoStrip(
             surahName: surah.name,
             surahTranslation: surah.description,
+            malayalamName: surah.malayalamName,
             place: surah.place,
             ordinalLabel: surah.ordinalLabel,
             surahNumber: surah.surahNumber,
+            isMalayalam: isMalayalam,
             showPrevious: sp.index < sp.surahList.length - 1,
             showNext: sp.index > 0,
             onPrevious: () => sp.onSwipe(false),

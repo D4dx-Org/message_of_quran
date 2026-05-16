@@ -11,6 +11,35 @@ class SurahDbHelper {
     return _getAllSurasAsad();
   }
 
+  static Future<SurahModel?> getSurahByNumber(int surahNumber) async {
+    final db = DatabaseHelper.quranAsadDb;
+    if (db == null) {
+      debugPrint('SurahDbHelper: quranAsadDb not initialized');
+      return null;
+    }
+
+    try {
+      final rows = await db.query(
+        DbConstants.asadSurahsTable,
+        where: '${DbConstants.asadSurahNumber} = ?',
+        whereArgs: [surahNumber],
+        limit: 1,
+      );
+      if (rows.isEmpty) return null;
+
+      final row = rows.first;
+      return SurahModel.fromAsadJson(
+        row,
+        arabicName: (row['arabic_name'] ?? '').toString(),
+        malayalamName: (row['malayalam_name'] ?? '').toString(),
+        ayathCount: (row['ayath_count'] as int?) ?? 0,
+      );
+    } catch (e) {
+      debugPrint('SurahDbHelper: Error fetching surah $surahNumber — $e');
+      return null;
+    }
+  }
+
   static Future<List<SurahModel>> _getAllSurasAsad() async {
     final db = DatabaseHelper.quranAsadDb;
     if (db == null) {

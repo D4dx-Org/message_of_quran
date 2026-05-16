@@ -5,17 +5,148 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:the_message_of_the_quran/core/models/arabic_block_model.dart';
 import 'package:the_message_of_the_quran/core/models/interpretation_model.dart';
+import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:the_message_of_the_quran/core/models/translation_block_model.dart';
 import 'package:the_message_of_the_quran/core/services/database/arabic_block_db_helper.dart';
 import 'package:the_message_of_the_quran/core/services/database/interpretations_db_helper.dart';
+import 'package:the_message_of_the_quran/core/services/database/surah_db_helper.dart';
 import 'package:the_message_of_the_quran/core/services/database/translation_block_db_helper.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/cross_reference_parser.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
+import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
+import 'package:the_message_of_the_quran/core/utils/translation_alignment.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/interpretation_note_marker.dart';
+
+String? formatInterpretationSheetSurahTitle({
+  required bool isMalayalam,
+  required SurahModel? surah,
+}) {
+  if (surah == null) return null;
+
+  final title = formatSurahDisplayNameLine(
+    isMalayalam: isMalayalam,
+    surahName: surah.name,
+    surahTranslation: surah.description,
+    malayalamName: surah.malayalamName,
+    surahNumber: surah.surahNumber,
+  ).trim();
+  return title.isEmpty ? null : title;
+}
+
+String formatInterpretationMetadataLabel({
+  required bool isMalayalam,
+  required int surahNumber,
+  required int interpretationNumber,
+  List<int> ayahNumbers = const [],
+}) {
+  final parts = <String>[
+    isMalayalam ? 'സൂറത്ത് $surahNumber' : 'Surah $surahNumber',
+    isMalayalam
+        ? 'ഇന്റർപ്രെറ്റേഷൻ $interpretationNumber'
+        : 'Interpretation $interpretationNumber',
+  ];
+
+  final verseLabel = _formatInterpretationVerseLabel(
+    isMalayalam: isMalayalam,
+    ayahNumbers: ayahNumbers,
+  );
+  if (verseLabel.isNotEmpty) {
+    parts.add(verseLabel);
+  }
+
+  return parts.join(' • ');
+}
+
+String _formatInterpretationVerseLabel({
+  required bool isMalayalam,
+  required List<int> ayahNumbers,
+}) {
+  final formatted = _formatInterpretationAyahNumbers(ayahNumbers);
+  if (formatted.isEmpty) return '';
+
+  final prefix = ayahNumbers.toSet().where((n) => n > 0).length == 1
+      ? (isMalayalam ? 'ആയത്ത്' : 'Verse')
+      : (isMalayalam ? 'ആയത്തുകൾ' : 'Verses');
+  return '$prefix $formatted';
+}
+
+String _formatInterpretationAyahNumbers(List<int> ayahNumbers) {
+  final normalized = ayahNumbers.toSet().where((n) => n > 0).toList()..sort();
+  if (normalized.isEmpty) return '';
+  if (normalized.length == 1) return '${normalized.first}';
+
+  bool contiguous = true;
+  for (int i = 1; i < normalized.length; i++) {
+    if (normalized[i] != normalized[i - 1] + 1) {
+      contiguous = false;
+      break;
+    }
+  }
+
+  if (contiguous) {
+    return '${normalized.first}-${normalized.last}';
+  }
+  return normalized.join(', ');
+}
+
+class InterpretationSheetHeader extends StatelessWidget {
+  final String? surahTitle;
+  final String metadataLabel;
+  final VoidCallback? onClose;
+
+  const InterpretationSheetHeader({
+    super.key,
+    this.surahTitle,
+    required this.metadataLabel,
+    this.onClose,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final hasSurahTitle = surahTitle != null && surahTitle!.trim().isNotEmpty;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (hasSurahTitle)
+                  Text(
+                    surahTitle!,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                if (hasSurahTitle) const SizedBox(height: 2),
+                Text(
+                  metadataLabel,
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                ),
+              ],
+            ),
+          ),
+          if (onClose != null)
+            IconButton(
+              tooltip: 'Close',
+              onPressed: onClose,
+              icon: const Icon(Icons.close, size: 22),
+            ),
+        ],
+      ),
+    );
+  }
+}
 
 /// A self-contained bottom sheet that displays the Arabic text and translation
 /// of a referenced Quranic verse (surah:ayah).
@@ -50,8 +181,9 @@ class CrossReferenceSheet extends StatefulWidget {
       context: context,
       isScrollControlled: true,
       barrierColor: Colors.transparent,
-      constraints:
-          bsMaxWidth != null ? BoxConstraints(maxWidth: bsMaxWidth) : null,
+      constraints: bsMaxWidth != null
+          ? BoxConstraints(maxWidth: bsMaxWidth)
+          : null,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -63,6 +195,54 @@ class CrossReferenceSheet extends StatefulWidget {
     );
   }
 
+  /// Shows a note-only interpretation sheet for the referenced surah.
+  static void showInterpretationNote(
+    BuildContext context, {
+    required int surahNumber,
+    required int noteNumber,
+  }) {
+    final isMl = context.read<LanguageProvider>().isMalayalam;
+    final bsMaxWidth = ResponsiveHelper.bottomSheetMaxWidth(context);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      barrierColor: Colors.transparent,
+      constraints: bsMaxWidth != null
+          ? BoxConstraints(maxWidth: bsMaxWidth)
+          : null,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => _NestedInterpretationSheet(
+        surahNumber: surahNumber,
+        footnoteNumber: noteNumber,
+        isMalayalam: isMl,
+      ),
+    );
+  }
+
+  /// Routes a parsed cross-reference to the matching sheet.
+  static void showParsedReference(BuildContext context, CrossReference ref) {
+    if (ref.ayahNumber != null) {
+      show(
+        context,
+        surahNumber: ref.surahNumber,
+        ayahNumber: ref.ayahNumber!,
+        noteNumber: ref.noteNumber,
+      );
+      return;
+    }
+
+    if (ref.noteNumber != null) {
+      showInterpretationNote(
+        context,
+        surahNumber: ref.surahNumber,
+        noteNumber: ref.noteNumber!,
+      );
+    }
+  }
+
   @override
   State<CrossReferenceSheet> createState() => _CrossReferenceSheetState();
 }
@@ -72,6 +252,7 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
   ArabicBlockModel? _arabic;
   TranslationBlockModel? _translation;
   List<InterpretationModel> _interpretation = [];
+  SurahModel? _surah;
 
   @override
   void initState() {
@@ -84,14 +265,20 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
 
     final results = await Future.wait([
       ArabicBlockDbHelper.getArabicBlockByVerse(
-          widget.surahNumber, widget.ayahNumber),
+        widget.surahNumber,
+        widget.ayahNumber,
+      ),
       TranslationBlockDbHelper.getTranslationBlockByVerse(
-          widget.surahNumber, widget.ayahNumber,
-          malayalam: isMl),
+        widget.surahNumber,
+        widget.ayahNumber,
+        malayalam: isMl,
+      ),
+      SurahDbHelper.getSurahByNumber(widget.surahNumber),
     ]);
 
     final arabic = results[0] as ArabicBlockModel?;
     final translation = results[1] as TranslationBlockModel?;
+    final surah = results[2] as SurahModel?;
 
     // If a note number was provided, also fetch interpretation
     List<InterpretationModel> interp = [];
@@ -108,8 +295,23 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
       _arabic = arabic;
       _translation = translation;
       _interpretation = interp;
+      _surah = surah;
       _loading = false;
     });
+  }
+
+  String? _surahTitle(bool isMalayalam) {
+    final surah = _surah;
+    if (surah == null) return null;
+
+    final title = formatSurahDisplayNameLine(
+      isMalayalam: isMalayalam,
+      surahName: surah.name,
+      surahTranslation: surah.description,
+      malayalamName: surah.malayalamName,
+      surahNumber: surah.surahNumber,
+    ).trim();
+    return title.isEmpty ? null : title;
   }
 
   String _combinedText() {
@@ -134,6 +336,7 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
   Widget build(BuildContext context) {
     final fontSettings = Provider.of<FontSizeChangerProvider>(context);
     final isMl = context.read<LanguageProvider>().isMalayalam;
+    final surahTitle = _surahTitle(isMl);
 
     return ConstrainedBox(
       constraints: BoxConstraints(
@@ -183,8 +386,7 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
                   icon: Icon(
                     Icons.copy_outlined,
                     size: 20,
-                    color:
-                        _loading ? Colors.grey[400] : AppTheme.appIconTheme,
+                    color: _loading ? Colors.grey[400] : AppTheme.appIconTheme,
                   ),
                 ),
                 // Share
@@ -201,8 +403,7 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
                   icon: Icon(
                     Icons.share_outlined,
                     size: 20,
-                    color:
-                        _loading ? Colors.grey[400] : AppTheme.appIconTheme,
+                    color: _loading ? Colors.grey[400] : AppTheme.appIconTheme,
                   ),
                 ),
                 const Spacer(),
@@ -224,65 +425,78 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
                     child: Center(child: CircularProgressIndicator()),
                   )
                 : _arabic == null && _translation == null
-                    ? const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 32),
-                        child: Center(
-                          child: Text('Verse not found'),
-                        ),
-                      )
-                    : SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            // Verse range label
-                            Center(
-                              child: Text(
-                                'Verse Range ${widget.ayahNumber}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                  color: Colors.grey[600],
-                                ),
+                ? const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 32),
+                    child: Center(child: Text('Verse not found')),
+                  )
+                : SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (surahTitle != null) ...[
+                          Center(
+                            child: Text(
+                              surahTitle,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15,
                               ),
                             ),
-                            const SizedBox(height: 16),
-                            // Arabic text
-                            if (_arabic?.arabicText != null)
-                              Directionality(
-                                textDirection: TextDirection.rtl,
-                                child: Text(
-                                  _arabic!.arabicText!,
-                                  style: AppTextTheme.surahArabiStyle(context),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            if (_arabic?.arabicText != null)
-                              const SizedBox(height: 16),
-                            // Translation text with tappable footnotes
-                            if (_translation?.translationText != null)
-                              _buildTranslationRichText(
-                                context,
-                                _translation!.translationText!,
-                                fontSettings,
-                                isMl,
-                              ),
-                            // Interpretation (if noteNumber was provided)
-                            if (_interpretation.isNotEmpty) ...[
-                              const Divider(height: 24),
-                              for (final item in _interpretation)
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 12),
-                                  child: _buildInterpretationWithCrossRefs(
-                                    context,
-                                    item.interpretationText,
-                                    widget.surahNumber,
-                                  ),
-                                ),
-                            ],
-                          ],
+                          ),
+                          const SizedBox(height: 4),
+                        ],
+                        // Verse range label
+                        Center(
+                          child: Text(
+                            'Verse Range ${widget.ayahNumber}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              color: Colors.grey[600],
+                            ),
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 16),
+                        // Arabic text
+                        if (_arabic?.arabicText != null)
+                          Directionality(
+                            textDirection: TextDirection.rtl,
+                            child: Text(
+                              _arabic!.arabicText!,
+                              style: AppTextTheme.surahArabiStyle(context),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        if (_arabic?.arabicText != null)
+                          const SizedBox(height: 16),
+                        // Translation text with tappable footnotes
+                        if (_translation?.translationText != null)
+                          _buildTranslationRichText(
+                            context,
+                            _translation!.translationText!,
+                            fontSettings,
+                            isMl,
+                          ),
+                        // Interpretation (if noteNumber was provided)
+                        if (_interpretation.isNotEmpty) ...[
+                          const Divider(height: 24),
+                          for (final item in _interpretation)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: _buildInterpretationWithCrossRefs(
+                                context,
+                                item.interpretationText,
+                                widget.surahNumber,
+                              ),
+                            ),
+                        ],
+                      ],
+                    ),
+                  ),
           ),
         ],
       ),
@@ -297,8 +511,9 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
     bool isMl,
   ) {
     // Strip HTML <br> tags
-    final cleaned =
-        text.replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n').trim();
+    final cleaned = text
+        .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n')
+        .trim();
     // Strip verse-number prefix (e.g. "51 ")
     final displayText = cleaned.replaceFirst(RegExp(r'^\d+[\s.]*'), '');
 
@@ -311,18 +526,22 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
       found = true;
       // Plain text before match
       if (match.start > lastEnd) {
-        spans.add(TextSpan(
-          text: displayText.substring(lastEnd, match.start),
-          style: AppTextTheme.surahMalayalamStyle(context),
-        ));
+        spans.add(
+          TextSpan(
+            text: displayText.substring(lastEnd, match.start),
+            style: AppTextTheme.surahMalayalamStyle(context),
+          ),
+        );
       }
       // Tappable (N)
       final num = int.tryParse(match.group(1)!);
       if (num == null) {
-        spans.add(TextSpan(
-          text: match.group(0),
-          style: AppTextTheme.surahMalayalamStyle(context),
-        ));
+        spans.add(
+          TextSpan(
+            text: match.group(0),
+            style: AppTextTheme.surahMalayalamStyle(context),
+          ),
+        );
       } else {
         spans.add(
           buildInterpretationNoteMarkerSpan(
@@ -336,44 +555,37 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
 
     if (!found) {
       // No footnotes found, just display as-is
-      spans.add(TextSpan(
-        text: displayText,
-        style: AppTextTheme.surahMalayalamStyle(context),
-      ));
+      spans.add(
+        TextSpan(
+          text: displayText,
+          style: AppTextTheme.surahMalayalamStyle(context),
+        ),
+      );
     } else if (lastEnd < displayText.length) {
-      spans.add(TextSpan(
-        text: displayText.substring(lastEnd),
-        style: AppTextTheme.surahMalayalamStyle(context),
-      ));
+      spans.add(
+        TextSpan(
+          text: displayText.substring(lastEnd),
+          style: AppTextTheme.surahMalayalamStyle(context),
+        ),
+      );
     }
 
     return Text.rich(
       TextSpan(children: spans),
-      textAlign:
-          fontSettings.translationJustify ? TextAlign.justify : TextAlign.start,
+      textAlign: resolveTranslationTextAlign(
+        isMalayalam: isMl,
+        justifyTranslation: fontSettings.translationJustify,
+      ),
     );
   }
 
   /// Shows a nested interpretation bottom sheet for a footnote in the
   /// referenced surah.
   void _showNestedInterpretation(BuildContext context, int footnoteNumber) {
-    final isMl = context.read<LanguageProvider>().isMalayalam;
-    final bsMaxWidth = ResponsiveHelper.bottomSheetMaxWidth(context);
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      barrierColor: Colors.transparent,
-      constraints:
-          bsMaxWidth != null ? BoxConstraints(maxWidth: bsMaxWidth) : null,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => _NestedInterpretationSheet(
-        surahNumber: widget.surahNumber,
-        footnoteNumber: footnoteNumber,
-        isMalayalam: isMl,
-      ),
+    CrossReferenceSheet.showInterpretationNote(
+      context,
+      surahNumber: widget.surahNumber,
+      noteNumber: footnoteNumber,
     );
   }
 
@@ -385,42 +597,33 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
   ) {
     final segments = parseForCrossReferences(text, currentSurahNumber);
     if (segments.length == 1 && !segments.first.isCrossReference) {
-      return Text(
-        text,
-        style: AppTextTheme.surahInterpretationStyle(context),
-      );
+      return Text(text, style: AppTextTheme.surahInterpretationStyle(context));
     }
 
     final spans = <InlineSpan>[];
     for (final seg in segments) {
       if (seg.isCrossReference) {
         final ref = seg.crossReference!;
-        spans.add(TextSpan(
-          text: seg.text,
-          style: AppTextTheme.surahInterpretationStyle(context).copyWith(
-            color: AppTheme.appIconTheme,
-            decoration: TextDecoration.underline,
-            decorationColor: AppTheme.appIconTheme,
+        spans.add(
+          TextSpan(
+            text: seg.text,
+            style: AppTextTheme.surahInterpretationStyle(context).copyWith(
+              color: AppTheme.appIconTheme,
+              decoration: TextDecoration.underline,
+              decorationColor: AppTheme.appIconTheme,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () =>
+                  CrossReferenceSheet.showParsedReference(context, ref),
           ),
-          recognizer: TapGestureRecognizer()
-            ..onTap = () {
-              if (ref.ayahNumber != null) {
-                CrossReferenceSheet.show(
-                  context,
-                  surahNumber: ref.surahNumber,
-                  ayahNumber: ref.ayahNumber!,
-                  noteNumber: ref.noteNumber,
-                );
-              } else if (ref.noteNumber != null) {
-                _showNestedInterpretation(context, ref.noteNumber!);
-              }
-            },
-        ));
+        );
       } else {
-        spans.add(TextSpan(
-          text: seg.text,
-          style: AppTextTheme.surahInterpretationStyle(context),
-        ));
+        spans.add(
+          TextSpan(
+            text: seg.text,
+            style: AppTextTheme.surahInterpretationStyle(context),
+          ),
+        );
       }
     }
 
@@ -450,6 +653,8 @@ class _NestedInterpretationSheetState
     extends State<_NestedInterpretationSheet> {
   bool _loading = true;
   List<InterpretationModel> _items = [];
+  SurahModel? _surah;
+  List<int> _referencedAyahNumbers = [];
 
   @override
   void initState() {
@@ -458,21 +663,45 @@ class _NestedInterpretationSheetState
   }
 
   Future<void> _fetch() async {
-    final items = await InterpretationsDbHelper.getinterpretations(
-      surahNumber: widget.surahNumber,
-      interpretationNumber: widget.footnoteNumber,
-      malayalam: widget.isMalayalam,
-    );
+    final results = await Future.wait<dynamic>([
+      InterpretationsDbHelper.getinterpretations(
+        surahNumber: widget.surahNumber,
+        interpretationNumber: widget.footnoteNumber,
+        malayalam: widget.isMalayalam,
+      ),
+      SurahDbHelper.getSurahByNumber(widget.surahNumber),
+      TranslationBlockDbHelper.getVerseNumbersForFootnote(
+        widget.surahNumber,
+        widget.footnoteNumber,
+        malayalam: widget.isMalayalam,
+      ),
+    ]);
+
+    final items = results[0] as List<InterpretationModel>;
+    final surah = results[1] as SurahModel?;
+    final referencedAyahs = results[2] as List<int>;
     if (!mounted) return;
     setState(() {
       _items = items;
+      _surah = surah;
+      _referencedAyahNumbers = referencedAyahs;
       _loading = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final isMl = context.read<LanguageProvider>().isMalayalam;
+    final isMl = widget.isMalayalam;
+    final surahTitle = formatInterpretationSheetSurahTitle(
+      isMalayalam: isMl,
+      surah: _surah,
+    );
+    final metadataLabel = formatInterpretationMetadataLabel(
+      isMalayalam: isMl,
+      surahNumber: widget.surahNumber,
+      interpretationNumber: widget.footnoteNumber,
+      ayahNumbers: _referencedAyahNumbers,
+    );
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.75,
@@ -495,25 +724,10 @@ class _NestedInterpretationSheetState
             ),
           ),
           // Header
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              children: [
-                Text(
-                  isMl ? 'വിശദീകരണം' : 'Explanation',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                const Spacer(),
-                IconButton(
-                  tooltip: 'Close',
-                  onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.close, size: 22),
-                ),
-              ],
-            ),
+          InterpretationSheetHeader(
+            surahTitle: surahTitle,
+            metadataLabel: metadataLabel,
+            onClose: () => Navigator.of(context).pop(),
           ),
           const Divider(height: 1),
           Flexible(
@@ -523,26 +737,26 @@ class _NestedInterpretationSheetState
                     child: Center(child: CircularProgressIndicator()),
                   )
                 : _items.isEmpty
-                    ? const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 32),
-                        child: Center(child: Text('No explanation found')),
-                      )
-                    : SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: _items.map((item) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: _buildInterpretationWithCrossRefs(
-                                context,
-                                item.interpretationText,
-                                widget.surahNumber,
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
+                ? const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 32),
+                    child: Center(child: Text('No explanation found')),
+                  )
+                : SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: _items.map((item) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _buildInterpretationWithCrossRefs(
+                            context,
+                            item.interpretationText,
+                            widget.surahNumber,
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
           ),
         ],
       ),
@@ -557,40 +771,33 @@ class _NestedInterpretationSheetState
   ) {
     final segments = parseForCrossReferences(text, currentSurahNumber);
     if (segments.length == 1 && !segments.first.isCrossReference) {
-      return Text(
-        text,
-        style: AppTextTheme.surahInterpretationStyle(context),
-      );
+      return Text(text, style: AppTextTheme.surahInterpretationStyle(context));
     }
 
     final spans = <InlineSpan>[];
     for (final seg in segments) {
       if (seg.isCrossReference) {
         final ref = seg.crossReference!;
-        spans.add(TextSpan(
-          text: seg.text,
-          style: AppTextTheme.surahInterpretationStyle(context).copyWith(
-            color: AppTheme.appIconTheme,
-            decoration: TextDecoration.underline,
-            decorationColor: AppTheme.appIconTheme,
+        spans.add(
+          TextSpan(
+            text: seg.text,
+            style: AppTextTheme.surahInterpretationStyle(context).copyWith(
+              color: AppTheme.appIconTheme,
+              decoration: TextDecoration.underline,
+              decorationColor: AppTheme.appIconTheme,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () =>
+                  CrossReferenceSheet.showParsedReference(context, ref),
           ),
-          recognizer: TapGestureRecognizer()
-            ..onTap = () {
-              if (ref.ayahNumber != null) {
-                CrossReferenceSheet.show(
-                  context,
-                  surahNumber: ref.surahNumber,
-                  ayahNumber: ref.ayahNumber!,
-                  noteNumber: ref.noteNumber,
-                );
-              }
-            },
-        ));
+        );
       } else {
-        spans.add(TextSpan(
-          text: seg.text,
-          style: AppTextTheme.surahInterpretationStyle(context),
-        ));
+        spans.add(
+          TextSpan(
+            text: seg.text,
+            style: AppTextTheme.surahInterpretationStyle(context),
+          ),
+        );
       }
     }
 

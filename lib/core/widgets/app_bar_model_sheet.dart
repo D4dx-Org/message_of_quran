@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
 class AppBarModelSheet {
@@ -107,6 +109,7 @@ class _JumpToSheetState extends State<_JumpToSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     return Consumer<SurahProvider>(
       builder: (_, provider, _) {
         final all = provider.surahList;
@@ -137,10 +140,7 @@ class _JumpToSheetState extends State<_JumpToSheet> {
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: Text(
                     'Jump to Surah',
-                    style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                   ),
                 ),
                 // ── Search field ──────────────────────────────────────
@@ -163,7 +163,9 @@ class _JumpToSheetState extends State<_JumpToSheet> {
                           : null,
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 12),
+                        vertical: 10,
+                        horizontal: 12,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -177,69 +179,78 @@ class _JumpToSheetState extends State<_JumpToSheet> {
                   child: _loading
                       ? const Center(child: CircularProgressIndicator())
                       : filtered.isEmpty
-                          ? Center(
-                              child: Text(
-                                _query.isEmpty
-                                    ? 'Loading surahs…'
-                                    : 'No surah found for "$_query"',
-                                style: const TextStyle(color: Colors.grey),
+                      ? Center(
+                          child: Text(
+                            _query.isEmpty
+                                ? 'Loading surahs…'
+                                : 'No surah found for "$_query"',
+                            style: const TextStyle(color: Colors.grey),
+                          ),
+                        )
+                      : ListView.separated(
+                          controller: scrollCtrl,
+                          itemCount: filtered.length,
+                          separatorBuilder: (_, _) =>
+                              const Divider(height: 1, indent: 72),
+                          itemBuilder: (_, i) {
+                            final surah = filtered[i];
+                            return ListTile(
+                              leading: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: AppTheme.appThemePrimary,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  '${surah.surahNumber}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
                               ),
-                            )
-                          : ListView.separated(
-                              controller: scrollCtrl,
-                              itemCount: filtered.length,
-                              separatorBuilder: (_, _) =>
-                                  const Divider(height: 1, indent: 72),
-                              itemBuilder: (_, i) {
-                                final surah = filtered[i];
-                                return ListTile(
-                                  leading: Container(
-                                    width: 40,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      color: AppTheme.appThemePrimary,
-                                      borderRadius:
-                                          BorderRadius.circular(8),
-                                    ),
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      '${surah.surahNumber}',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ),
-                                  title: Text(
-                                    surah.name,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                  subtitle: Text(
-                                    ' ${surah.ayathCount}  Ayat .   ${surah.arabicName} ',
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
-                                  trailing: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 6, vertical: 3),
-                                    decoration: BoxDecoration(
-                                      color: Colors.amber.shade100,
-                                      borderRadius:
-                                          BorderRadius.circular(6),
-                                    ),
-                                    child: Text(
+                              title: Text(
+                                surah.name,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              subtitle: Text(
+                                ' ${surah.ayathCount}  Ayat .   ${surah.arabicName} ',
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                              trailing: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.amber.shade100,
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  localizeSurahMadinahDisplayLabel(
+                                    surah.place,
+                                    isMalayalam: isMalayalam,
+                                    surahNumber: surah.surahNumber,
+                                    fallback: localizeSurahPlace(
                                       surah.place,
-                                      style: const TextStyle(
-                                        fontSize: 10,
-                                        color: Color(0xFF9C5A20),
-                                      ),
+                                      isMalayalam: isMalayalam,
                                     ),
                                   ),
-                                  onTap: () => _onSurahTap(surah),
-                                );
-                              },
-                            ),
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    color: Color(0xFF9C5A20),
+                                  ),
+                                ),
+                              ),
+                              onTap: () => _onSurahTap(surah),
+                            );
+                          },
+                        ),
                 ),
               ],
             );
