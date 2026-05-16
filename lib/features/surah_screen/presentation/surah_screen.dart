@@ -1079,11 +1079,11 @@ class _SurahScreenState extends State<SurahScreen> {
                   final block = arabicBlockList[i];
                   final start = block.verseFrom ?? i + 1;
                   final end = block.verseTo ?? i + 1;
-                  final startArabic = _toArabicNumerals(start);
-                  final endArabic = _toArabicNumerals(end);
+                  final startText = start.toString();
+                  final endText = end.toString();
                   final label = start == end
-                      ? 'Ayah $startArabic'
-                      : 'Ayah $startArabic – $endArabic';
+                      ? 'Ayah $startText'
+                      : 'Ayahs $startText – $endText';
                   return ListTile(
                     leading: Container(
                       width: 36,
@@ -1094,7 +1094,7 @@ class _SurahScreenState extends State<SurahScreen> {
                       ),
                       alignment: Alignment.center,
                       child: Text(
-                        startArabic,
+                        startText,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 11,
@@ -1667,7 +1667,7 @@ class _SurahScreenState extends State<SurahScreen> {
               ctrl.index >= 0 &&
               ctrl.index < ctrl.surahList.length;
           final surah = hasSurah ? ctrl.surahList[ctrl.index] : null;
-            final headerSurahNumber = surah?.surahNumber ?? (ctrl.index + 1);
+          final headerSurahNumber = surah?.surahNumber ?? (ctrl.index + 1);
           final headerInterpretationNumber =
               ctrl.currentInterpretationNumber > 0
               ? ctrl.currentInterpretationNumber
@@ -1979,6 +1979,10 @@ class _SurahScreenState extends State<SurahScreen> {
                                                         index + 1;
                                                     final arabicText =
                                                         block.arabicText ?? '';
+                                                    final ayaStartText =
+                                                        ayaStart.toString();
+                                                    final ayaEndText = ayaEnd
+                                                        .toString();
                                                     final isLastBlock =
                                                         index ==
                                                         controller
@@ -1987,8 +1991,8 @@ class _SurahScreenState extends State<SurahScreen> {
                                                             1;
                                                     final ayahRange =
                                                         ayaStart == ayaEnd
-                                                        ? 'Ayah ${_toArabicNumerals(ayaStart)}'
-                                                        : 'Ayahs ${_toArabicNumerals(ayaStart)} to ${_toArabicNumerals(ayaEnd)}';
+                                                        ? 'Ayah $ayaStartText'
+                                                        : 'Ayahs $ayaStartText to $ayaEndText';
 
                                                     return Semantics(
                                                       label:
@@ -2208,7 +2212,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                             final surah =
                                                                                 controller.surahList[controller.index];
                                                                             final shareText =
-                                                                                '${surah.name} – Ayah ${_toArabicNumerals(ayaStart)}\n\n'
+                                                                                '${surah.name} – Ayah $ayaStartText\n\n'
                                                                                 '${arabicText.isNotEmpty ? '$arabicText\n\n' : ''}'
                                                                                 '$translationText';
                                                                             if (shareText.trim().isNotEmpty) {
@@ -2296,7 +2300,7 @@ class _SurahScreenState extends State<SurahScreen> {
                     : null;
                 final surahName = playingSurah?.name ?? '';
                 final ayahLabel = audio.playingAyahId != null
-                    ? 'Ayah ${_toArabicNumerals(audio.playingAyahId!)}'
+                    ? 'Ayah ${audio.playingAyahId!}'
                     : '';
                 final translationIdx = audio.currentTranslationIndex;
                 final canPrev = translationIdx != null && translationIdx > 0;
