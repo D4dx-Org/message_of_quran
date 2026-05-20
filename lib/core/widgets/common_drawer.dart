@@ -8,7 +8,6 @@ import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/d4dx_branding_footer.dart';
 import 'package:the_message_of_the_quran/features/author_screen/author_screen.dart';
-import 'package:the_message_of_the_quran/features/ayah_of_the_day/presentation/ayah_of_the_day_screen.dart';
 import 'package:the_message_of_the_quran/features/contact_us_screen/presentation/contact_us_screen.dart';
 import 'package:the_message_of_the_quran/features/library/presentation/appendix_screen.dart';
 import 'package:the_message_of_the_quran/features/library/presentation/foreword_screen.dart';
@@ -44,7 +43,7 @@ class CommonDrawer extends StatelessWidget {
                 onSupportTap: () async {
                   try {
                     await launchUrl(
-                      Uri.parse('https://buymeacoffee.com/donateus'),
+                      Uri.parse(' '),
                       mode: LaunchMode.externalApplication,
                     );
                   } catch (e) {
@@ -65,32 +64,6 @@ class CommonDrawer extends StatelessWidget {
                           controller.changeIndex(0);
                           Navigator.pop(context);
                           Navigator.popUntil(context, (route) => route.isFirst);
-                        },
-                      ),
-                      _DrawerTile(
-                        title: 'Ayah of the Day',
-                        icon: Icons.auto_awesome_outlined,
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const AyahOfTheDayScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      _DrawerTile(
-                        title: 'About Author',
-                        icon: Icons.person_outline,
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const AuthorScreen(),
-                            ),
-                          );
                         },
                       ),
                       _DrawerTile(
@@ -169,12 +142,16 @@ class CommonDrawer extends StatelessWidget {
                         ],
                       ),
                       _DrawerTile(
-                        title: 'Settings',
-                        icon: Icons.settings_outlined,
+                        title: 'About Author',
+                        icon: Icons.person_outline,
                         onTap: () {
-                          controller.changeIndex(3);
                           Navigator.pop(context);
-                          Navigator.popUntil(context, (route) => route.isFirst);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const AuthorScreen(),
+                            ),
+                          );
                         },
                       ),
                       _DrawerTile(
@@ -188,19 +165,6 @@ class CommonDrawer extends StatelessWidget {
                               builder: (_) => const ContactUsScreen(),
                             ),
                           );
-                        },
-                      ),
-                      _DrawerTile(
-                        title: 'Privacy',
-                        icon: Icons.shield_outlined,
-                        onTap: () {
-                          try {
-                            launchUrl(Uri.parse(ApiConstants.privacyPolicyUrl));
-                          } catch (e) {
-                            debugPrint(
-                              'Drawer: failed to launch privacy URL — $e',
-                            );
-                          }
                         },
                       ),
                       _DrawerTile(
@@ -225,11 +189,33 @@ class CommonDrawer extends StatelessWidget {
                             const Duration(milliseconds: 300),
                           );
                           final link = Platform.isIOS
-                              ? 'https://apps.apple.com/us/app/vishudha-quran/id6761527985'
-                              : 'https://play.google.com/store/apps/details?id=com.d4dx.quran';
+                              ? ' '
+                              : ' ';
                           await Share.share(
                             'Check out The Message of The Quran – a beautiful Quran reader with Malayalam translation.\n$link',
                           );
+                        },
+                      ),
+                      _DrawerTile(
+                        title: 'Settings',
+                        icon: Icons.settings_outlined,
+                        onTap: () {
+                          controller.changeIndex(3);
+                          Navigator.pop(context);
+                          Navigator.popUntil(context, (route) => route.isFirst);
+                        },
+                      ),
+                      _DrawerTile(
+                        title: 'Privacy',
+                        icon: Icons.shield_outlined,
+                        onTap: () {
+                          try {
+                            launchUrl(Uri.parse(ApiConstants.privacyPolicyUrl));
+                          } catch (e) {
+                            debugPrint(
+                              'Drawer: failed to launch privacy URL — $e',
+                            );
+                          }
                         },
                       ),
                       SizedBox(height: 6 * scale),
