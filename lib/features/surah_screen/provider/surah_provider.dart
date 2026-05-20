@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:the_message_of_the_quran/core/constants/app_constants.dart';
 import 'package:the_message_of_the_quran/core/models/ayah_bookmark_model.dart';
 import 'package:the_message_of_the_quran/core/models/arabic_block_model.dart';
 import 'package:the_message_of_the_quran/core/models/interpretation_model.dart';
@@ -226,13 +227,9 @@ class SurahProvider extends ChangeNotifier {
       }
     }
     buffer.writeln();
-    buffer.writeln('Source : The Message of the Quran');
-    buffer.writeln(
-      'Android : https://play.google.com/store/apps/details?id=com.d4dx.quran',
-    );
-    buffer.writeln(
-      'iOS : https://apps.apple.com/us/app/vishudha-quran/id6761527985',
-    );
+    buffer.writeln('Source : ${AppConstants.appName}');
+    buffer.writeln('Android : ${AppConstants.androidStoreUrl}');
+    buffer.writeln('iOS : ${AppConstants.iosStoreUrl}');
     return buffer.toString().trimRight();
   }
 

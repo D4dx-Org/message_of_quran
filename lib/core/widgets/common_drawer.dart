@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
+import 'package:the_message_of_the_quran/core/constants/useful_links.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/d4dx_branding_footer.dart';
@@ -153,6 +154,20 @@ class CommonDrawer extends StatelessWidget {
                               );
                             },
                           ),
+                        ],
+                      ),
+                      _DrawerExpansionTile(
+                        title: 'Useful Links',
+                        icon: Icons.link_outlined,
+                        children: [
+                          for (final section in usefulLinksSections) ...[
+                            _DrawerSectionHeader(title: section.title),
+                            for (final link in section.links)
+                              _DrawerLinkTile(
+                                title: link.title,
+                                url: link.url,
+                              ),
+                          ],
                         ],
                       ),
                       _DrawerTile(
@@ -488,6 +503,79 @@ class _DrawerSubTile extends StatelessWidget {
       contentPadding: EdgeInsets.only(left: 56 * scale, right: 20 * scale),
       minLeadingWidth: 20 * scale,
       horizontalTitleGap: 12 * scale,
+      dense: true,
+    );
+  }
+}
+
+class _DrawerSectionHeader extends StatelessWidget {
+  const _DrawerSectionHeader({required this.title});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scale = ResponsiveHelper.scaleFactor(context);
+    final accentColor = appBarAccentColor(context);
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        56 * scale,
+        10 * scale,
+        20 * scale,
+        4 * scale,
+      ),
+      child: Text(
+        title,
+        style: theme.textTheme.bodySmall?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: accentColor,
+        ),
+      ),
+    );
+  }
+}
+
+class _DrawerLinkTile extends StatelessWidget {
+  const _DrawerLinkTile({required this.title, required this.url});
+
+  final String title;
+  final String url;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scale = ResponsiveHelper.scaleFactor(context);
+
+    return ListTile(
+      onTap: () async {
+        Navigator.pop(context);
+        try {
+          await launchUrl(
+            Uri.parse(url),
+            mode: LaunchMode.externalApplication,
+          );
+        } catch (e) {
+          debugPrint('Drawer: failed to launch link — $e');
+        }
+      },
+      title: Text(
+        title,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          fontWeight: FontWeight.w400,
+          fontSize: 13,
+        ),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+      trailing: Icon(
+        Icons.open_in_new,
+        size: 16 * scale,
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
+      ),
+      contentPadding: EdgeInsets.only(left: 68 * scale, right: 16 * scale),
+      horizontalTitleGap: 0,
       dense: true,
     );
   }

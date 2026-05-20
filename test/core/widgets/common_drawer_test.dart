@@ -79,7 +79,7 @@ void main() {
     expect(homeIcon.color, expectedAccentColor);
 
     final libraryTile = tester.widget<ExpansionTile>(
-      find.byType(ExpansionTile),
+      find.widgetWithText(ExpansionTile, 'Library'),
     );
     expect(libraryTile.iconColor, expectedAccentColor);
     expect(libraryTile.collapsedIconColor, expectedAccentColor);
@@ -201,6 +201,25 @@ void main() {
     final footerRectAfterScroll = tester.getRect(footerFinder);
 
     expect(footerRectAfterScroll.bottom, lessThanOrEqualTo(screenHeight));
+  });
+
+  testWidgets('drawer shows useful links with grouped sections', (
+    WidgetTester tester,
+  ) async {
+    await pumpDrawer(tester, themeMode: ThemeMode.light);
+
+    expect(find.text('Useful Links'), findsOneWidget);
+    expect(find.text("Al Qur'an Translations"), findsNothing);
+
+    await tester.tap(find.text('Useful Links'));
+    await tester.pumpAndSettle();
+
+    expect(find.text("Al Qur'an Translations"), findsOneWidget);
+    expect(find.text('Hadith Collection'), findsOneWidget);
+    expect(find.text('Quran Malayalam Translations'), findsOneWidget);
+    expect(find.text('Abdullah Yusuf Ali'), findsOneWidget);
+    expect(find.text('Sahih Al Bukhari'), findsOneWidget);
+    expect(find.text("Thafheemul Qur'an by Maududi"), findsOneWidget);
   });
 
   testWidgets('drawer labels stay in English when Malayalam is selected', (
