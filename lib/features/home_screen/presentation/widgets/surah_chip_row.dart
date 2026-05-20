@@ -20,15 +20,13 @@ class SurahChipRow extends StatelessWidget {
     (surahNumber: 18, ayahId: null),
   ];
 
-  static const String _ayatulKursiLabel = 'Ayatul Kursi';
-
   static String _chipLabel({
     required bool isMalayalam,
     required List<SurahModel> surahList,
     required int surahNumber,
     int? ayahId,
   }) {
-    if (ayahId == 255) return _ayatulKursiLabel;
+    if (ayahId == 255) return formatAyatulKursiLabel(isMalayalam: isMalayalam);
 
     final surah = surahList
         .where((s) => s.surahNumber == surahNumber)

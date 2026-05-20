@@ -21,6 +21,10 @@ String formatAyahReferenceLabel(int ayahNumber, {required bool isMalayalam}) {
   return isMalayalam ? 'ആയത്ത് $ayahNumber' : 'Ayah $ayahNumber';
 }
 
+String formatAyatulKursiLabel({required bool isMalayalam}) {
+  return isMalayalam ? 'ആയത്തുൽ കുർസി' : 'Ayatul Kursi';
+}
+
 String _baseMalayalamSurahName({
   required String surahName,
   required String malayalamName,
