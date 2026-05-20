@@ -26,9 +26,11 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
   }
   Future<void> _launchPhone() async {
     final contactProvider = Provider.of<ContactProvider>(context, listen: false);
-    final phone = contactProvider.contactList.isNotEmpty
-        ? contactProvider.contactList[0].mobile.toString()
-        : '+916598321478';
+    final digits = contactProvider.contactList.isNotEmpty
+        ? contactProvider.contactList[0].whatsapp.toString().replaceAll(RegExp(r'[^0-9]'), '')
+        : '919946666139';
+    final phone =
+        digits.startsWith('91') ? '+$digits' : '+91$digits';
     final Uri phoneUri = Uri(scheme: 'tel', path: phone);
     if (await canLaunchUrl(phoneUri)) {
       if (!mounted) return;
@@ -138,10 +140,10 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                   builder: (context, contactProvider, child) {
                                     return Text(
                                       contactProvider.contactList.isEmpty
-                                          ? "+91 6598321478"
+                                          ? "+91 99466 66139"
                                           : contactProvider
                                                 .contactList[0]
-                                                .mobile
+                                                .whatsapp
                                                 .toString(),
                                       style: AppTextTheme.popinsDefault(
                                         fontSize: 16,
