@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
-import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/core/widgets/scroll_to_top_button.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_screen_list.dart';
@@ -86,14 +85,14 @@ class _HomeScreenState extends State<HomeScreen>
         : const Color.fromRGBO(230, 230, 230, 1);
     final selectedBg = isDarkMode
         ? const Color(0xFF3C3C3C)
-        : const Color.fromRGBO(124, 58, 40, 1);
+        : AppTheme.appThemePrimary;
     final unselectedBg = isDarkMode
         ? const Color(0xFF3A3A3C)
         : const Color.fromRGBO(221, 221, 221, 1);
     const selectedTextColor = Colors.white;
     final unselectedTextColor = isDarkMode
         ? Colors.grey[400]!
-        : const Color.fromRGBO(124, 58, 40, 1);
+        : AppTheme.appThemePrimary;
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     final tabs = isMalayalam ? ['സൂറത്ത്', 'ജുസ്'] : ['Surah', "Juz'e"];
 

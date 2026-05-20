@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
@@ -25,7 +26,7 @@ class HomeScreenListTile extends StatelessWidget {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDarkMode
         ? Colors.white
-        : const Color.fromRGBO(124, 58, 40, 1);
+        : AppTheme.appThemePrimary;
     final subColor = isDarkMode ? Colors.white54 : Colors.grey[600]!;
     final lastReadSurah = context.watch<LastReadProvider>().surahNumber;
     final dividerColor = DividerTheme.of(context).color;

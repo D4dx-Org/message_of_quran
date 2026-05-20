@@ -17,7 +17,7 @@ class CommonAppBar {
       alignment: Alignment.centerLeft,
       child: Image.asset(
         'assets/images/Group-logo.png',
-        height: 36 * scale,
+        height: 40 * scale,
         fit: BoxFit.contain,
         semanticLabel: 'The Message of the Quran logo',
       ),

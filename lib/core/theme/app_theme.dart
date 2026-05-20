@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   AppTheme._();
-  static const Color appThemePrimary = Color.fromRGBO(94, 36, 20, 1);
+  static const Color appThemePrimary = Color(0xff234B7D);
   static const Color appThemeSecondary = Color.fromRGBO(255, 252, 247, 1);
-  static const Color appIconTheme = Color.fromRGBO(124, 58, 40, 1);
-  static const Color appThemeSplash = Color.fromRGBO(70, 26, 14, 1);
+  static const Color appIconTheme = Color(0xff234B7D);
+  static const Color appThemeSplash = Color(0xFF194874);
   static const Color appThemeSplashCenter = Color.fromRGBO(130, 60, 40, 0);
+  static const Color appThemeRawChips = Color(0xff103564);
 
   static ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,

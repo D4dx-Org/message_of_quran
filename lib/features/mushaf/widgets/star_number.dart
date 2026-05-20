@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 
 class StarNumber extends StatelessWidget {
   final int number;
@@ -26,12 +27,12 @@ class StarNumber extends StatelessWidget {
     final Color fgColor;
 
     if (isHighlighted) {
-      polygonColor = const Color.fromRGBO(124, 58, 40, 1);
+      polygonColor = AppTheme.appThemePrimary;
       fgColor = Colors.white;
     } else {
-      polygonColor = const Color.fromRGBO(124, 58, 40, 1);
+      polygonColor = AppTheme.appThemePrimary;
       fgColor =
-          isDarkMode ? Colors.white : const Color.fromRGBO(124, 58, 40, 1);
+          isDarkMode ? Colors.white : AppTheme.appThemePrimary;
     }
 
     return SizedBox(

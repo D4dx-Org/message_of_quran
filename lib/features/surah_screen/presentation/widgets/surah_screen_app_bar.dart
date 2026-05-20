@@ -188,7 +188,7 @@ class SurahInfoStrip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [AppTheme.appThemePrimary, Color(0xFF7E3A24)],
+          colors: [AppTheme.appThemePrimary, Color(0xFF123B69)],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
