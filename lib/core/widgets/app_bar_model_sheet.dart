@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
@@ -109,6 +110,11 @@ class _JumpToSheetState extends State<_JumpToSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final placeBadgeFill = isDark
+        ? appBarAccentFillColor(context, alpha: 0.22)
+        : appBarAccentFillColor(context, alpha: 0.10);
+    final placeBadgeText = appBarAccentColor(context);
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     return Consumer<SurahProvider>(
       builder: (_, provider, _) {
@@ -228,7 +234,7 @@ class _JumpToSheetState extends State<_JumpToSheet> {
                                   vertical: 3,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Colors.amber.shade100,
+                                  color: placeBadgeFill,
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
@@ -241,9 +247,10 @@ class _JumpToSheetState extends State<_JumpToSheet> {
                                       isMalayalam: isMalayalam,
                                     ),
                                   ),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 10,
-                                    color: Color(0xFF9C5A20),
+                                    fontWeight: FontWeight.w600,
+                                    color: placeBadgeText,
                                   ),
                                 ),
                               ),

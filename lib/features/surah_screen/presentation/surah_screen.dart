@@ -1129,21 +1129,26 @@ class _SurahScreenState extends State<SurahScreen> {
     final isMl = context.read<LanguageProvider>().isMalayalam;
 
     final bsMaxWidth = ResponsiveHelper.bottomSheetMaxWidth(context);
+    final sheetTheme = Theme.of(context);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: sheetTheme.cardColor,
       constraints: bsMaxWidth != null
           ? BoxConstraints(maxWidth: bsMaxWidth)
           : null,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => DraggableScrollableSheet(
+      builder: (sheetContext) => DraggableScrollableSheet(
         initialChildSize: 0.7,
         minChildSize: 0.35,
         maxChildSize: 0.92,
         expand: false,
-        builder: (_, scrollCtrl) => Column(
+        builder: (_, scrollCtrl) {
+          final isDark = isDarkMode(context: sheetContext);
+          final colorScheme = Theme.of(sheetContext).colorScheme;
+          return Column(
           children: [
             // Drag handle
             Padding(
@@ -1152,7 +1157,7 @@ class _SurahScreenState extends State<SurahScreen> {
                 height: 4,
                 width: 40,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade400,
+                  color: colorScheme.outline,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -1162,10 +1167,13 @@ class _SurahScreenState extends State<SurahScreen> {
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Text(
                 surah.arabicName,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 24,
                   fontFamily: 'Al Mushaf',
                   fontWeight: FontWeight.bold,
+                  color: isDark
+                      ? colorScheme.onSurface
+                      : AppTheme.appThemePrimary,
                 ),
                 textDirection: TextDirection.rtl,
               ),
@@ -1179,6 +1187,7 @@ class _SurahScreenState extends State<SurahScreen> {
                 alignment: WrapAlignment.center,
                 children: [
                   _infoChip(
+                    sheetContext,
                     isMl ? 'അവതരണം :' : 'Revelation :',
                     localizeSurahMadinahDisplayLabel(
                       surah.place,
@@ -1191,6 +1200,7 @@ class _SurahScreenState extends State<SurahScreen> {
                     ),
                   ),
                   _infoChip(
+                    sheetContext,
                     isMl ? 'സൂക്തങ്ങൾ :' : 'Verses :',
                     _toArabicNumerals(surah.ayathCount),
                   ),
@@ -1248,15 +1258,20 @@ class _SurahScreenState extends State<SurahScreen> {
                                 padding: const EdgeInsets.only(bottom: 8),
                                 child: Text(
                                   preface.prefaceSubTitle,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
+                                    color: colorScheme.onSurface,
                                   ),
                                 ),
                               ),
                             Text(
                               preface.prefaceText,
-                              style: const TextStyle(fontSize: 14, height: 1.6),
+                              style: TextStyle(
+                                fontSize: 14,
+                                height: 1.6,
+                                color: colorScheme.onSurface,
+                              ),
                             ),
                           ],
                         ),
@@ -1267,28 +1282,45 @@ class _SurahScreenState extends State<SurahScreen> {
               ),
             ),
           ],
-        ),
+        );
+        },
       ),
     );
   }
 
-  Widget _infoChip(String label, String value) {
+  Widget _infoChip(BuildContext context, String label, String value) {
+    final isDark = isDarkMode(context: context);
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.grey.shade200,
+        color: isDark ? colorScheme.outlineVariant : Colors.grey.shade200,
         borderRadius: BorderRadius.circular(12),
+        border: isDark
+            ? Border.all(color: colorScheme.outline.withValues(alpha: 0.6))
+            : null,
       ),
       child: Column(
         children: [
           Text(
             label,
-            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+            style: TextStyle(
+              fontSize: 12,
+              color: isDark
+                  ? colorScheme.onSurface.withValues(alpha: 0.7)
+                  : Colors.grey.shade600,
+            ),
           ),
           const SizedBox(height: 2),
           Text(
             value,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: isDark
+                  ? colorScheme.onSurface
+                  : AppTheme.appThemePrimary,
+            ),
           ),
         ],
       ),
