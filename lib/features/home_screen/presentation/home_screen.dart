@@ -148,7 +148,6 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildTabBody() {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return TabBarView(
       controller: _tabController,
       children: [
