@@ -86,7 +86,7 @@ class D4dxBrandingFooter extends StatelessWidget {
                 ),
                 child: Image.asset(
                   'assets/images/d4_logo.png',
-                  height: 38 * scale,
+                  height: 46 * scale,
                   fit: BoxFit.contain,
                 ),
               ),

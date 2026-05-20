@@ -24,6 +24,6 @@ void main() {
     );
 
     expect(find.text('Powered by'), findsOneWidget);
-    expect(image.height, 38 * scale);
+    expect(image.height, 46 * scale);
   });
 }
