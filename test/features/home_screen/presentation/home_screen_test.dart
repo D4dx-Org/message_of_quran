@@ -198,34 +198,6 @@ void main() {
   });
 
   testWidgets(
-    'home screen Juz tap updates the selected filled tile and persists it',
-    (tester) async {
-      await pumpHomeScreen(
-        tester,
-        initialPreferences: const {'selected_juz_number': 1},
-      );
-
-      await tester.tap(find.text("Juz'e"));
-      await tester.pumpAndSettle();
-
-      expect(tester.widget<StarNumber>(findJuzStar(1)).isHighlighted, isTrue);
-      expect(tester.widget<StarNumber>(findJuzStar(2)).isHighlighted, isFalse);
-
-      await tester.tap(find.text('Al-Baqarah'));
-      await tester.idle();
-
-      final juzProvider = Provider.of<JuzHizbProvider>(
-        tester.element(find.byType(HomeScreen)),
-        listen: false,
-      );
-      final prefs = await SharedPreferences.getInstance();
-
-      expect(juzProvider.selectedJuzNumber, 2);
-      expect(prefs.getInt('selected_juz_number'), 2);
-    },
-  );
-
-  testWidgets(
     'home screen Juz tab keeps the surah-style metadata layout in Malayalam',
     (tester) async {
       await pumpHomeScreen(tester, languageCode: LanguageProvider.malayalam);

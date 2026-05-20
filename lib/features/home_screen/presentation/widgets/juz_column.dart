@@ -92,16 +92,17 @@ class JuzColumn extends StatelessWidget {
               excludeSemantics: true,
               child: InkWell(
                 onTap: available
-                    ? () {
-                        unawaited(provider.selectJuz(juz.number));
+                    ? () async {
                         surahProvider.assignIndex(surahIndex);
-                        Navigator.push(
+                        await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (_) =>
                                 SurahScreen(scrollToAyahId: juz.ayahNumber),
                           ),
                         );
+                        if (!context.mounted) return;
+                        unawaited(provider.selectJuz(juz.number));
                       }
                     : null,
                 child: Padding(

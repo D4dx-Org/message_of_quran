@@ -124,7 +124,7 @@ class HomeScreenListTile extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.right,
                           style: GoogleFonts.poppins(
-                            color: textColor,
+                            color: subColor,
                             fontSize: 11 * scale,
                             fontWeight: FontWeight.w600,
                           ),
