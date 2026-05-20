@@ -22,7 +22,8 @@ void main() {
     );
     expect(
       darkAppBarTheme.titleTextStyle?.color,
-      const Color.fromRGBO(255, 232, 187, 1),
+      AppTheme.appBarForegroundColor,
     );
+    expect(lightAppBarTheme.titleTextStyle?.color, Colors.white);
   });
 }

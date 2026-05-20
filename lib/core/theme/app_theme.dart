@@ -8,6 +8,7 @@ class AppTheme {
   static const Color appThemeSplash = Color(0xFF194874);
   static const Color appThemeSplashCenter = Color.fromRGBO(130, 60, 40, 0);
   static const Color appThemeRawChips = Color(0xff103564);
+  static const Color appBarForegroundColor = Colors.white;
 
   static ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,

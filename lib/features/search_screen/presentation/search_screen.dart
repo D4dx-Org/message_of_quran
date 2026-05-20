@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
+import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_card.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
@@ -14,7 +15,12 @@ class SearchScreen extends StatelessWidget {
     final controller = Provider.of<SurahProvider>(context, listen: false);
     return BaseScreenLayout(
       appBar: AppBar(
-        title: Text("Search", style: AppTextTheme.titleRegular.copyWith(color: Colors.white)),
+        title: Text(
+          'Search',
+          style: AppTextTheme.titleRegular.copyWith(
+            color: appBarTitleMatchedAccentColor(context),
+          ),
+        ),
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);

@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:the_message_of_the_quran/core/constants/app_constants.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/app_bar_language_button.dart';
 import 'package:the_message_of_the_quran/core/widgets/app_bar_model_sheet.dart';
@@ -43,7 +44,7 @@ class CommonAppBar {
               width: 137,
               height: 146,
               fit: BoxFit.contain,
-              color: AppTheme.appThemePrimary,
+              color: AppTheme.appThemeRawChips,
               colorBlendMode: BlendMode.srcIn,
             ),
           ),
@@ -109,7 +110,7 @@ class CommonAppBar {
                         style: GoogleFonts.poppins(
                           fontSize: 18 * scale,
                           fontWeight: FontWeight.w600,
-                          color: const Color.fromRGBO(255, 232, 187, 1),
+                          color: appBarTitleMatchedAccentColor(ctx),
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/core/services/database/arabic_block_db_helper.dart';
 import 'package:the_message_of_the_quran/core/services/database/translation_block_db_helper.dart';
@@ -100,10 +101,10 @@ class _AyahReadingScreenState extends State<AyahReadingScreen> {
           icon: const Icon(Icons.chevron_left, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           'Progression Tracker',
           style: TextStyle(
-            color: Colors.white,
+            color: appBarTitleMatchedAccentColor(context),
             fontSize: 18,
             fontWeight: FontWeight.w700,
           ),

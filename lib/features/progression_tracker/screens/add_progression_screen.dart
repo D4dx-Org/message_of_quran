@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/provider/progression_tracker_provider.dart';
@@ -107,10 +108,10 @@ class _AddProgressionScreenState extends State<AddProgressionScreen> {
           icon: const Icon(Icons.chevron_left, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           'Progression Tracker',
           style: TextStyle(
-            color: Colors.white,
+            color: appBarTitleMatchedAccentColor(context),
             fontSize: 18,
             fontWeight: FontWeight.w700,
           ),
