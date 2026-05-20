@@ -76,23 +76,33 @@ class ThemeProvider extends ChangeNotifier {
       thickness: 1,
     ),
     textTheme: ThemeData.light().textTheme.apply(
-      bodyColor: const Color.fromRGBO(124, 58, 40, 1),
-      displayColor: const Color.fromRGBO(124, 58, 40, 1),
+      bodyColor: AppTheme.appThemePrimary,
+      displayColor: AppTheme.appThemePrimary,
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: Colors.white,
-      selectedItemColor: Color.fromRGBO(147, 100, 46, 1),
+      selectedItemColor: AppTheme.appThemePrimary,
       unselectedItemColor: Color(0xFF9E9E9E),
     ),
-    navigationBarTheme: const NavigationBarThemeData(
+    navigationBarTheme: NavigationBarThemeData(
       backgroundColor: Colors.white,
-      indicatorColor: Color.fromRGBO(255, 234, 191, 1),
-      iconTheme: WidgetStatePropertyAll(
-        IconThemeData(color: Color(0xFF9E9E9E)),
-      ),
-      labelTextStyle: WidgetStatePropertyAll(
-        TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
-      ),
+      indicatorColor: AppTheme.appThemePrimary.withValues(alpha: 0.14),
+      iconTheme: WidgetStateProperty.resolveWith((states) {
+        final color = states.contains(WidgetState.selected)
+            ? AppTheme.appThemePrimary
+            : const Color(0xFF9E9E9E);
+        return IconThemeData(color: color);
+      }),
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
+        final color = states.contains(WidgetState.selected)
+            ? AppTheme.appThemePrimary
+            : const Color(0xFF9E9E9E);
+        return TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w500,
+          color: color,
+        );
+      }),
     ),
     appBarTheme: const AppBarTheme(
       backgroundColor: AppTheme.appThemePrimary,

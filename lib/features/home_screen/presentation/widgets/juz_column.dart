@@ -25,7 +25,7 @@ class JuzColumn extends StatelessWidget {
         final isDarkMode = Theme.of(context).brightness == Brightness.dark;
         final textColor = isDarkMode
             ? Colors.white
-            : const Color.fromRGBO(124, 58, 40, 1);
+          : AppTheme.appThemePrimary;
         final subColor = isDarkMode ? Colors.white54 : Colors.grey[600]!;
         final dividerColor = DividerTheme.of(context).color;
 

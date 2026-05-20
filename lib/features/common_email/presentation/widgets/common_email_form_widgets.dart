@@ -86,7 +86,7 @@ class CommonEmailHeaderCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         gradient: const LinearGradient(
-          colors: [Color(0xFFC47A5A), AppTheme.appThemePrimary],
+          colors: [AppTheme.appThemeSplash, AppTheme.appThemePrimary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),

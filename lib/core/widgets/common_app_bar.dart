@@ -24,7 +24,7 @@ class CommonAppBar {
     );
   }
 
-  /// Brown-themed app bar for the home screen matching the screenshot design.
+  /// Primary-themed app bar for the home screen matching the current brand.
   static PreferredSizeWidget homeAppBar(BuildContext ctx) {
     final scale = ResponsiveHelper.scaleFactor(ctx);
     return AppBar(
@@ -43,7 +43,7 @@ class CommonAppBar {
               width: 137,
               height: 146,
               fit: BoxFit.contain,
-              color: const Color.fromRGBO(124, 58, 40, 1),
+              color: AppTheme.appThemePrimary,
               colorBlendMode: BlendMode.srcIn,
             ),
           ),
