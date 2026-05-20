@@ -19,6 +19,7 @@ import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/cross_reference_parser.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
+import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
 import 'package:the_message_of_the_quran/core/utils/translation_alignment.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
@@ -1127,6 +1128,13 @@ class _SurahScreenState extends State<SurahScreen> {
     }
     final surah = controller.surahList[controller.index];
     final isMl = context.read<LanguageProvider>().isMalayalam;
+    final surahTitle = formatSurahDisplayNameLine(
+      isMalayalam: isMl,
+      surahName: surah.name,
+      surahTranslation: surah.description,
+      malayalamName: surah.malayalamName,
+      surahNumber: surah.surahNumber,
+    );
 
     final bsMaxWidth = ResponsiveHelper.bottomSheetMaxWidth(context);
     final sheetTheme = Theme.of(context);
@@ -1162,20 +1170,22 @@ class _SurahScreenState extends State<SurahScreen> {
                 ),
               ),
             ),
-            // Surah Arabic name header
+            // Surah name header (English / Malayalam per language setting)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Text(
-                surah.arabicName,
+                surahTitle,
                 style: TextStyle(
-                  fontSize: 24,
-                  fontFamily: 'Al Mushaf',
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: isDark
                       ? colorScheme.onSurface
                       : AppTheme.appThemePrimary,
+                  height: 1.25,
                 ),
-                textDirection: TextDirection.rtl,
+                textAlign: TextAlign.center,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             // Metadata chips
@@ -1202,7 +1212,7 @@ class _SurahScreenState extends State<SurahScreen> {
                   _infoChip(
                     sheetContext,
                     isMl ? 'സൂക്തങ്ങൾ :' : 'Verses :',
-                    _toArabicNumerals(surah.ayathCount),
+                    '${surah.ayathCount}',
                   ),
                 ],
               ),

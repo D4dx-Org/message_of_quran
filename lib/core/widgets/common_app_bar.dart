@@ -18,9 +18,27 @@ class CommonAppBar {
       alignment: Alignment.centerLeft,
       child: Image.asset(
         'assets/images/Group-logo.png',
-        height: 40 * scale,
+        height: 37 * scale,
         fit: BoxFit.contain,
         semanticLabel: 'The Message of the Quran logo',
+      ),
+    );
+  }
+
+  static Widget _drawerMenuButton(BuildContext context) {
+    final scale = ResponsiveHelper.scaleFactor(context);
+    return Semantics(
+      button: true,
+      label: 'Open navigation menu',
+      child: IconButton(
+        icon: Image.asset(
+          'assets/images/menu-icon-new.png',
+          height: AppConstants.appBarIconHeight * scale,
+          width: AppConstants.appBarIconWidth * scale,
+          fit: BoxFit.contain,
+        ),
+        onPressed: () => Scaffold.of(context).openDrawer(),
+        padding: EdgeInsets.zero,
       ),
     );
   }
@@ -54,15 +72,7 @@ class CommonAppBar {
       title: _brandLogo(scale),
       centerTitle: false,
       leading: Builder(
-        builder: (context) => Semantics(
-          button: true,
-          label: 'Open navigation menu',
-          child: IconButton(
-            icon: const Icon(Icons.menu, color: Colors.white),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-            padding: EdgeInsets.zero,
-          ),
-        ),
+        builder: (context) => _drawerMenuButton(context),
       ),
       actions: [
         const AppBarLanguageButton(),
@@ -119,15 +129,7 @@ class CommonAppBar {
       centerTitle: showBrandLogo ? false : centerTitle,
       leading: showLeading
           ? Builder(
-              builder: (context) => Semantics(
-                button: true,
-                label: 'Open navigation menu',
-                child: IconButton(
-                  icon: const Icon(Icons.menu, color: Colors.white),
-                  onPressed: () => Scaffold.of(context).openDrawer(),
-                  padding: EdgeInsets.zero,
-                ),
-              ),
+              builder: (context) => _drawerMenuButton(context),
             )
           : null,
       actions: isActionsNeeded
