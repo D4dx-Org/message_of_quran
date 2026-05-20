@@ -10,13 +10,11 @@ import 'package:the_message_of_the_quran/core/widgets/d4dx_branding_footer.dart'
 import 'package:the_message_of_the_quran/features/author_screen/author_screen.dart';
 import 'package:the_message_of_the_quran/features/ayah_of_the_day/presentation/ayah_of_the_day_screen.dart';
 import 'package:the_message_of_the_quran/features/contact_us_screen/presentation/contact_us_screen.dart';
-import 'package:the_message_of_the_quran/features/help_screen/help_screen.dart';
 import 'package:the_message_of_the_quran/features/library/presentation/appendix_screen.dart';
 import 'package:the_message_of_the_quran/features/library/presentation/foreword_screen.dart';
 import 'package:the_message_of_the_quran/features/library/presentation/works_of_reference_screen.dart';
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/common_email/presentation/feedback_screen.dart';
-import 'package:the_message_of_the_quran/features/common_email/presentation/feature_request_screen.dart';
 import 'package:the_message_of_the_quran/features/prostration_verses/presentation/prostration_verses_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -193,19 +191,6 @@ class CommonDrawer extends StatelessWidget {
                         },
                       ),
                       _DrawerTile(
-                        title: 'Help & Support',
-                        icon: Icons.help_outline,
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const HelpScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      _DrawerTile(
                         title: 'Privacy',
                         icon: Icons.shield_outlined,
                         onTap: () {
@@ -227,19 +212,6 @@ class CommonDrawer extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (_) => const FeedbackScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      _DrawerTile(
-                        title: 'Feature Request',
-                        icon: Icons.lightbulb_outline,
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const FeatureRequestScreen(),
                             ),
                           );
                         },
