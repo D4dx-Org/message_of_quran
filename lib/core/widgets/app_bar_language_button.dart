@@ -132,7 +132,7 @@ class AppBarLanguageButton extends StatelessWidget {
                 label,
                 style:
                     (useMalayalamFont
-                            ? GoogleFonts.notoSansMalayalam()
+                            ? GoogleFonts.notoSerifMalayalam()
                             : GoogleFonts.poppins())
                         .copyWith(
                           fontSize: 14,

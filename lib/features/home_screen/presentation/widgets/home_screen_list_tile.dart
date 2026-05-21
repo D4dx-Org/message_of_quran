@@ -40,12 +40,7 @@ class HomeScreenListTile extends StatelessWidget {
     );
     final displayName = displayText.title;
     final description = displayText.subtitle;
-    final placeName = localizeSurahMadinahDisplayLabel(
-      surah.place,
-      isMalayalam: isMl,
-      surahNumber: surah.surahNumber,
-      fallback: localizeSurahPlace(surah.place, isMalayalam: isMl),
-    );
+    final placeName = localizeSurahPlace(surah.place, isMalayalam: isMl);
     final ayahLabel = formatAyahCountLabel(
       surah.ayathCount,
       isMalayalam: isMl,

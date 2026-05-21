@@ -71,8 +71,8 @@ class CommonDrawer extends StatelessWidget {
                       ),
                       if (isMalayalam)
                         _DrawerExpansionTile(
-                          title: 'രചയിതാവ്',
-                          icon: Icons.person_outline,
+                          title: 'ഖുർആന്റെ സന്ദേശം',
+                          icon: Icons.menu_book_outlined,
                           children: [
                             _DrawerSubTile(
                               title: 'ഗ്രന്ഥകർത്താവ്',
@@ -133,7 +133,7 @@ class CommonDrawer extends StatelessWidget {
                           },
                         ),
                       _DrawerExpansionTile(
-                        title: 'Library',
+                        title: isMalayalam ? 'ലൈബ്രറി' : 'Library',
                         icon: Icons.auto_stories_outlined,
                         children: [
                           _DrawerSubTile(
@@ -150,7 +150,7 @@ class CommonDrawer extends StatelessWidget {
                             },
                           ),
                           _DrawerSubTile(
-                            title: 'Appendix',
+                            title: isMalayalam ? 'അനുബന്ധം' : 'Appendix',
                             icon: Icons.note_alt_outlined,
                             onTap: () {
                               Navigator.pop(context);

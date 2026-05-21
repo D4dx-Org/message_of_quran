@@ -38,7 +38,7 @@ class _AuthorScreenState extends State<AuthorScreen> {
     return BaseScreenLayout(
       appBar: AppBar(
         title: Text(
-          isMalayalam ? 'രചയിതാവ്' : 'About Author',
+          isMalayalam ? 'ഖുർആന്റെ സന്ദേശം' : 'About Author',
           style: AppTextTheme.titleRegular,
         ),
       ),

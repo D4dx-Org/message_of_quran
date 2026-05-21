@@ -217,4 +217,10 @@ class DbConstants {
   static const String mlTranslatorNoteAuthor = "author";
   static const String mlTranslatorNoteDate = "date";
 
+  // ─── preface (quran_asad_malayalam.db → preface) ───
+  static const String mlPrefaceTable = "preface";
+  static const String mlPrefaceId = "id";
+  static const String mlPrefaceHeading = "heading";
+  static const String mlPrefaceContent = "content";
+
 }

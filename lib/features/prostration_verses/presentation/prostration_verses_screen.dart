@@ -330,7 +330,7 @@ TextStyle _headlineStyle({
   required FontWeight weight,
 }) {
   return isMalayalam
-      ? GoogleFonts.notoSansMalayalam(
+      ? GoogleFonts.notoSerifMalayalam(
           color: color,
           fontSize: size,
           fontWeight: weight,
@@ -345,7 +345,7 @@ TextStyle _bodyStyle({
   required FontWeight weight,
 }) {
   return isMalayalam
-      ? GoogleFonts.notoSansMalayalam(
+      ? GoogleFonts.notoSerifMalayalam(
           color: color,
           fontSize: size,
           fontWeight: weight,

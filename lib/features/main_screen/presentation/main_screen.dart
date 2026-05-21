@@ -43,7 +43,7 @@ class _MainScreenState extends State<MainScreen> {
     (
       label: '',
       iconData: null,
-      assetPath: 'assets/icons/revamp/mushaf_page.svg',
+      assetPath: 'assets/icons/mushaf-img.png',
     ),
     (label: 'Settings', iconData: Icons.settings_outlined, assetPath: null),
     (label: 'About', iconData: Icons.info_outline_rounded, assetPath: null),
@@ -112,11 +112,19 @@ class _MainScreenState extends State<MainScreen> {
     }
 
     final assetPath = item.assetPath!;
-    return SvgPicture.asset(
+    if (assetPath.endsWith('.svg')) {
+      return SvgPicture.asset(
+        assetPath,
+        width: size,
+        height: size,
+        colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+      );
+    }
+    return Image.asset(
       assetPath,
       width: size,
       height: size,
-      colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+      color: color,
     );
   }
 
@@ -166,14 +174,11 @@ class _MainScreenState extends State<MainScreen> {
             onPressed: () {
               _onItemTapped(2);
             },
-            child: SvgPicture.asset(
+            child: Image.asset(
               _navItems[2].assetPath!,
               width: _navIconSize,
               height: _navIconSize,
-              colorFilter: const ColorFilter.mode(
-                Colors.white,
-                BlendMode.srcIn,
-              ),
+              color: Colors.white,
             ),
           ),
           floatingActionButtonLocation:
@@ -248,14 +253,11 @@ class _MainScreenState extends State<MainScreen> {
             onPressed: () {
               _onItemTapped(2);
             },
-            child: SvgPicture.asset(
+            child: Image.asset(
               _navItems[2].assetPath!,
               width: _navIconSize * scale,
               height: _navIconSize * scale,
-              colorFilter: const ColorFilter.mode(
-                Colors.white,
-                BlendMode.srcIn,
-              ),
+              color: Colors.white,
             ),
           ),
         ),
