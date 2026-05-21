@@ -190,4 +190,31 @@ class DbConstants {
   static const String forewordId = "id";
   static const String forewordBody = "body";
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // quran_asad_malayalam.db database
+  // ═══════════════════════════════════════════════════════════════════════════
+  static const String quranAsadMalayalamDbName = "quran_asad_malayalam.db";
+  static const String quranAsadMalayalamDbVersionKey =
+      'quran_asad_malayalam_db_version';
+  static const int quranAsadMalayalamDbVersion = 1;
+
+  // ─── Table names (quran_asad_malayalam.db) ───
+  static const String mlAboutAuthorTable = "about_author";
+  static const String mlTranslatorNoteTable = "translator_note";
+
+  // ─── about_author columns (quran_asad_malayalam.db → about_author) ───
+  static const String mlAboutAuthorId = "id";
+  static const String mlAboutAuthorName = "name";
+  static const String mlAboutAuthorRole = "role";
+  static const String mlAboutAuthorBio = "bio";
+  static const String mlAboutAuthorEmail = "email";
+  static const String mlAboutAuthorMobile = "mobile";
+
+  // ─── translator_note columns (quran_asad_malayalam.db → translator_note) ───
+  static const String mlTranslatorNoteId = "id";
+  static const String mlTranslatorNoteHeading = "heading";
+  static const String mlTranslatorNoteContent = "content";
+  static const String mlTranslatorNoteAuthor = "author";
+  static const String mlTranslatorNoteDate = "date";
+
 }

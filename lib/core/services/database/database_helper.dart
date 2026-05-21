@@ -30,6 +30,7 @@ class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
 
   static Database? quranAsadDb;
+  static Database? quranAsadMalayalamDb;
   static Database? userDatabase;
 
   static Completer<void>? _initCompleter;
@@ -76,6 +77,26 @@ class DatabaseHelper {
     await prefs.setInt(
       DbConstants.quranAsadDbVersionKey,
       DbConstants.quranAsadDbVersion,
+    );
+
+    // ── quran_asad_malayalam.db ──
+    final storedMalayalamVersion =
+        prefs.getInt(DbConstants.quranAsadMalayalamDbVersionKey) ?? 0;
+    if (storedMalayalamVersion < DbConstants.quranAsadMalayalamDbVersion) {
+      final databasesPathMl = await getDatabasesPath();
+      final mlPath =
+          join(databasesPathMl, DbConstants.quranAsadMalayalamDbName);
+      await db_io.deleteFileIfExists(mlPath);
+      await db_io.deleteWalShmFiles(mlPath);
+    }
+
+    quranAsadMalayalamDb = await initDatabase(
+      name: DbConstants.quranAsadMalayalamDbName,
+      dbName: DbConstants.quranAsadMalayalamDbName,
+    );
+    await prefs.setInt(
+      DbConstants.quranAsadMalayalamDbVersionKey,
+      DbConstants.quranAsadMalayalamDbVersion,
     );
 
     final databasesPath = await getDatabasesPath();
@@ -138,7 +159,7 @@ class DatabaseHelper {
   }
 
   static Future<void> _closeAll() async {
-    for (final db in [quranAsadDb, userDatabase]) {
+    for (final db in [quranAsadDb, quranAsadMalayalamDb, userDatabase]) {
       if (db != null && db.isOpen) {
         try {
           await db.close();
@@ -148,6 +169,7 @@ class DatabaseHelper {
       }
     }
     quranAsadDb = null;
+    quranAsadMalayalamDb = null;
     userDatabase = null;
   }
 

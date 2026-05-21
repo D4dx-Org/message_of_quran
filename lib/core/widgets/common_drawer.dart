@@ -8,6 +8,9 @@ import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/d4dx_branding_footer.dart';
 import 'package:the_message_of_the_quran/features/author_screen/author_screen.dart';
+import 'package:the_message_of_the_quran/features/author_screen/presentation/author_writer_screen.dart';
+import 'package:the_message_of_the_quran/features/author_screen/presentation/translator_screen.dart';
+import 'package:the_message_of_the_quran/features/author_screen/presentation/translator_note_screen.dart';
 import 'package:the_message_of_the_quran/features/contact_us_screen/presentation/contact_us_screen.dart';
 import 'package:the_message_of_the_quran/features/library/presentation/appendix_screen.dart';
 import 'package:the_message_of_the_quran/features/library/presentation/foreword_screen.dart';
@@ -66,19 +69,69 @@ class CommonDrawer extends StatelessWidget {
                           Navigator.popUntil(context, (route) => route.isFirst);
                         },
                       ),
-                      _DrawerTile(
-                        title: 'About Author',
-                        icon: Icons.person_outline,
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const AuthorScreen(),
+                      if (isMalayalam)
+                        _DrawerExpansionTile(
+                          title: 'രചയിതാവ്',
+                          icon: Icons.person_outline,
+                          children: [
+                            _DrawerSubTile(
+                              title: 'ഗ്രന്ഥകർത്താവ്',
+                              icon: Icons.edit_outlined,
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const AuthorWriterScreen(),
+                                  ),
+                                );
+                              },
                             ),
-                          );
-                        },
-                      ),
+                            _DrawerSubTile(
+                              title: 'വിവർത്തകൻ',
+                              icon: Icons.translate_outlined,
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const TranslatorScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+                            _DrawerSubTile(
+                              title: 'പരിഭാഷകന്റെ കുറിപ്പ്',
+                              icon: Icons.note_outlined,
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const TranslatorNoteScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        )
+                      else
+                        _DrawerTile(
+                          title: 'Author',
+                          icon: Icons.person_outline,
+                          onTap: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const AuthorScreen(),
+                              ),
+                            );
+                          },
+                        ),
                       _DrawerExpansionTile(
                         title: 'Library',
                         icon: Icons.auto_stories_outlined,
@@ -431,6 +484,7 @@ class _DrawerExpansionTile extends StatelessWidget {
       collapsedIconColor: accentColor,
       shape: const Border(),
       collapsedShape: const Border(),
+      expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
       dense: true,
       visualDensity: VisualDensity.compact,
       children: children,
@@ -491,7 +545,7 @@ class _DrawerSectionHeader extends StatelessWidget {
       child: Text(
         title,
         style: theme.textTheme.bodySmall?.copyWith(
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: accentColor,
         ),
       ),
@@ -522,6 +576,13 @@ class _DrawerLinkTile extends StatelessWidget {
           debugPrint('Drawer: failed to launch link — $e');
         }
       },
+      leading: Text(
+        '•',
+        style: theme.textTheme.bodyMedium?.copyWith(
+          fontWeight: FontWeight.w700,
+          fontSize: 14,
+        ),
+      ),
       title: Text(
         title,
         style: theme.textTheme.bodyMedium?.copyWith(
@@ -536,8 +597,9 @@ class _DrawerLinkTile extends StatelessWidget {
         size: 16 * scale,
         color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
       ),
-      contentPadding: EdgeInsets.only(left: 68 * scale, right: 16 * scale),
-      horizontalTitleGap: 0,
+      contentPadding: EdgeInsets.only(left: 56 * scale, right: 16 * scale),
+      minLeadingWidth: 12 * scale,
+      horizontalTitleGap: 6 * scale,
       dense: true,
     );
   }
