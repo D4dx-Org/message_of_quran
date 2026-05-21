@@ -223,4 +223,14 @@ class DbConstants {
   static const String mlPrefaceHeading = "heading";
   static const String mlPrefaceContent = "content";
 
+  // ─── surahs (quran_asad_malayalam.db → surahs) ───
+  static const String mlSurahsTable = "surahs";
+  static const String mlSurahId = "id";
+  static const String mlSurahChapterNumber = "chapter_number";
+  static const String mlSurahArabicName = "arabic_name";
+  static const String mlSurahMalayalamName = "malayalam_name";
+  static const String mlSurahEnglishTranslation = "english_translation";
+  static const String mlSurahRevelationPeriod = "revelation_period";
+  static const String mlSurahIntroduction = "introduction";
+
 }

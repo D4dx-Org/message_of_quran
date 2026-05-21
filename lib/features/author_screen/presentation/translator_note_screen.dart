@@ -23,6 +23,9 @@ class _TranslatorNoteScreenState extends State<TranslatorNoteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bodyColor = isDark ? Colors.white70 : Colors.black87;
+
     return BaseScreenLayout(
       appBar: AppBar(
         title: Text(
@@ -63,6 +66,7 @@ class _TranslatorNoteScreenState extends State<TranslatorNoteScreen> {
                           style: AppTextTheme.popinsDefault(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
+                            color: bodyColor,
                           ),
                         ),
                       ),
@@ -71,7 +75,7 @@ class _TranslatorNoteScreenState extends State<TranslatorNoteScreen> {
                     ...note.content!.split('\n').where((p) => p.trim().isNotEmpty).expand((paragraph) => [
                       Text(
                         paragraph.trim(),
-                        style: AppTextTheme.popinsDefault(fontSize: 14),
+                        style: AppTextTheme.popinsDefault(fontSize: 14, color: bodyColor),
                       ),
                       const SizedBox(height: 14),
                     ]),
@@ -83,6 +87,7 @@ class _TranslatorNoteScreenState extends State<TranslatorNoteScreen> {
                         style: AppTextTheme.popinsDefault(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
+                          color: bodyColor,
                         ),
                       ),
                     ),

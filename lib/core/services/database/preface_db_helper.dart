@@ -49,25 +49,31 @@ class PrefaceDbHelper {
   }
 
   static Future<List<PrefaceModel>> _getPrefaceThafeemMalayalam(int surahId) async {
-    final db = DatabaseHelper.quranAsadDb;
+    final db = DatabaseHelper.quranAsadMalayalamDb;
     if (db == null) {
-      debugPrint('PrefaceDbHelper: quranAsadDb not initialized');
+      debugPrint('PrefaceDbHelper: quranAsadMalayalamDb not initialized');
       return [];
     }
 
     try {
       final result = await db.query(
-        DbConstants.malayalamDummyDatasTable,
-        where: '${DbConstants.malayalamDummySurahId} = ? AND ${DbConstants.malayalamDummyAyahId} = 1 AND ${DbConstants.malayalamDummySurahIntroduction} IS NOT NULL AND ${DbConstants.malayalamDummySurahIntroduction} != ?',
-        whereArgs: [surahId, ''],
+        DbConstants.mlSurahsTable,
+        columns: [DbConstants.mlSurahIntroduction],
+        where: '${DbConstants.mlSurahChapterNumber} = ?',
+        whereArgs: [surahId],
       );
       if (result.isEmpty) return [];
-      return result.map((row) => PrefaceModel(
-        id: (row[DbConstants.malayalamDummyId] as int?) ?? 0,
-        prefaceSubTitle: '',
-        prefaceText: (row[DbConstants.malayalamDummySurahIntroduction] ?? '').toString(),
-        suraId: surahId,
-      )).toList();
+      final introText =
+          (result.first[DbConstants.mlSurahIntroduction] ?? '').toString();
+      if (introText.trim().isEmpty) return [];
+      return [
+        PrefaceModel(
+          id: surahId,
+          prefaceSubTitle: '',
+          prefaceText: introText,
+          suraId: surahId,
+        ),
+      ];
     } catch (e) {
       debugPrint(
           'PrefaceDbHelper: Error fetching Malayalam preface for surah $surahId: $e');

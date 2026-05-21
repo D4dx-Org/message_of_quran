@@ -1230,14 +1230,9 @@ class _SurahScreenState extends State<SurahScreen> {
                   _infoChip(
                     sheetContext,
                     isMl ? 'അവതരണം :' : 'Revelation :',
-                    localizeSurahMadinahDisplayLabel(
+                    localizeSurahPlace(
                       surah.place,
                       isMalayalam: isMl,
-                      surahNumber: surah.surahNumber,
-                      fallback: localizeSurahPlace(
-                        surah.place,
-                        isMalayalam: isMl,
-                      ),
                     ),
                   ),
                   _infoChip(

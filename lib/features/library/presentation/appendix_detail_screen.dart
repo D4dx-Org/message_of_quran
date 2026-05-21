@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:the_message_of_the_quran/core/models/appendix_model.dart';
 import 'package:the_message_of_the_quran/core/services/database/appendix_db_helper.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 
 class AppendixDetailScreen extends StatelessWidget {
   const AppendixDetailScreen({
@@ -19,11 +21,14 @@ class AppendixDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const accentColor = AppTheme.appThemePrimary;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bodyColor = isDark ? Colors.white70 : Colors.black87;
+    final isMalayalam = Provider.of<LanguageProvider>(context).isMalayalam;
 
     return BaseScreenLayout(
       appBar: AppBar(
         title: Text(
-          'Appendix',
+          isMalayalam ? 'അനുബന്ധം' : 'Appendix',
           style: AppTextTheme.titleRegular,
         ),
         actions: [
@@ -103,7 +108,7 @@ class AppendixDetailScreen extends StatelessWidget {
                 // Body text
                 Text(
                   appendix.body,
-                  style: const TextStyle(fontSize: 15, height: 1.7),
+                  style: TextStyle(fontSize: 15, height: 1.7, color: bodyColor),
                 ),
               ],
             ),

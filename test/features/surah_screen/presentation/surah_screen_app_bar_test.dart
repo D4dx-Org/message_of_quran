@@ -78,7 +78,7 @@ void main() {
         ),
       );
 
-      expect(find.text('അധ്യായം 1'), findsOneWidget);
+      expect(find.text('അധ്യായം ഒന്ന്'), findsOneWidget);
       expect(find.text('അല്‍-ഫാതിഹ (പ്രാരംഭം)'), findsOneWidget);
       expect(find.text('മക്കാ കാലഘട്ടം'), findsOneWidget);
       expect(find.text('Al-Fatihah (The Opening)'), findsNothing);
@@ -102,7 +102,7 @@ void main() {
         ),
       );
 
-      expect(find.text('അധ്യായം 2'), findsOneWidget);
+      expect(find.text('അധ്യായം രണ്ട്'), findsOneWidget);
       expect(find.text('അല്‍-ബഖറ (പശു)'), findsOneWidget);
       expect(find.text('അവതരണം മദീനയിൽ'), findsOneWidget);
       expect(find.text('Al-Baqarah (The Cow)'), findsNothing);
@@ -125,7 +125,7 @@ void main() {
         ),
       );
 
-      expect(find.text('അധ്യായം 3'), findsOneWidget);
+      expect(find.text('അധ്യായം മൂന്ന്'), findsOneWidget);
       expect(find.text('ഡിബി സൂറത്ത് 3'), findsOneWidget);
       expect(find.text('ഡിബി സൂറത്ത് 3 (Family of Imran)'), findsNothing);
       expect(find.text('മദീനാ കാലഘട്ടം'), findsOneWidget);

@@ -162,20 +162,21 @@ class CommonDrawer extends StatelessWidget {
                               );
                             },
                           ),
-                          _DrawerSubTile(
-                            title: 'Works of Reference',
-                            icon: Icons.library_books_outlined,
-                            onTap: () {
-                              Navigator.pop(context);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      const WorksOfReferenceScreen(),
-                                ),
-                              );
-                            },
-                          ),
+                          if (!isMalayalam)
+                            _DrawerSubTile(
+                              title: 'Works of Reference',
+                              icon: Icons.library_books_outlined,
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const WorksOfReferenceScreen(),
+                                  ),
+                                );
+                              },
+                            ),
                         ],
                       ),
                       _DrawerTile(

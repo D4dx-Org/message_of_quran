@@ -33,17 +33,6 @@ String _baseMalayalamSurahName({
   return trimmedMalayalamName.isNotEmpty ? trimmedMalayalamName : surahName;
 }
 
-String _specialMalayalamSurahSubtitle(int surahNumber) {
-  switch (surahNumber) {
-    case 1:
-      return 'പ്രാരംഭം';
-    case 2:
-      return 'പശു';
-    default:
-      return '';
-  }
-}
-
 SurahListDisplayText formatSurahListDisplayText({
   required bool isMalayalam,
   required String surahName,
@@ -63,7 +52,7 @@ SurahListDisplayText formatSurahListDisplayText({
       surahName: surahName,
       malayalamName: malayalamName,
     ),
-    subtitle: _specialMalayalamSurahSubtitle(surahNumber),
+    subtitle: '',
   );
 }
 

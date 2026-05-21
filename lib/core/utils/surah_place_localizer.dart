@@ -9,14 +9,16 @@ SurahPlaceKind? resolveSurahPlaceKind(String place) {
   if (normalized.contains('makk') ||
       normalized.contains('mecca') ||
       normalized.contains('مكي') ||
-      normalized.contains('مكية')) {
+      normalized.contains('مكية') ||
+      normalized.contains('മക്ക')) {
     return SurahPlaceKind.makkah;
   }
 
   if (normalized.contains('madin') ||
       normalized.contains('medina') ||
       normalized.contains('مدني') ||
-      normalized.contains('مدنية')) {
+      normalized.contains('مدنية') ||
+      normalized.contains('മദീന')) {
     return SurahPlaceKind.madinah;
   }
 
