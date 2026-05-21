@@ -111,7 +111,7 @@ class _AppendixScreenState extends State<AppendixScreen> {
                     onChanged: _onSearchChanged,
                     decoration: InputDecoration(
                       hintText: 'Search appendix...',
-                      hintStyle: TextStyle(
+                      hintStyle: AppTextTheme.popinsDefault(
                         color: Colors.grey.shade400,
                         fontSize: 14,
                       ),

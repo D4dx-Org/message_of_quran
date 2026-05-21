@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_card.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_list_tile.dart';
@@ -155,7 +156,7 @@ class SettingsScreenTajweedBlock extends StatelessWidget {
                           onPressed: tajweed.resumeDownload,
                           style: TextButton.styleFrom(
                             foregroundColor: accentColor,
-                            textStyle: const TextStyle(
+                            textStyle: AppTextTheme.popinsDefault(
                               fontWeight: FontWeight.w600,
                             ),
                           ),

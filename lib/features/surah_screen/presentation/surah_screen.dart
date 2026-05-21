@@ -52,6 +52,37 @@ String _toArabicNumerals(int value) {
       .join();
 }
 
+class _SurahBismillahHeader extends StatelessWidget {
+  const _SurahBismillahHeader({required this.glyphText});
+
+  static const String _fallbackText =
+      'بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ';
+
+  final String glyphText;
+
+  @override
+  Widget build(BuildContext context) {
+    final trimmedGlyph = glyphText.trim();
+    final hasGlyph = trimmedGlyph.isNotEmpty;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 2, 12, 12),
+      child: Center(
+        child: Text(
+          hasGlyph ? trimmedGlyph : _fallbackText,
+          textAlign: TextAlign.center,
+          textDirection: hasGlyph ? TextDirection.ltr : TextDirection.rtl,
+          style: AppTextTheme.forewordBismillah(context).copyWith(
+            fontFamily: hasGlyph ? 'QCF_BSML' : null,
+            fontSize: hasGlyph ? 30 : 28,
+            height: hasGlyph ? 1.35 : 1.6,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class SurahScreen extends StatefulWidget {
   /// When set, the screen scrolls to the ayah block with this ayaStart after
   /// the content loads (used from BookmarkScreen).
@@ -1985,6 +2016,10 @@ class _SurahScreenState extends State<SurahScreen> {
                                           .surahList[controller.index]
                                           .surahNumber
                                     : 0;
+                                final showDecorativeBismillah =
+                                  surahNumber > 0 &&
+                                  surahNumber != 1 &&
+                                  surahNumber != 9;
                                 final surahName =
                                     controller.surahList.isNotEmpty
                                     ? controller
@@ -2029,6 +2064,13 @@ class _SurahScreenState extends State<SurahScreen> {
                                             cacheExtent: _deepLinkCacheExtent,
                                             slivers: [
                                               const SurahScreenAppBar(),
+                                              if (showDecorativeBismillah)
+                                                SliverToBoxAdapter(
+                                                  child: _SurahBismillahHeader(
+                                                    glyphText: controller
+                                                        .currentBismillahGlyph,
+                                                  ),
+                                                ),
                                               SliverList(
                                                 delegate: SliverChildBuilderDelegate(
                                                   (context, index) {

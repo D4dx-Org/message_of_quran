@@ -127,11 +127,12 @@ class _MainScreenState extends State<MainScreen> {
     final isDarkMode = theme.brightness == Brightness.dark;
     final navBg = isDarkMode
         ? const Color(0xFF1C1C1E)
-        : const Color.fromRGBO(255, 248, 235, 1);
+        : Colors.white; // AppTheme.appThemeSecondary;
     final inactiveColor = isDarkMode ? Colors.white70 : const Color(0xFF4A4A4A);
     final displayIndex = controller.currentIndex;
     final tablet = ResponsiveHelper.isTablet(context);
     final scale = ResponsiveHelper.scaleFactor(context);
+      final navCornerRadius = 28.0 * scale;
 
     final pageBody = IndexedStack(index: displayIndex, children: _pages);
 
@@ -242,15 +243,15 @@ class _MainScreenState extends State<MainScreen> {
         key: _scaffoldKey,
         appBar: appBar,
         floatingActionButton: Transform.translate(
-          offset: const Offset(0, 10),
+          offset: Offset(0, 10 * scale),
           child: FloatingActionButton(
             onPressed: () {
               _onItemTapped(2);
             },
             child: SvgPicture.asset(
               _navItems[2].assetPath!,
-              width: _navIconSize,
-              height: _navIconSize,
+              width: _navIconSize * scale,
+              height: _navIconSize * scale,
               colorFilter: const ColorFilter.mode(
                 Colors.white,
                 BlendMode.srcIn,
@@ -263,11 +264,13 @@ class _MainScreenState extends State<MainScreen> {
         drawer: const CommonDrawer(),
         body: pageBody,
         bottomNavigationBar: Container(
-          clipBehavior: Clip.none,
-          // height: 80,
+          clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
-            // color: Colors.red,
             color: navBg,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(navCornerRadius),
+              topRight: Radius.circular(navCornerRadius),
+            ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.08),
@@ -278,7 +281,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
           child: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6),
+              padding: EdgeInsets.symmetric(vertical: 6 * scale),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -303,13 +306,15 @@ class _MainScreenState extends State<MainScreen> {
                           excludeSemantics: true,
                           child: InkWell(
                             onTap: () => _onItemTapped(index),
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(10 * scale),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 4,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 6 * scale,
+                                vertical: 4 * scale,
                               ),
-                              margin: const EdgeInsets.symmetric(horizontal: 4),
+                              margin: EdgeInsets.symmetric(
+                                horizontal: 4 * scale,
+                              ),
                               // decoration:
                               //     ? BoxDecoration(
                               //         color: isDarkMode
@@ -329,20 +334,20 @@ class _MainScreenState extends State<MainScreen> {
                                 children: [
                                   if (item.label.isEmpty)
                                     SizedBox.square(
-                                      dimension: _navItemSize(index),
+                                      dimension: _navItemSize(index) * scale,
                                     )
                                   else
                                     _buildNavItemIcon(
                                       index: index,
                                       color: color,
-                                      size: _navItemSize(index),
+                                      size: _navItemSize(index) * scale,
                                     ),
-                                  const SizedBox(height: 3),
+                                  SizedBox(height: 3 * scale),
                                   Text(
                                     item.label,
                                     style: TextStyle(
                                       color: color,
-                                      fontSize: 10,
+                                      fontSize: 10 * scale,
                                       fontWeight: isSelected
                                           ? FontWeight.w700
                                           : FontWeight.w400,

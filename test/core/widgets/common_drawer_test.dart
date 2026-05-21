@@ -174,6 +174,23 @@ void main() {
     );
   });
 
+  testWidgets('drawer keeps phone width on tablet surfaces', (
+    WidgetTester tester,
+  ) async {
+    await pumpDrawer(
+      tester,
+      themeMode: ThemeMode.light,
+      surfaceSize: const Size(800, 1280),
+    );
+
+    final drawerContext = tester.element(find.byType(CommonDrawer));
+
+    expect(ResponsiveHelper.usesPhoneLayoutOnTablet(drawerContext), isTrue);
+    expect(ResponsiveHelper.isTablet(drawerContext), isFalse);
+    expect(ResponsiveHelper.scaleFactor(drawerContext), 1.15);
+    expect(tester.getSize(find.byType(Drawer)).width, 304.0);
+  });
+
   testWidgets('drawer footer appears after scrolling on short screens', (
     WidgetTester tester,
   ) async {
@@ -269,7 +286,7 @@ void main() {
     );
 
     expect(find.text('Home'), findsOneWidget);
-    expect(find.text('About Author'), findsOneWidget);
+    expect(find.text('Author'), findsOneWidget);
     expect(find.text('Feedback'), findsOneWidget);
 
     expect(find.text('ഹോം'), findsNothing);

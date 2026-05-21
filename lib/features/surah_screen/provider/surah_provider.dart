@@ -12,6 +12,8 @@ import 'package:the_message_of_the_quran/core/services/database/bookmark_db_help
 import 'package:the_message_of_the_quran/core/services/database/interpretations_db_helper.dart';
 import 'package:the_message_of_the_quran/core/services/database/surah_db_helper.dart';
 import 'package:the_message_of_the_quran/core/services/database/translation_block_db_helper.dart';
+import 'package:the_message_of_the_quran/features/mushaf/data/mushaf_repository.dart';
+import 'package:the_message_of_the_quran/features/mushaf/utils/mushaf_text_utils.dart';
 
 class SurahProvider extends ChangeNotifier {
   ////////////////////////////////// Variables //////////////////////////////////
@@ -30,6 +32,7 @@ class SurahProvider extends ChangeNotifier {
   bool isSurahLoading = false;
   List<ArabicBlockModel> arabicBlockList = [];
   List<TranslationBlockModel> translationBlockList = [];
+  String currentBismillahGlyph = '';
   bool _isSwiping = false;
 
   // ── Language state ──
@@ -271,6 +274,7 @@ class SurahProvider extends ChangeNotifier {
     index = indexClicked;
     arabicBlockList = [];
     translationBlockList = [];
+    _clearCurrentBismillahGlyph();
     _resetInterpretationState();
     _selectedAyahs.clear();
     notifyListeners();
@@ -307,10 +311,39 @@ class SurahProvider extends ChangeNotifier {
       // recreated fresh at offset 0 when the new data arrives.
       arabicBlockList = [];
       translationBlockList = [];
+      _clearCurrentBismillahGlyph();
       notifyListeners();
       await getAyasForCurrentSurah();
     } finally {
       _isSwiping = false;
+    }
+  }
+
+  bool _shouldShowDecorativeBismillah(int surahNumber) {
+    return surahNumber > 0 && surahNumber != 1 && surahNumber != 9;
+  }
+
+  void _clearCurrentBismillahGlyph() {
+    currentBismillahGlyph = '';
+  }
+
+  Future<String> _loadCurrentBismillahGlyph(int surahNumber) async {
+    if (!_shouldShowDecorativeBismillah(surahNumber)) {
+      return '';
+    }
+
+    try {
+      final rawGlyph = await MushafRepository().getBismillahGlyph(3);
+      if (rawGlyph.isEmpty) {
+        return '';
+      }
+      final segments = MushafTextUtils.parseLine(
+        rawGlyph,
+        isHeadingOrBismillah: true,
+      );
+      return segments.isNotEmpty ? segments.first.text : '';
+    } catch (_) {
+      return '';
     }
   }
   ///////////////////////////////// bookmarks /////////////////////////////////
@@ -663,23 +696,27 @@ class SurahProvider extends ChangeNotifier {
     if (surahList.isEmpty || index < 0 || index >= surahList.length) {
       arabicBlockList = [];
       translationBlockList = [];
+      _clearCurrentBismillahGlyph();
       notifyListeners();
       return;
     }
     final surahNumber = surahList[index].surahNumber;
     try {
-      final results = await Future.wait([
+      final results = await Future.wait<dynamic>([
         ArabicBlockDbHelper.getArabicBlocksBySurah(surahNumber),
         TranslationBlockDbHelper.getTranslationBlocksBySurah(
           surahNumber,
           malayalam: _isMalayalam,
         ),
+        _loadCurrentBismillahGlyph(surahNumber),
       ]);
       arabicBlockList = results[0] as List<ArabicBlockModel>;
       translationBlockList = results[1] as List<TranslationBlockModel>;
+      currentBismillahGlyph = results[2] as String;
     } catch (e) {
       arabicBlockList = [];
       translationBlockList = [];
+      _clearCurrentBismillahGlyph();
     } finally {
       notifyListeners();
     }

@@ -393,6 +393,8 @@ class _DrawerTile extends StatelessWidget {
       ),
       minLeadingWidth: 24 * scale,
       horizontalTitleGap: 14 * scale,
+      dense: true,
+      visualDensity: VisualDensity.compact,
     );
   }
 }
@@ -429,6 +431,8 @@ class _DrawerExpansionTile extends StatelessWidget {
       collapsedIconColor: accentColor,
       shape: const Border(),
       collapsedShape: const Border(),
+      dense: true,
+      visualDensity: VisualDensity.compact,
       children: children,
     );
   }

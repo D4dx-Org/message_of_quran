@@ -11,6 +11,7 @@ import '../../../core/utils/responsive_helper.dart';
 import '../provider/mushaf_reader_provider.dart';
 import '../services/mushaf_download_manager.dart';
 import '../../../core/widgets/base_screen_layout.dart';
+import '../../../core/theme/app_text_theme.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../surah_screen/provider/surah_provider.dart';
 import '../widgets/mushaf_page_view.dart';
@@ -212,14 +213,14 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
-              title: const Row(
+              title: Row(
                 children: [
-                  Icon(Icons.download_rounded, color: _kSecondaryDark),
-                  SizedBox(width: 8),
+                  const Icon(Icons.download_rounded, color: _kSecondaryDark),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'Download Required',
-                      style: TextStyle(
+                      style: AppTextTheme.popinsDefault(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
@@ -227,18 +228,21 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
                   ),
                 ],
               ),
-              content: const Text(
+              content: Text(
                 'Pages 1\u20132 are available offline.\n'
                 'Download the Mushaf font pack to read the full Quran.\n\n'
                 'The download will continue in the background.',
-                style: TextStyle(fontSize: 14),
+                style: AppTextTheme.popinsDefault(fontSize: 14),
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text(
+                  child: Text(
                     'Cancel',
-                    style: TextStyle(fontSize: 14, color: _kNeutral500),
+                    style: AppTextTheme.popinsDefault(
+                      fontSize: 14,
+                      color: _kNeutral500,
+                    ),
                   ),
                 ),
                 ElevatedButton(
@@ -263,7 +267,10 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text('Download', style: TextStyle(fontSize: 14)),
+                  child: Text(
+                    'Download',
+                    style: AppTextTheme.popinsDefault(fontSize: 14),
+                  ),
                 ),
               ],
             ),
