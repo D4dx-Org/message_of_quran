@@ -203,6 +203,43 @@ void main() {
     expect(footerRectAfterScroll.bottom, lessThanOrEqualTo(screenHeight));
   });
 
+  testWidgets('drawer shows top-level items in the expected order', (
+    WidgetTester tester,
+  ) async {
+    await pumpDrawer(
+      tester,
+      themeMode: ThemeMode.light,
+      surfaceSize: const Size(390, 844),
+    );
+
+    final orderedLabels = [
+      'Home',
+      'About Author',
+      'Library',
+      'Prostration Verses',
+      'Useful Links',
+      'Feedback',
+      'Contact Us',
+      'Share App',
+      'Settings',
+      'Privacy',
+    ];
+    final labelPositions = {
+      for (final label in orderedLabels)
+        label: tester.getCenter(find.text(label)).dy,
+    };
+
+    for (var index = 0; index < orderedLabels.length - 1; index++) {
+      final currentLabel = orderedLabels[index];
+      final nextLabel = orderedLabels[index + 1];
+
+      expect(
+        labelPositions[currentLabel]!,
+        lessThan(labelPositions[nextLabel]!),
+      );
+    }
+  });
+
   testWidgets('drawer shows useful links with grouped sections', (
     WidgetTester tester,
   ) async {

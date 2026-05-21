@@ -1478,7 +1478,10 @@ class _SurahScreenState extends State<SurahScreen> {
                 _crossRefSpansForPlainText(
                   context,
                   cleaned,
-                  AppTextTheme.surahMalayalamStyle(context),
+                  AppTextTheme.surahTranslationStyle(
+                    context,
+                    isMalayalam: isMl,
+                  ),
                   surahNumber,
                 ),
               );
@@ -1506,7 +1509,10 @@ class _SurahScreenState extends State<SurahScreen> {
                     _crossRefSpansForPlainText(
                       context,
                       cleaned.substring(lastEnd, match.start),
-                      AppTextTheme.surahMalayalamStyle(context),
+                      AppTextTheme.surahTranslationStyle(
+                        context,
+                        isMalayalam: isMl,
+                      ),
                       surahNumber,
                     ),
                   );
@@ -1516,7 +1522,10 @@ class _SurahScreenState extends State<SurahScreen> {
                   spans.add(
                     TextSpan(
                       text: match.group(0),
-                      style: AppTextTheme.surahMalayalamStyle(context),
+                      style: AppTextTheme.surahTranslationStyle(
+                        context,
+                        isMalayalam: isMl,
+                      ),
                     ),
                   );
                 } else {
@@ -1539,7 +1548,10 @@ class _SurahScreenState extends State<SurahScreen> {
                   _crossRefSpansForPlainText(
                     context,
                     cleaned.substring(lastEnd),
-                    AppTextTheme.surahMalayalamStyle(context),
+                    AppTextTheme.surahTranslationStyle(
+                      context,
+                      isMalayalam: isMl,
+                    ),
                     surahNumber,
                   ),
                 );
@@ -1549,7 +1561,10 @@ class _SurahScreenState extends State<SurahScreen> {
                   _crossRefSpansForPlainText(
                     context,
                     cleaned,
-                    AppTextTheme.surahMalayalamStyle(context),
+                    AppTextTheme.surahTranslationStyle(
+                      context,
+                      isMalayalam: isMl,
+                    ),
                     surahNumber,
                   ),
                 );
@@ -1598,12 +1613,18 @@ class _SurahScreenState extends State<SurahScreen> {
     if (segments.length == 1 && !segments.first.isCrossReference) {
       return Text(
         text,
-        style: AppTextTheme.surahInterpretationStyle(context),
+        style: AppTextTheme.surahInterpretationStyle(
+          context,
+          isMalayalam: context.read<LanguageProvider>().isMalayalam,
+        ),
         textAlign: justify ? TextAlign.justify : TextAlign.start,
       );
     }
 
-    final baseStyle = AppTextTheme.surahInterpretationStyle(context);
+    final baseStyle = AppTextTheme.surahInterpretationStyle(
+      context,
+      isMalayalam: context.read<LanguageProvider>().isMalayalam,
+    );
     final linkStyle = baseStyle.copyWith(
       color: AppTheme.appIconTheme,
       decoration: TextDecoration.underline,

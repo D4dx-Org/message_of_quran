@@ -67,16 +67,14 @@ class CommonDrawer extends StatelessWidget {
                         },
                       ),
                       _DrawerTile(
-                        title: isMalayalam
-                            ? 'സുജൂദിന്റെ ആയത്തുകൾ'
-                            : 'Prostration Verses',
-                        icon: Icons.mosque_outlined,
+                        title: 'About Author',
+                        icon: Icons.person_outline,
                         onTap: () {
                           Navigator.pop(context);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const ProstrationVersesScreen(),
+                              builder: (_) => const AuthorScreen(),
                             ),
                           );
                         },
@@ -127,6 +125,21 @@ class CommonDrawer extends StatelessWidget {
                           ),
                         ],
                       ),
+                      _DrawerTile(
+                        title: isMalayalam
+                            ? 'സുജൂദിന്റെ ആയത്തുകൾ'
+                            : 'Prostration Verses',
+                        icon: Icons.mosque_outlined,
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ProstrationVersesScreen(),
+                            ),
+                          );
+                        },
+                      ),
                       _DrawerExpansionTile(
                         title: 'Useful Links',
                         icon: Icons.link_outlined,
@@ -142,14 +155,14 @@ class CommonDrawer extends StatelessWidget {
                         ],
                       ),
                       _DrawerTile(
-                        title: 'About Author',
-                        icon: Icons.person_outline,
+                        title: 'Feedback',
+                        icon: Icons.mail_outline,
                         onTap: () {
                           Navigator.pop(context);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const AuthorScreen(),
+                              builder: (_) => const FeedbackScreen(),
                             ),
                           );
                         },
@@ -163,19 +176,6 @@ class CommonDrawer extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (_) => const ContactUsScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      _DrawerTile(
-                        title: 'Feedback',
-                        icon: Icons.mail_outline,
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const FeedbackScreen(),
                             ),
                           );
                         },

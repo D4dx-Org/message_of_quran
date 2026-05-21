@@ -10,6 +10,9 @@ class AppTextTheme {
   static const _malayalamFont = GoogleFonts.notoSerifMalayalam;
   static const _englishFont = GoogleFonts.poppins;
 
+  static TextTheme englishTextTheme(TextTheme base) =>
+      GoogleFonts.poppinsTextTheme(base);
+
   //////////////////// English fonts ////////////////////
 
   static final indexStyle = _englishFont(fontSize: 10, fontWeight: FontWeight.w500);
@@ -29,13 +32,15 @@ class AppTextTheme {
     Color? color,
     FontWeight? fontWeight,
     double? letterSpacing,
+    double? height,
     TextDecoration? decoration,
     FontStyle? fontStyle,
-  }) => GoogleFonts.poppins(
+  }) => _englishFont(
     color: color,
     fontSize: fontSize,
     fontWeight: fontWeight,
     letterSpacing: letterSpacing,
+    height: height,
     decoration: decoration,
     fontStyle: fontStyle,
   );
@@ -75,8 +80,12 @@ class AppTextTheme {
     fontWeight: FontWeight.w500,
   );
 
-  static TextStyle surahMalayalamStyle(BuildContext ctx) {
-    return _malayalamFont(
+  static TextStyle surahTranslationStyle(
+    BuildContext ctx, {
+    required bool isMalayalam,
+  }) {
+    final font = isMalayalam ? _malayalamFont : _englishFont;
+    return font(
       fontSize: Provider.of<FontSizeChangerProvider>(
         ctx,
       ).quranTransaltionFontSize.toDouble(),
@@ -85,8 +94,16 @@ class AppTextTheme {
     );
   }
 
-  static TextStyle surahInterpretationStyle(BuildContext ctx) {
-    return _malayalamFont(
+  static TextStyle surahMalayalamStyle(BuildContext ctx) {
+    return surahTranslationStyle(ctx, isMalayalam: true);
+  }
+
+  static TextStyle surahInterpretationStyle(
+    BuildContext ctx, {
+    required bool isMalayalam,
+  }) {
+    final font = isMalayalam ? _malayalamFont : _englishFont;
+    return font(
       fontSize: Provider.of<FontSizeChangerProvider>(
         ctx,
       ).interpretationFontSize.toDouble(),
@@ -229,17 +246,17 @@ class AppTextTheme {
 
   static TextStyle forewordTitle(BuildContext ctx) {
     final isDark = Theme.of(ctx).brightness == Brightness.dark;
-    return GoogleFonts.libreBaskerville(
+    return _englishFont(
       fontSize: 22,
-      fontWeight: FontWeight.w400,
-      letterSpacing: 2.0,
+      fontWeight: FontWeight.w600,
+      letterSpacing: 0.2,
       color: isDark ? Colors.white : Colors.black87,
     );
   }
 
   static TextStyle forewordBody(BuildContext ctx) {
     final isDark = Theme.of(ctx).brightness == Brightness.dark;
-    return GoogleFonts.libreBaskerville(
+    return _englishFont(
       fontSize: 14,
       fontWeight: FontWeight.w400,
       height: 1.8,
@@ -249,7 +266,7 @@ class AppTextTheme {
 
   static TextStyle forewordDropCap(BuildContext ctx) {
     final isDark = Theme.of(ctx).brightness == Brightness.dark;
-    return GoogleFonts.libreBaskerville(
+    return _englishFont(
       fontSize: 32,
       fontWeight: FontWeight.w700,
       height: 1.0,
@@ -259,7 +276,7 @@ class AppTextTheme {
 
   static TextStyle forewordQuote(BuildContext ctx) {
     final isDark = Theme.of(ctx).brightness == Brightness.dark;
-    return GoogleFonts.libreBaskerville(
+    return _englishFont(
       fontSize: 14,
       fontWeight: FontWeight.w400,
       fontStyle: FontStyle.italic,
@@ -270,7 +287,7 @@ class AppTextTheme {
 
   static TextStyle forewordFootnote(BuildContext ctx) {
     final isDark = Theme.of(ctx).brightness == Brightness.dark;
-    return GoogleFonts.libreBaskerville(
+    return _englishFont(
       fontSize: 13,
       fontWeight: FontWeight.w400,
       height: 1.7,
@@ -291,7 +308,7 @@ class AppTextTheme {
 
   static TextStyle forewordVerseRef(BuildContext ctx) {
     final isDark = Theme.of(ctx).brightness == Brightness.dark;
-    return GoogleFonts.libreBaskerville(
+    return _englishFont(
       fontSize: 13,
       fontWeight: FontWeight.w400,
       fontStyle: FontStyle.italic,

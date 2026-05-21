@@ -529,7 +529,10 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
         spans.add(
           TextSpan(
             text: displayText.substring(lastEnd, match.start),
-            style: AppTextTheme.surahMalayalamStyle(context),
+            style: AppTextTheme.surahTranslationStyle(
+              context,
+              isMalayalam: isMl,
+            ),
           ),
         );
       }
@@ -539,7 +542,10 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
         spans.add(
           TextSpan(
             text: match.group(0),
-            style: AppTextTheme.surahMalayalamStyle(context),
+            style: AppTextTheme.surahTranslationStyle(
+              context,
+              isMalayalam: isMl,
+            ),
           ),
         );
       } else {
@@ -558,14 +564,20 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
       spans.add(
         TextSpan(
           text: displayText,
-          style: AppTextTheme.surahMalayalamStyle(context),
+          style: AppTextTheme.surahTranslationStyle(
+            context,
+            isMalayalam: isMl,
+          ),
         ),
       );
     } else if (lastEnd < displayText.length) {
       spans.add(
         TextSpan(
           text: displayText.substring(lastEnd),
-          style: AppTextTheme.surahMalayalamStyle(context),
+          style: AppTextTheme.surahTranslationStyle(
+            context,
+            isMalayalam: isMl,
+          ),
         ),
       );
     }
@@ -595,11 +607,22 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
     String text,
     int currentSurahNumber,
   ) {
+    final isMl = context.read<LanguageProvider>().isMalayalam;
     final segments = parseForCrossReferences(text, currentSurahNumber);
     if (segments.length == 1 && !segments.first.isCrossReference) {
-      return Text(text, style: AppTextTheme.surahInterpretationStyle(context));
+      return Text(
+        text,
+        style: AppTextTheme.surahInterpretationStyle(
+          context,
+          isMalayalam: isMl,
+        ),
+      );
     }
 
+    final baseStyle = AppTextTheme.surahInterpretationStyle(
+      context,
+      isMalayalam: isMl,
+    );
     final spans = <InlineSpan>[];
     for (final seg in segments) {
       if (seg.isCrossReference) {
@@ -607,7 +630,7 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
         spans.add(
           TextSpan(
             text: seg.text,
-            style: AppTextTheme.surahInterpretationStyle(context).copyWith(
+            style: baseStyle.copyWith(
               color: AppTheme.appIconTheme,
               decoration: TextDecoration.underline,
               decorationColor: AppTheme.appIconTheme,
@@ -621,7 +644,7 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
         spans.add(
           TextSpan(
             text: seg.text,
-            style: AppTextTheme.surahInterpretationStyle(context),
+            style: baseStyle,
           ),
         );
       }
@@ -771,9 +794,19 @@ class _NestedInterpretationSheetState
   ) {
     final segments = parseForCrossReferences(text, currentSurahNumber);
     if (segments.length == 1 && !segments.first.isCrossReference) {
-      return Text(text, style: AppTextTheme.surahInterpretationStyle(context));
+      return Text(
+        text,
+        style: AppTextTheme.surahInterpretationStyle(
+          context,
+          isMalayalam: widget.isMalayalam,
+        ),
+      );
     }
 
+    final baseStyle = AppTextTheme.surahInterpretationStyle(
+      context,
+      isMalayalam: widget.isMalayalam,
+    );
     final spans = <InlineSpan>[];
     for (final seg in segments) {
       if (seg.isCrossReference) {
@@ -781,7 +814,7 @@ class _NestedInterpretationSheetState
         spans.add(
           TextSpan(
             text: seg.text,
-            style: AppTextTheme.surahInterpretationStyle(context).copyWith(
+            style: baseStyle.copyWith(
               color: AppTheme.appIconTheme,
               decoration: TextDecoration.underline,
               decorationColor: AppTheme.appIconTheme,
@@ -795,7 +828,7 @@ class _NestedInterpretationSheetState
         spans.add(
           TextSpan(
             text: seg.text,
-            style: AppTextTheme.surahInterpretationStyle(context),
+            style: baseStyle,
           ),
         );
       }

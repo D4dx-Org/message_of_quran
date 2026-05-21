@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/features/ayah_of_the_day/data/ayah_of_the_day_model.dart';
 
@@ -75,7 +76,7 @@ class AyahPosterWidget extends StatelessWidget {
                     Text(
                       ayah.translationText,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.notoSansMalayalam(
+                      style: AppTextTheme.popinsDefault(
                         fontSize: 13,
                         color: _textDark.withValues(alpha: 0.78),
                         height: 1.7,

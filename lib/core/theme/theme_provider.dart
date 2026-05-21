@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -43,6 +44,20 @@ class ThemeProvider extends ChangeNotifier {
   static const Color darkBackgroundColor = Color(0xFF333333);
   static const Color lightBackgroundColor = AppTheme.appThemeSecondary;
 
+  TextTheme _lightTextTheme() {
+    return AppTextTheme.englishTextTheme(ThemeData.light().textTheme).apply(
+      bodyColor: AppTheme.appThemePrimary,
+      displayColor: AppTheme.appThemePrimary,
+    );
+  }
+
+  TextTheme _darkTextTheme() {
+    return AppTextTheme.englishTextTheme(ThemeData.dark().textTheme).apply(
+      bodyColor: const Color(0xFFF2F2F7),
+      displayColor: const Color(0xFFF2F2F7),
+    );
+  }
+
   // Constructor
   ThemeProvider() {
     // Defer until after the first frame so notifyListeners() is never called
@@ -61,7 +76,9 @@ class ThemeProvider extends ChangeNotifier {
   }
 
   // Light theme data
-  ThemeData get lightTheme => ThemeData.light().copyWith(
+  ThemeData get lightTheme {
+    final textTheme = _lightTextTheme();
+    return ThemeData.light().copyWith(
     primaryColor: AppTheme.appIconTheme,
     scaffoldBackgroundColor: lightBackgroundColor,
     brightness: Brightness.light,
@@ -71,10 +88,7 @@ class ThemeProvider extends ChangeNotifier {
       space: 1,
       thickness: 1,
     ),
-    textTheme: ThemeData.light().textTheme.apply(
-      bodyColor: AppTheme.appThemePrimary,
-      displayColor: AppTheme.appThemePrimary,
-    ),
+    textTheme: textTheme,
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: Colors.white,
       selectedItemColor: AppTheme.appThemePrimary,
@@ -93,20 +107,20 @@ class ThemeProvider extends ChangeNotifier {
         final color = states.contains(WidgetState.selected)
             ? AppTheme.appThemePrimary
             : const Color(0xFF9E9E9E);
-        return TextStyle(
+        return AppTextTheme.popinsDefault(
           fontSize: 11,
           fontWeight: FontWeight.w500,
           color: color,
         );
       }),
     ),
-    appBarTheme: const AppBarTheme(
+    appBarTheme: AppBarTheme(
       backgroundColor: AppTheme.appThemePrimary,
       surfaceTintColor: AppTheme.appThemePrimary,
       centerTitle: false,
       elevation: 0,
-      iconTheme: IconThemeData(color: AppTheme.appBarForegroundColor),
-      titleTextStyle: TextStyle(
+      iconTheme: const IconThemeData(color: AppTheme.appBarForegroundColor),
+      titleTextStyle: AppTextTheme.popinsDefault(
         color: AppTheme.appBarForegroundColor,
         fontSize: 18,
         fontWeight: FontWeight.w600,
@@ -119,14 +133,20 @@ class ThemeProvider extends ChangeNotifier {
       outline: Color(0xFFAEAEB2),
       outlineVariant: Color(0xFFE5E5EA),
     ),
-    searchBarTheme: const SearchBarThemeData(
-      backgroundColor: WidgetStatePropertyAll(Color(0xFFF2F2F7)),
-      elevation: WidgetStatePropertyAll(0),
+    searchBarTheme: SearchBarThemeData(
+      backgroundColor: const WidgetStatePropertyAll(Color(0xFFF2F2F7)),
+      elevation: const WidgetStatePropertyAll(0),
+      textStyle: WidgetStatePropertyAll(
+        textTheme.bodyMedium?.copyWith(color: AppTheme.appThemePrimary),
+      ),
     ),
   );
+  }
 
   // Dark theme data
-  ThemeData get darkTheme => ThemeData.dark().copyWith(
+  ThemeData get darkTheme {
+    final textTheme = _darkTextTheme();
+    return ThemeData.dark().copyWith(
     primaryColor: AppTheme.appIconTheme,
     scaffoldBackgroundColor: darkBackgroundColor,
     brightness: Brightness.dark,
@@ -136,10 +156,7 @@ class ThemeProvider extends ChangeNotifier {
       space: 1,
       thickness: 1,
     ),
-    textTheme: ThemeData.dark().textTheme.apply(
-      bodyColor: const Color(0xFFF2F2F7),
-      displayColor: const Color(0xFFF2F2F7),
-    ),
+    textTheme: textTheme,
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: darkBackgroundColor,
       selectedItemColor: AppTheme.appThemePrimary,
@@ -151,21 +168,21 @@ class ThemeProvider extends ChangeNotifier {
       iconTheme: const WidgetStatePropertyAll(
         IconThemeData(color: Colors.white),
       ),
-      labelTextStyle: const WidgetStatePropertyAll(
-        TextStyle(
+      labelTextStyle: WidgetStatePropertyAll(
+        AppTextTheme.popinsDefault(
           fontSize: 11,
           fontWeight: FontWeight.w500,
           color: Color(0xFFAEAEB2),
         ),
       ),
     ),
-    appBarTheme: const AppBarTheme(
+    appBarTheme: AppBarTheme(
       backgroundColor: AppTheme.appThemePrimary,
       surfaceTintColor: AppTheme.appThemePrimary,
       centerTitle: false,
       elevation: 0,
-      iconTheme: IconThemeData(color: AppTheme.appBarForegroundColor),
-      titleTextStyle: TextStyle(
+      iconTheme: const IconThemeData(color: AppTheme.appBarForegroundColor),
+      titleTextStyle: AppTextTheme.popinsDefault(
         color: AppTheme.appBarForegroundColor,
         fontSize: 18,
         fontWeight: FontWeight.w600,
@@ -187,12 +204,13 @@ class ThemeProvider extends ChangeNotifier {
       backgroundColor: const WidgetStatePropertyAll(Color(0xFF3A3A3C)),
       elevation: const WidgetStatePropertyAll(0),
       textStyle: WidgetStatePropertyAll(
-        ThemeData.dark().textTheme.bodyMedium?.copyWith(
+        textTheme.bodyMedium?.copyWith(
           color: const Color(0xFFF2F2F7),
         ),
       ),
     ),
   );
+  }
 
   // Load theme from SharedPreferences
   void _loadThemeFromPrefs() {
