@@ -27,7 +27,7 @@ class UsefulLinkSection {
 const List<UsefulLinkSection> usefulLinksSections = [
   UsefulLinkSection(
     icon: Icons.translate,
-    title: "Qur'an English Translations",
+    title: "English Translations",
     links: [
       UsefulLinkItem(
         title: 'Abdullah Yusuf Ali',
@@ -41,7 +41,7 @@ const List<UsefulLinkSection> usefulLinksSections = [
   ),
   UsefulLinkSection(
     icon: Icons.language,
-    title: "Qur'an Malayalam Translations",
+    title: "Malayalam Translations",
     links: [
       UsefulLinkItem(
         title: "Thafheemul Qur'an",
