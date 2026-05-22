@@ -559,6 +559,7 @@ class _DrawerSubTile extends StatelessWidget {
       minLeadingWidth: 20 * scale,
       horizontalTitleGap: 12 * scale,
       dense: true,
+      visualDensity: const VisualDensity(vertical: -4),
     );
   }
 }
@@ -613,6 +614,7 @@ class _DrawerLinkTile extends StatelessWidget {
       minLeadingWidth: 12 * scale,
       horizontalTitleGap: 6 * scale,
       dense: true,
+      visualDensity: const VisualDensity(vertical: -4),
     );
   }
 }
