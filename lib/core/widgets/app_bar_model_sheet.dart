@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
+import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
@@ -13,9 +14,13 @@ class AppBarModelSheet {
 
   static Future<void> modelSheet(BuildContext ctx) {
     final surahProvider = Provider.of<SurahProvider>(ctx, listen: false);
+    final maxWidth = ResponsiveHelper.bottomSheetMaxWidth(ctx);
     return showModalBottomSheet(
       context: ctx,
       isScrollControlled: true,
+      constraints: maxWidth != null
+          ? BoxConstraints(maxWidth: maxWidth)
+          : null,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),

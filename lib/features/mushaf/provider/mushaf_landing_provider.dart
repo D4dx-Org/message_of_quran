@@ -13,6 +13,8 @@ class MushafLandingProvider extends ChangeNotifier {
     _loadAll();
   }
 
+  bool _isDisposed = false;
+
   late final MushafRepository _repository;
   MushafRepository get repository => _repository;
 
@@ -86,5 +88,16 @@ class MushafLandingProvider extends ChangeNotifier {
   void setFontsInstalled() {
     fontsInstalled = true;
     notifyListeners();
+  }
+
+  @override
+  void notifyListeners() {
+    if (!_isDisposed) super.notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
   }
 }

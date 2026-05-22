@@ -172,7 +172,7 @@ class ThemeProvider extends ChangeNotifier {
         AppTextTheme.popinsDefault(
           fontSize: 11,
           fontWeight: FontWeight.w500,
-          color: Color(0xFFAEAEB2),
+          color: const Color(0xFFAEAEB2),
         ),
       ),
     ),

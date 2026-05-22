@@ -34,6 +34,8 @@ class MushafReaderProvider extends ChangeNotifier {
 
   late final MushafRepository repository;
 
+  bool _isDisposed = false;
+
   final int? _requestedPage;
   final int? _initialSurahNo;
   final int? _initialAyaNo;
@@ -511,7 +513,13 @@ class MushafReaderProvider extends ChangeNotifier {
   }
 
   @override
+  void notifyListeners() {
+    if (!_isDisposed) super.notifyListeners();
+  }
+
+  @override
   void dispose() {
+    _isDisposed = true;
     _playerStateSub?.cancel();
     _playlistIndexSub?.cancel();
     // Don't dispose the player – it's shared via the handler

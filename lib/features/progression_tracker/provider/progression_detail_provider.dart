@@ -16,6 +16,7 @@ class ProgressionDetailProvider extends ChangeNotifier {
   int _completedAyahCount = 0;
   int _completedDayCount = 0;
   bool _isLoading = false;
+  bool _isDisposed = false;
 
   ProgressionModel? get progression => _progression;
   List<ProgressionDayModel> get days => _days;
@@ -167,5 +168,16 @@ class ProgressionDetailProvider extends ChangeNotifier {
     _completedAyahCount = 0;
     _completedDayCount = 0;
     notifyListeners();
+  }
+
+  @override
+  void notifyListeners() {
+    if (!_isDisposed) super.notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
   }
 }

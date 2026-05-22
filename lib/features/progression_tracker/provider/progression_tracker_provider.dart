@@ -13,6 +13,7 @@ class ProgressionTrackerProvider extends ChangeNotifier {
   final Map<int, int> _completedDaysMap = {};
   final Map<int, int> _completedAyahsMap = {};
   bool _isLoading = false;
+  bool _isDisposed = false;
 
   List<ProgressionModel> get progressions => _progressions;
   bool get isLoading => _isLoading;
@@ -157,5 +158,16 @@ class ProgressionTrackerProvider extends ChangeNotifier {
     _completedAyahsMap[progressionId] =
         await ProgressionDbHelper.getCompletedAyahCount(progressionId);
     notifyListeners();
+  }
+
+  @override
+  void notifyListeners() {
+    if (!_isDisposed) super.notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
   }
 }

@@ -140,6 +140,7 @@ class BookmarkScreen extends StatelessWidget {
                           final bookmark = value.bookmarkedList[index];
                           final bodyText = _bookmarkBody(bookmark);
                           return Padding(
+                            key: ValueKey('bookmark_${bookmark.surahNumber}_${bookmark.ayahId}'),
                             padding: const EdgeInsets.only(bottom: 8),
                             child: Semantics(
                               button: true,

@@ -64,7 +64,7 @@ class AppBarLanguageButton extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.language_rounded, size: 15, color: buttonAccent),
+                  const Icon(Icons.language_rounded, size: 15, color: buttonAccent),
                   const SizedBox(width: 4),
                   Text(
                     isMalayalam ? 'ML' : 'EN',
@@ -75,7 +75,7 @@ class AppBarLanguageButton extends StatelessWidget {
                       letterSpacing: 0.3,
                     ),
                   ),
-                  Icon(
+                  const Icon(
                     Icons.keyboard_arrow_down_rounded,
                     size: 16,
                     color: buttonAccent,

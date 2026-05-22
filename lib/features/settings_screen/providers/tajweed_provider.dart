@@ -16,6 +16,8 @@ class TajweedProvider extends ChangeNotifier {
       'https://d4dx-storage.blr1.cdn.digitaloceanspaces.com/thafheem-zip/tajweed_words.zip';
   static const _maxRetries = 3;
 
+  bool _isDisposed = false;
+
   bool _enabled = false;
   bool _isDownloading = false;
   bool _downloadPaused = false;
@@ -85,7 +87,13 @@ class TajweedProvider extends ChangeNotifier {
   }
 
   @override
+  void notifyListeners() {
+    if (!_isDisposed) super.notifyListeners();
+  }
+
+  @override
   void dispose() {
+    _isDisposed = true;
     _currentGeneration++;
     _httpClient?.close();
     _httpClient = null;
@@ -379,7 +387,9 @@ class TajweedProvider extends ChangeNotifier {
 
     try {
       final request = http.Request('GET', Uri.parse(_zipUrl));
-      final response = await client.send(request);
+      final response = await client.send(request).timeout(
+        const Duration(seconds: 30),
+      );
 
       if (response.statusCode != 200) {
         throw HttpException(

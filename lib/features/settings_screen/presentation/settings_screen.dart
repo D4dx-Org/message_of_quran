@@ -277,13 +277,19 @@ class _FontSettingsCard extends StatelessWidget {
                 IconButton(
                   onPressed: () => controller.decrement(true),
                   icon: const Icon(Icons.remove_circle_outline_rounded),
+                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                  padding: EdgeInsets.zero,
                 ),
                 Consumer<FontSizeChangerProvider>(
                   builder: (context, value, child) {
-                    return Text(
-                      '${value.quranFontSize}',
-                      style: AppTextTheme.surahTitle.copyWith(
-                        color: accentColor,
+                    return SizedBox(
+                      width: 28,
+                      child: Text(
+                        '${value.quranFontSize}',
+                        textAlign: TextAlign.center,
+                        style: AppTextTheme.surahTitle.copyWith(
+                          color: accentColor,
+                        ),
                       ),
                     );
                   },
@@ -291,6 +297,8 @@ class _FontSettingsCard extends StatelessWidget {
                 IconButton(
                   onPressed: () => controller.increment(true),
                   icon: const Icon(Icons.add_circle_outline),
+                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                  padding: EdgeInsets.zero,
                 ),
               ],
             ),
@@ -306,13 +314,19 @@ class _FontSettingsCard extends StatelessWidget {
                 IconButton(
                   onPressed: () => controller.decrement(false),
                   icon: const Icon(Icons.remove_circle_outline_rounded),
+                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                  padding: EdgeInsets.zero,
                 ),
                 Consumer<FontSizeChangerProvider>(
                   builder: (context, value, child) {
-                    return Text(
-                      '${value.quranTransaltionFontSize}',
-                      style: AppTextTheme.surahTitle.copyWith(
-                        color: accentColor,
+                    return SizedBox(
+                      width: 28,
+                      child: Text(
+                        '${value.quranTransaltionFontSize}',
+                        textAlign: TextAlign.center,
+                        style: AppTextTheme.surahTitle.copyWith(
+                          color: accentColor,
+                        ),
                       ),
                     );
                   },
@@ -320,6 +334,8 @@ class _FontSettingsCard extends StatelessWidget {
                 IconButton(
                   onPressed: () => controller.increment(false),
                   icon: const Icon(Icons.add_circle_outline),
+                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                  padding: EdgeInsets.zero,
                 ),
               ],
             ),
@@ -335,13 +351,19 @@ class _FontSettingsCard extends StatelessWidget {
                 IconButton(
                   onPressed: () => controller.decrementInterpretation(),
                   icon: const Icon(Icons.remove_circle_outline_rounded),
+                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                  padding: EdgeInsets.zero,
                 ),
                 Consumer<FontSizeChangerProvider>(
                   builder: (context, value, child) {
-                    return Text(
-                      '${value.interpretationFontSize}',
-                      style: AppTextTheme.surahTitle.copyWith(
-                        color: accentColor,
+                    return SizedBox(
+                      width: 28,
+                      child: Text(
+                        '${value.interpretationFontSize}',
+                        textAlign: TextAlign.center,
+                        style: AppTextTheme.surahTitle.copyWith(
+                          color: accentColor,
+                        ),
                       ),
                     );
                   },
@@ -349,6 +371,8 @@ class _FontSettingsCard extends StatelessWidget {
                 IconButton(
                   onPressed: () => controller.incrementInterpretation(),
                   icon: const Icon(Icons.add_circle_outline),
+                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                  padding: EdgeInsets.zero,
                 ),
               ],
             ),

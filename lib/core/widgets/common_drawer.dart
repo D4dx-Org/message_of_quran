@@ -563,34 +563,7 @@ class _DrawerSubTile extends StatelessWidget {
   }
 }
 
-class _DrawerSectionHeader extends StatelessWidget {
-  const _DrawerSectionHeader({required this.title});
 
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scale = ResponsiveHelper.scaleFactor(context);
-    final accentColor = appBarAccentColor(context);
-
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        56 * scale,
-        10 * scale,
-        20 * scale,
-        4 * scale,
-      ),
-      child: Text(
-        title,
-        style: theme.textTheme.bodySmall?.copyWith(
-          fontWeight: FontWeight.w700,
-          color: accentColor,
-        ),
-      ),
-    );
-  }
-}
 
 class _DrawerLinkTile extends StatelessWidget {
   const _DrawerLinkTile({required this.title, required this.url});

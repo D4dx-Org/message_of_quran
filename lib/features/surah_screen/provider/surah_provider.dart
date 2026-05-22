@@ -18,6 +18,8 @@ import 'package:the_message_of_the_quran/features/mushaf/utils/mushaf_text_utils
 class SurahProvider extends ChangeNotifier {
   ////////////////////////////////// Variables //////////////////////////////////
 
+  bool _isDisposed = false;
+
   List<SurahModel> surahList = [];
   List<InterpretationModel> interpretationList = [];
   List<int> currentInterpretationAyahNumbers = [];
@@ -244,7 +246,14 @@ class SurahProvider extends ChangeNotifier {
   }
 
   @override
+  void notifyListeners() {
+    if (!_isDisposed) super.notifyListeners();
+  }
+
+  @override
   void dispose() {
+    _isDisposed = true;
+    _singleTapTimer?.cancel();
     searchController.dispose();
     super.dispose();
   }

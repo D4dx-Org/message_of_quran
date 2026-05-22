@@ -2624,6 +2624,8 @@ class _SurahScreenState extends State<SurahScreen> {
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       TextButton.icon(

@@ -342,6 +342,8 @@ class SurahInfoStrip extends StatelessWidget {
                       height: 1.2,
                     ),
                     textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   SizedBox(
@@ -374,6 +376,8 @@ class SurahInfoStrip extends StatelessWidget {
                       height: 1.2,
                     ),
                     textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),

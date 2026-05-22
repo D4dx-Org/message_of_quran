@@ -129,7 +129,7 @@ void main() {
       expect(shadow.offset, const Offset(0, -3));
       expect(shadow.blurRadius, 16);
       expect(shadow.spreadRadius, 1);
-      expect(shadow.color.opacity, closeTo(0.10, 0.01));
+      expect(shadow.color.a, closeTo(0.10, 0.01));
     },
   );
 
