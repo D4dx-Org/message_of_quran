@@ -63,6 +63,7 @@ class CommonDrawer extends StatelessWidget {
                       _DrawerTile(
                         title: 'Home',
                         icon: Icons.home_outlined,
+                        assetPath: 'assets/icons/home-img.png',
                         onTap: () {
                           controller.changeIndex(0);
                           Navigator.pop(context);
@@ -253,6 +254,7 @@ class CommonDrawer extends StatelessWidget {
                       _DrawerTile(
                         title: 'Settings',
                         icon: Icons.settings_outlined,
+                        assetPath: 'assets/icons/settings-img.png',
                         onTap: () {
                           controller.changeIndex(3);
                           Navigator.pop(context);
@@ -419,10 +421,16 @@ class _DrawerFooter extends StatelessWidget {
 }
 
 class _DrawerTile extends StatelessWidget {
-  const _DrawerTile({required this.title, required this.icon, this.onTap});
+  const _DrawerTile({
+    required this.title,
+    required this.icon,
+    this.onTap,
+    this.assetPath,
+  });
   final String title;
   final IconData icon;
   final VoidCallback? onTap;
+  final String? assetPath;
 
   @override
   Widget build(BuildContext context) {
@@ -430,9 +438,18 @@ class _DrawerTile extends StatelessWidget {
     final scale = ResponsiveHelper.scaleFactor(context);
     final accentColor = appBarAccentColor(context);
 
+    final leadingWidget = assetPath != null
+        ? Image.asset(
+            assetPath!,
+            width: 22 * scale,
+            height: 22 * scale,
+            color: accentColor,
+          )
+        : Icon(icon, color: accentColor, size: 22 * scale);
+
     return ListTile(
       onTap: onTap,
-      leading: Icon(icon, color: accentColor, size: 22 * scale),
+      leading: leadingWidget,
       title: Text(
         title,
         style: theme.textTheme.bodyMedium?.copyWith(

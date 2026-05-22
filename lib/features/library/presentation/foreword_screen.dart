@@ -254,8 +254,8 @@ class _MalayalamPrefaceContentState extends State<_MalayalamPrefaceContent> {
   Widget _buildParagraph(String text, BuildContext context) {
     // Check for inline footnote superscripts
     final refPattern =
-        RegExp(r'(?<=[^\d\s(])\d+(?=\s|$)|\[([٠-٩]+|\d+)\]');
-    final hasRefs = _footnotes.isNotEmpty && refPattern.hasMatch(text);
+        RegExp(r'(?<=[^\d\s(])\d+(?=\s|$)|\[\^?([٠-٩]+|\d+)\]');
+    final hasRefs = refPattern.hasMatch(text);
 
     if (hasRefs) {
       return Padding(
@@ -280,17 +280,14 @@ class _MalayalamPrefaceContentState extends State<_MalayalamPrefaceContent> {
   TextSpan _buildSpanWithRefs(String text, BuildContext context) {
     final spans = <InlineSpan>[];
     final refPattern =
-        RegExp(r'(?<=[^\d\s(])\d+(?=\s|$)|\[([٠-٩]+|\d+)\]');
+        RegExp(r'(?<=[^\d\s(])\d+(?=\s|$)|\[\^?([٠-٩]+|\d+)\]');
     int lastEnd = 0;
 
     for (final match in refPattern.allMatches(text)) {
-      // group(1) is set when the bracketed [N] alternate matched
+      // group(1) is set when the bracketed [N] or [^N] alternate matched
       final raw = match.group(1) ?? match.group(0)!;
       final num = _parseArabicOrAsciiInt(raw);
       if (num == null || num < 1 || num > 20) continue;
-      final hasFootnote =
-          _footnotes.any((fn) => _extractFnNum(fn.text) == num);
-      if (!hasFootnote) continue;
 
       if (match.start > lastEnd) {
         spans.add(TextSpan(
@@ -298,18 +295,22 @@ class _MalayalamPrefaceContentState extends State<_MalayalamPrefaceContent> {
           style: AppTextTheme.forewordBody(context),
         ));
       }
+
+      final hasFootnote =
+          _footnotes.any((fn) => _extractFnNum(fn.text) == num);
+      final isDark = Theme.of(context).brightness == Brightness.dark;
       spans.add(WidgetSpan(
         alignment: PlaceholderAlignment.top,
         child: GestureDetector(
-          onTap: () => _scrollToFootnote(num),
+          onTap: hasFootnote ? () => _scrollToFootnote(num) : null,
           child: Padding(
             padding: const EdgeInsets.only(bottom: 4),
             child: Text(
               num.toString(),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 9,
                 fontWeight: FontWeight.w700,
-                color: AppTheme.appThemePrimary,
+                color: isDark ? Colors.white70 : Colors.black87,
               ),
             ),
           ),

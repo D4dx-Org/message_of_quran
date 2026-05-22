@@ -34,19 +34,23 @@ class _MainScreenState extends State<MainScreen> {
 
   static const List<({String label, IconData? iconData, String? assetPath})>
   _navItems = [
-    (label: 'Home', iconData: Icons.home_outlined, assetPath: null),
+    (label: 'Home', iconData: null, assetPath: 'assets/icons/home-img.png'),
     (
       label: 'Bookmarks',
-      iconData: Icons.bookmark_border_outlined,
-      assetPath: null,
+      iconData: null,
+      assetPath: 'assets/icons/bookmark-img.png',
     ),
     (
       label: '',
       iconData: null,
       assetPath: 'assets/icons/mushaf-img.png',
     ),
-    (label: 'Settings', iconData: Icons.settings_outlined, assetPath: null),
-    (label: 'About', iconData: Icons.info_outline_rounded, assetPath: null),
+    (
+      label: 'Settings',
+      iconData: null,
+      assetPath: 'assets/icons/settings-img.png',
+    ),
+    (label: 'About', iconData: null, assetPath: 'assets/icons/about-img.png'),
   ];
 
   static const List<Widget> _pages = [
@@ -95,7 +99,8 @@ class _MainScreenState extends State<MainScreen> {
 
   double _navItemSize(int index) {
     return switch (index) {
-      0 || 1 => _navIconSize - 1,
+      0 || 3 => _navIconSize - 4,
+      1 => _navIconSize - 1,
       _ => _navIconSize,
     };
   }

@@ -21,7 +21,7 @@ class BookmarkScreen extends StatelessWidget {
 
   Widget _buildBookmarkIcon(Color color) {
     return Icon(
-      Icons.bookmark_border_outlined,
+      Icons.bookmark,
       size: _bookmarkIconSize,
       color: color,
     );

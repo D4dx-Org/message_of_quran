@@ -565,11 +565,16 @@ class _SurahScreenState extends State<SurahScreen> {
   Widget _buildSurahActionDockButton(
     BuildContext context, {
     required String tooltip,
-    required IconData icon,
+    IconData? icon,
+    String? assetPath,
     required VoidCallback onPressed,
   }) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final iconColor = isDarkMode ? Colors.white : AppTheme.appIconTheme;
+
+    final Widget iconWidget = assetPath != null
+        ? Image.asset(assetPath, width: 24, height: 24, color: iconColor)
+        : Icon(icon, color: iconColor, size: 24);
 
     return Expanded(
       child: Semantics(
@@ -583,7 +588,7 @@ class _SurahScreenState extends State<SurahScreen> {
             onTap: onPressed,
             child: SizedBox(
               height: _surahActionDockHeight,
-              child: Icon(icon, color: iconColor, size: 24),
+              child: Center(child: iconWidget),
             ),
           ),
         ),
@@ -647,7 +652,7 @@ class _SurahScreenState extends State<SurahScreen> {
                             _buildSurahActionDockButton(
                               context,
                               tooltip: 'Home',
-                              icon: Icons.home_outlined,
+                              assetPath: 'assets/icons/home-img.png',
                               onPressed: () => _navigateToMainTab(0),
                             ),
                             Container(
@@ -686,7 +691,7 @@ class _SurahScreenState extends State<SurahScreen> {
                             _buildSurahActionDockButton(
                               context,
                               tooltip: 'Settings',
-                              icon: Icons.settings_outlined,
+                              assetPath: 'assets/icons/settings-img.png',
                               onPressed: () => _navigateToMainTab(3),
                             ),
                           ],
@@ -2300,9 +2305,10 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                           icon: Icon(
                                                                             isBookmarked
                                                                                 ? Icons.bookmark
-                                                                                : Icons.bookmark_border_outlined,
-                                                                            color:
-                                                                                AppTheme.appIconTheme,
+                                                                                : Icons.bookmark_border,
+                                                                            color: isBookmarked
+                                                                                ? AppTheme.appThemePrimary
+                                                                                : AppTheme.appIconTheme,
                                                                           ),
                                                                         ),
                                                                         IconButton(
