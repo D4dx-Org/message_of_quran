@@ -18,11 +18,11 @@ class UsefulLinkSection {
   final List<UsefulLinkItem> links;
 }
 
-/// External resources shown under the drawer "Useful Links" section.
-/// Add new sections or links here as needed.
+/// External resources shown in the drawer as individual expandable sections.
+/// Order: English translations, Malayalam translations, Hadith collections.
 const List<UsefulLinkSection> usefulLinksSections = [
   UsefulLinkSection(
-    title: "Al Qur'an Translations",
+    title: "Qur'an English Translations",
     links: [
       UsefulLinkItem(
         title: 'Abdullah Yusuf Ali',
@@ -35,7 +35,24 @@ const List<UsefulLinkSection> usefulLinksSections = [
     ],
   ),
   UsefulLinkSection(
-    title: 'Hadith Collection',
+    title: "Qur'an Malayalam Translations",
+    links: [
+      UsefulLinkItem(
+        title: "Thafheemul Qur'an",
+        url: 'https://thafheem.net/',
+      ),
+      UsefulLinkItem(
+        title: 'Thafseer Amani',
+        url: 'https://www.thafseeramani.com/index.asp',
+      ),
+      UsefulLinkItem(
+        title: 'Quran Lalithasaram',
+        url: 'https://lalithasaram.net/',
+      ),
+    ],
+  ),
+  UsefulLinkSection(
+    title: 'Hadith Collections',
     links: [
       UsefulLinkItem(
         title: 'Sahih Al Bukhari',
@@ -72,19 +89,6 @@ const List<UsefulLinkSection> usefulLinksSections = [
       UsefulLinkItem(
         title: 'Fiqh us-Sunnah by As-Sayyid Sabiq',
         url: 'https://www.alim.org/hadith/fiqh-us-sunnah/landing/',
-      ),
-    ],
-  ),
-  UsefulLinkSection(
-    title: 'Quran Malayalam Translations',
-    links: [
-      UsefulLinkItem(
-        title: "Thafheemul Qur'an by Maududi",
-        url: 'https://thafheem.net/',
-      ),
-      UsefulLinkItem(
-        title: 'Thafseer Amani',
-        url: 'https://www.thafseeramani.com/index.asp',
       ),
     ],
   ),

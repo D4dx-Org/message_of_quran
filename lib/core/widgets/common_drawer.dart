@@ -39,6 +39,7 @@ class CommonDrawer extends StatelessWidget {
       child: Drawer(
         backgroundColor: theme.scaffoldBackgroundColor,
         child: SafeArea(
+          top: false,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -56,7 +57,7 @@ class CommonDrawer extends StatelessWidget {
               ),
               Expanded(
                 child: SingleChildScrollView(
-                  padding: EdgeInsets.only(top: 4 * scale, bottom: 8 * scale),
+                  padding: EdgeInsets.only(top: 1 * scale, bottom: 8 * scale),
                   child: Column(
                     children: [
                       _DrawerTile(
@@ -194,20 +195,20 @@ class CommonDrawer extends StatelessWidget {
                           );
                         },
                       ),
-                      _DrawerExpansionTile(
-                        title: 'Useful Links',
-                        icon: Icons.link_outlined,
-                        children: [
-                          for (final section in usefulLinksSections) ...[
-                            _DrawerSectionHeader(title: section.title),
+                      for (final section in usefulLinksSections)
+                        _DrawerExpansionTile(
+                          title: section.title,
+                          icon: section == usefulLinksSections.last
+                              ? Icons.menu_book_outlined
+                              : Icons.translate_outlined,
+                          children: [
                             for (final link in section.links)
                               _DrawerLinkTile(
                                 title: link.title,
                                 url: link.url,
                               ),
                           ],
-                        ],
-                      ),
+                        ),
                       _DrawerTile(
                         title: 'Feedback',
                         icon: Icons.mail_outline,
@@ -330,11 +331,11 @@ class _DrawerBrandHeader extends StatelessWidget {
         : Colors.black.withValues(alpha: 0.08);
     return Container(
       key: const ValueKey('drawer-brand-header'),
-      margin: EdgeInsets.only(bottom: curveDepth + 4 * scale),
+      margin: EdgeInsets.only(bottom: curveDepth  * scale),
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: shadowColor,
+            color:shadowColor,
             blurRadius: 24 * scale,
             offset: Offset(0, 10 * scale),
           ),
@@ -365,7 +366,7 @@ class _DrawerBrandHeader extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.fromLTRB(
                   24 * scale,
-                  16 * scale,
+                  16 * scale + MediaQuery.paddingOf(context).top,
                   24 * scale,
                   28 * scale,
                 ),
@@ -375,15 +376,15 @@ class _DrawerBrandHeader extends StatelessWidget {
                       key: const ValueKey('drawer-brand-logo-box'),
                       child: Image.asset(
                         'assets/images/Group-logo.png',
-                        height: 44 * scale,
+                        height: 50 * scale,
                         fit: BoxFit.contain,
                         semanticLabel: 'The Message of the Quran logo',
                       ),
                     ),
-                    SizedBox(height: 14 * scale),
+                    SizedBox(height: 18 * scale),
                     SizedBox(
                       key: const ValueKey('drawer-support-button-box'),
-                      width: double.infinity,
+                      // width: double.infinity,
                       child: OutlinedButton.icon(
                         onPressed: onSupportTap,
                         label: Text(
