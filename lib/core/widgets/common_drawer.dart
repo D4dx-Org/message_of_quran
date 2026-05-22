@@ -329,7 +329,7 @@ class _DrawerBrandHeader extends StatelessWidget {
         : Colors.black.withValues(alpha: 0.08);
     return Container(
       key: const ValueKey('drawer-brand-header'),
-      margin: EdgeInsets.only(bottom: curveDepth  * scale),
+      margin: EdgeInsets.only(bottom: 8 * scale),
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
