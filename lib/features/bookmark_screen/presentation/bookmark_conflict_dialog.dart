@@ -10,7 +10,7 @@ enum BookmarkConflictResolution { replace, keepBoth }
 String bookmarkTargetLabel(String navigationTarget) {
   return BookmarkNavigationTarget.normalize(navigationTarget) ==
           BookmarkNavigationTarget.mushaf
-      ? 'Mushaf'
+      ? 'Mushaf Block'
       : 'Quran Block';
 }
 
