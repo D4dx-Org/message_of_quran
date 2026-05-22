@@ -54,7 +54,6 @@ class CommonDrawer extends StatelessWidget {
                   }
                 },
               ),
-              SizedBox(height: 2 * scale),
               Expanded(
                 child: SingleChildScrollView(
                   padding: EdgeInsets.only(top: 4 * scale, bottom: 8 * scale),
@@ -288,6 +287,31 @@ class CommonDrawer extends StatelessWidget {
   }
 }
 
+class _HalfMoonClipper extends CustomClipper<Path> {
+  const _HalfMoonClipper({this.curveDepth = 30.0});
+
+  final double curveDepth;
+
+  @override
+  Path getClip(Size size) {
+    final path = Path()
+      ..lineTo(0, size.height - curveDepth)
+      ..quadraticBezierTo(
+        size.width / 2,
+        size.height + curveDepth,
+        size.width,
+        size.height - curveDepth,
+      )
+      ..lineTo(size.width, 0)
+      ..close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant _HalfMoonClipper oldClipper) =>
+      oldClipper.curveDepth != curveDepth;
+}
+
 class _DrawerBrandHeader extends StatelessWidget {
   const _DrawerBrandHeader({required this.onSupportTap});
 
@@ -300,27 +324,26 @@ class _DrawerBrandHeader extends StatelessWidget {
     final headerColor =
         theme.appBarTheme.backgroundColor ?? theme.colorScheme.secondary;
     final headerAccent = appBarTitleMatchedAccentColor(context);
-    final borderRadius = BorderRadius.circular(28 * scale);
+    final curveDepth = 28.0 * scale;
     final shadowColor = isDarkMode(context: context)
         ? Colors.black.withValues(alpha: 0.2)
         : Colors.black.withValues(alpha: 0.08);
-    return Padding(
-      padding: EdgeInsets.fromLTRB(14 * scale, 0, 14 * scale, 6 * scale),
-      child: Container(
-        key: const ValueKey('drawer-brand-header'),
-        decoration: BoxDecoration(
+    return Container(
+      key: const ValueKey('drawer-brand-header'),
+      margin: EdgeInsets.only(bottom: curveDepth + 4 * scale),
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: shadowColor,
+            blurRadius: 24 * scale,
+            offset: Offset(0, 10 * scale),
+          ),
+        ],
+      ),
+      child: ClipPath(
+        clipper: _HalfMoonClipper(curveDepth: curveDepth),
+        child: Container(
           color: headerColor,
-          borderRadius: borderRadius,
-          boxShadow: [
-            BoxShadow(
-              color: shadowColor,
-              blurRadius: 24 * scale,
-              offset: Offset(0, 10 * scale),
-            ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: borderRadius,
           child: Stack(
             children: [
               Positioned(
@@ -341,10 +364,10 @@ class _DrawerBrandHeader extends StatelessWidget {
               ),
               Padding(
                 padding: EdgeInsets.fromLTRB(
-                  18 * scale,
+                  24 * scale,
                   16 * scale,
-                  18 * scale,
-                  18 * scale,
+                  24 * scale,
+                  28 * scale,
                 ),
                 child: Column(
                   children: [
@@ -363,10 +386,6 @@ class _DrawerBrandHeader extends StatelessWidget {
                       width: double.infinity,
                       child: OutlinedButton.icon(
                         onPressed: onSupportTap,
-                        // icon: Icon(
-                        //   Icons.volunteer_activism_outlined,
-                        //   size: 18 * scale,
-                        // ),
                         label: Text(
                           'Support Us',
                           style: theme.textTheme.titleMedium?.copyWith(
