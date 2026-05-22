@@ -198,9 +198,7 @@ class CommonDrawer extends StatelessWidget {
                       for (final section in usefulLinksSections)
                         _DrawerExpansionTile(
                           title: section.title,
-                          icon: section == usefulLinksSections.last
-                              ? Icons.menu_book_outlined
-                              : Icons.translate_outlined,
+                              icon: section.icon,
                           children: [
                             for (final link in section.links)
                               _DrawerLinkTile(

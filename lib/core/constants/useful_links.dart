@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class UsefulLinkItem {
   const UsefulLinkItem({
     required this.title,
@@ -12,16 +14,19 @@ class UsefulLinkSection {
   const UsefulLinkSection({
     required this.title,
     required this.links,
+    required this.icon,
   });
 
   final String title;
   final List<UsefulLinkItem> links;
+  final IconData icon ;
 }
 
 /// External resources shown in the drawer as individual expandable sections.
 /// Order: English translations, Malayalam translations, Hadith collections.
 const List<UsefulLinkSection> usefulLinksSections = [
   UsefulLinkSection(
+    icon: Icons.translate,
     title: "Qur'an English Translations",
     links: [
       UsefulLinkItem(
@@ -35,6 +40,7 @@ const List<UsefulLinkSection> usefulLinksSections = [
     ],
   ),
   UsefulLinkSection(
+    icon: Icons.language,
     title: "Qur'an Malayalam Translations",
     links: [
       UsefulLinkItem(
@@ -52,6 +58,7 @@ const List<UsefulLinkSection> usefulLinksSections = [
     ],
   ),
   UsefulLinkSection(
+    icon: Icons.book,
     title: 'Hadith Collections',
     links: [
       UsefulLinkItem(
