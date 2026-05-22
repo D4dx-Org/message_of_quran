@@ -385,11 +385,14 @@ class _DrawerBrandHeader extends StatelessWidget {
                       // width: double.infinity,
                       child: OutlinedButton.icon(
                         onPressed: onSupportTap,
-                        label: Text(
-                          'Support Us',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: headerAccent,
-                            fontWeight: FontWeight.w700,
+                        label: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          child: Text(
+                            'Support Us',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: headerAccent,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                         style: OutlinedButton.styleFrom(
