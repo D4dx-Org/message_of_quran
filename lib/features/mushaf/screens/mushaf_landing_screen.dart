@@ -621,6 +621,8 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          _buildQuickAccessWrap(context, isDarkMode, isLandscape),
+          SizedBox(height: isLandscape ? 6 : 8),
           Text(
             'Recently Read',
             style: TextStyle(
@@ -629,8 +631,6 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
               fontWeight: FontWeight.w600,
             ),
           ),
-          SizedBox(height: isLandscape ? 6 : 8),
-          _buildQuickAccessWrap(context, isDarkMode, isLandscape),
           SizedBox(height: isLandscape ? 6 : 8),
           GestureDetector(
             onTap: () => _openPage(context, _p.lastRead?.page ?? 1),
