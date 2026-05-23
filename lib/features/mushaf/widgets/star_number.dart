@@ -47,6 +47,8 @@ class StarNumber extends StatelessWidget {
               painter: _HexagonPainter(
                 color: polygonColor,
                 radius: size * 0.50,
+                strokeColor:
+                    isDarkMode ? const Color(0xB3FFFFFF) : null,
               ),
             ),
           Image.asset(
@@ -74,15 +76,17 @@ class StarNumber extends StatelessWidget {
 class _HexagonPainter extends CustomPainter {
   final Color color;
   final double radius;
+  final Color? strokeColor;
 
-  _HexagonPainter({required this.color, required this.radius});
+  _HexagonPainter({
+    required this.color,
+    required this.radius,
+    this.strokeColor,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill;
 
     final path = Path();
     for (int i = 0; i < 6; i++) {
@@ -96,10 +100,24 @@ class _HexagonPainter extends CustomPainter {
       }
     }
     path.close();
-    canvas.drawPath(path, paint);
+
+    final fillPaint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+    canvas.drawPath(path, fillPaint);
+
+    if (strokeColor != null) {
+      final strokePaint = Paint()
+        ..color = strokeColor!
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5;
+      canvas.drawPath(path, strokePaint);
+    }
   }
 
   @override
   bool shouldRepaint(_HexagonPainter oldDelegate) =>
-      color != oldDelegate.color || radius != oldDelegate.radius;
+      color != oldDelegate.color ||
+      radius != oldDelegate.radius ||
+      strokeColor != oldDelegate.strokeColor;
 }

@@ -1061,8 +1061,10 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                             metaIcon,
                             height: 12,
                             width: 12,
-                            colorFilter: const ColorFilter.mode(
-                              AppTheme.appIconTheme,
+                            colorFilter: ColorFilter.mode(
+                              isDarkMode
+                                  ? const Color(0xB3FFFFFF)
+                                  : AppTheme.appIconTheme,
                               BlendMode.srcIn,
                             ),
                           ),

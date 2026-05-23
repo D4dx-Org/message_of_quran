@@ -2233,7 +2233,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                         );
                                                                     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
                                                                     final actionIconColor = isDarkMode
-                                                                        ? AppTheme.appThemePrimary
+                                                                        ? Colors.white.withValues(alpha: 0.7)
                                                                         : AppTheme.appIconTheme;
                                                                     const translationText =
                                                                         '';

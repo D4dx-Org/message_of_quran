@@ -139,7 +139,7 @@ class _MainScreenState extends State<MainScreen> {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final navBg = isDarkMode
-        ? const Color(0xff0c2d52)
+        ? AppTheme.appThemePrimary
         : Colors.white; // AppTheme.appThemeSecondary;
     final inactiveColor = isDarkMode ? Colors.grey[400]! : const Color(0xFF4A4A4A);
     final displayIndex = controller.currentIndex;

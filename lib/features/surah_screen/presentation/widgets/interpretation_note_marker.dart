@@ -12,15 +12,18 @@ InlineSpan buildInterpretationNoteMarkerSpan({
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Transform.translate(
-        offset: const Offset(0, -4),
+        offset: const Offset(0, -2),
         child: Padding(
           padding: const EdgeInsetsDirectional.only(start: 2),
           child: Builder(
             builder: (context) {
               final isDark = Theme.of(context).brightness == Brightness.dark;
               final circleColor = isDark
-                  ? AppTheme.appThemePrimary
+                  ? Colors.white.withValues(alpha: 0.7)
                   : AppTheme.appThemePrimary;
+              final textColor = isDark
+                  ? const Color(0xff103564)
+                  : Colors.white;
               return Container(
                 width: 18,
                 height: 18,
@@ -35,10 +38,10 @@ InlineSpan buildInterpretationNoteMarkerSpan({
                     fit: BoxFit.scaleDown,
                     child: Text(
                       '$number',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 9,
                         fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                        color: textColor,
                         height: 1,
                       ),
                     ),
