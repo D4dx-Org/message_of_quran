@@ -36,7 +36,7 @@ Future<BookmarkConflictResolution?> showBookmarkConflictDialog(
           ResponsiveHelper.bottomSheetMaxWidth(dialogContext) ?? 420.0;
       final cardColor =
           theme.dialogTheme.backgroundColor ??
-          (isDark ? const Color(0xFF2C2C2E) : AppTheme.appThemeSecondary);
+          (isDark ? const Color(0xff122f5a) : AppTheme.appThemeSecondary);
       final borderColor = isDark
           ? Colors.white.withValues(alpha: 0.08)
           : AppTheme.appThemePrimary.withValues(alpha: 0.08);

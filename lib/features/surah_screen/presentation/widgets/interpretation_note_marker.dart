@@ -15,29 +15,37 @@ InlineSpan buildInterpretationNoteMarkerSpan({
         offset: const Offset(0, -4),
         child: Padding(
           padding: const EdgeInsetsDirectional.only(start: 2),
-          child: Container(
-            width: 18,
-            height: 18,
-            decoration: const BoxDecoration(
-              color: AppTheme.appThemePrimary,
-              shape: BoxShape.circle,
-            ),
-            alignment: Alignment.center,
-            child: Padding(
-              padding: const EdgeInsets.all(1.5),
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  '$number',
-                  style: const TextStyle(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                    height: 1,
+          child: Builder(
+            builder: (context) {
+              final isDark = Theme.of(context).brightness == Brightness.dark;
+              final circleColor = isDark
+                  ? AppTheme.appThemePrimary
+                  : AppTheme.appThemePrimary;
+              return Container(
+                width: 18,
+                height: 18,
+                decoration: BoxDecoration(
+                  color: circleColor,
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: Padding(
+                  padding: const EdgeInsets.all(1.5),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      '$number',
+                      style: const TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                        height: 1,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
         ),
       ),

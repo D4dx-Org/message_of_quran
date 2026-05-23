@@ -600,7 +600,7 @@ class _SurahScreenState extends State<SurahScreen> {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final dockBg = isDarkMode
-        ? const Color(0xFF1C1C1E)
+        ? const Color(0xff0c2d52)
         : const Color.fromRGBO(255, 248, 235, 1);
     final borderColor = isDarkMode
         ? Colors.white.withValues(alpha: 0.12)
@@ -1656,10 +1656,12 @@ class _SurahScreenState extends State<SurahScreen> {
       context,
       isMalayalam: context.read<LanguageProvider>().isMalayalam,
     );
+    final isDarkLink = Theme.of(context).brightness == Brightness.dark;
+    final linkColor = isDarkLink ? const Color(0xff5B9BD5) : AppTheme.appIconTheme;
     final linkStyle = baseStyle.copyWith(
-      color: AppTheme.appIconTheme,
+      color: linkColor,
       decoration: TextDecoration.underline,
-      decorationColor: AppTheme.appIconTheme,
+      decorationColor: linkColor,
     );
 
     final spans = <InlineSpan>[];
@@ -1700,10 +1702,12 @@ class _SurahScreenState extends State<SurahScreen> {
       return [TextSpan(text: text, style: style)];
     }
 
+    final isDarkRef = Theme.of(context).brightness == Brightness.dark;
+    final refLinkColor = isDarkRef ? const Color(0xff5B9BD5) : AppTheme.appIconTheme;
     final linkStyle = style.copyWith(
-      color: AppTheme.appIconTheme,
+      color: refLinkColor,
       decoration: TextDecoration.underline,
-      decorationColor: AppTheme.appIconTheme,
+      decorationColor: refLinkColor,
     );
 
     return segments.map<InlineSpan>((seg) {
@@ -1862,7 +1866,11 @@ class _SurahScreenState extends State<SurahScreen> {
                     8,
                     MediaQuery.of(ctx).padding.bottom + 8,
                   ),
-                  child: Row(
+                  child: Builder(
+                    builder: (barCtx) {
+                      final isDarkBar = Theme.of(barCtx).brightness == Brightness.dark;
+                      final activeColor = isDarkBar ? Colors.white : Colors.black;
+                      return Row(
                     children: [
                       // Prev
                       IconButton(
@@ -1873,14 +1881,17 @@ class _SurahScreenState extends State<SurahScreen> {
                         icon: Icon(
                           Icons.chevron_left,
                           color: canPrev
-                              ? AppTheme.appIconTheme
+                              ? activeColor
                               : Colors.grey[400],
                         ),
                       ),
                       if (!isLoading && hasBounds)
                         Text(
                           '${ctrl.currentInterpretationNumber} / ${ctrl.maxInterpretationNumber}',
-                          style: const TextStyle(fontSize: 13),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: activeColor,
+                          ),
                         ),
                       // Next
                       IconButton(
@@ -1891,7 +1902,7 @@ class _SurahScreenState extends State<SurahScreen> {
                         icon: Icon(
                           Icons.chevron_right,
                           color: canNext
-                              ? AppTheme.appIconTheme
+                              ? activeColor
                               : Colors.grey[400],
                         ),
                       ),
@@ -1921,7 +1932,7 @@ class _SurahScreenState extends State<SurahScreen> {
                           Icons.copy_outlined,
                           color: isLoading
                               ? Colors.grey[400]
-                              : AppTheme.appIconTheme,
+                              : activeColor,
                         ),
                       ),
                       // Share
@@ -1939,10 +1950,12 @@ class _SurahScreenState extends State<SurahScreen> {
                           Icons.share_outlined,
                           color: isLoading
                               ? Colors.grey[400]
-                              : AppTheme.appIconTheme,
+                              : activeColor,
                         ),
                       ),
                     ],
+                  );
+                    },
                   ),
                 ),
               ],
@@ -2218,6 +2231,10 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                           surahNumber,
                                                                           ayaStart,
                                                                         );
+                                                                    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+                                                                    final actionIconColor = isDarkMode
+                                                                        ? AppTheme.appThemePrimary
+                                                                        : AppTheme.appIconTheme;
                                                                     const translationText =
                                                                         '';
                                                                     return Row(
@@ -2264,19 +2281,19 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                                     }
                                                                                   },
                                                                                   icon: isLoadingThis
-                                                                                      ? const SizedBox(
+                                                                                      ? SizedBox(
                                                                                           width: 20,
                                                                                           height: 20,
                                                                                           child: CircularProgressIndicator(
                                                                                             strokeWidth: 2,
-                                                                                            color: AppTheme.appIconTheme,
+                                                                                            color: actionIconColor,
                                                                                           ),
                                                                                         )
                                                                                       : Icon(
                                                                                           isThis
                                                                                               ? Icons.stop_circle
                                                                                               : Icons.play_circle_outline,
-                                                                                          color: AppTheme.appIconTheme,
+                                                                                          color: actionIconColor,
                                                                                         ),
                                                                                 );
                                                                               },
@@ -2307,8 +2324,8 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                                 ? Icons.bookmark
                                                                                 : Icons.bookmark_border,
                                                                             color: isBookmarked
-                                                                                ? AppTheme.appThemePrimary
-                                                                                : AppTheme.appIconTheme,
+                                                                                ? actionIconColor
+                                                                                : actionIconColor,
                                                                           ),
                                                                         ),
                                                                         IconButton(
@@ -2327,10 +2344,10 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                               );
                                                                             }
                                                                           },
-                                                                          icon: const Icon(
+                                                                          icon: Icon(
                                                                             Icons.share_outlined,
                                                                             color:
-                                                                                AppTheme.appIconTheme,
+                                                                                actionIconColor,
                                                                           ),
                                                                         ),
                                                                       ],

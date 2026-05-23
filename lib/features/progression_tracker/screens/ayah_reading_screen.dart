@@ -90,7 +90,7 @@ class _AyahReadingScreenState extends State<AyahReadingScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : Colors.black;
-    final cardBg = isDark ? const Color(0xFF3C3C3C) : Colors.white;
+    final cardBg = isDark ? const Color(0xff163d6e) : Colors.white;
     final borderColor = isDark
         ? Colors.white.withValues(alpha: 0.08)
         : Colors.grey.withValues(alpha: 0.18);

@@ -41,7 +41,7 @@ class ThemeProvider extends ChangeNotifier {
   bool get isDarkMode => _themeMode == ThemeMode.dark;
 
   // Custom colors for themes
-  static const Color darkBackgroundColor = Color(0xFF333333);
+  static const Color darkBackgroundColor = Color(0xff103564);
   static const Color lightBackgroundColor = AppTheme.appThemeSecondary;
 
   TextTheme _lightTextTheme() {
@@ -150,7 +150,7 @@ class ThemeProvider extends ChangeNotifier {
     primaryColor: AppTheme.appIconTheme,
     scaffoldBackgroundColor: darkBackgroundColor,
     brightness: Brightness.dark,
-    cardColor: const Color(0xFF3C3C3E),
+    cardColor: const Color(0xff163d6e),
     dividerTheme: const DividerThemeData(
       color: Color(0x33FFFFFF),
       space: 1,
@@ -163,7 +163,7 @@ class ThemeProvider extends ChangeNotifier {
       unselectedItemColor: Colors.white,
     ),
     navigationBarTheme: NavigationBarThemeData(
-      backgroundColor: const Color(0xFF3C3C3E),
+      backgroundColor: const Color(0xff0c2d52),
       indicatorColor: AppTheme.appThemePrimary.withValues(alpha: 0.25),
       iconTheme: const WidgetStatePropertyAll(
         IconThemeData(color: Colors.white),
@@ -193,15 +193,25 @@ class ThemeProvider extends ChangeNotifier {
         iconColor: WidgetStatePropertyAll(AppTheme.appThemeSecondary),
       ),
     ),
+    dialogBackgroundColor: const Color(0xff0c2d52),
+    dialogTheme: const DialogThemeData(
+      backgroundColor: Color(0xff0c2d52),
+    ),
+    bottomSheetTheme: const BottomSheetThemeData(
+      backgroundColor: Color(0xff103564),
+    ),
+    popupMenuTheme: const PopupMenuThemeData(
+      color: Color(0xff163d6e),
+    ),
     colorScheme: const ColorScheme.dark(
       primary: AppTheme.appIconTheme,
       secondary: AppTheme.appThemePrimary,
       surface: darkBackgroundColor,
-      outline: Color(0xFF636366),
-      outlineVariant: Color(0xFF3A3A3C),
+      outline: Color(0xFF4A7AB5),
+      outlineVariant: Color(0xff163d6e),
     ),
     searchBarTheme: SearchBarThemeData(
-      backgroundColor: const WidgetStatePropertyAll(Color(0xFF3A3A3C)),
+      backgroundColor: const WidgetStatePropertyAll(Color(0xff163d6e)),
       elevation: const WidgetStatePropertyAll(0),
       textStyle: WidgetStatePropertyAll(
         textTheme.bodyMedium?.copyWith(

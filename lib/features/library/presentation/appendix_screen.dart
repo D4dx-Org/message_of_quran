@@ -125,7 +125,7 @@ class _AppendixScreenState extends State<AppendixScreen> {
                       filled: true,
                       fillColor:
                           Theme.of(context).brightness == Brightness.dark
-                              ? Colors.grey.shade800
+                              ? const Color(0xff163d6e)
                               : Colors.grey.shade100,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -194,7 +194,7 @@ class _AppendixAccordionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF2C2C2E) : Colors.white;
+    final cardColor = isDark ? const Color(0xff163d6e) : Colors.white;
     final numeral = appendix.romanNumeral.isEmpty
         ? appendix.number.toString()
         : appendix.romanNumeral.toUpperCase();
@@ -213,7 +213,7 @@ class _AppendixAccordionTile extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isDark ? Colors.grey.shade700 : Colors.grey.shade200,
+                color: isDark ? const Color(0xff1a4a82) : Colors.grey.shade200,
                 width: 1,
               ),
             ),

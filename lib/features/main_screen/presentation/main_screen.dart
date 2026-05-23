@@ -43,7 +43,7 @@ class _MainScreenState extends State<MainScreen> {
     (
       label: '',
       iconData: null,
-      assetPath: 'assets/icons/mushaf-img.png',
+      assetPath: 'assets/icons/mushaf-img-2.png',
     ),
     (
       label: 'Settings',
@@ -139,9 +139,9 @@ class _MainScreenState extends State<MainScreen> {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final navBg = isDarkMode
-        ? const Color(0xFF1C1C1E)
+        ? const Color(0xff0c2d52)
         : Colors.white; // AppTheme.appThemeSecondary;
-    final inactiveColor = isDarkMode ? Colors.white70 : const Color(0xFF4A4A4A);
+    final inactiveColor = isDarkMode ? Colors.grey[400]! : const Color(0xFF4A4A4A);
     final displayIndex = controller.currentIndex;
     final tablet = ResponsiveHelper.isTablet(context);
     final scale = ResponsiveHelper.scaleFactor(context);
@@ -197,7 +197,7 @@ class _MainScreenState extends State<MainScreen> {
                 backgroundColor: navBg,
                 labelType: NavigationRailLabelType.all,
                 selectedIconTheme: IconThemeData(
-                  color: AppTheme.appIconTheme,
+                  color: isDarkMode ? Colors.white : AppTheme.appIconTheme,
                   size: _navIconSize * scale,
                 ),
                 unselectedIconTheme: IconThemeData(
@@ -205,7 +205,7 @@ class _MainScreenState extends State<MainScreen> {
                   size: _navIconSize * scale,
                 ),
                 selectedLabelTextStyle: TextStyle(
-                  color: AppTheme.appIconTheme,
+                  color: isDarkMode ? Colors.white : AppTheme.appIconTheme,
                   fontSize: 11 * scale,
                   fontWeight: FontWeight.w700,
                 ),
@@ -301,7 +301,7 @@ class _MainScreenState extends State<MainScreen> {
                       final color = isMushaf
                           ? Colors.white
                           : isSelected
-                          ? AppTheme.appIconTheme
+                          ? (isDarkMode ? Colors.white : AppTheme.appIconTheme)
                           : inactiveColor;
 
                       // Other items: active gets a filled container, inactive stays plain

@@ -18,7 +18,7 @@ class AyahPosterWidget extends StatelessWidget {
 
   static const Color _gold = AppTheme.appIconTheme;
   static const Color _bg = AppTheme.appThemeSecondary;
-  static const Color _textDark = Color(0xFF1C1C1E);
+  static const Color _textDark = Color(0xff0c2d52);
 
   @override
   Widget build(BuildContext context) {

@@ -94,7 +94,7 @@ class ProgressionTrackerScreen extends StatelessWidget {
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF3C3C3C) : Colors.white,
+                    color: isDark ? const Color(0xff163d6e) : Colors.white,
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
                       color: isDark

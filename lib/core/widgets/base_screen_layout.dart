@@ -97,7 +97,7 @@ class BaseScreenLayout extends StatelessWidget {
                             Color.fromRGBO(255, 250, 234, 1),
                           ],
                         ),
-                  color: isDarkMode ? const Color(0xFF1C1C1E) : null,
+                  color: isDarkMode ? const Color(0xff0c2d52) : null,
                   boxShadow:
                       contentCardBoxShadows ??
                       const [

@@ -314,7 +314,7 @@ const _kWhite = Color(0xffFFFFFF);
 const _kBlack = Color(0xff000000);
 const _kWhite70 = Color(0xB3FFFFFF);
 const _kBlack54 = Color(0x8A000000);
-const _kGrey3C = Color(0xFF3C3C3C);
+const _kGrey3C = Color(0xff163d6e);
 const _kMaddina = 'assets/icons/revamp/madeena_icon.svg';
 const _kMakkah = 'assets/icons/revamp/makkah_icon.svg';
 

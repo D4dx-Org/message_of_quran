@@ -81,13 +81,13 @@ class _HomeScreenState extends State<HomeScreen>
   Widget _buildTabBar(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final containerBg = isDarkMode
-        ? const Color(0xFF2C2C2E)
+        ? const Color(0xff163d6e)
         : const Color.fromRGBO(230, 230, 230, 1);
     final selectedBg = isDarkMode
-        ? const Color(0xFF3C3C3C)
+        ? AppTheme.appThemePrimary
         : AppTheme.appThemePrimary;
     final unselectedBg = isDarkMode
-        ? const Color(0xFF3A3A3C)
+        ? const Color(0xff163d6e)
         : const Color.fromRGBO(221, 221, 221, 1);
     const selectedTextColor = Colors.white;
     final unselectedTextColor = isDarkMode

@@ -383,10 +383,15 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
                             }
                           }
                         },
-                  icon: Icon(
-                    Icons.copy_outlined,
-                    size: 20,
-                    color: _loading ? Colors.grey[400] : AppTheme.appIconTheme,
+                  icon: Builder(
+                    builder: (ctx) {
+                      final isDark = Theme.of(ctx).brightness == Brightness.dark;
+                      return Icon(
+                        Icons.copy_outlined,
+                        size: 20,
+                                                color: _loading ? Colors.grey[400] : (isDark ? const Color(0xff5B9BD5) : AppTheme.appIconTheme),
+                      );
+                    },
                   ),
                 ),
                 // Share
@@ -400,10 +405,15 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
                             await Share.share(text);
                           }
                         },
-                  icon: Icon(
-                    Icons.share_outlined,
-                    size: 20,
-                    color: _loading ? Colors.grey[400] : AppTheme.appIconTheme,
+                  icon: Builder(
+                    builder: (ctx) {
+                      final isDark = Theme.of(ctx).brightness == Brightness.dark;
+                      return Icon(
+                        Icons.share_outlined,
+                        size: 20,
+                        color: _loading ? Colors.grey[400] : (isDark ? const Color(0xff5B9BD5) : AppTheme.appIconTheme),
+                      );
+                    },
                   ),
                 ),
                 const Spacer(),
@@ -623,6 +633,8 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
       context,
       isMalayalam: isMl,
     );
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final linkColor = isDark ? const Color(0xff5B9BD5) : AppTheme.appIconTheme;
     final spans = <InlineSpan>[];
     for (final seg in segments) {
       if (seg.isCrossReference) {
@@ -631,9 +643,9 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
           TextSpan(
             text: seg.text,
             style: baseStyle.copyWith(
-              color: AppTheme.appIconTheme,
+              color: linkColor,
               decoration: TextDecoration.underline,
-              decorationColor: AppTheme.appIconTheme,
+              decorationColor: linkColor,
             ),
             recognizer: TapGestureRecognizer()
               ..onTap = () =>
@@ -807,6 +819,8 @@ class _NestedInterpretationSheetState
       context,
       isMalayalam: widget.isMalayalam,
     );
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final linkColor = isDark ? const Color(0xff5B9BD5) : AppTheme.appIconTheme;
     final spans = <InlineSpan>[];
     for (final seg in segments) {
       if (seg.isCrossReference) {
@@ -815,9 +829,9 @@ class _NestedInterpretationSheetState
           TextSpan(
             text: seg.text,
             style: baseStyle.copyWith(
-              color: AppTheme.appIconTheme,
+              color: linkColor,
               decoration: TextDecoration.underline,
-              decorationColor: AppTheme.appIconTheme,
+              decorationColor: linkColor,
             ),
             recognizer: TapGestureRecognizer()
               ..onTap = () =>

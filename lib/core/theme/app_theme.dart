@@ -25,8 +25,8 @@ class AppTheme {
   static ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     primaryColor: appThemePrimary,
-    listTileTheme: const ListTileThemeData(tileColor: Color(0xFF3C3C3C)),
-    scaffoldBackgroundColor: const Color(0xFF333333),
+    listTileTheme: const ListTileThemeData(tileColor: Color(0xff163d6e)),
+    scaffoldBackgroundColor: const Color(0xff103564),
     appBarTheme: const AppBarTheme(
       backgroundColor: appThemePrimary,
       foregroundColor: Colors.white,

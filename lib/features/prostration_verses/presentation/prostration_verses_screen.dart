@@ -177,7 +177,7 @@ class _ProstrationVersesScreenState extends State<ProstrationVersesScreen> {
     }
 
     return ColoredBox(
-      color: isDarkMode ? const Color(0xFF1C1C1E) : const Color(0xFFF3F4F6),
+      color: isDarkMode ? const Color(0xff0c2d52) : const Color(0xFFF3F4F6),
       child: ListView.separated(
         padding: EdgeInsets.fromLTRB(
           horizontalPadding,

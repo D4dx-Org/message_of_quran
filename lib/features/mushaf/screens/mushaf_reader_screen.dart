@@ -548,7 +548,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
   Widget _buildAppBar(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark
-        ? const Color(0xFF1C1C1E).withValues(alpha: 0.95)
+        ? const Color(0xff0c2d52).withValues(alpha: 0.95)
         : AppTheme.appThemePrimary;
     const textColor = Colors.white;
 
@@ -616,7 +616,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
   Widget _buildBottomBar(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark
-        ? const Color(0xFF1C1C1E).withValues(alpha: 0.95)
+        ? const Color(0xff0c2d52).withValues(alpha: 0.95)
         : AppTheme.appThemePrimary;
     const textColor = Colors.white;
 
