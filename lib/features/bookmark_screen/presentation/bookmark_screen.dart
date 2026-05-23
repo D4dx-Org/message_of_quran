@@ -110,9 +110,13 @@ class BookmarkScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final accentColor = appBarAccentColor(context);
-    final deleteAccentColor = theme.brightness == Brightness.dark
-        ? accentColor
+    final iconColor = isDark
+        ? Colors.white.withValues(alpha: 0.7)
+        : accentColor;
+    final deleteAccentColor = isDark
+        ? Colors.white.withValues(alpha: 0.7)
         : AppTheme.appThemePrimary;
 
     return BaseScreenLayout(
@@ -169,7 +173,7 @@ class BookmarkScreen extends StatelessWidget {
                                             right: 14,
                                           ),
                                           child: _buildBookmarkIcon(
-                                            accentColor,
+                                            iconColor,
                                           ),
                                         ),
                                         Expanded(
@@ -230,7 +234,7 @@ class BookmarkScreen extends StatelessWidget {
                                                               ),
                                                           icon: Icon(
                                                             Icons.edit_outlined,
-                                                            color: accentColor,
+                                                            color: iconColor,
                                                           ),
                                                         ),
                                                       ),
