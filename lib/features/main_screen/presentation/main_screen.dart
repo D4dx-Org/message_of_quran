@@ -183,7 +183,7 @@ class _MainScreenState extends State<MainScreen> {
               _navItems[2].assetPath!,
               width: _navIconSize,
               height: _navIconSize,
-              color: Colors.white,
+              color: isDarkMode && displayIndex != 2 ? inactiveColor : Colors.white,
             ),
           ),
           floatingActionButtonLocation:
@@ -262,7 +262,7 @@ class _MainScreenState extends State<MainScreen> {
               _navItems[2].assetPath!,
               width: _navIconSize * scale,
               height: _navIconSize * scale,
-              color: Colors.white,
+              color: isDarkMode && displayIndex != 2 ? inactiveColor : Colors.white,
             ),
           ),
         ),
