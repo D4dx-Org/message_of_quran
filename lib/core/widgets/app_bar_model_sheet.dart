@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
+import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
@@ -116,11 +118,10 @@ class _JumpToSheetState extends State<_JumpToSheet> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final placeBadgeFill = isDark
-        ? appBarAccentFillColor(context, alpha: 0.22)
-        : appBarAccentFillColor(context, alpha: 0.10);
-    final placeBadgeText = appBarAccentColor(context);
+    final textColor = isDark ? Colors.white : AppTheme.appThemePrimary;
+    final subColor = isDark ? Colors.white54 : Colors.grey[600]!;
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
+    final scale = ResponsiveHelper.scaleFactor(context);
     return Consumer<SurahProvider>(
       builder: (_, provider, _) {
         final all = provider.surahList;
@@ -205,6 +206,23 @@ class _JumpToSheetState extends State<_JumpToSheet> {
                               const Divider(height: 1, indent: 72),
                           itemBuilder: (_, i) {
                             final surah = filtered[i];
+                            final displayText = formatSurahListDisplayText(
+                              isMalayalam: isMalayalam,
+                              surahName: surah.name,
+                              surahTranslation: surah.description,
+                              malayalamName: surah.malayalamName,
+                              surahNumber: surah.surahNumber,
+                            );
+                            final displayName = displayText.title;
+                            final description = displayText.subtitle;
+                            final placeName = localizeSurahPlace(
+                              surah.place,
+                              isMalayalam: isMalayalam,
+                            );
+                            final ayahLabel = formatAyahCountLabel(
+                              surah.ayathCount,
+                              isMalayalam: isMalayalam,
+                            );
                             return ListTile(
                               leading: Container(
                                 width: 40,
@@ -224,40 +242,57 @@ class _JumpToSheetState extends State<_JumpToSheet> {
                                 ),
                               ),
                               title: Text(
-                                surah.name,
-                                style: const TextStyle(
+                                displayName,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.poppins(
+                                  color: textColor,
                                   fontWeight: FontWeight.w600,
+                                  fontSize: 12 * scale,
                                 ),
                               ),
-                              subtitle: Text(
-                                ' ${surah.ayathCount}  Ayat .   ${surah.arabicName} ',
-                                style: const TextStyle(fontSize: 12),
-                              ),
-                              trailing: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 3,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: placeBadgeFill,
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  localizeSurahMadinahDisplayLabel(
-                                    surah.place,
-                                    isMalayalam: isMalayalam,
-                                    surahNumber: surah.surahNumber,
-                                    fallback: localizeSurahPlace(
-                                      surah.place,
-                                      isMalayalam: isMalayalam,
+                              subtitle: description.isNotEmpty
+                                  ? Text(
+                                      description,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 11 * scale,
+                                        color: subColor,
+                                        fontWeight: FontWeight.w400,
+                                        letterSpacing: 0.2,
+                                      ),
+                                    )
+                                  : null,
+                              trailing: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    placeName,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.right,
+                                    style: GoogleFonts.poppins(
+                                      color: subColor,
+                                      fontSize: 11 * scale,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w600,
-                                    color: placeBadgeText,
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    ayahLabel,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.right,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 10.5 * scale,
+                                      color: subColor,
+                                      fontWeight: FontWeight.w500,
+                                      letterSpacing: 0.3,
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
                               onTap: () => _onSurahTap(surah),
                             );
