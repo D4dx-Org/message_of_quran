@@ -20,15 +20,21 @@ class PlaySettingsProvider extends ChangeNotifier {
   static const List<double> speedPresets = [0.5, 1.0, 1.5, 2.0];
 
   static const List<ReciterInfo> reciters = [
+    ReciterInfo(
+        name: 'Abdul Basit Abdul Samad (Mujawwad)',
+        folderName: 'Abdul_Basit_Mujawwad_128kbps'),
+    ReciterInfo(
+        name: 'Abdurrahmaan As-Sudais',
+        folderName: 'Abdurrahmaan_As-Sudais_192kbps'),
+    ReciterInfo(
+        name: "Sa'ud Ash-Shuraym",
+        folderName: 'Saood_ash-Shuraym_128kbps'),
     ReciterInfo(name: 'Mishary Rashid Alafasy', folderName: 'Alafasy_128kbps'),
     ReciterInfo(
         name: 'Mahmoud Khalil Al-Husary', folderName: 'Husary_128kbps'),
     ReciterInfo(
         name: 'Muhammad Siddiq Al-Minshawi (Mujawwad)',
         folderName: 'Minshawy_Mujawwad_192kbps'),
-    ReciterInfo(
-        name: 'Abdul Basit Abdul Samad (Mujawwad)',
-        folderName: 'Abdul_Basit_Mujawwad_128kbps'),
     ReciterInfo(name: 'Saad Al-Ghamdi', folderName: 'Ghamadi_40kbps'),
     ReciterInfo(
         name: 'Ahmed ibn Ali Al-Ajamy',
