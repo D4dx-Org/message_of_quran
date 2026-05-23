@@ -29,16 +29,29 @@ class PlaySettingsProvider extends ChangeNotifier {
     ReciterInfo(
         name: "Sa'ud Ash-Shuraym",
         folderName: 'Saood_ash-Shuraym_128kbps'),
-    ReciterInfo(name: 'Mishary Rashid Alafasy', folderName: 'Alafasy_128kbps'),
+    ReciterInfo(
+        name: 'Abdulrahman Al-Ossi',
+        folderName: 'Abdulrahman_Al-Ossi_128kbps'),
+    ReciterInfo(
+        name: 'Abdullah Basfar', folderName: 'Abdullah_Basfar_192kbps'),
+    ReciterInfo(
+        name: 'Ahmed ibn Ali Al-Ajamy',
+        folderName: 'Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net'),
+    ReciterInfo(name: 'Ali Jaber', folderName: 'Ali_Jaber_64kbps'),
+    ReciterInfo(name: 'Fares Abbad', folderName: 'Fares_Abbad_64kbps'),
+    ReciterInfo(
+        name: 'Muhsin Al Qasim', folderName: 'Muhsin_Al_Qasim_192kbps'),
+    ReciterInfo(
+        name: 'Nasser Alqatami', folderName: 'Nasser_Alqatami_128kbps'),
+    ReciterInfo(
+        name: 'Abdullah Awwaad Al-Juhayni',
+        folderName: 'Abdullaah_3awwaad_Al-Juhaynee_128kbps'),
     ReciterInfo(
         name: 'Mahmoud Khalil Al-Husary', folderName: 'Husary_128kbps'),
     ReciterInfo(
         name: 'Muhammad Siddiq Al-Minshawi (Mujawwad)',
         folderName: 'Minshawy_Mujawwad_192kbps'),
     ReciterInfo(name: 'Saad Al-Ghamdi', folderName: 'Ghamadi_40kbps'),
-    ReciterInfo(
-        name: 'Ahmed ibn Ali Al-Ajamy',
-        folderName: 'Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net'),
   ];
 
   PlayMode _playMode = PlayMode.continuous;
