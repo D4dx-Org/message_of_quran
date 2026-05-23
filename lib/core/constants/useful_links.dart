@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_islamic_icons/flutter_islamic_icons.dart';
+import 'package:iconsax/iconsax.dart';
 
 class UsefulLinkItem {
   const UsefulLinkItem({
@@ -26,7 +28,7 @@ class UsefulLinkSection {
 /// Order: English translations, Malayalam translations, Hadith collections.
 const List<UsefulLinkSection> usefulLinksSections = [
   UsefulLinkSection(
-    icon: Icons.translate,
+    icon: Iconsax.book_1,
     title: "English Translations",
     links: [
       UsefulLinkItem(
@@ -40,7 +42,7 @@ const List<UsefulLinkSection> usefulLinksSections = [
     ],
   ),
   UsefulLinkSection(
-    icon: Icons.language,
+    icon: Iconsax.book_1,
     title: "Malayalam Translations",
     links: [
       UsefulLinkItem(
@@ -58,7 +60,7 @@ const List<UsefulLinkSection> usefulLinksSections = [
     ],
   ),
   UsefulLinkSection(
-    icon: Icons.book,
+    icon: FlutterIslamicIcons.lantern,
     title: 'Hadith Collections',
     links: [
       UsefulLinkItem(
