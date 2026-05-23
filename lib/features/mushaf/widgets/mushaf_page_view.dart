@@ -9,8 +9,7 @@ import '../../../core/theme/app_theme.dart';
 import '../utils/mushaf_text_utils.dart';
 
 const _kSecondaryDarkColor = AppTheme.appIconTheme;
-const _kSurahHeaderLight = 'assets/images/title-border-gray.png';
-const _kSurahHeaderDark = 'assets/images/title-border2.png';
+const _kSurahHeader = 'assets/images/mushaf-title.png';
 
 /// Renders a single Mushaf page using QCF page fonts.
 class MushafPageView extends StatefulWidget {
@@ -363,8 +362,7 @@ class _MushafPageViewState extends State<MushafPageView> {
   Widget _buildSuraHeading(MushafLine line, _TextSizes sizes) {
     final segments = MushafTextUtils.parseLine(line.data, isHeadingOrBismillah: true);
     final displayText = segments.isNotEmpty ? segments.first.text : '';
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-final isPotrait= MediaQuery.of(context).orientation == Orientation.portrait;
+    final isPotrait = MediaQuery.of(context).orientation == Orientation.portrait;
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 2, horizontal: isPotrait ? 10 : 50),
       child: Center(
@@ -375,7 +373,7 @@ final isPotrait= MediaQuery.of(context).orientation == Orientation.portrait;
             alignment: Alignment.center,
             children: [
               Image.asset(
-                isDarkMode ? _kSurahHeaderDark : _kSurahHeaderLight,
+                _kSurahHeader,
                 height: isPotrait ? 56 : 70,
                 width: double.infinity,
                 fit: isPotrait ? BoxFit.contain : BoxFit.fill,
@@ -388,7 +386,7 @@ final isPotrait= MediaQuery.of(context).orientation == Orientation.portrait;
                   fontFamily: _bsmlFontFamily,
                   fontSize: sizes.headTextSize,
                   height: 1.0,
-                  color: _textColor,
+                  color: Colors.black,
                 ),
               ),
             ],

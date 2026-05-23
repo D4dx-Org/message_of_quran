@@ -2774,7 +2774,6 @@ class _TajweedWordRowState extends State<_TajweedWordRow> {
     final sortedAyahs = byAyah.keys.toList()..sort();
 
     final playingAyah = widget.playingAyahId;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final children = <Widget>[];
     for (final ayahNo in sortedAyahs) {
@@ -2789,55 +2788,43 @@ class _TajweedWordRowState extends State<_TajweedWordRow> {
         final localPath = _imagesDir != null
             ? TajweedProvider.localPathFor(_imagesDir!, w.imageUrl)
             : null;
-        Widget imageWidget = localPath != null
-            ? Image.file(
-                File(localPath),
-                height: 40,
-                fit: BoxFit.fitHeight,
-                frameBuilder: isLast
-                    ? (ctx, child, frame, wasSynchronouslyLoaded) {
-                        if (frame != null) {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            if (mounted &&
-                                _ayahBadgeVisible[ayahNo] != true) {
-                              setState(
-                                () => _ayahBadgeVisible[ayahNo] = true,
-                              );
-                            }
-                          });
+        final wordWidget = IntrinsicWidth(
+          child: localPath != null
+              ? Image.file(
+                  File(localPath),
+                  height: 40,
+                  fit: BoxFit.fitHeight,
+                  frameBuilder: isLast
+                      ? (ctx, child, frame, wasSynchronouslyLoaded) {
+                          if (frame != null) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (mounted &&
+                                  _ayahBadgeVisible[ayahNo] != true) {
+                                setState(
+                                  () => _ayahBadgeVisible[ayahNo] = true,
+                                );
+                              }
+                            });
+                          }
+                          return child;
                         }
-                        return child;
-                      }
-                    : null,
-                errorBuilder: (_, _, _) => Text(
+                      : null,
+                  errorBuilder: (_, _, _) => Text(
+                    w.wordText,
+                    textDirection: TextDirection.rtl,
+                    textAlign: quranJustify
+                        ? TextAlign.justify
+                        : TextAlign.start,
+                    style: AppTextTheme.surahArabiStyle(context),
+                  ),
+                )
+              : Text(
                   w.wordText,
                   textDirection: TextDirection.rtl,
-                  textAlign: quranJustify
-                      ? TextAlign.justify
-                      : TextAlign.start,
+                  textAlign: quranJustify ? TextAlign.justify : TextAlign.start,
                   style: AppTextTheme.surahArabiStyle(context),
                 ),
-              )
-            : Text(
-                w.wordText,
-                textDirection: TextDirection.rtl,
-                textAlign: quranJustify ? TextAlign.justify : TextAlign.start,
-                style: AppTextTheme.surahArabiStyle(context),
-              );
-        // In dark mode, brighten image colors so tajweed markings remain
-        // visible on the dark background while preserving hue differences.
-        if (isDark && localPath != null) {
-          imageWidget = ColorFiltered(
-            colorFilter: const ColorFilter.matrix(<double>[
-              1, 0, 0, 0, 150,
-              0, 1, 0, 0, 150,
-              0, 0, 1, 0, 150,
-              0, 0, 0, 1, 0,
-            ]),
-            child: imageWidget,
-          );
-        }
-        final wordWidget = IntrinsicWidth(child: imageWidget);
+        );
         children.add(
           isPlayingAyah
               ? DecoratedBox(
@@ -2861,7 +2848,9 @@ class _TajweedWordRowState extends State<_TajweedWordRow> {
       }
     }
 
-    return Wrap(
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final wrap = Wrap(
       textDirection: TextDirection.rtl,
       alignment: quranJustify
           ? WrapAlignment.spaceBetween
@@ -2870,6 +2859,19 @@ class _TajweedWordRowState extends State<_TajweedWordRow> {
       runSpacing: 6,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: children,
+    );
+
+    if (!isDark) return wrap;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFFCF7),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        child: wrap,
+      ),
     );
   }
 }
