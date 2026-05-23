@@ -324,21 +324,9 @@ class _DrawerBrandHeader extends StatelessWidget {
         theme.appBarTheme.backgroundColor ?? theme.colorScheme.secondary;
     final headerAccent = appBarTitleMatchedAccentColor(context);
     final curveDepth = 28.0 * scale;
-    final shadowColor = isDarkMode(context: context)
-        ? Colors.black.withValues(alpha: 0.2)
-        : Colors.black.withValues(alpha: 0.08);
     return Container(
       key: const ValueKey('drawer-brand-header'),
       margin: EdgeInsets.only(bottom: 8 * scale),
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color:shadowColor,
-            blurRadius: 24 * scale,
-            offset: Offset(0, 10 * scale),
-          ),
-        ],
-      ),
       child: ClipPath(
         clipper: _HalfMoonClipper(curveDepth: curveDepth),
         child: Container(
