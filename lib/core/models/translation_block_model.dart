@@ -42,15 +42,16 @@ class TranslationBlockModel {
     );
   }
 
-  /// Creates a [TranslationBlockModel] from the `malayalam_dummy_datas` row.
+  /// Creates a [TranslationBlockModel] from the Malayalam `verses` table row.
   /// Maps malayalam_translation column to translationText.
   factory TranslationBlockModel.fromMalayalamJson(Map<String, dynamic> json) {
-    final ayahId = json[DbConstants.malayalamDummyAyahId] as int?;
+    final verseNum = json[DbConstants.mlVersesVerseNumber] as int?;
     return TranslationBlockModel(
-      translationText: json[DbConstants.malayalamDummyTranslation] as String?,
-      verseFrom: ayahId,
-      verseTo: ayahId,
-      chapterNo: json[DbConstants.malayalamDummySurahId] as int?,
+      translationText:
+          json[DbConstants.mlVersesMalayalamTranslation] as String?,
+      verseFrom: verseNum,
+      verseTo: verseNum,
+      chapterNo: json[DbConstants.mlVersesSurahId] as int?,
       translationNo: null,
       arabicId: null,
     );

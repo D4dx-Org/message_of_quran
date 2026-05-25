@@ -41,16 +41,16 @@ class TranslationBlockDbHelper {
 
   static Future<List<TranslationBlockModel>>
   _getTranslationBlocksThafeemMalayalam(int surahNumber) async {
-    final db = DatabaseHelper.quranAsadDb;
+    final db = DatabaseHelper.quranAsadMalayalamDb;
     if (db == null) return [];
 
     try {
       final rows = await db.query(
-        DbConstants.malayalamDummyDatasTable,
+        DbConstants.mlVersesTable,
         where:
-            '${DbConstants.malayalamDummySurahId} = ? AND ${DbConstants.malayalamDummyAyahId} IS NOT NULL',
+            '${DbConstants.mlVersesSurahId} = ? AND ${DbConstants.mlVersesVerseNumber} IS NOT NULL',
         whereArgs: [surahNumber],
-        orderBy: '${DbConstants.malayalamDummyAyahId} ASC',
+        orderBy: '${DbConstants.mlVersesVerseNumber} ASC',
       );
 
       return rows
@@ -71,15 +71,14 @@ class TranslationBlockDbHelper {
     int ayahNumber, {
     bool malayalam = false,
   }) async {
-    final db = DatabaseHelper.quranAsadDb;
-    if (db == null) return null;
-
-    try {
-      if (malayalam) {
+    if (malayalam) {
+      final db = DatabaseHelper.quranAsadMalayalamDb;
+      if (db == null) return null;
+      try {
         final rows = await db.query(
-          DbConstants.malayalamDummyDatasTable,
+          DbConstants.mlVersesTable,
           where:
-              '${DbConstants.malayalamDummySurahId} = ? AND ${DbConstants.malayalamDummyAyahId} = ?',
+              '${DbConstants.mlVersesSurahId} = ? AND ${DbConstants.mlVersesVerseNumber} = ?',
           whereArgs: [surahNumber, ayahNumber],
           limit: 1,
         );
@@ -87,7 +86,13 @@ class TranslationBlockDbHelper {
         return TranslationBlockModel.fromMalayalamJson(
           Map<String, dynamic>.from(rows.first),
         );
-      } else {
+      } catch (e) {
+        return null;
+      }
+    } else {
+      final db = DatabaseHelper.quranAsadDb;
+      if (db == null) return null;
+      try {
         final rows = await db.query(
           DbConstants.asadVersesTable,
           where:
@@ -99,9 +104,9 @@ class TranslationBlockDbHelper {
         return TranslationBlockModel.fromAsadJson(
           Map<String, dynamic>.from(rows.first),
         );
+      } catch (e) {
+        return null;
       }
-    } catch (e) {
-      return null;
     }
   }
 

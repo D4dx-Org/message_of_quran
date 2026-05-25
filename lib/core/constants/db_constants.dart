@@ -209,12 +209,18 @@ class DbConstants {
   static const String enContactUsMobile = "mobile";
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // quran_asad_malayalam.db database
+  // quran_asad_malayalam_nw.db database
   // ═══════════════════════════════════════════════════════════════════════════
-  static const String quranAsadMalayalamDbName = "quran_asad_malayalam.db";
+  static const String quranAsadMalayalamDbName = "quran_asad_malayalam_nw.db";
   static const String quranAsadMalayalamDbVersionKey =
       'quran_asad_malayalam_db_version';
-  static const int quranAsadMalayalamDbVersion = 2;
+  static const int quranAsadMalayalamDbVersion = 3;
+
+  // ─── verses (quran_asad_malayalam.db → verses) ───
+  static const String mlVersesTable = "verses";
+  static const String mlVersesSurahId = "surah_id";
+  static const String mlVersesVerseNumber = "verse_number";
+  static const String mlVersesMalayalamTranslation = "malayalam_translation";
 
   // ─── Table names (quran_asad_malayalam.db) ───
   static const String mlAboutAuthorTable = "about_author";

@@ -1069,6 +1069,7 @@ class _SurahScreenState extends State<SurahScreen> {
     BuildContext context,
     List<ArabicBlockModel> arabicBlockList,
   ) {
+    final isMl = context.read<LanguageProvider>().isMalayalam;
     final bsMaxWidth = ResponsiveHelper.bottomSheetMaxWidth(context);
     showModalBottomSheet(
       context: context,
@@ -1098,11 +1099,11 @@ class _SurahScreenState extends State<SurahScreen> {
                 ),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
               child: Text(
-                'Jump to Ayah',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                isMl ? 'ആയത്തിലേക്ക് പോകുക' : 'Jump to Ayah',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
             const Divider(height: 1),
@@ -1117,10 +1118,9 @@ class _SurahScreenState extends State<SurahScreen> {
                   final start = block.verseFrom ?? i + 1;
                   final end = block.verseTo ?? i + 1;
                   final startText = start.toString();
-                  final endText = end.toString();
                   final label = start == end
-                      ? 'Ayah $startText'
-                      : 'Ayahs $startText – $endText';
+                      ? formatAyahReferenceLabel(start, isMalayalam: isMl)
+                      : formatAyahRangeLabel(start, end, isMalayalam: isMl);
                   return ListTile(
                     leading: Container(
                       width: 36,
