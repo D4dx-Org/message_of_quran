@@ -229,7 +229,7 @@ class CommonDrawer extends StatelessWidget {
                               ),
                           ],
                         ),
-                      _DrawerExpansionTile(
+                    const  _DrawerExpansionTile(
                         title: 'Kids',
                         icon: Icons.child_friendly_outlined,
                         children: [
