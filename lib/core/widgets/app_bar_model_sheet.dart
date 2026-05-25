@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
-import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';

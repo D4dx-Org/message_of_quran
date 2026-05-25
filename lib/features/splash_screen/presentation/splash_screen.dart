@@ -47,7 +47,9 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return const Scaffold(
       backgroundColor: AppTheme.appThemeSplash,
-      body: SizedBox.expand(
+      body: SizedBox(
+        width: double.infinity,
+        height: double.infinity,
         child: Image(
           image: AssetImage('assets/images/splash-nw.png'),
           fit: BoxFit.cover,

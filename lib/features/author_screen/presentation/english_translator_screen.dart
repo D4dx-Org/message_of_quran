@@ -66,6 +66,20 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen> {
                         ),
                       ),
                     ),
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.asset(
+                          'assets/images/kc-saleem.png',
+                          width: 300,
+                          height: 300,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
                   if (translator.bio != null && translator.bio!.isNotEmpty)
                     ...translator.bio!
                         .split('\n')

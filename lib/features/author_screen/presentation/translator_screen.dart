@@ -71,6 +71,20 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
                         ),
                       ),
                     ),
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.asset(
+                          'assets/images/kc-saleem.png',
+                           width: 300,
+                          height: 300,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
                   if (author.bio != null && author.bio!.isNotEmpty)
                     ...author.bio!.split('\n').where((p) => p.trim().isNotEmpty).expand((paragraph) => [
                       Text(
