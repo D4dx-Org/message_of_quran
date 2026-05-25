@@ -37,6 +37,17 @@ String _baseMalayalamSurahName({
   return trimmedMalayalamName.isNotEmpty ? trimmedMalayalamName : surahName;
 }
 
+SurahListDisplayText _parseMalayalamDisplayText(String malayalamName) {
+  final openParen = malayalamName.indexOf('(');
+  final closeParen = malayalamName.lastIndexOf(')');
+  if (openParen > 0 && closeParen > openParen) {
+    final title = malayalamName.substring(0, openParen).trim();
+    final subtitle = malayalamName.substring(openParen + 1, closeParen).trim();
+    return SurahListDisplayText(title: title, subtitle: subtitle);
+  }
+  return SurahListDisplayText(title: malayalamName, subtitle: '');
+}
+
 SurahListDisplayText formatSurahListDisplayText({
   required bool isMalayalam,
   required String surahName,
@@ -51,13 +62,11 @@ SurahListDisplayText formatSurahListDisplayText({
     );
   }
 
-  return SurahListDisplayText(
-    title: _baseMalayalamSurahName(
-      surahName: surahName,
-      malayalamName: malayalamName,
-    ),
-    subtitle: '',
+  final baseName = _baseMalayalamSurahName(
+    surahName: surahName,
+    malayalamName: malayalamName,
   );
+  return _parseMalayalamDisplayText(baseName);
 }
 
 String formatSurahDisplayNameLine({
