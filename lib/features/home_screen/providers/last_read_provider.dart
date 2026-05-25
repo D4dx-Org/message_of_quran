@@ -7,10 +7,14 @@ class LastReadProvider extends ChangeNotifier {
   static const _kSurahNumber = 'last_read_surah_number';
   static const _kSurahName = 'last_read_surah_name';
   static const _kAyahId = 'last_read_ayah_id';
+  static const _kSurahTabSelection = 'last_surah_tab_selection';
 
   int? surahNumber;
   String? surahName;
   int? ayahId;
+
+  /// Tracks which surah was last tapped specifically from the Surah home tab.
+  int? lastSurahTabSelection;
 
   bool get hasLastRead => surahNumber != null;
 
@@ -24,6 +28,7 @@ class LastReadProvider extends ChangeNotifier {
       surahNumber = prefs.getInt(_kSurahNumber);
       surahName = prefs.getString(_kSurahName);
       ayahId = prefs.getInt(_kAyahId);
+      lastSurahTabSelection = prefs.getInt(_kSurahTabSelection);
     } catch (e) {
       debugPrint('LastReadProvider: load failed — $e');
     }
@@ -49,6 +54,19 @@ class LastReadProvider extends ChangeNotifier {
       await prefs.setInt(_kAyahId, ayahId);
     } catch (e) {
       debugPrint('LastReadProvider: save failed — $e');
+    }
+  }
+
+  /// Call when the user taps a surah from the Surah home tab.
+  Future<void> saveLastSurahTabSelection(int surahNumber) async {
+    lastSurahTabSelection = surahNumber;
+    notifyListeners();
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(_kSurahTabSelection, surahNumber);
+    } catch (e) {
+      debugPrint('LastReadProvider: save surah tab selection failed — $e');
     }
   }
 }

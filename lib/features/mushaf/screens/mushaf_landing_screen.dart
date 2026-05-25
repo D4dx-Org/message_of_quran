@@ -403,10 +403,44 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
       _handleUndownloadedPage(context);
       return;
     }
+    _p.saveMushafSurahSelection(suraNo);
     Navigator.of(context)
         .push(
           MaterialPageRoute(
             builder: (_) => MushafReaderScreen(initialPage: page),
+          ),
+        )
+        .then((_) => _p.refreshAfterReader());
+  }
+
+  Future<void> _openRevelationSurah(BuildContext context, int suraNo) async {
+    final page = await _p.getFirstPageForSurah(suraNo);
+    if (!context.mounted) return;
+    if (!_p.fontsInstalled && page > MushafLandingProvider.previewPageLimit) {
+      _handleUndownloadedPage(context);
+      return;
+    }
+    _p.saveMushafRevelationSelection(suraNo);
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (_) => MushafReaderScreen(initialPage: page),
+          ),
+        )
+        .then((_) => _p.refreshAfterReader());
+  }
+
+  void _openJuz(BuildContext context, int juzNo, int firstPage) {
+    if (!_p.fontsInstalled &&
+        firstPage > MushafLandingProvider.previewPageLimit) {
+      _handleUndownloadedPage(context);
+      return;
+    }
+    _p.saveMushafJuzSelection(juzNo);
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (_) => MushafReaderScreen(initialPage: firstPage),
           ),
         )
         .then((_) => _p.refreshAfterReader());
@@ -1011,7 +1045,9 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: InkWell(
-        onTap: () => _openSurah(context, meta.no),
+        onTap: () => revelationIndex != null
+            ? _openRevelationSurah(context, meta.no)
+            : _openSurah(context, meta.no),
         borderRadius: BorderRadius.circular(16),
         child: Container(
           decoration: BoxDecoration(
@@ -1038,7 +1074,9 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
               children: [
                 StarNumber(
                   number: revelationIndex ?? meta.no,
-                  isHighlighted: _p.lastRead?.suraNo == meta.no,
+                  isHighlighted: revelationIndex != null
+                      ? _p.lastMushafRevelationSelection == meta.no
+                      : _p.lastMushafSurahSelection == meta.no,
                   textColor: isDarkMode ? _kWhite : _kBlack,
                 ),
                 const SizedBox(width: 16),
@@ -1131,7 +1169,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: InkWell(
-        onTap: () => _openPage(context, firstPage),
+        onTap: () => _openJuz(context, juzNo, firstPage),
         borderRadius: BorderRadius.circular(14),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -1155,7 +1193,11 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
           ),
           child: Row(
             children: [
-              _buildDiamondBadge(juzNo, isDarkMode),
+              _buildDiamondBadge(
+                juzNo,
+                isDarkMode,
+                isHighlighted: _p.lastMushafJuzSelection == juzNo,
+              ),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
@@ -1189,7 +1231,11 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
     );
   }
 
-  Widget _buildDiamondBadge(int number, bool isDarkMode) {
+  Widget _buildDiamondBadge(
+    int number,
+    bool isDarkMode, {
+    bool isHighlighted = false,
+  }) {
     return SizedBox(
       width: 40,
       height: 40,
@@ -1202,12 +1248,16 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: isDarkMode
-                    ? _kPrimaryColor.withValues(alpha: 0.15)
-                    : _kPrimaryColor.withValues(alpha: 0.1),
+                color: isHighlighted
+                    ? _kPrimaryColor
+                    : isDarkMode
+                        ? _kPrimaryColor.withValues(alpha: 0.15)
+                        : _kPrimaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(
-                  color: _kPrimaryColor.withValues(alpha: 0.5),
+                  color: isHighlighted
+                      ? _kPrimaryColor
+                      : _kPrimaryColor.withValues(alpha: 0.5),
                   width: 1.2,
                 ),
               ),
@@ -1216,7 +1266,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
           Text(
             '$number',
             style: TextStyle(
-              color: _kPrimaryColor,
+              color: isHighlighted ? Colors.white : _kPrimaryColor,
               fontWeight: FontWeight.w700,
               fontSize: number > 99 ? 10 : 13,
             ),

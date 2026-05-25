@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/mushaf_repository.dart';
 import '../db/local_database.dart';
@@ -25,11 +26,21 @@ class MushafLandingProvider extends ChangeNotifier {
 
   static const int previewPageLimit = 2;
 
+  // ─── Independent tab selection tracking ─────────────────────────────────
+  static const _kMushafSurahSelection = 'mushaf_surah_tab_selection';
+  static const _kMushafJuzSelection = 'mushaf_juz_tab_selection';
+  static const _kMushafRevelationSelection = 'mushaf_revelation_tab_selection';
+
+  int? lastMushafSurahSelection;
+  int? lastMushafJuzSelection;
+  int? lastMushafRevelationSelection;
+
   Future<void> _loadAll() async {
     await Future.wait([
       _checkFontsInstalled(),
       loadLastRead(),
       _loadJuzPages(),
+      _loadTabSelections(),
     ]);
   }
 
@@ -83,6 +94,69 @@ class MushafLandingProvider extends ChangeNotifier {
   void toggleSort() {
     sortAscending = !sortAscending;
     notifyListeners();
+  }
+
+  /// Returns the juz number that the last-read page belongs to, or null.
+  int? get lastReadJuzNo {
+    final page = lastRead?.page;
+    if (page == null || juzPages.isEmpty) return null;
+    int? juz;
+    for (final jp in juzPages) {
+      if (jp.firstPage <= page) {
+        juz = jp.juzNo;
+      } else {
+        break;
+      }
+    }
+    return juz;
+  }
+
+  // ─── Tab selection persistence ──────────────────────────────────────────
+
+  Future<void> _loadTabSelections() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      lastMushafSurahSelection = prefs.getInt(_kMushafSurahSelection);
+      lastMushafJuzSelection = prefs.getInt(_kMushafJuzSelection);
+      lastMushafRevelationSelection =
+          prefs.getInt(_kMushafRevelationSelection);
+      notifyListeners();
+    } catch (e) {
+      log('MushafLanding: _loadTabSelections error: $e');
+    }
+  }
+
+  Future<void> saveMushafSurahSelection(int suraNo) async {
+    lastMushafSurahSelection = suraNo;
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(_kMushafSurahSelection, suraNo);
+    } catch (e) {
+      log('MushafLanding: saveMushafSurahSelection error: $e');
+    }
+  }
+
+  Future<void> saveMushafJuzSelection(int juzNo) async {
+    lastMushafJuzSelection = juzNo;
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(_kMushafJuzSelection, juzNo);
+    } catch (e) {
+      log('MushafLanding: saveMushafJuzSelection error: $e');
+    }
+  }
+
+  Future<void> saveMushafRevelationSelection(int suraNo) async {
+    lastMushafRevelationSelection = suraNo;
+    notifyListeners();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt(_kMushafRevelationSelection, suraNo);
+    } catch (e) {
+      log('MushafLanding: saveMushafRevelationSelection error: $e');
+    }
   }
 
   void setFontsInstalled() {

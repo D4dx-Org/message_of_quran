@@ -28,7 +28,8 @@ class HomeScreenListTile extends StatelessWidget {
         ? Colors.white
         : AppTheme.appThemePrimary;
     final subColor = isDarkMode ? Colors.white54 : Colors.grey[600]!;
-    final lastReadSurah = context.watch<LastReadProvider>().surahNumber;
+    final lastSurahTabSelection =
+        context.watch<LastReadProvider>().lastSurahTabSelection;
     final dividerColor = DividerTheme.of(context).color;
     final scale = ResponsiveHelper.scaleFactor(context);
     final displayText = formatSurahListDisplayText(
@@ -70,7 +71,8 @@ class HomeScreenListTile extends StatelessWidget {
                   StarNumber(
                     number: surah.surahNumber,
                     outlineOnly: true,
-                    isHighlighted: lastReadSurah == surah.surahNumber,
+                    isHighlighted:
+                        lastSurahTabSelection == surah.surahNumber,
                     size: 42,
                   ),
                   const SizedBox(width: 14),

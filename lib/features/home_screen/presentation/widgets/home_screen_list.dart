@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_screen_list_tile.dart';
+import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
@@ -34,14 +35,18 @@ class HomeScreenList extends StatelessWidget {
           itemBuilder: (context, index) {
             return HomeScreenListTile(
               index: index,
-              onTap: () {
+              onTap: () async {
                 surahProvider.assignIndex(index);
-                Navigator.push(
+                await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => const SurahScreen(),
                   ),
                 );
+                if (!context.mounted) return;
+                context.read<LastReadProvider>().saveLastSurahTabSelection(
+                      surahProvider.surahList[index].surahNumber,
+                    );
               },
             );
           },
