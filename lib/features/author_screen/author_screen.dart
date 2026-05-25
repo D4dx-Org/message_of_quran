@@ -35,6 +35,8 @@ class _AuthorScreenState extends State<AuthorScreen> {
   @override
   Widget build(BuildContext context) {
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bodyColor = isDark ? Colors.white70 : Colors.black87;
     return BaseScreenLayout(
       appBar: AppBar(
         title: Text(
@@ -83,12 +85,22 @@ class _AuthorScreenState extends State<AuthorScreen> {
                             'body': Style(
                               margin: Margins.zero,
                               padding: HtmlPaddings.zero,
+                              color: bodyColor,
+                              fontSize: FontSize(14),
+                            ),
+                            'p': Style(
+                              color: bodyColor,
+                              fontSize: FontSize(14),
                             ),
                             'h2': Style(
                               textAlign: TextAlign.center,
+                              color: bodyColor,
+                              fontSize: FontSize(18),
+                              fontWeight: FontWeight.w600,
                             ),
                             'a': Style(
                               textDecoration: TextDecoration.none,
+                              color: bodyColor,
                             ),
                           },
                         )

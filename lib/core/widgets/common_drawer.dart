@@ -9,6 +9,7 @@ import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/d4dx_branding_footer.dart';
 import 'package:the_message_of_the_quran/features/author_screen/author_screen.dart';
 import 'package:the_message_of_the_quran/features/author_screen/presentation/author_writer_screen.dart';
+import 'package:the_message_of_the_quran/features/author_screen/presentation/english_translator_screen.dart';
 import 'package:the_message_of_the_quran/features/author_screen/presentation/translator_screen.dart';
 import 'package:the_message_of_the_quran/features/author_screen/presentation/translator_note_screen.dart';
 import 'package:the_message_of_the_quran/features/contact_us_screen/presentation/contact_us_screen.dart';
@@ -120,18 +121,39 @@ class CommonDrawer extends StatelessWidget {
                           ],
                         )
                       else
-                        _DrawerTile(
-                          title: 'Author',
-                          icon: Icons.person_outline,
-                          onTap: () {
-                            Navigator.pop(context);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const AuthorScreen(),
-                              ),
-                            );
-                          },
+                        _DrawerExpansionTile(
+                          title: 'The Message of the Qur\'an',
+                          icon: Icons.menu_book_outlined,
+                          children: [
+                            _DrawerSubTile(
+                              title: 'Author',
+                              icon: Icons.edit_outlined,
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const AuthorScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+                            _DrawerSubTile(
+                              title: 'Translator',
+                              icon: Icons.translate_outlined,
+                              onTap: () {
+                                Navigator.pop(context);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const EnglishTranslatorScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
                         ),
                       _DrawerExpansionTile(
                         title: isMalayalam ? 'ലൈബ്രറി' : 'Library',

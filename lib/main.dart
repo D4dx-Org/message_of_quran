@@ -15,6 +15,7 @@ import 'package:the_message_of_the_quran/features/contact_us_screen/presentation
 import 'package:the_message_of_the_quran/features/author_screen/provider/author_provider.dart';
 import 'package:the_message_of_the_quran/features/author_screen/provider/translator_provider.dart';
 import 'package:the_message_of_the_quran/features/author_screen/provider/translator_note_provider.dart';
+import 'package:the_message_of_the_quran/features/author_screen/provider/english_translator_provider.dart';
 import 'package:the_message_of_the_quran/features/help_screen/provider/help_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/play_settings_provider.dart';
@@ -199,6 +200,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => AuthorProvider()),
         ChangeNotifierProvider(create: (context) => TranslatorProvider()),
         ChangeNotifierProvider(create: (context) => TranslatorNoteProvider()),
+        ChangeNotifierProvider(create: (context) => EnglishTranslatorProvider()),
         ChangeNotifierProvider(create: (context) => PlaySettingsProvider()),
         ChangeNotifierProvider(create: (context) => TajweedProvider()),
         ChangeNotifierProvider(create: (context) => ReminderProvider()),

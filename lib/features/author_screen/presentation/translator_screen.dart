@@ -80,6 +80,15 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
                       const SizedBox(height: 14),
                     ]),
                   const SizedBox(height: 16),
+                     if (author.mobile != null && author.mobile!.isNotEmpty)
+                    Text(
+                      '${author.mobile!}',
+                      style: AppTextTheme.popinsDefault(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: bodyColor,
+                      ),
+                    ),
                   if (author.email != null && author.email!.isNotEmpty)
                     Text(
                       'E-mail: ${author.email!}',
@@ -89,15 +98,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
                         color: bodyColor,
                       ),
                     ),
-                  if (author.mobile != null && author.mobile!.isNotEmpty)
-                    Text(
-                      'Mobile: ${author.mobile!}',
-                      style: AppTextTheme.popinsDefault(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: bodyColor,
-                      ),
-                    ),
+               
                   const SizedBox(height: 16),
                 ],
               ),

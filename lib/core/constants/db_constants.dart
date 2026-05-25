@@ -115,13 +115,14 @@ class DbConstants {
   // ═══════════════════════════════════════════════════════════════════════════
   static const String quranAsadDbName = "quran_asad.sqlite";
   static const String quranAsadDbVersionKey = 'quran_asad_db_version';
-  static const int quranAsadDbVersion = 10;
+  static const int quranAsadDbVersion = 11;
 
   // ─── Table names (quran_asad.sqlite) ───
   static const String asadSurahsTable = "surahs";
   static const String asadVersesTable = "verses";
   static const String asadFootnotesTable = "footnotes";
   static const String asadAuthorsTable = "authors";
+  static const String asadTranslatorTable = "translator";
   static const String worksOfReferenceTable = "worksofreference";
 
   // ─── surahs columns (quran_asad.sqlite → surahs) ───
@@ -152,6 +153,14 @@ class DbConstants {
   static const String asadAuthorCreatedBy = "created_by";
   static const String asadAuthorCreatedByRole = "created_by_role";
   static const String asadAuthorIsVerified = "is_verified";
+
+  // ─── translator columns (quran_asad.sqlite → translator) ───
+  static const String asadTranslatorId = "id";
+  static const String asadTranslatorName = "name";
+  static const String asadTranslatorRole = "role";
+  static const String asadTranslatorBio = "bio";
+  static const String asadTranslatorEmail = "email";
+  static const String asadTranslatorAddress = "address";
 
   // ─── works of reference columns (quran_asad.sqlite → worksofreference) ───
   static const String worksOfReferenceId = "id";
@@ -190,13 +199,22 @@ class DbConstants {
   static const String forewordId = "id";
   static const String forewordBody = "body";
 
+  // ─── contact_us_content (quran_asad.sqlite → contact_us_content) ───
+  static const String enContactUsTable = "contact_us_content";
+  static const String enContactUsId = "id";
+  static const String enContactUsTitle = "title";
+  static const String enContactUsDescription = "description";
+  static const String enContactUsAddress = "address";
+  static const String enContactUsEmail = "email";
+  static const String enContactUsMobile = "mobile";
+
   // ═══════════════════════════════════════════════════════════════════════════
   // quran_asad_malayalam.db database
   // ═══════════════════════════════════════════════════════════════════════════
   static const String quranAsadMalayalamDbName = "quran_asad_malayalam.db";
   static const String quranAsadMalayalamDbVersionKey =
       'quran_asad_malayalam_db_version';
-  static const int quranAsadMalayalamDbVersion = 1;
+  static const int quranAsadMalayalamDbVersion = 2;
 
   // ─── Table names (quran_asad_malayalam.db) ───
   static const String mlAboutAuthorTable = "about_author";
@@ -222,6 +240,15 @@ class DbConstants {
   static const String mlPrefaceId = "id";
   static const String mlPrefaceHeading = "heading";
   static const String mlPrefaceContent = "content";
+
+  // ─── contact_us (quran_asad_malayalam.db → contact_us) ───
+  static const String mlContactUsTable = "contact_us";
+  static const String mlContactUsId = "id";
+  static const String mlContactUsTitle = "title";
+  static const String mlContactUsDescription = "description";
+  static const String mlContactUsAddress = "address";
+  static const String mlContactUsEmail = "email";
+  static const String mlContactUsMobile = "mobile";
 
   // ─── surahs (quran_asad_malayalam.db → surahs) ───
   static const String mlSurahsTable = "surahs";
