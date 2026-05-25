@@ -239,10 +239,66 @@ class MyApp extends StatelessWidget {
             themeMode: value.themeMode,
             home: const SplashScreen(),
             builder: (context, child) {
-              return MediaQuery(
-                data: MediaQuery.of(context).copyWith(
+              var data = MediaQuery.of(context);
+              final view = View.of(context);
+              final physicalWidth = view.physicalSize.width;
+
+              // Compute the device's "default" logical width from physical resolution.
+              // Standard Android density: FHD(1080px)→2.75, QHD(1440px)→3.5, HD(720px)→2.0
+              final double referenceDpr;
+              if (physicalWidth >= 1260) {
+                referenceDpr = 3.5;
+              } else if (physicalWidth >= 900) {
+                referenceDpr = 2.75;
+              } else {
+                referenceDpr = 2.0;
+              }
+              final double referenceWidth = physicalWidth / referenceDpr;
+
+              if (data.size.width < referenceWidth - 1.0) {
+                final double scale = data.size.width / referenceWidth;
+                final double invScale = 1.0 / scale;
+                final double referenceHeight = data.size.height * invScale;
+
+                data = data.copyWith(
+                  size: Size(referenceWidth, referenceHeight),
+                  padding: EdgeInsets.only(
+                    left: data.padding.left * invScale,
+                    top: data.padding.top * invScale,
+                    right: data.padding.right * invScale,
+                    bottom: data.padding.bottom * invScale,
+                  ),
+                  viewPadding: EdgeInsets.only(
+                    left: data.viewPadding.left * invScale,
+                    top: data.viewPadding.top * invScale,
+                    right: data.viewPadding.right * invScale,
+                    bottom: data.viewPadding.bottom * invScale,
+                  ),
+                  viewInsets: EdgeInsets.only(
+                    left: data.viewInsets.left * invScale,
+                    top: data.viewInsets.top * invScale,
+                    right: data.viewInsets.right * invScale,
+                    bottom: data.viewInsets.bottom * invScale,
+                  ),
                   textScaler: TextScaler.noScaling,
-                ),
+                );
+
+                return MediaQuery(
+                  data: data,
+                  child: FittedBox(
+                    fit: BoxFit.fitWidth,
+                    alignment: Alignment.topCenter,
+                    child: SizedBox(
+                      width: referenceWidth,
+                      height: referenceHeight,
+                      child: child!,
+                    ),
+                  ),
+                );
+              }
+
+              return MediaQuery(
+                data: data.copyWith(textScaler: TextScaler.noScaling),
                 child: child!,
               );
             },

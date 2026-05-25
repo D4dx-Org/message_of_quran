@@ -37,6 +37,10 @@ class SurahProvider extends ChangeNotifier {
   String currentBismillahGlyph = '';
   bool _isSwiping = false;
 
+  /// The minimum footnote number found in the current surah's Malayalam
+  /// translation text. Used to display per-surah numbering starting from 1.
+  int mlFootnoteMinNumber = 0;
+
   // ── Language state ──
   bool _isMalayalam = false;
   bool get isMalayalam => _isMalayalam;
@@ -722,6 +726,9 @@ class SurahProvider extends ChangeNotifier {
       arabicBlockList = results[0] as List<ArabicBlockModel>;
       translationBlockList = results[1] as List<TranslationBlockModel>;
       currentBismillahGlyph = results[2] as String;
+      if (_isMalayalam) {
+        _computeMlFootnoteMinNumber();
+      }
     } catch (e) {
       arabicBlockList = [];
       translationBlockList = [];
@@ -729,5 +736,21 @@ class SurahProvider extends ChangeNotifier {
     } finally {
       notifyListeners();
     }
+  }
+
+  /// Scans translation blocks for [^N] markers and sets [mlFootnoteMinNumber].
+  void _computeMlFootnoteMinNumber() {
+    final pattern = RegExp(r'\[\^?(\d+)\]');
+    int min = 0;
+    for (final block in translationBlockList) {
+      final text = block.translationText ?? '';
+      for (final match in pattern.allMatches(text)) {
+        final num = int.tryParse(match.group(1)!);
+        if (num != null && (min == 0 || num < min)) {
+          min = num;
+        }
+      }
+    }
+    mlFootnoteMinNumber = min;
   }
 }

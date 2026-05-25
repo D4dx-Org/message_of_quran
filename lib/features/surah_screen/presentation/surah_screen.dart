@@ -1588,29 +1588,88 @@ class _SurahScreenState extends State<SurahScreen> {
                 );
               }
               if (!found) {
-                spans.addAll(
-                  _crossRefSpansForPlainText(
-                    context,
-                    cleaned,
-                    AppTextTheme.surahTranslationStyle(
-                      context,
-                      isMalayalam: isMl,
-                    ),
-                    surahNumber,
-                  ),
-                );
-                // In Malayalam mode, add a tappable interpretation indicator
-                // since Malayalam translations don't have embedded (N) refs.
+                // Try [^N] pattern for Malayalam footnote markers
                 if (isMl) {
-                  spans.add(
-                    buildInterpretationNoteMarkerSpan(
-                      number: blockAyah,
-                      onTap: () => _showInterpretationSheet(
+                  final mlPattern = RegExp(r'\[\^?(\d+)\]');
+                  int mlLastEnd = 0;
+                  bool mlFound = false;
+                  for (final match in mlPattern.allMatches(cleaned)) {
+                    mlFound = true;
+                    if (match.start > mlLastEnd) {
+                      spans.addAll(
+                        _crossRefSpansForPlainText(
+                          context,
+                          cleaned.substring(mlLastEnd, match.start),
+                          AppTextTheme.surahTranslationStyle(
+                            context,
+                            isMalayalam: isMl,
+                          ),
+                          surahNumber,
+                        ),
+                      );
+                    }
+                    final num = int.tryParse(match.group(1)!);
+                    if (num == null) {
+                      spans.add(
+                        TextSpan(
+                          text: match.group(0),
+                          style: AppTextTheme.surahTranslationStyle(
+                            context,
+                            isMalayalam: isMl,
+                          ),
+                        ),
+                      );
+                    } else {
+                      spans.add(
+                        buildInterpretationNoteMarkerSpan(
+                          number: num - controller.mlFootnoteMinNumber + 1,
+                          onTap: () => _showInterpretationSheet(
+                            context,
+                            controller,
+                            blockAyah,
+                            pageNumber: num,
+                          ),
+                        ),
+                      );
+                    }
+                    mlLastEnd = match.end;
+                  }
+                  if (mlFound && mlLastEnd < cleaned.length) {
+                    spans.addAll(
+                      _crossRefSpansForPlainText(
                         context,
-                        controller,
-                        blockAyah,
-                        pageNumber: blockAyah,
+                        cleaned.substring(mlLastEnd),
+                        AppTextTheme.surahTranslationStyle(
+                          context,
+                          isMalayalam: isMl,
+                        ),
+                        surahNumber,
                       ),
+                    );
+                  }
+                  if (!mlFound) {
+                    spans.addAll(
+                      _crossRefSpansForPlainText(
+                        context,
+                        cleaned,
+                        AppTextTheme.surahTranslationStyle(
+                          context,
+                          isMalayalam: isMl,
+                        ),
+                        surahNumber,
+                      ),
+                    );
+                  }
+                } else {
+                  spans.addAll(
+                    _crossRefSpansForPlainText(
+                      context,
+                      cleaned,
+                      AppTextTheme.surahTranslationStyle(
+                        context,
+                        isMalayalam: isMl,
+                      ),
+                      surahNumber,
                     ),
                   );
                 }
@@ -1770,6 +1829,9 @@ class _SurahScreenState extends State<SurahScreen> {
               ctrl.currentInterpretationNumber > 0
               ? ctrl.currentInterpretationNumber
               : (pageNumber ?? -1);
+          final displayInterpretationNumber = isMalayalam
+              ? headerInterpretationNumber - ctrl.mlFootnoteMinNumber + 1
+              : headerInterpretationNumber;
           final surahTitle = formatInterpretationSheetSurahTitle(
             isMalayalam: isMalayalam,
             surah: surah,
@@ -1778,7 +1840,7 @@ class _SurahScreenState extends State<SurahScreen> {
               ? formatInterpretationMetadataLabel(
                   isMalayalam: isMalayalam,
                   surahNumber: headerSurahNumber,
-                  interpretationNumber: headerInterpretationNumber,
+                  interpretationNumber: displayInterpretationNumber,
                   ayahNumbers: ctrl.currentInterpretationAyahNumbers,
                 )
               : (isMalayalam
@@ -1887,7 +1949,9 @@ class _SurahScreenState extends State<SurahScreen> {
                       ),
                       if (!isLoading && hasBounds)
                         Text(
-                          '${ctrl.currentInterpretationNumber} / ${ctrl.maxInterpretationNumber}',
+                          isMalayalam
+                              ? '${ctrl.currentInterpretationNumber - ctrl.mlFootnoteMinNumber + 1} / ${ctrl.maxInterpretationNumber - ctrl.mlFootnoteMinNumber + 1}'
+                              : '${ctrl.currentInterpretationNumber} / ${ctrl.maxInterpretationNumber}',
                           style: TextStyle(
                             fontSize: 13,
                             color: activeColor,

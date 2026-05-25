@@ -119,7 +119,27 @@ class TranslationBlockDbHelper {
     if (footnoteNumber <= 0) return [];
 
     if (malayalam) {
-      return [footnoteNumber];
+      // Search Malayalam translation text for [^N] marker
+      final db = DatabaseHelper.quranAsadMalayalamDb;
+      if (db == null) return [footnoteNumber];
+      try {
+        final marker = '[^$footnoteNumber]';
+        final rows = await db.query(
+          DbConstants.mlVersesTable,
+          columns: [DbConstants.mlVersesVerseNumber],
+          where:
+              '${DbConstants.mlVersesSurahId} = ? AND ${DbConstants.mlVersesMalayalamTranslation} LIKE ?',
+          whereArgs: [surahNumber, '%$marker%'],
+          orderBy: '${DbConstants.mlVersesVerseNumber} ASC',
+        );
+        final result = rows
+            .map((row) => (row[DbConstants.mlVersesVerseNumber] as int?) ?? -1)
+            .where((v) => v > 0)
+            .toList();
+        return result.isNotEmpty ? result : [footnoteNumber];
+      } catch (e) {
+        return [footnoteNumber];
+      }
     }
 
     final db = DatabaseHelper.quranAsadDb;

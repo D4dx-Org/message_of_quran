@@ -253,6 +253,7 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
   TranslationBlockModel? _translation;
   List<InterpretationModel> _interpretation = [];
   SurahModel? _surah;
+  int _mlFootnoteMinNumber = 0;
 
   @override
   void initState() {
@@ -290,12 +291,24 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
       );
     }
 
+    // For Malayalam, compute per-surah min footnote number for display offset
+    int mlMin = 0;
+    if (isMl) {
+      final range = await InterpretationsDbHelper.getInterpretationRange(
+        surahNumber: widget.surahNumber,
+        malayalam: true,
+      );
+      mlMin = range['min'] ?? 0;
+      if (mlMin < 0) mlMin = 0;
+    }
+
     if (!mounted) return;
     setState(() {
       _arabic = arabic;
       _translation = translation;
       _interpretation = interp;
       _surah = surah;
+      _mlFootnoteMinNumber = mlMin;
       _loading = false;
     });
   }
@@ -513,7 +526,8 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
     );
   }
 
-  /// Builds translation text with tappable `(N)` footnote markers.
+  /// Builds translation text with tappable footnote markers.
+  /// Malayalam uses `[^N]` pattern; English uses `(N)` pattern.
   Widget _buildTranslationRichText(
     BuildContext context,
     String text,
@@ -528,7 +542,7 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
     final displayText = cleaned.replaceFirst(RegExp(r'^\d+[\s.]*'), '');
 
     final spans = <InlineSpan>[];
-    final pattern = RegExp(r'\((\d+)\)');
+    final pattern = isMl ? RegExp(r'\[\^?(\d+)\]') : RegExp(r'\((\d+)\)');
     int lastEnd = 0;
     bool found = false;
 
@@ -546,7 +560,7 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
           ),
         );
       }
-      // Tappable (N)
+      // Tappable footnote marker
       final num = int.tryParse(match.group(1)!);
       if (num == null) {
         spans.add(
@@ -559,9 +573,10 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
           ),
         );
       } else {
+        final displayNum = isMl ? num - _mlFootnoteMinNumber + 1 : num;
         spans.add(
           buildInterpretationNoteMarkerSpan(
-            number: num,
+            number: displayNum,
             onTap: () => _showNestedInterpretation(context, num),
           ),
         );

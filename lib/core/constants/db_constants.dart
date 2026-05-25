@@ -256,6 +256,12 @@ class DbConstants {
   static const String mlContactUsEmail = "email";
   static const String mlContactUsMobile = "mobile";
 
+  // ─── footnotes (quran_asad_malayalam.db → footnotes) ───
+  static const String mlFootnotesTable = "footnotes";
+  static const String mlFootnoteId = "id";
+  static const String mlFootnoteNumber = "footnote_number";
+  static const String mlFootnoteContent = "content";
+
   // ─── surahs (quran_asad_malayalam.db → surahs) ───
   static const String mlSurahsTable = "surahs";
   static const String mlSurahId = "id";

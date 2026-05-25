@@ -73,4 +73,22 @@ class InterpretationModel {
       isVerified: true,
     );
   }
+
+  /// Creates an [InterpretationModel] from the new `quran_asad_malayalam_nw.db → footnotes` row.
+  /// Maps content column to interpretationText.
+  static InterpretationModel fromMalayalamFootnoteJson(Map<dynamic, dynamic> json) {
+    final footnoteNum = (json[DbConstants.mlFootnoteNumber] as int?) ?? -1;
+    return InterpretationModel(
+      id: (json[DbConstants.mlFootnoteId] ?? '').toString(),
+      surahNumber: -1,
+      ayaRangeStart: footnoteNum,
+      ayaRangeEnd: footnoteNum,
+      interpretationNumber: footnoteNum,
+      language: 'ml',
+      interpretationText: (json[DbConstants.mlFootnoteContent] as String?) ?? '',
+      createdBy: '',
+      createdByRole: '',
+      isVerified: true,
+    );
+  }
 }

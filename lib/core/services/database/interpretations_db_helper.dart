@@ -43,15 +43,17 @@ class InterpretationsDbHelper {
     required int surahNumber,
     required int ayahNumber,
   }) async {
-    final db = DatabaseHelper.quranAsadDb;
+    final db = DatabaseHelper.quranAsadMalayalamDb;
     if (db == null) return [];
     try {
       final rows = await db.query(
-        DbConstants.malayalamDummyDatasTable,
-        where: '${DbConstants.malayalamDummySurahId} = ? AND ${DbConstants.malayalamDummyAyahId} = ?',
-        whereArgs: [surahNumber, ayahNumber],
+        DbConstants.mlFootnotesTable,
+        where: '${DbConstants.mlFootnoteNumber} = ?',
+        whereArgs: [ayahNumber],
+        orderBy: '${DbConstants.mlFootnoteId} ASC',
+        limit: 1,
       );
-      return rows.map((e) => InterpretationModel.fromMalayalamJson(e)).toList();
+      return rows.map((e) => InterpretationModel.fromMalayalamFootnoteJson(e)).toList();
     } catch (e) {
       return [];
     }
@@ -94,22 +96,30 @@ class InterpretationsDbHelper {
   static Future<Map<String, int>> _getInterpretationRangeThafeemMalayalam({
     required int surahNumber,
   }) async {
-    final db = DatabaseHelper.quranAsadDb;
+    final db = DatabaseHelper.quranAsadMalayalamDb;
     if (db == null) return {'min': -1, 'max': -1};
     try {
-      final result = await db.rawQuery(
-        'SELECT MIN(${DbConstants.malayalamDummyAyahId}) as min_num,'
-        ' MAX(${DbConstants.malayalamDummyAyahId}) as max_num'
-        ' FROM ${DbConstants.malayalamDummyDatasTable}'
-        ' WHERE ${DbConstants.malayalamDummySurahId} = ?'
-        ' AND ${DbConstants.malayalamDummyAyahId} IS NOT NULL',
-        [surahNumber],
+      // Extract footnote numbers from verse text [^N] markers for this surah
+      final rows = await db.query(
+        DbConstants.mlVersesTable,
+        columns: [DbConstants.mlVersesMalayalamTranslation],
+        where: '${DbConstants.mlVersesSurahId} = ?',
+        whereArgs: [surahNumber],
       );
-      if (result.isEmpty) return {'min': -1, 'max': -1};
-      return {
-        'min': (result.first['min_num'] as int?) ?? -1,
-        'max': (result.first['max_num'] as int?) ?? -1,
-      };
+      final pattern = RegExp(r'\[\^?(\d+)\]');
+      int minNum = -1;
+      int maxNum = -1;
+      for (final row in rows) {
+        final text = (row[DbConstants.mlVersesMalayalamTranslation] as String?) ?? '';
+        for (final match in pattern.allMatches(text)) {
+          final num = int.tryParse(match.group(1)!);
+          if (num != null) {
+            if (minNum == -1 || num < minNum) minNum = num;
+            if (maxNum == -1 || num > maxNum) maxNum = num;
+          }
+        }
+      }
+      return {'min': minNum, 'max': maxNum};
     } catch (e) {
       debugPrint('InterpretationsDB: Malayalam bounds query failed — $e');
       return {'min': -1, 'max': -1};

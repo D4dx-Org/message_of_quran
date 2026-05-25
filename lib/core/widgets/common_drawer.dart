@@ -229,6 +229,16 @@ class CommonDrawer extends StatelessWidget {
                               ),
                           ],
                         ),
+                      _DrawerExpansionTile(
+                        title: 'Kids',
+                        icon: Icons.child_friendly_outlined,
+                        children: [
+                          _DrawerLinkTile(
+                            title: "Kids Qur'an",
+                            url: 'https://www.alim.org/kids-quran/',
+                          ),
+                        ],
+                      ),
                       _DrawerTile(
                         title: 'Feedback',
                         icon: Icons.mail_outline,
