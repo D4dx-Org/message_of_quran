@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/features/force_update_screen/presentation/force_update_screen.dart';
 import 'package:the_message_of_the_quran/features/main_screen/presentation/main_screen.dart';
+import 'package:the_message_of_the_quran/features/splash_screen/presentation/widgets/splash_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/splash_screen/providers/version_check_provider.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -47,6 +48,8 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return const Scaffold(
       backgroundColor: AppTheme.appThemeSplash,
+      // Legacy full-image splash kept for future reference.
+      /*
       body: SizedBox(
         width: double.infinity,
         height: double.infinity,
@@ -56,6 +59,8 @@ class _SplashScreenState extends State<SplashScreen> {
           alignment: Alignment.center,
         ),
       ),
+      */
+      body: SplashScreenLayout(),
     );
   }
 }
