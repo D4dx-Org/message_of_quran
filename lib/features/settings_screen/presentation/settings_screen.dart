@@ -58,7 +58,7 @@ class SettingsScreen extends StatelessWidget {
           _SectionLabel('General'),
           SizedBox(height: 8),
           SettingsScreenAppBlock(),
-          D4dxBrandingFooter(showTopBorder: true),
+          D4dxBrandingFooter(),
         ],
       ),
     );
