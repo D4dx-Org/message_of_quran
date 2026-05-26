@@ -5,9 +5,13 @@ import 'package:the_message_of_the_quran/core/services/database/database_helper.
 
 class AuthorDbHelper {
   static Future<List<AuthorsModel>> getAuthors({bool malayalam = false}) async {
-    final db = DatabaseHelper.quranAsadDb;
+    final db = malayalam
+        ? DatabaseHelper.quranAsadMalayalamDb
+        : DatabaseHelper.quranAsadDb;
     if (db == null) {
-      debugPrint('AuthorDbHelper: quranAsadDb not initialized');
+      debugPrint(
+        'AuthorDbHelper: ${malayalam ? 'quranAsadMalayalamDb' : 'quranAsadDb'} not initialized',
+      );
       return [];
     }
 

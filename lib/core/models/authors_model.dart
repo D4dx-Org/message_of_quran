@@ -21,7 +21,7 @@ class AuthorsModel {
       createdBy: json['created_by'] ??"Unknown",
       createdByRole: json['created_by_role'] ??"Unknown",
       isVerified: json['is_verified'] ?? 0,
-      id: json['id'] ?? "Unknown",
+      id: json['id']?.toString() ?? "Unknown",
    
     );
   }

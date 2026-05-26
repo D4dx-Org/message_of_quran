@@ -16,6 +16,80 @@ class AuthorScreen extends StatefulWidget {
 
 class _AuthorScreenState extends State<AuthorScreen> {
   bool? _lastMalayalam;
+  static final RegExp _h2Regex = RegExp(
+    r'<h2[^>]*>.*?</h2>',
+    caseSensitive: false,
+    dotAll: true,
+  );
+  static final RegExp _paragraphRegex = RegExp(
+    r'<p\b[^>]*>.*?</p>',
+    caseSensitive: false,
+    dotAll: true,
+  );
+  static final RegExp _htmlTagRegex = RegExp(r'<[^>]+>');
+  static final RegExp _whitespaceRegex = RegExp(r'\s+');
+
+  String _stripHtmlText(String value) {
+    return value
+        .replaceAll('&nbsp;', ' ')
+        .replaceAll('&amp;', '&')
+        .replaceAll(_htmlTagRegex, ' ')
+        .replaceAll(_whitespaceRegex, ' ')
+        .trim();
+  }
+
+  String _normalizeSignature(String value) {
+    return _stripHtmlText(value)
+        .replaceAll('.', '')
+        .replaceAll(',', '')
+        .replaceAll(':', '')
+        .replaceAll(';', '')
+        .replaceAll('-', ' ')
+        .replaceAll('—', ' ')
+        .replaceAll(_whitespaceRegex, ' ')
+        .trim()
+        .toLowerCase();
+  }
+
+  Map<String, String?> _extractFirstAuthorContent(
+    String rawHtml,
+    String? createdBy,
+  ) {
+    final cleanedHtml = rawHtml.replaceFirst(_h2Regex, '').trim();
+    final signature = createdBy?.trim();
+
+    if (signature == null || signature.isEmpty) {
+      return {
+        'bodyHtml': cleanedHtml,
+        'signature': null,
+      };
+    }
+
+    final paragraphMatches = _paragraphRegex.allMatches(cleanedHtml).toList();
+    if (paragraphMatches.isEmpty) {
+      return {
+        'bodyHtml': cleanedHtml,
+        'signature': null,
+      };
+    }
+
+    final lastParagraphMatch = paragraphMatches.last;
+    final lastParagraphHtml = lastParagraphMatch.group(0)!;
+    final lastParagraphText = _stripHtmlText(lastParagraphHtml);
+
+    if (_normalizeSignature(lastParagraphText) !=
+        _normalizeSignature(signature)) {
+      return {
+        'bodyHtml': cleanedHtml,
+        'signature': null,
+      };
+    }
+
+    return {
+      'bodyHtml': cleanedHtml.substring(0, lastParagraphMatch.start).trimRight(),
+      'signature': lastParagraphText,
+    };
+  }
 
   @override
   void didChangeDependencies() {
@@ -40,7 +114,7 @@ class _AuthorScreenState extends State<AuthorScreen> {
     return BaseScreenLayout(
       appBar: AppBar(
         title: Text(
-          isMalayalam ? 'ഖുർആന്റെ സന്ദേശം' : 'About Author',
+          isMalayalam ? 'മുഹമ്മദ് അസദ്' : 'Muhammad Asad',
           style: AppTextTheme.titleRegular,
         ),
       ),
@@ -65,35 +139,21 @@ class _AuthorScreenState extends State<AuthorScreen> {
             return ListView.builder(
               itemCount: authorProvider.authorsList.length,
               itemBuilder: (context, index) {
-                // final html = authorProvider.authorsList[index].htmlContent;
-                // print(html);
-                final rawHtml = authorProvider.authorsList[index].htmlContent;
+                final author = authorProvider.authorsList[index];
+                final rawHtml = author.htmlContent;
                 final hasContent = rawHtml != null && rawHtml.isNotEmpty;
 
-                // For the first author (Muhammad Asad), extract title and show image
+                // For the first author (Muhammad Asad), remove the inline title and show the image first.
                 if (index == 0 && hasContent) {
-                  // Extract h2 title from HTML
-                  final h2Regex = RegExp(r'<h2[^>]*>(.*?)</h2>', caseSensitive: false);
-                  final h2Match = h2Regex.firstMatch(rawHtml);
-                  final title = h2Match != null ? h2Match.group(1) ?? '' : '';
-                  // Remove h2 from HTML so we render it separately
-                  final bodyHtml = rawHtml.replaceFirst(h2Regex, '');
+                  final firstAuthorContent = _extractFirstAuthorContent(
+                    rawHtml,
+                    author.createdBy,
+                  );
+                  final bodyHtml = firstAuthorContent['bodyHtml'] ?? '';
+                  final signature = firstAuthorContent['signature'];
 
                   return Column(
                     children: [
-                      if (title.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: Text(
-                            title,
-                            textAlign: TextAlign.center,
-                            style: AppTextTheme.popinsDefault(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: bodyColor,
-                            ),
-                          ),
-                        ),
                       Center(
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 16),
@@ -142,6 +202,28 @@ class _AuthorScreenState extends State<AuthorScreen> {
                             ),
                           },
                         ),
+                      if (signature != null) ...[
+                        const SizedBox(height: 16),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            signature,
+                            style: isMalayalam
+                                ? AppTextTheme.subTitleblack.copyWith(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: bodyColor,
+                                    height: 1.4,
+                                  )
+                                : AppTextTheme.popinsDefault(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                    color: bodyColor,
+                                    height: 1.4,
+                                  ),
+                          ),
+                        ),
+                      ],
                     ],
                   );
                 }
@@ -150,7 +232,7 @@ class _AuthorScreenState extends State<AuthorScreen> {
                   padding: const EdgeInsets.only(bottom: 16),
                   child: hasContent
                       ? Html(
-                          data: rawHtml!,
+                          data: rawHtml,
                           onLinkTap: (url, _, _) async {
                             if (url != null) {
                               final uri = Uri.parse(url);

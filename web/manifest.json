@@ -1,11 +1,11 @@
 {
-    "name": "The Message of The Quran",
-    "short_name": "The Message of The Quran",
+    "name": "Quran Asad Malayalam",
+    "short_name": "Quran Asad Malayalam",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "The Message of The Quran - A beautiful Quran reader with translation.",
+    "description": "Quran Asad Malayalam - A beautiful Quran reader with translation.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

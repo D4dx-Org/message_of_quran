@@ -4,7 +4,7 @@ import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/common_email/models/common_email_requests.dart';
 import 'package:the_message_of_the_quran/features/common_email/presentation/widgets/common_email_form_widgets.dart';
 
-const _feedbackAppName = 'The Message of The Quran';
+const _feedbackAppName = 'Quran Asad Malayalam';
 const _feedbackSource = 'the_message_of_the_quran';
 const _feedbackPlatform = 'mobile';
 

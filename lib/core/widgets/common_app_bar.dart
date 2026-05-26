@@ -20,7 +20,7 @@ class CommonAppBar {
         'assets/images/Group-logo.png',
         height: 37 * scale,
         fit: BoxFit.contain,
-        semanticLabel: 'The Message of the Quran logo',
+        semanticLabel: 'Quran Asad Malayalam logo',
       ),
     );
   }

@@ -231,7 +231,7 @@ class MyApp extends StatelessWidget {
         builder: (context, value, child) {
           return MaterialApp(
             navigatorKey: navigatorKey,
-            title: 'The Message of The Quran',
+            title: 'Quran Asad Malayalam',
             showPerformanceOverlay: false,
             debugShowCheckedModeBanner: false,
             theme: value.lightTheme,

@@ -1,5 +1,5 @@
 name: the_message_of_the_quran
-description: "The Message of The Quran - A beautiful Quran reader with translation."
+description: "Quran Asad Malayalam - A beautiful Quran reader with translation."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev

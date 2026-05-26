@@ -115,7 +115,7 @@ class DbConstants {
   // ═══════════════════════════════════════════════════════════════════════════
   static const String quranAsadDbName = "quran_asad.sqlite";
   static const String quranAsadDbVersionKey = 'quran_asad_db_version';
-  static const int quranAsadDbVersion = 12;
+  static const int quranAsadDbVersion = 13;
 
   // ─── Table names (quran_asad.sqlite) ───
   static const String asadSurahsTable = "surahs";
@@ -221,7 +221,7 @@ class DbConstants {
   static const String quranAsadMalayalamDbName = "quran_asad_malayalam_nw.db";
   static const String quranAsadMalayalamDbVersionKey =
       'quran_asad_malayalam_db_version';
-  static const int quranAsadMalayalamDbVersion = 5;
+  static const int quranAsadMalayalamDbVersion = 8;
 
   // ─── verses (quran_asad_malayalam.db → verses) ───
   static const String mlVersesTable = "verses";
@@ -230,10 +230,10 @@ class DbConstants {
   static const String mlVersesMalayalamTranslation = "malayalam_translation";
 
   // ─── Table names (quran_asad_malayalam.db) ───
-  static const String mlAboutAuthorTable = "about_author";
+  static const String mlAboutAuthorTable = "about_translator";
   static const String mlTranslatorNoteTable = "translator_note";
 
-  // ─── about_author columns (quran_asad_malayalam.db → about_author) ───
+  // ─── about_translator columns (quran_asad_malayalam.db → about_translator) ───
   static const String mlAboutAuthorId = "id";
   static const String mlAboutAuthorName = "name";
   static const String mlAboutAuthorRole = "role";

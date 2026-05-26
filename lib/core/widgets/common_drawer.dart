@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
 import 'package:the_message_of_the_quran/core/constants/useful_links.dart';
@@ -8,10 +9,8 @@ import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/d4dx_branding_footer.dart';
 import 'package:the_message_of_the_quran/features/author_screen/author_screen.dart';
-import 'package:the_message_of_the_quran/features/author_screen/presentation/author_writer_screen.dart';
 import 'package:the_message_of_the_quran/features/author_screen/presentation/english_translator_screen.dart';
 import 'package:the_message_of_the_quran/features/author_screen/presentation/translator_screen.dart';
-import 'package:the_message_of_the_quran/features/author_screen/presentation/translator_note_screen.dart';
 import 'package:the_message_of_the_quran/features/contact_us_screen/presentation/contact_us_screen.dart';
 import 'package:the_message_of_the_quran/features/library/presentation/appendix_screen.dart';
 import 'package:the_message_of_the_quran/features/library/presentation/foreword_screen.dart';
@@ -77,15 +76,14 @@ class CommonDrawer extends StatelessWidget {
                           icon: Icons.menu_book_outlined,
                           children: [
                             _DrawerSubTile(
-                              title: 'ഗ്രന്ഥകർത്താവ്',
+                              title: 'മുഹമ്മദ് അസദ്',
                               icon: Icons.edit_outlined,
                               onTap: () {
                                 Navigator.pop(context);
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) =>
-                                        const AuthorWriterScreen(),
+                                    builder: (_) => const AuthorScreen(),
                                   ),
                                 );
                               },
@@ -104,20 +102,6 @@ class CommonDrawer extends StatelessWidget {
                                 );
                               },
                             ),
-                            _DrawerSubTile(
-                              title: 'പരിഭാഷകന്റെ കുറിപ്പ്',
-                              icon: Icons.note_outlined,
-                              onTap: () {
-                                Navigator.pop(context);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) =>
-                                        const TranslatorNoteScreen(),
-                                  ),
-                                );
-                              },
-                            ),
                           ],
                         )
                       else
@@ -126,7 +110,7 @@ class CommonDrawer extends StatelessWidget {
                           icon: Icons.menu_book_outlined,
                           children: [
                             _DrawerSubTile(
-                              title: 'Author',
+                              title: 'Muhammad Asad',
                               icon: Icons.edit_outlined,
                               onTap: () {
                                 Navigator.pop(context);
@@ -231,7 +215,7 @@ class CommonDrawer extends StatelessWidget {
                         ),
                     const  _DrawerExpansionTile(
                         title: 'Kids',
-                        icon: Icons.child_friendly_outlined,
+                        icon: Iconsax.magic_star,
                         children: [
                           _DrawerLinkTile(
                             title: "Kids Qur'an",
@@ -277,7 +261,7 @@ class CommonDrawer extends StatelessWidget {
                               ? ' '
                               : ' ';
                           await Share.share(
-                            'Check out The Message of The Quran – a beautiful Quran reader with Malayalam translation.\n$link',
+                            'Check out Quran Asad Malayalam – a beautiful Quran reader with Malayalam translation.\n$link',
                           );
                         },
                       ),
@@ -396,7 +380,7 @@ class _DrawerBrandHeader extends StatelessWidget {
                         'assets/images/Group-logo.png',
                         height: 50 * scale,
                         fit: BoxFit.contain,
-                        semanticLabel: 'The Message of the Quran logo',
+                        semanticLabel: 'Quran Asad Malayalam logo',
                       ),
                     ),
                     SizedBox(height: 18 * scale),

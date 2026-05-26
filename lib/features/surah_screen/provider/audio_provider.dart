@@ -74,7 +74,7 @@ class AudioProvider extends ChangeNotifier {
   }) {
     _handler.mediaItem.add(MediaItem(
       id: 'surah_${surahNumber}_ayah_$ayahId',
-      album: 'The Message of the Quran',
+      album: 'Quran Asad Malayalam',
       title: 'Surah $surahNumber - Ayah $ayahId',
       artist: reciterName ?? 'Quran Recitation',
     ));

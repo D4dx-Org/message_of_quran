@@ -107,7 +107,7 @@ class AyahPosterWidget extends StatelessWidget {
                     _buildGoldLine(50),
                     const SizedBox(height: 8),
                     Text(
-                      'The Message of the Quran',
+                      'Quran Asad Malayalam',
                       style: GoogleFonts.poppins(
                         fontSize: 9,
                         color: _gold.withValues(alpha: 0.5),

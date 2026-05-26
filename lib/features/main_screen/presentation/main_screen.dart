@@ -159,7 +159,7 @@ class _MainScreenState extends State<MainScreen> {
             context,
             centerTitle: true,
             isActionsNeeded: displayIndex != 4 && displayIndex != 3,
-            showLeading: displayIndex != 4,
+            showLeading: true,
             title: [
               'Home',
               'Bookmarks',

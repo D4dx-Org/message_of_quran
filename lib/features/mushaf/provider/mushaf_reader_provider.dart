@@ -466,7 +466,7 @@ class MushafReaderProvider extends ChangeNotifier {
           // Update media notification with current ayah info
           _handler.mediaItem.add(MediaItem(
             id: 'mushaf_${playlistSuraNos[i]}_ayah_${playlistAyaNos[i]}',
-            album: 'The Message of the Quran',
+            album: 'Quran Asad Malayalam',
             title: 'Surah ${playlistSuraNos[i]} - Ayah ${playlistAyaNos[i]}',
             artist: 'Mishary Rashid Alafasy',
           ));
