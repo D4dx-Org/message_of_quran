@@ -1,29 +1,33 @@
 import 'package:the_message_of_the_quran/core/constants/db_constants.dart';
 
 class AboutModel {
- final String? title;
+  final int? id;
+  final String? title;
   final String? description;
-  final String? createdBy;
-  final String? createdByRole;
-  final int? isVerified;
-  
+  final String? signedBy;
 
   AboutModel({
+    this.id,
     this.title,
     this.description,
-    this.createdBy,
-    this.createdByRole,
-    this.isVerified,
+    this.signedBy,
   });
 
   factory AboutModel.fromJson(Map<String, dynamic> json) {
     return AboutModel(
-      title: json[DbConstants.aboutTitle] ??"No Title",
-      description: json[DbConstants.aboutDescription] ??"No Description",
-      createdBy: json[DbConstants.createdBy] ??"Unknown",
-      createdByRole: json[DbConstants.createdByRole] ??"Unknown",
-      isVerified: json[DbConstants.isVerified] ?? 0,
+      id: json[DbConstants.mlAboutUsId],
+      title: json[DbConstants.mlAboutUsTitle] ?? "No Title",
+      description: json[DbConstants.mlAboutUsDescription] ?? "No Description",
+      signedBy: json[DbConstants.mlAboutUsSignedBy],
     );
   }
 
+  factory AboutModel.fromEnglishJson(Map<String, dynamic> json) {
+    return AboutModel(
+      id: json[DbConstants.enAboutUsId],
+      title: json[DbConstants.enAboutUsTitle] ?? "No Title",
+      description: json[DbConstants.enAboutUsDescription] ?? "No Description",
+      signedBy: json[DbConstants.enAboutUsSignedBy],
+    );
+  }
 }

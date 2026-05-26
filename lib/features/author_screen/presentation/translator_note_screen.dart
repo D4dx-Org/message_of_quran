@@ -56,21 +56,6 @@ class _TranslatorNoteScreenState extends State<TranslatorNoteScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (note.heading != null && note.heading!.isNotEmpty)
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: Text(
-                          note.heading!,
-                          textAlign: TextAlign.center,
-                          style: AppTextTheme.popinsDefault(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: bodyColor,
-                          ),
-                        ),
-                      ),
-                    ),
                   if (note.content != null && note.content!.isNotEmpty)
                     ...note.content!.split('\n').where((p) => p.trim().isNotEmpty).expand((paragraph) => [
                       Text(

@@ -67,12 +67,90 @@ class _AuthorScreenState extends State<AuthorScreen> {
               itemBuilder: (context, index) {
                 // final html = authorProvider.authorsList[index].htmlContent;
                 // print(html);
+                final rawHtml = authorProvider.authorsList[index].htmlContent;
+                final hasContent = rawHtml != null && rawHtml.isNotEmpty;
+
+                // For the first author (Muhammad Asad), extract title and show image
+                if (index == 0 && hasContent) {
+                  // Extract h2 title from HTML
+                  final h2Regex = RegExp(r'<h2[^>]*>(.*?)</h2>', caseSensitive: false);
+                  final h2Match = h2Regex.firstMatch(rawHtml);
+                  final title = h2Match != null ? h2Match.group(1) ?? '' : '';
+                  // Remove h2 from HTML so we render it separately
+                  final bodyHtml = rawHtml.replaceFirst(h2Regex, '');
+
+                  return Column(
+                    children: [
+                      if (title.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: Text(
+                            title,
+                            textAlign: TextAlign.center,
+                            style: AppTextTheme.popinsDefault(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: bodyColor,
+                            ),
+                          ),
+                        ),
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.asset(
+                              'assets/images/asad_img.jpeg',
+                              width: 300,
+                              height: 300,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (bodyHtml.trim().isNotEmpty)
+                        Html(
+                          data: bodyHtml,
+                          onLinkTap: (url, _, _) async {
+                            if (url != null) {
+                              final uri = Uri.parse(url);
+                              if (await canLaunchUrl(uri)) {
+                                await launchUrl(uri, mode: LaunchMode.externalApplication);
+                              }
+                            }
+                          },
+                          style: {
+                            'body': Style(
+                              margin: Margins.zero,
+                              padding: HtmlPaddings.zero,
+                              color: bodyColor,
+                              fontSize: FontSize(14),
+                            ),
+                            'p': Style(
+                              color: bodyColor,
+                              fontSize: FontSize(14),
+                            ),
+                            'h2': Style(
+                              textAlign: TextAlign.center,
+                              color: bodyColor,
+                              fontSize: FontSize(18),
+                              fontWeight: FontWeight.w600,
+                            ),
+                            'a': Style(
+                              textDecoration: TextDecoration.none,
+                              color: bodyColor,
+                            ),
+                          },
+                        ),
+                    ],
+                  );
+                }
+
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: (authorProvider.authorsList[index].htmlContent != null &&
-                   authorProvider.authorsList[index].htmlContent!.isNotEmpty)
+                  child: hasContent
                       ? Html(
-                          data: authorProvider.authorsList[index].htmlContent!,
+                          data: rawHtml!,
                           onLinkTap: (url, _, _) async {
                             if (url != null) {
                               final uri = Uri.parse(url);

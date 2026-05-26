@@ -77,7 +77,7 @@ class WorksOfReferenceScreen extends StatelessWidget {
                               padding: HtmlPaddings.zero,
                             ),
                             'h2': Style(
-                              textAlign: TextAlign.center,
+                              display: Display.none,
                             ),
                             'a': Style(
                               textDecoration: TextDecoration.none,

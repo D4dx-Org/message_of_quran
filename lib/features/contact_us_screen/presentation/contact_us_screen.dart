@@ -49,8 +49,16 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isMalayalam =
+        Provider.of<LanguageProvider>(context).isMalayalam;
+
     return BaseScreenLayout(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text(
+          isMalayalam ? 'ഞങ്ങളെ ബന്ധപ്പെടുക' : 'Contact Us',
+          style: AppTextTheme.titleRegular,
+        ),
+      ),
       child: Container(
         decoration: const BoxDecoration(),
         child: Padding(
@@ -58,7 +66,6 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
           child: Consumer<ContactProvider>(
             builder: (context, contactProvider, child) {
               final content = contactProvider.contactContent;
-              final title = content?.title ?? 'Contact Us';
               final description = content?.description;
               final address = content?.address;
               final email = content?.email;
@@ -72,16 +79,6 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Center(
-                      child: Text(
-                        title,
-                        style: AppTextTheme.popinsDefault(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
                     if (description != null) ...[
                       Text(
                         description,

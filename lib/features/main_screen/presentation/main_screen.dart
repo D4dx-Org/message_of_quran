@@ -12,6 +12,7 @@ import 'package:the_message_of_the_quran/features/home_screen/presentation/home_
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/mushaf/screens/mushaf_landing_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 import 'package:the_message_of_the_quran/main.dart' as app;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -156,12 +157,14 @@ class _MainScreenState extends State<MainScreen> {
             centerTitle: true,
             isActionsNeeded: displayIndex != 4 && displayIndex != 3,
             showLeading: displayIndex != 4,
-            title: const [
+            title: [
               'Home',
               'Bookmarks',
               'Mushaf',
               'Settings',
-              'About Us',
+              context.watch<LanguageProvider>().isMalayalam
+                  ? 'ഞങ്ങളെക്കുറിച്ച്'
+                  : 'About Us',
             ][displayIndex.clamp(0, 4)],
           );
 

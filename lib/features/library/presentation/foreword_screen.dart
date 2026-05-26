@@ -180,16 +180,6 @@ class _MalayalamPrefaceContentState extends State<_MalayalamPrefaceContent> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // ─── Centered Title ───
-          Center(
-            child: Text(
-              widget.preface.heading,
-              style: AppTextTheme.forewordTitle(context),
-            ),
-          ),
-          const SizedBox(height: 20),
-          _OrnamentalDivider(isDark: isDark),
-          const SizedBox(height: 20),
           // ─── Body ───
           ..._buildBody(context),
           // ─── Footnotes ───
@@ -539,14 +529,6 @@ class _ForewordContentState extends State<_ForewordContent> {
           const SizedBox(height: 20),
           // ─── Ornamental divider ───
           _OrnamentalDivider(isDark: isDark),
-          const SizedBox(height: 20),
-          // ─── Title ───
-          Center(
-            child: Text(
-              'FOREWORD',
-              style: AppTextTheme.forewordTitle(context),
-            ),
-          ),
           const SizedBox(height: 28),
           // ─── Body segments ───
           ..._buildBodySegments(bodySegments, context),

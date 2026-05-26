@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/about_screen/provider/about_providers.dart';
@@ -31,8 +30,8 @@ class _AboutScreenState extends State<AboutScreen> {
     }
   }
 
-  Future<void> _launchBookPlusUrl() async {
-    final uri = Uri.parse(ApiConstants.bookplusUrl);
+  Future<void> _launchD4dxUrl() async {
+    final uri = Uri.parse('https://d4dx.co/');
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
@@ -68,20 +67,6 @@ class _AboutScreenState extends State<AboutScreen> {
                   ...provider.aboutList.map((about) => Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (about.title != null && about.title!.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 0),
-                          child: Center(
-                            child: Text(
-                              about.title!,
-                              style: AppTextTheme.subTitleblack.copyWith(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 18,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
                       if (about.description != null &&
                           about.description!.isNotEmpty)
                         Text(
@@ -90,23 +75,26 @@ class _AboutScreenState extends State<AboutScreen> {
                           style:
                               AppTextTheme.subTitleblack.copyWith(height: 1.7),
                         ),
+                      const SizedBox(height: 16),
+                      if (about.signedBy != null && about.signedBy!.isNotEmpty)
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: GestureDetector(
+                            onTap: _launchD4dxUrl,
+                            child: Text(
+                              '- ${about.signedBy!}',
+                              style: AppTextTheme.subTitleblack.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: Colors.blue,
+                                decoration: TextDecoration.underline,
+                                decorationColor: Colors.blue,
+                              ),
+                            ),
+                          ),
+                        ),
                       const SizedBox(height: 20),
                     ],
                   ),
-                  ),
-                  Center(
-                    child: GestureDetector(
-                      onTap: _launchBookPlusUrl,
-                      child: Text(
-                        ApiConstants.bookplusUrl,
-                        style: AppTextTheme.subTitleblack.copyWith(
-                          color: Colors.blue,
-                          fontSize: 16,
-                          decoration: TextDecoration.underline,
-                          decorationColor: Colors.blue,
-                        ),
-                      ),
-                    ),
                   ),
                 const  SizedBox(height: 16),
                 ],

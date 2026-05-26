@@ -36,7 +36,10 @@ class D4dxBrandingFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scale = ResponsiveHelper.scaleFactor(context);
-    final footerColor = theme.colorScheme.outline.withValues(alpha: 0.92);
+    final isDark = theme.brightness == Brightness.dark;
+    final footerColor = isDark
+        ? const Color(0xFFF2F2F7).withValues(alpha: 0.85)
+        : theme.colorScheme.outline.withValues(alpha: 0.92);
 
     return Container(
       padding:
@@ -88,6 +91,8 @@ class D4dxBrandingFooter extends StatelessWidget {
                   'assets/images/d4_logo.png',
                   height: 46 * scale,
                   fit: BoxFit.contain,
+                  color: isDark ? footerColor : null,
+                  colorBlendMode: isDark ? BlendMode.srcIn : null,
                 ),
               ),
             ),

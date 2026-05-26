@@ -115,7 +115,7 @@ class DbConstants {
   // ═══════════════════════════════════════════════════════════════════════════
   static const String quranAsadDbName = "quran_asad.sqlite";
   static const String quranAsadDbVersionKey = 'quran_asad_db_version';
-  static const int quranAsadDbVersion = 11;
+  static const int quranAsadDbVersion = 12;
 
   // ─── Table names (quran_asad.sqlite) ───
   static const String asadSurahsTable = "surahs";
@@ -199,6 +199,13 @@ class DbConstants {
   static const String forewordId = "id";
   static const String forewordBody = "body";
 
+  // ─── about_us (quran_asad.sqlite → about_us) ───
+  static const String enAboutUsTable = "about_us";
+  static const String enAboutUsId = "id";
+  static const String enAboutUsTitle = "title";
+  static const String enAboutUsDescription = "description";
+  static const String enAboutUsSignedBy = "signed_by";
+
   // ─── contact_us_content (quran_asad.sqlite → contact_us_content) ───
   static const String enContactUsTable = "contact_us_content";
   static const String enContactUsId = "id";
@@ -214,7 +221,7 @@ class DbConstants {
   static const String quranAsadMalayalamDbName = "quran_asad_malayalam_nw.db";
   static const String quranAsadMalayalamDbVersionKey =
       'quran_asad_malayalam_db_version';
-  static const int quranAsadMalayalamDbVersion = 3;
+  static const int quranAsadMalayalamDbVersion = 4;
 
   // ─── verses (quran_asad_malayalam.db → verses) ───
   static const String mlVersesTable = "verses";
@@ -246,6 +253,13 @@ class DbConstants {
   static const String mlPrefaceId = "id";
   static const String mlPrefaceHeading = "heading";
   static const String mlPrefaceContent = "content";
+
+  // ─── about_us (quran_asad_malayalam.db → about_us) ───
+  static const String mlAboutUsTable = "about_us";
+  static const String mlAboutUsId = "id";
+  static const String mlAboutUsTitle = "title";
+  static const String mlAboutUsDescription = "description";
+  static const String mlAboutUsSignedBy = "signed_by";
 
   // ─── contact_us (quran_asad_malayalam.db → contact_us) ───
   static const String mlContactUsTable = "contact_us";
