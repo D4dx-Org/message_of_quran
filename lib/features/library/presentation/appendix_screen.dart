@@ -24,15 +24,27 @@ class _AppendixScreenState extends State<AppendixScreen> {
   List<AppendixModel> _filteredAppendices = [];
   bool _isLoading = true;
   int? _expandedIndex;
+  bool? _loadedMalayalam;
 
   @override
-  void initState() {
-    super.initState();
-    _loadAppendices();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final isMalayalam = Provider.of<LanguageProvider>(context).isMalayalam;
+    if (_loadedMalayalam == isMalayalam) return;
+
+    _loadedMalayalam = isMalayalam;
+    _loadAppendices(isMalayalam);
   }
 
-  Future<void> _loadAppendices() async {
-    final data = await AppendixDbHelper.getAppendices();
+  Future<void> _loadAppendices(bool isMalayalam) async {
+    setState(() {
+      _isLoading = true;
+      _expandedIndex = null;
+    });
+
+    final data = await AppendixDbHelper.getAppendices(
+      malayalam: isMalayalam,
+    );
     if (!mounted) return;
     setState(() {
       _allAppendices = data;

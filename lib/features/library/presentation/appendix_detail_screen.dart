@@ -35,8 +35,10 @@ class AppendixDetailScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.share_outlined, color: Colors.white),
             onPressed: () async {
-              final appendix =
-                  await AppendixDbHelper.getAppendixByNumber(appendixNumber);
+              final appendix = await AppendixDbHelper.getAppendixByNumber(
+                appendixNumber,
+                malayalam: isMalayalam,
+              );
               if (appendix != null) {
                 await Share.share(
                   '${appendix.title}\n\n${appendix.body}',
@@ -48,7 +50,10 @@ class AppendixDetailScreen extends StatelessWidget {
         ],
       ),
       child: FutureBuilder<AppendixModel?>(
-        future: AppendixDbHelper.getAppendixByNumber(appendixNumber),
+        future: AppendixDbHelper.getAppendixByNumber(
+          appendixNumber,
+          malayalam: isMalayalam,
+        ),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

@@ -221,7 +221,7 @@ class DbConstants {
   static const String quranAsadMalayalamDbName = "quran_asad_malayalam_nw.db";
   static const String quranAsadMalayalamDbVersionKey =
       'quran_asad_malayalam_db_version';
-  static const int quranAsadMalayalamDbVersion = 4;
+  static const int quranAsadMalayalamDbVersion = 5;
 
   // ─── verses (quran_asad_malayalam.db → verses) ───
   static const String mlVersesTable = "verses";
