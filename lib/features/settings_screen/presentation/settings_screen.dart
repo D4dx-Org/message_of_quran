@@ -20,6 +20,7 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseScreenLayout(
+      contentCardBoxShadows: const [],
       child: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         children: const [

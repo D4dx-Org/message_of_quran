@@ -120,6 +120,7 @@ class BookmarkScreen extends StatelessWidget {
         : AppTheme.appThemePrimary;
 
     return BaseScreenLayout(
+      contentCardBoxShadows: const [],
       child: CustomScrollView(
         slivers: [
           Consumer<SurahProvider>(

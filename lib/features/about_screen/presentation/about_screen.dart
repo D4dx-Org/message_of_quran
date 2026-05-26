@@ -40,6 +40,7 @@ class _AboutScreenState extends State<AboutScreen> {
   @override
   Widget build(BuildContext context) {
     return BaseScreenLayout(
+      contentCardBoxShadows: const [],
       child: Consumer<AboutProvider>(
         builder: (context, provider, _) {
           if (provider.isAboutLoading) {

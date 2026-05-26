@@ -142,6 +142,9 @@ class _MainScreenState extends State<MainScreen> {
     final navBg = isDarkMode
         ? AppTheme.appThemePrimary
         : Colors.white; // AppTheme.appThemeSecondary;
+    final navCornerFillColor = isDarkMode
+      ? const Color(0xff0c2d52)
+      : const Color.fromRGBO(255, 250, 234, 1);
     final inactiveColor = isDarkMode ? Colors.grey[400]! : const Color(0xFF4A4A4A);
     final displayIndex = controller.currentIndex;
     final tablet = ResponsiveHelper.isTablet(context);
@@ -273,110 +276,164 @@ class _MainScreenState extends State<MainScreen> {
 
         drawer: const CommonDrawer(),
         body: pageBody,
-        bottomNavigationBar: Container(
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(
-            color: navBg,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(navCornerRadius),
-              topRight: Radius.circular(navCornerRadius),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.08),
-                blurRadius: 8,
-                offset: const Offset(0, -1),
+        bottomNavigationBar: Stack(
+          fit: StackFit.passthrough,
+          children: [
+            Positioned.fill(
+              child: IgnorePointer(
+                child: CustomPaint(
+                  painter: _NavCornerFillPainter(
+                    color: navCornerFillColor,
+                    radius: navCornerRadius,
+                  ),
+                ),
               ),
-            ],
-          ),
-          child: SafeArea(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 6 * scale),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    children: List.generate(_navItems.length, (index) {
-                      final item = _navItems[index];
-                      final isSelected = displayIndex == index;
-                      final isMushaf = index == 2;
+            ),
+            Container(
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                color: navBg,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(navCornerRadius),
+                  topRight: Radius.circular(navCornerRadius),
+                ),
+              ),
+              child: SafeArea(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 6 * scale),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        children: List.generate(_navItems.length, (index) {
+                          final item = _navItems[index];
+                          final isSelected = displayIndex == index;
+                          final isMushaf = index == 2;
 
-                      final color = isMushaf
-                          ? Colors.white
-                          : isSelected
-                          ? (isDarkMode ? Colors.white : AppTheme.appIconTheme)
-                          : inactiveColor;
+                          final color = isMushaf
+                              ? Colors.white
+                              : isSelected
+                              ? (isDarkMode ? Colors.white : AppTheme.appIconTheme)
+                              : inactiveColor;
 
-                      // Other items: active gets a filled container, inactive stays plain
-                      return Expanded(
-                        child: Semantics(
-                          button: true,
-                          label:
-                              '${item.label} tab${isSelected ? ', selected' : ''}',
-                          excludeSemantics: true,
-                          child: InkWell(
-                            onTap: () => _onItemTapped(index),
-                            borderRadius: BorderRadius.circular(10 * scale),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 6 * scale,
-                                vertical: 4 * scale,
-                              ),
-                              margin: EdgeInsets.symmetric(
-                                horizontal: 4 * scale,
-                              ),
-                              // decoration:
-                              //     ? BoxDecoration(
-                              //         color: isDarkMode
-                              //             ? Colors.white.withValues(alpha: 0.12)
-                              //             : const Color.fromRGBO(
-                              //                 255,
-                              //                 234,
-                              //                 191,
-                              //                 1,
-                              //               ),
-                              //         borderRadius: BorderRadius.circular(10),
-                              //       )
-                              //     : null,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  if (item.label.isEmpty)
-                                    SizedBox.square(
-                                      dimension: _navItemSize(index) * scale,
-                                    )
-                                  else
-                                    _buildNavItemIcon(
-                                      index: index,
-                                      color: color,
-                                      size: _navItemSize(index) * scale,
-                                    ),
-                                  SizedBox(height: 3 * scale),
-                                  Text(
-                                    item.label,
-                                    style: TextStyle(
-                                      color: color,
-                                      fontSize: 10 * scale,
-                                      fontWeight: isSelected
-                                          ? FontWeight.w700
-                                          : FontWeight.w400,
-                                    ),
+                          return Expanded(
+                            child: Semantics(
+                              button: true,
+                              label:
+                                  '${item.label} tab${isSelected ? ', selected' : ''}',
+                              excludeSemantics: true,
+                              child: InkWell(
+                                onTap: () => _onItemTapped(index),
+                                borderRadius: BorderRadius.circular(10 * scale),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 6 * scale,
+                                    vertical: 4 * scale,
                                   ),
-                                ],
+                                  margin: EdgeInsets.symmetric(
+                                    horizontal: 4 * scale,
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      if (item.label.isEmpty)
+                                        SizedBox.square(
+                                          dimension: _navItemSize(index) * scale,
+                                        )
+                                      else
+                                        _buildNavItemIcon(
+                                          index: index,
+                                          color: color,
+                                          size: _navItemSize(index) * scale,
+                                        ),
+                                      SizedBox(height: 3 * scale),
+                                      Text(
+                                        item.label,
+                                        style: TextStyle(
+                                          color: color,
+                                          fontSize: 10 * scale,
+                                          fontWeight: isSelected
+                                              ? FontWeight.w700
+                                              : FontWeight.w400,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                      );
-                    }),
+                          );
+                        }),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
+  }
+}
+
+class _NavCornerFillPainter extends CustomPainter {
+  const _NavCornerFillPainter({required this.color, required this.radius});
+
+  final Color color;
+  final double radius;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (radius <= 0 || size.width <= 0 || size.height <= 0) return;
+
+    final wedgeExtent = radius.clamp(0.0, size.width / 2);
+    final paint = Paint()..color = color;
+
+    final leftSquare = Path()
+      ..addRect(Rect.fromLTWH(0, 0, wedgeExtent, wedgeExtent));
+    final leftCircle = Path()
+      ..addOval(
+        Rect.fromCircle(
+          center: Offset(wedgeExtent, wedgeExtent),
+          radius: wedgeExtent,
+        ),
+      );
+    final leftWedge = Path.combine(
+      PathOperation.difference,
+      leftSquare,
+      leftCircle,
+    );
+
+    final rightSquare = Path()
+      ..addRect(
+        Rect.fromLTWH(
+          size.width - wedgeExtent,
+          0,
+          wedgeExtent,
+          wedgeExtent,
+        ),
+      );
+    final rightCircle = Path()
+      ..addOval(
+        Rect.fromCircle(
+          center: Offset(size.width - wedgeExtent, wedgeExtent),
+          radius: wedgeExtent,
+        ),
+      );
+    final rightWedge = Path.combine(
+      PathOperation.difference,
+      rightSquare,
+      rightCircle,
+    );
+
+    canvas.drawPath(leftWedge, paint);
+    canvas.drawPath(rightWedge, paint);
+  }
+
+  @override
+  bool shouldRepaint(_NavCornerFillPainter oldDelegate) {
+    return oldDelegate.color != color || oldDelegate.radius != radius;
   }
 }

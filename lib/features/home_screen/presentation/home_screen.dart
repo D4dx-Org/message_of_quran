@@ -161,18 +161,8 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final contentCardBoxShadows = [
-      BoxShadow(
-        color: Colors.black.withValues(alpha: isDarkMode ? 0.24 : 0.10),
-        blurRadius: isDarkMode ? 12 : 16,
-        spreadRadius: isDarkMode ? 0 : 1,
-        offset: const Offset(0, -3),
-      ),
-    ];
-
     return BaseScreenLayout(
-      contentCardBoxShadows: contentCardBoxShadows,
+      contentCardBoxShadows: const [],
       topBorderRadius: 70,
       floatingActionButton: ScrollToTopButton(
         visible: _showScrollToTop && _tabController.index == 0,

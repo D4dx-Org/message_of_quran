@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -369,6 +371,9 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
   late final TabController _tabController;
   late final MushafLandingProvider _p;
   final MushafDownloadManager _downloadManager = MushafDownloadManager.instance;
+  static const Duration _downloadBannerDuration = Duration(seconds: 3);
+  Timer? _downloadBannerTimer;
+  String? _downloadBannerMessage;
 
   @override
   void initState() {
@@ -380,6 +385,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
 
   @override
   void dispose() {
+    _downloadBannerTimer?.cancel();
     _downloadManager.removeListener(_onDownloadStateChanged);
     _tabController.dispose();
     _p.dispose();
@@ -388,8 +394,115 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
 
   void _onDownloadStateChanged() {
     if (_downloadManager.isDone && mounted) {
+      _hideDownloadBanner();
       _p.setFontsInstalled();
+      return;
     }
+
+    if (!_downloadManager.isDownloading) {
+      _hideDownloadBanner();
+    }
+  }
+
+  void _showDownloadBanner(String message) {
+    if (!mounted) return;
+
+    _downloadBannerTimer?.cancel();
+    setState(() {
+      _downloadBannerMessage = message;
+    });
+
+    _downloadBannerTimer = Timer(_downloadBannerDuration, () {
+      if (!mounted) return;
+      setState(() {
+        _downloadBannerMessage = null;
+      });
+    });
+  }
+
+  void _hideDownloadBanner() {
+    _downloadBannerTimer?.cancel();
+    if (!mounted || _downloadBannerMessage == null) return;
+
+    setState(() {
+      _downloadBannerMessage = null;
+    });
+  }
+
+  Widget _buildDownloadBanner(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final isVisible = _downloadBannerMessage != null;
+    final maxWidth = ResponsiveHelper.bottomSheetMaxWidth(context);
+    final horizontalPadding = ResponsiveHelper.isTablet(context)
+        ? ResponsiveHelper.horizontalPadding(context)
+        : 0.0;
+
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: IgnorePointer(
+        ignoring: !isVisible,
+        child: AnimatedSlide(
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOutCubic,
+          offset: isVisible ? Offset.zero : const Offset(0, 1),
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 180),
+            curve: Curves.easeOut,
+            opacity: isVisible ? 1 : 0,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(
+                horizontalPadding,
+                0,
+                horizontalPadding,
+                MediaQuery.of(context).padding.bottom + 16,
+              ),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: maxWidth ?? double.infinity,
+                ),
+                child: Semantics(
+                  container: true,
+                  liveRegion: true,
+                  label: _downloadBannerMessage ?? '',
+                  child: Material(
+                    color: isDarkMode ? theme.cardColor : Colors.white,
+                    elevation: 10,
+                    shadowColor: Colors.black.withValues(alpha: 0.14),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 14,
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(
+                            color: isDarkMode
+                                ? Colors.white.withValues(alpha: 0.08)
+                                : Colors.black.withValues(alpha: 0.06),
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        _downloadBannerMessage ?? '',
+                        style: GoogleFonts.poppins(
+                          color: isDarkMode
+                              ? Colors.white
+                              : const Color(0xFF22304A),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _openSurah(BuildContext context, int suraNo) async {
@@ -473,14 +586,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
   void _handleUndownloadedPage(BuildContext context) {
     if (_downloadManager.isDownloading) {
       final percent = (_downloadManager.progress * 100).toStringAsFixed(0);
-      ScaffoldMessenger.of(context)
-        ..clearSnackBars()
-        ..showSnackBar(
-          SnackBar(
-            content: Text('Download in progress — $percent% complete'),
-            duration: const Duration(seconds: 3),
-          ),
-        );
+      _showDownloadBanner('Download in progress — $percent% complete');
       return;
     }
     _showDownloadDialog(context);
@@ -534,16 +640,9 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                 onPressed: () {
                   Navigator.of(ctx).pop();
                   _downloadManager.startDownload();
-                  ScaffoldMessenger.of(context)
-                    ..clearSnackBars()
-                    ..showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Mushaf download started. You can continue using the app.',
-                        ),
-                        duration: Duration(seconds: 3),
-                      ),
-                    );
+                  _showDownloadBanner(
+                    'Mushaf download started. You can continue using the app.',
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _kSecondaryDark,
@@ -573,10 +672,20 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
       value: _p,
       child: Consumer<MushafLandingProvider>(
         builder: (context, p, _) {
-          if (widget.embedded) return _buildBody(context);
+          if (widget.embedded) return _buildScreenBody(context);
           return _buildScaffold(context);
         },
       ),
+    );
+  }
+
+  Widget _buildScreenBody(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        _buildBody(context),
+        _buildDownloadBanner(context),
+      ],
     );
   }
 
@@ -627,7 +736,8 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
 
   Widget _buildScaffold(BuildContext context) {
     return BaseScreenLayout(
-      child: _buildBody(context),
+      contentCardBoxShadows: const [],
+      child: _buildScreenBody(context),
     );
   }
 
