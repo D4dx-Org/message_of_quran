@@ -1832,7 +1832,7 @@ class _SurahScreenState extends State<SurahScreen> {
           final displayInterpretationNumber = isMalayalam
               ? headerInterpretationNumber - ctrl.mlFootnoteMinNumber + 1
               : headerInterpretationNumber;
-          final surahTitle = formatInterpretationSheetSurahTitle(
+          final surahHeader = formatInterpretationSheetSurahHeader(
             isMalayalam: isMalayalam,
             surah: surah,
           );
@@ -1853,7 +1853,7 @@ class _SurahScreenState extends State<SurahScreen> {
                 .map((e) => e.interpretationText)
                 .join('\n\n');
             final headerLines = <String>[
-              if (surahTitle != null && surahTitle.isNotEmpty) surahTitle,
+              ...surahHeader.toLines(),
               if (metadataLabel.trim().isNotEmpty) metadataLabel,
             ];
             final headerText = headerLines.join('\n').trim();
@@ -1883,7 +1883,7 @@ class _SurahScreenState extends State<SurahScreen> {
                   ),
                 ),
                 InterpretationSheetHeader(
-                  surahTitle: surahTitle,
+                  surahHeader: surahHeader,
                   metadataLabel: metadataLabel,
                   onClose: () => Navigator.of(ctx).pop(),
                 ),

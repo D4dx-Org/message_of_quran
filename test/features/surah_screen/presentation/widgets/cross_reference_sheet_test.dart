@@ -47,6 +47,71 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  Future<void> pumpInterpretationHeader(
+    WidgetTester tester, {
+    required InterpretationSheetSurahHeaderText surahHeader,
+    required String metadataLabel,
+  }) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: InterpretationSheetHeader(
+            surahHeader: surahHeader,
+            metadataLabel: metadataLabel,
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('interpretation header shows meaning on separate subtitle line', (
+    tester,
+  ) async {
+    await pumpInterpretationHeader(
+      tester,
+      surahHeader: const InterpretationSheetSurahHeaderText(
+        title: "Al-A'raf",
+        subtitle: 'The Faculty Of Discernment',
+      ),
+      metadataLabel: 'Surah 7 • Interpretation 5 • Verse 5',
+    );
+
+    expect(find.text("Al-A'raf"), findsOneWidget);
+    expect(find.text('The Faculty Of Discernment'), findsOneWidget);
+    expect(
+      find.text("Al-A'raf (The Faculty Of Discernment)"),
+      findsNothing,
+    );
+
+    final subtitle = tester.widget<Text>(
+      find.text('The Faculty Of Discernment'),
+    );
+    expect(subtitle.style?.fontSize, 13);
+    expect(subtitle.style?.fontWeight, FontWeight.w500);
+    expect(subtitle.style?.color, Colors.grey[700]);
+  });
+
+  testWidgets('interpretation header omits subtitle when missing', (
+    tester,
+  ) async {
+    await pumpInterpretationHeader(
+      tester,
+      surahHeader: const InterpretationSheetSurahHeaderText(
+        title: 'Al-Fatihah',
+      ),
+      metadataLabel: 'Surah 1 • Interpretation 1 • Verse 1',
+    );
+
+    expect(find.text('Al-Fatihah'), findsOneWidget);
+    expect(find.text('The Opening'), findsNothing);
+    expect(
+      find.text('Surah 1 • Interpretation 1 • Verse 1'),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('note-only reference opens explanation sheet', (tester) async {
     await pumpReferenceHost(
       tester,

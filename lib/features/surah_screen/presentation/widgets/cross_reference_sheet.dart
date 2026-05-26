@@ -21,20 +21,45 @@ import 'package:the_message_of_the_quran/features/settings_screen/providers/font
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/interpretation_note_marker.dart';
 
-String? formatInterpretationSheetSurahTitle({
+class InterpretationSheetSurahHeaderText {
+  const InterpretationSheetSurahHeaderText({this.title, this.subtitle});
+
+  final String? title;
+  final String? subtitle;
+
+  bool get hasTitle => title != null && title!.trim().isNotEmpty;
+  bool get hasSubtitle => subtitle != null && subtitle!.trim().isNotEmpty;
+
+  List<String> toLines() {
+    return [
+      if (hasTitle) title!.trim(),
+      if (hasSubtitle) subtitle!.trim(),
+    ];
+  }
+}
+
+InterpretationSheetSurahHeaderText formatInterpretationSheetSurahHeader({
   required bool isMalayalam,
   required SurahModel? surah,
 }) {
-  if (surah == null) return null;
+  if (surah == null) {
+    return const InterpretationSheetSurahHeaderText();
+  }
 
-  final title = formatSurahDisplayNameLine(
+  final displayText = formatSurahListDisplayText(
     isMalayalam: isMalayalam,
     surahName: surah.name,
     surahTranslation: surah.description,
     malayalamName: surah.malayalamName,
     surahNumber: surah.surahNumber,
-  ).trim();
-  return title.isEmpty ? null : title;
+  );
+  final title = displayText.title.trim();
+  final subtitle = displayText.subtitle.trim();
+
+  return InterpretationSheetSurahHeaderText(
+    title: title.isEmpty ? null : title,
+    subtitle: subtitle.isEmpty ? null : subtitle,
+  );
 }
 
 String formatInterpretationMetadataLabel({
@@ -94,20 +119,21 @@ String _formatInterpretationAyahNumbers(List<int> ayahNumbers) {
 }
 
 class InterpretationSheetHeader extends StatelessWidget {
-  final String? surahTitle;
+  final InterpretationSheetSurahHeaderText surahHeader;
   final String metadataLabel;
   final VoidCallback? onClose;
 
   const InterpretationSheetHeader({
     super.key,
-    this.surahTitle,
+    required this.surahHeader,
     required this.metadataLabel,
     this.onClose,
   });
 
   @override
   Widget build(BuildContext context) {
-    final hasSurahTitle = surahTitle != null && surahTitle!.trim().isNotEmpty;
+    final hasSurahTitle = surahHeader.hasTitle;
+    final hasSurahSubtitle = surahHeader.hasSubtitle;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -120,7 +146,7 @@ class InterpretationSheetHeader extends StatelessWidget {
               children: [
                 if (hasSurahTitle)
                   Text(
-                    surahTitle!,
+                    surahHeader.title!,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
@@ -128,7 +154,21 @@ class InterpretationSheetHeader extends StatelessWidget {
                       fontSize: 16,
                     ),
                   ),
-                if (hasSurahTitle) const SizedBox(height: 2),
+                if (hasSurahSubtitle) ...[
+                  if (hasSurahTitle) const SizedBox(height: 2),
+                  Text(
+                    surahHeader.subtitle!,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ],
+                if (hasSurahTitle || hasSurahSubtitle)
+                  const SizedBox(height: 2),
                 Text(
                   metadataLabel,
                   style: TextStyle(fontSize: 12, color: Colors.grey[600]),
@@ -742,7 +782,7 @@ class _NestedInterpretationSheetState
   @override
   Widget build(BuildContext context) {
     final isMl = widget.isMalayalam;
-    final surahTitle = formatInterpretationSheetSurahTitle(
+    final surahHeader = formatInterpretationSheetSurahHeader(
       isMalayalam: isMl,
       surah: _surah,
     );
@@ -775,7 +815,7 @@ class _NestedInterpretationSheetState
           ),
           // Header
           InterpretationSheetHeader(
-            surahTitle: surahTitle,
+            surahHeader: surahHeader,
             metadataLabel: metadataLabel,
             onClose: () => Navigator.of(context).pop(),
           ),
