@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:the_message_of_the_quran/core/models/preface_model.dart';
 import 'package:the_message_of_the_quran/core/services/database/preface_db_helper.dart';
+import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 
 class IntroductionScreen extends StatelessWidget {
@@ -10,7 +11,10 @@ class IntroductionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BaseScreenLayout(
       appBar: AppBar(
-        title: const Text('ആമുഖം'),
+        title: Text(
+          'ആമുഖം',
+          style: AppTextTheme.localizedTitle(isMalayalam: true),
+        ),
       ),
       child: FutureBuilder<PrefaceModel?>(
         future: PrefaceDbHelper.getGeneralPreface(),
@@ -19,19 +23,27 @@ class IntroductionScreen extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return const Center(
+            return Center(
               child: Text(
                 'Failed to load introduction.',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+                style: AppTextTheme.localizedBody(
+                  isMalayalam: true,
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
               ),
             );
           }
           final preface = snapshot.data;
           if (preface == null) {
-            return const Center(
+            return Center(
               child: Text(
                 'No introduction available.',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+                style: AppTextTheme.localizedBody(
+                  isMalayalam: true,
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
               ),
             );
           }
@@ -40,7 +52,11 @@ class IntroductionScreen extends StatelessWidget {
             child: SingleChildScrollView(
               child: Text(
                 preface.prefaceText,
-                style: const TextStyle(fontSize: 16, height: 1.6),
+                style: AppTextTheme.localizedBody(
+                  isMalayalam: true,
+                  fontSize: 16,
+                  height: 1.6,
+                ),
               ),
             ),
           );

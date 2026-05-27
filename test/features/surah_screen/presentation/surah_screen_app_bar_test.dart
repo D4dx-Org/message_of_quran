@@ -70,7 +70,7 @@ void main() {
             surahName: 'Al-Fatihah',
             malayalamName: 'അല്‍-ഫാതിഹ',
             surahTranslation: 'The Opening',
-            place: 'Makkah',
+            place: 'മക്ക',
             ordinalLabel: 'First',
             surahNumber: 1,
             isMalayalam: true,
@@ -79,8 +79,9 @@ void main() {
       );
 
       expect(find.text('അധ്യായം ഒന്ന്'), findsOneWidget);
-      expect(find.text('അല്‍-ഫാതിഹ (പ്രാരംഭം)'), findsOneWidget);
-      expect(find.text('മക്കാ കാലഘട്ടം'), findsOneWidget);
+      expect(find.text('അല്‍-ഫാതിഹ'), findsOneWidget);
+      expect(find.text('അല്‍-ഫാതിഹ (പ്രാരംഭം)'), findsNothing);
+      expect(find.text('മക്ക'), findsOneWidget);
       expect(find.text('Al-Fatihah (The Opening)'), findsNothing);
     });
 
@@ -93,7 +94,7 @@ void main() {
             surahName: 'Al-Baqarah',
             malayalamName: 'അല്‍-ബഖറ',
             surahTranslation: 'The Cow',
-            place: 'Madinah',
+            place: 'മദീന കാലഘട്ടം',
             ordinalLabel: '',
             surahNumber: 2,
             isMalayalam: true,
@@ -103,12 +104,13 @@ void main() {
       );
 
       expect(find.text('അധ്യായം രണ്ട്'), findsOneWidget);
-      expect(find.text('അല്‍-ബഖറ (പശു)'), findsOneWidget);
-      expect(find.text('അവതരണം മദീനയിൽ'), findsOneWidget);
+      expect(find.text('അല്‍-ബഖറ'), findsOneWidget);
+      expect(find.text('അല്‍-ബഖറ (പശു)'), findsNothing);
+      expect(find.text('മദീന കാലഘട്ടം'), findsOneWidget);
       expect(find.text('Al-Baqarah (The Cow)'), findsNothing);
     });
 
-    testWidgets('renders the Malayalam Madinah period label for later surahs', (
+    testWidgets('renders raw Malayalam period text for later surahs', (
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(
@@ -117,7 +119,7 @@ void main() {
             surahName: 'Aal-e-Imran',
             malayalamName: 'ഡിബി സൂറത്ത് 3',
             surahTranslation: 'Family of Imran',
-            place: 'Madinah',
+            place: 'കാലഘട്ടം അവ്യക്തം',
             ordinalLabel: 'Third',
             surahNumber: 3,
             isMalayalam: true,
@@ -128,7 +130,8 @@ void main() {
       expect(find.text('അധ്യായം മൂന്ന്'), findsOneWidget);
       expect(find.text('ഡിബി സൂറത്ത് 3'), findsOneWidget);
       expect(find.text('ഡിബി സൂറത്ത് 3 (Family of Imran)'), findsNothing);
-      expect(find.text('മദീനാ കാലഘട്ടം'), findsOneWidget);
+      expect(find.text('കാലഘട്ടം അവ്യക്തം'), findsOneWidget);
+      expect(find.text('കാലഘട്ടം അവ്യക്തം കാലഘട്ടം'), findsNothing);
     });
 
     testWidgets(

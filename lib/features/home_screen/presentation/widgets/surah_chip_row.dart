@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
+import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
@@ -96,7 +96,8 @@ class SurahChipRow extends StatelessWidget {
               alignment: Alignment.center,
               child: Text(
                 label,
-                style: GoogleFonts.poppins(
+                style: AppTextTheme.localizedLabel(
+                  isMalayalam: isMalayalam,
                   color: Colors.white,
                   fontSize: 12,
                   fontWeight: FontWeight.w500,

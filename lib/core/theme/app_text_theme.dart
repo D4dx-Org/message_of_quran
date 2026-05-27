@@ -44,6 +44,81 @@ class AppTextTheme {
     decoration: decoration,
     fontStyle: fontStyle,
   );
+
+  static TextStyle localized({
+    required bool isMalayalam,
+    double? fontSize,
+    Color? color,
+    FontWeight? fontWeight,
+    double? letterSpacing,
+    double? height,
+    TextDecoration? decoration,
+    FontStyle? fontStyle,
+  }) {
+    final font = isMalayalam ? _malayalamFont : _englishFont;
+    return font(
+      color: color,
+      fontSize: fontSize,
+      fontWeight: fontWeight,
+      letterSpacing: letterSpacing,
+      height: height,
+      decoration: decoration,
+      fontStyle: fontStyle,
+    );
+  }
+
+  static TextStyle localizedTitle({
+    required bool isMalayalam,
+    Color? color,
+    double fontSize = 17,
+    FontWeight fontWeight = FontWeight.w500,
+    double? letterSpacing,
+    double? height,
+  }) => localized(
+    isMalayalam: isMalayalam,
+    color: color,
+    fontSize: fontSize,
+    fontWeight: fontWeight,
+    letterSpacing: letterSpacing,
+    height: height,
+  );
+
+  static TextStyle localizedBody({
+    required bool isMalayalam,
+    Color? color,
+    required double fontSize,
+    FontWeight fontWeight = FontWeight.w400,
+    double? letterSpacing,
+    double? height,
+    TextDecoration? decoration,
+    FontStyle? fontStyle,
+  }) => localized(
+    isMalayalam: isMalayalam,
+    color: color,
+    fontSize: fontSize,
+    fontWeight: fontWeight,
+    letterSpacing: letterSpacing,
+    height: height,
+    decoration: decoration,
+    fontStyle: fontStyle,
+  );
+
+  static TextStyle localizedLabel({
+    required bool isMalayalam,
+    Color? color,
+    required double fontSize,
+    FontWeight fontWeight = FontWeight.w500,
+    double? letterSpacing,
+    double? height,
+  }) => localized(
+    isMalayalam: isMalayalam,
+    color: color,
+    fontSize: fontSize,
+    fontWeight: fontWeight,
+    letterSpacing: letterSpacing,
+    height: height,
+  );
+
   static final surahTitle = _englishFont(
     fontSize: 17,
     fontWeight: FontWeight.w500,
@@ -254,11 +329,11 @@ class AppTextTheme {
     );
   }
 
-  static TextStyle forewordBody(BuildContext ctx) {
+  static TextStyle forewordBody(BuildContext ctx, {bool isMalayalam = false}) {
     final isDark = Theme.of(ctx).brightness == Brightness.dark;
-    return _englishFont(
+    return localizedBody(
+      isMalayalam: isMalayalam,
       fontSize: 14,
-      fontWeight: FontWeight.w400,
       height: 1.8,
       color: isDark ? Colors.white70 : Colors.black87,
     );
@@ -274,22 +349,25 @@ class AppTextTheme {
     );
   }
 
-  static TextStyle forewordQuote(BuildContext ctx) {
+  static TextStyle forewordQuote(BuildContext ctx, {bool isMalayalam = false}) {
     final isDark = Theme.of(ctx).brightness == Brightness.dark;
-    return _englishFont(
+    return localizedBody(
+      isMalayalam: isMalayalam,
       fontSize: 14,
-      fontWeight: FontWeight.w400,
       fontStyle: FontStyle.italic,
       height: 1.8,
       color: isDark ? Colors.white70 : Colors.black87,
     );
   }
 
-  static TextStyle forewordFootnote(BuildContext ctx) {
+  static TextStyle forewordFootnote(
+    BuildContext ctx, {
+    bool isMalayalam = false,
+  }) {
     final isDark = Theme.of(ctx).brightness == Brightness.dark;
-    return _englishFont(
+    return localizedBody(
+      isMalayalam: isMalayalam,
       fontSize: 13,
-      fontWeight: FontWeight.w400,
       height: 1.7,
       color: isDark ? Colors.white70 : Colors.black87,
     );
@@ -306,11 +384,14 @@ class AppTextTheme {
     );
   }
 
-  static TextStyle forewordVerseRef(BuildContext ctx) {
+  static TextStyle forewordVerseRef(
+    BuildContext ctx, {
+    bool isMalayalam = false,
+  }) {
     final isDark = Theme.of(ctx).brightness == Brightness.dark;
-    return _englishFont(
+    return localizedBody(
+      isMalayalam: isMalayalam,
       fontSize: 13,
-      fontWeight: FontWeight.w400,
       fontStyle: FontStyle.italic,
       color: isDark ? Colors.white60 : Colors.black54,
     );

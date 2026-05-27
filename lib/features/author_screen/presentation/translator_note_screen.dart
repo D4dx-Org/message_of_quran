@@ -30,7 +30,7 @@ class _TranslatorNoteScreenState extends State<TranslatorNoteScreen> {
       appBar: AppBar(
         title: Text(
           'പരിഭാഷകന്റെ കുറിപ്പ്',
-          style: AppTextTheme.titleRegular,
+          style: AppTextTheme.localizedTitle(isMalayalam: true),
         ),
       ),
       child: Padding(
@@ -44,7 +44,8 @@ class _TranslatorNoteScreenState extends State<TranslatorNoteScreen> {
               return Center(
                 child: Text(
                   'പരിഭാഷകന്റെ കുറിപ്പ് ലഭ്യമല്ല.',
-                  style: AppTextTheme.popinsDefault(
+                  style: AppTextTheme.localizedBody(
+                    isMalayalam: true,
                     fontSize: 14,
                     color: Colors.grey,
                   ),
@@ -60,7 +61,11 @@ class _TranslatorNoteScreenState extends State<TranslatorNoteScreen> {
                     ...note.content!.split('\n').where((p) => p.trim().isNotEmpty).expand((paragraph) => [
                       Text(
                         paragraph.trim(),
-                        style: AppTextTheme.popinsDefault(fontSize: 14, color: bodyColor),
+                        style: AppTextTheme.localizedBody(
+                          isMalayalam: true,
+                          fontSize: 14,
+                          color: bodyColor,
+                        ),
                       ),
                       const SizedBox(height: 14),
                     ]),
@@ -69,7 +74,8 @@ class _TranslatorNoteScreenState extends State<TranslatorNoteScreen> {
                       padding: const EdgeInsets.only(top: 16),
                       child: Text(
                         '— ${note.author!}',
-                        style: AppTextTheme.popinsDefault(
+                        style: AppTextTheme.localizedBody(
+                          isMalayalam: true,
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: bodyColor,

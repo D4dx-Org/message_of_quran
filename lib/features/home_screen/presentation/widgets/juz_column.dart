@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
@@ -37,7 +37,14 @@ class JuzColumn extends StatelessWidget {
 
         if (provider.juzList.isEmpty) {
           return Center(
-            child: Text(isMalayalam ? 'ജുസ് ലഭ്യമല്ല' : 'No Juz available'),
+            child: Text(
+              isMalayalam ? 'ജുസ് ലഭ്യമല്ല' : 'No Juz available',
+              style: AppTextTheme.localizedBody(
+                isMalayalam: isMalayalam,
+                fontSize: 14,
+                color: isDarkMode ? Colors.white70 : AppTheme.appThemePrimary,
+              ),
+            ),
           );
         }
 
@@ -132,7 +139,8 @@ class JuzColumn extends StatelessWidget {
                                   title,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.poppins(
+                                  style: AppTextTheme.localizedLabel(
+                                    isMalayalam: isMalayalam,
                                     color: primaryColor,
                                     fontWeight: FontWeight.w600,
                                     fontSize: 12 * scale,
@@ -144,7 +152,8 @@ class JuzColumn extends StatelessWidget {
                                     subtitle,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.poppins(
+                                    style: AppTextTheme.localizedBody(
+                                      isMalayalam: isMalayalam,
                                       fontSize: 11 * scale,
                                       color: secondaryColor,
                                       fontWeight: FontWeight.w500,
@@ -167,7 +176,8 @@ class JuzColumn extends StatelessWidget {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   textAlign: TextAlign.right,
-                                  style: GoogleFonts.poppins(
+                                  style: AppTextTheme.localizedLabel(
+                                    isMalayalam: isMalayalam,
                                     color: secondaryColor,
                                     fontSize: 10.5 * scale,
                                     fontWeight: FontWeight.w500,

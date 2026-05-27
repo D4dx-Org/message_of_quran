@@ -401,6 +401,7 @@ class _LanguageChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final accentColor = appBarAccentColor(context);
     final accentFillColor = appBarAccentFillColor(context);
+    final usesMalayalamFont = RegExp(r'[\u0D00-\u0D7F]').hasMatch(label);
 
     return GestureDetector(
       onTap: onTap,
@@ -420,7 +421,8 @@ class _LanguageChip extends StatelessWidget {
           children: [
             Text(
               label,
-              style: TextStyle(
+              style: AppTextTheme.localizedLabel(
+                isMalayalam: usesMalayalamFont,
                 fontSize: 12,
                 fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
                 color: selected ? accentColor : Colors.grey,

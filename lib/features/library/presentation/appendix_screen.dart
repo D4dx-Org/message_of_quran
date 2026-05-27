@@ -111,7 +111,7 @@ class _AppendixScreenState extends State<AppendixScreen> {
       appBar: AppBar(
         title: Text(
           isMalayalam ? 'അനുബന്ധം' : 'Appendix',
-          style: AppTextTheme.titleRegular,
+          style: AppTextTheme.localizedTitle(isMalayalam: isMalayalam),
         ),
       ),
       child: _isLoading
@@ -175,6 +175,7 @@ class _AppendixScreenState extends State<AppendixScreen> {
                               titleKey: _titleKeys[index]!,
                               appendix: appendix,
                               accentColor: accentColor,
+                              isMalayalam: isMalayalam,
                               isExpanded: _expandedIndex == index,
                               onTap: () => _onCardTapped(index),
                             );
@@ -193,6 +194,7 @@ class _AppendixAccordionTile extends StatelessWidget {
     required this.titleKey,
     required this.appendix,
     required this.accentColor,
+    required this.isMalayalam,
     required this.isExpanded,
     required this.onTap,
   });
@@ -200,6 +202,7 @@ class _AppendixAccordionTile extends StatelessWidget {
   final GlobalKey titleKey;
   final AppendixModel appendix;
   final Color accentColor;
+  final bool isMalayalam;
   final bool isExpanded;
   final VoidCallback onTap;
 
@@ -254,7 +257,8 @@ class _AppendixAccordionTile extends StatelessWidget {
                     Expanded(
                       child: Text(
                         appendix.title.toUpperCase(),
-                        style: TextStyle(
+                        style: AppTextTheme.localizedLabel(
+                          isMalayalam: isMalayalam,
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                           height: 1.3,
@@ -287,10 +291,12 @@ class _AppendixAccordionTile extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 14),
                     child: Text(
                       appendix.body,
-                      style: TextStyle(
-                          fontSize: 15,
-                          height: 1.7,
-                          color: isDark ? Colors.white70 : Colors.black87),
+                      style: AppTextTheme.localizedBody(
+                        isMalayalam: isMalayalam,
+                        fontSize: 15,
+                        height: 1.7,
+                        color: isDark ? Colors.white70 : Colors.black87,
+                      ),
                     ),
                   ),
               ],

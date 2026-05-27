@@ -51,13 +51,25 @@ void main() {
     WidgetTester tester, {
     required InterpretationSheetSurahHeaderText surahHeader,
     required String metadataLabel,
+    ThemeData? theme,
+    VoidCallback? onClose,
+    EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 20),
+    EdgeInsetsGeometry closeButtonPadding = const EdgeInsets.only(right: 20),
+    double titleSpacing = 2,
+    bool compactCloseButton = false,
   }) async {
     await tester.pumpWidget(
       MaterialApp(
+        theme: theme ?? ThemeData.light(),
         home: Scaffold(
           body: InterpretationSheetHeader(
             surahHeader: surahHeader,
             metadataLabel: metadataLabel,
+            onClose: onClose,
+            padding: padding,
+            closeButtonPadding: closeButtonPadding,
+            titleSpacing: titleSpacing,
+            compactCloseButton: compactCloseButton,
           ),
         ),
       ),
@@ -91,6 +103,11 @@ void main() {
     expect(subtitle.style?.fontSize, 13);
     expect(subtitle.style?.fontWeight, FontWeight.w500);
     expect(subtitle.style?.color, Colors.grey[700]);
+
+    final metadata = tester.widget<Text>(
+      find.text('Surah 7 • Interpretation 5 • Verse 5'),
+    );
+    expect(metadata.style?.color, Colors.grey[600]);
   });
 
   testWidgets('interpretation header omits subtitle when missing', (
@@ -110,6 +127,117 @@ void main() {
       find.text('Surah 1 • Interpretation 1 • Verse 1'),
       findsOneWidget,
     );
+  });
+
+  testWidgets('interpretation header can render subtitle tightly under title', (
+    tester,
+  ) async {
+    await pumpInterpretationHeader(
+      tester,
+      surahHeader: const InterpretationSheetSurahHeaderText(
+        title: 'Al-Fatihah',
+        subtitle: 'The Opening',
+      ),
+      metadataLabel: 'Surah 1 • Interpretation 1 • Verse 1',
+      titleSpacing: 0,
+    );
+
+    final titleRect = tester.getRect(find.text('Al-Fatihah'));
+    final subtitleRect = tester.getRect(find.text('The Opening'));
+
+    expect(subtitleRect.top, moreOrLessEquals(titleRect.bottom, epsilon: 0.1));
+  });
+
+  testWidgets('interpretation header supports extra bottom gap with compact close button', (
+    tester,
+  ) async {
+    await pumpInterpretationHeader(
+      tester,
+      surahHeader: const InterpretationSheetSurahHeaderText(
+        title: 'Al-Fatihah',
+        subtitle: 'The Opening',
+      ),
+      metadataLabel: 'Surah 1 • Interpretation 1 • Verse 1',
+      onClose: () {},
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+      compactCloseButton: true,
+      titleSpacing: 0,
+    );
+
+    final iconButton = tester.widget<IconButton>(find.byType(IconButton));
+
+    expect(iconButton.padding, EdgeInsets.zero);
+    expect(
+      iconButton.constraints,
+      const BoxConstraints.tightFor(width: 24, height: 24),
+    );
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is Padding &&
+            widget.padding == const EdgeInsets.fromLTRB(20, 0, 20, 8),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('interpretation header uses readable dark theme subtitle and metadata colors', (
+    tester,
+  ) async {
+    await pumpInterpretationHeader(
+      tester,
+      surahHeader: const InterpretationSheetSurahHeaderText(
+        title: 'Al-Fatihah',
+        subtitle: 'The Opening',
+      ),
+      metadataLabel: 'Surah 1 • Interpretation 1 • Verse 1',
+      theme: ThemeData.dark(),
+    );
+
+    final subtitle = tester.widget<Text>(find.text('The Opening'));
+    final metadata = tester.widget<Text>(
+      find.text('Surah 1 • Interpretation 1 • Verse 1'),
+    );
+
+    expect(subtitle.style?.color, Colors.white70);
+    expect(metadata.style?.color, Colors.white60);
+  });
+
+  testWidgets('interpretation header supports compact close button layout', (
+    tester,
+  ) async {
+    await pumpInterpretationHeader(
+      tester,
+      surahHeader: const InterpretationSheetSurahHeaderText(
+        title: 'Al-Fatihah',
+        subtitle: 'The Opening',
+      ),
+      metadataLabel: 'Surah 1 • Interpretation 1 • Verse 1',
+      onClose: () {},
+      padding: const EdgeInsets.fromLTRB(20, 2, 8, 2),
+      closeButtonPadding: const EdgeInsets.only(right: 8),
+      compactCloseButton: true,
+    );
+
+    final iconButton = tester.widget<IconButton>(find.byType(IconButton));
+
+    expect(iconButton.padding, EdgeInsets.zero);
+    expect(
+      iconButton.constraints,
+      const BoxConstraints.tightFor(width: 24, height: 24),
+    );
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is Padding &&
+            widget.padding == const EdgeInsets.only(right: 8),
+      ),
+      findsOneWidget,
+    );
+
+    final closeTop = tester.getTopLeft(find.byType(IconButton)).dy;
+    final titleTop = tester.getTopLeft(find.text('Al-Fatihah')).dy;
+    expect(closeTop, lessThanOrEqualTo(titleTop));
   });
 
   testWidgets('note-only reference opens explanation sheet', (tester) async {

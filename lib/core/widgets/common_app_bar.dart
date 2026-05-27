@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:the_message_of_the_quran/core/constants/app_constants.dart';
+import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
@@ -99,6 +99,7 @@ class CommonAppBar {
     bool showBrandLogo = false,
     bool centerTitle = false,
     String? title,
+    bool isMalayalam = false,
     Widget? titleWidget,
     VoidCallback? onSurahInfoTap,
   }) {
@@ -117,7 +118,8 @@ class CommonAppBar {
               : (title != null
                     ? Text(
                         title,
-                        style: GoogleFonts.poppins(
+                        style: AppTextTheme.localizedTitle(
+                          isMalayalam: isMalayalam,
                           fontSize: 18 * scale,
                           fontWeight: FontWeight.w600,
                           color: appBarTitleMatchedAccentColor(ctx),

@@ -115,7 +115,7 @@ class _AuthorScreenState extends State<AuthorScreen> {
       appBar: AppBar(
         title: Text(
           isMalayalam ? 'മുഹമ്മദ് അസദ്' : 'Muhammad Asad',
-          style: AppTextTheme.titleRegular,
+          style: AppTextTheme.localizedTitle(isMalayalam: isMalayalam),
         ),
       ),
       child: Padding(

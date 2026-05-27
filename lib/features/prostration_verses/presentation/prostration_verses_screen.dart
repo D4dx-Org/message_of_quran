@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
@@ -98,7 +97,7 @@ class _ProstrationVersesScreenState extends State<ProstrationVersesScreen> {
           header: true,
           child: Text(
             isMalayalam ? 'സുജൂദിന്റെ ആയത്തുകൾ' : 'Prostration Verses',
-            style: AppTextTheme.titleRegular,
+            style: AppTextTheme.localizedTitle(isMalayalam: isMalayalam),
           ),
         ),
         centerTitle: false,
@@ -134,11 +133,12 @@ class _ProstrationVersesScreenState extends State<ProstrationVersesScreen> {
                     ? 'സുജൂദിന്റെ ആയത്തുകൾ ലോഡ് ചെയ്യാനായില്ല.'
                     : 'Could not load the prostration verses.',
                 textAlign: TextAlign.center,
-                style: _bodyStyle(
+                style: AppTextTheme.localizedBody(
                   isMalayalam: isMalayalam,
                   color: Theme.of(context).textTheme.bodyLarge?.color,
-                  size: 15,
-                  weight: FontWeight.w500,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  height: 1.35,
                 ),
               ),
               const SizedBox(height: 16),
@@ -148,7 +148,15 @@ class _ProstrationVersesScreenState extends State<ProstrationVersesScreen> {
                   backgroundColor: AppTheme.appIconTheme,
                   foregroundColor: Colors.white,
                 ),
-                child: Text(isMalayalam ? 'വീണ്ടും ശ്രമിക്കുക' : 'Retry'),
+                child: Text(
+                  isMalayalam ? 'വീണ്ടും ശ്രമിക്കുക' : 'Retry',
+                  style: AppTextTheme.localizedLabel(
+                    isMalayalam: isMalayalam,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ],
           ),
@@ -165,11 +173,12 @@ class _ProstrationVersesScreenState extends State<ProstrationVersesScreen> {
                 ? 'സുജൂദിന്റെ ആയത്തുകൾ ലഭ്യമല്ല.'
                 : 'No prostration verses available.',
             textAlign: TextAlign.center,
-            style: _bodyStyle(
+            style: AppTextTheme.localizedBody(
               isMalayalam: isMalayalam,
               color: Theme.of(context).textTheme.bodyLarge?.color,
-              size: 15,
-              weight: FontWeight.w500,
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              height: 1.35,
             ),
           ),
         ),
@@ -269,7 +278,7 @@ class _ProstrationVerseTile extends StatelessWidget {
                     alignment: Alignment.center,
                     child: Text(
                       '${verse.order}',
-                      style: GoogleFonts.poppins(
+                      style: AppTextTheme.popinsDefault(
                         color: accentColor,
                         fontSize: 14 * scale,
                         fontWeight: FontWeight.w700,
@@ -285,11 +294,11 @@ class _ProstrationVerseTile extends StatelessWidget {
                           title,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: _headlineStyle(
+                          style: AppTextTheme.localizedLabel(
                             isMalayalam: isMalayalam,
                             color: accentColor,
-                            size: 15 * scale,
-                            weight: FontWeight.w700,
+                            fontSize: 15 * scale,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                         SizedBox(height: 6 * scale),
@@ -297,11 +306,12 @@ class _ProstrationVerseTile extends StatelessWidget {
                           subtitle,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: _bodyStyle(
+                          style: AppTextTheme.localizedBody(
                             isMalayalam: isMalayalam,
                             color: isDarkMode ? Colors.white70 : accentColor,
-                            size: 12 * scale,
-                            weight: FontWeight.w500,
+                            fontSize: 12 * scale,
+                            fontWeight: FontWeight.w500,
+                            height: 1.35,
                           ),
                         ),
                       ],
@@ -321,40 +331,4 @@ class _ProstrationVerseTile extends StatelessWidget {
       ),
     );
   }
-}
-
-TextStyle _headlineStyle({
-  required bool isMalayalam,
-  required Color? color,
-  required double size,
-  required FontWeight weight,
-}) {
-  return isMalayalam
-      ? GoogleFonts.notoSerifMalayalam(
-          color: color,
-          fontSize: size,
-          fontWeight: weight,
-        )
-      : GoogleFonts.poppins(color: color, fontSize: size, fontWeight: weight);
-}
-
-TextStyle _bodyStyle({
-  required bool isMalayalam,
-  required Color? color,
-  required double size,
-  required FontWeight weight,
-}) {
-  return isMalayalam
-      ? GoogleFonts.notoSerifMalayalam(
-          color: color,
-          fontSize: size,
-          fontWeight: weight,
-          height: 1.35,
-        )
-      : GoogleFonts.poppins(
-          color: color,
-          fontSize: size,
-          fontWeight: weight,
-          height: 1.35,
-        );
 }

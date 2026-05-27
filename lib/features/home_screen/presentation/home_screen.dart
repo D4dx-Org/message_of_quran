@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/core/widgets/scroll_to_top_button.dart';
@@ -127,7 +127,8 @@ class _HomeScreenState extends State<HomeScreen>
                         alignment: Alignment.center,
                         child: Text(
                           tabs[index],
-                          style: GoogleFonts.poppins(
+                          style: AppTextTheme.localizedLabel(
+                            isMalayalam: isMalayalam,
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                             color: currentIndex == index

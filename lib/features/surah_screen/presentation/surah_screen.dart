@@ -1118,7 +1118,11 @@ class _SurahScreenState extends State<SurahScreen> {
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Text(
                 isMl ? 'ആയത്തിലേക്ക് പോകുക' : 'Jump to Ayah',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: AppTextTheme.localizedLabel(
+                  isMalayalam: isMl,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             const Divider(height: 1),
@@ -1154,7 +1158,14 @@ class _SurahScreenState extends State<SurahScreen> {
                         ),
                       ),
                     ),
-                    title: Text(label),
+                    title: Text(
+                      label,
+                      style: AppTextTheme.localizedLabel(
+                        isMalayalam: isMl,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                     onTap: () {
                       Navigator.pop(context);
                       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1226,7 +1237,8 @@ class _SurahScreenState extends State<SurahScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Text(
                 surahTitle,
-                style: TextStyle(
+                style: AppTextTheme.localizedTitle(
+                  isMalayalam: isMl,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: isDark
@@ -1254,11 +1266,13 @@ class _SurahScreenState extends State<SurahScreen> {
                       surah.place,
                       isMalayalam: isMl,
                     ),
+                    isMalayalam: isMl,
                   ),
                   _infoChip(
                     sheetContext,
                     isMl ? 'സൂക്തങ്ങൾ :' : 'Verses :',
                     '${surah.ayathCount}',
+                    isMalayalam: isMl,
                   ),
                 ],
               ),
@@ -1314,7 +1328,8 @@ class _SurahScreenState extends State<SurahScreen> {
                                 padding: const EdgeInsets.only(bottom: 8),
                                 child: Text(
                                   preface.prefaceSubTitle,
-                                  style: TextStyle(
+                                  style: AppTextTheme.localizedLabel(
+                                    isMalayalam: isMl,
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                     color: colorScheme.onSurface,
@@ -1323,7 +1338,8 @@ class _SurahScreenState extends State<SurahScreen> {
                               ),
                             Text(
                               preface.prefaceText,
-                              style: TextStyle(
+                              style: AppTextTheme.localizedBody(
+                                isMalayalam: isMl,
                                 fontSize: 14,
                                 height: 1.6,
                                 color: colorScheme.onSurface,
@@ -1344,7 +1360,12 @@ class _SurahScreenState extends State<SurahScreen> {
     );
   }
 
-  Widget _infoChip(BuildContext context, String label, String value) {
+  Widget _infoChip(
+    BuildContext context,
+    String label,
+    String value, {
+    required bool isMalayalam,
+  }) {
     final isDark = isDarkMode(context: context);
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
@@ -1360,7 +1381,8 @@ class _SurahScreenState extends State<SurahScreen> {
         children: [
           Text(
             label,
-            style: TextStyle(
+            style: AppTextTheme.localizedBody(
+              isMalayalam: isMalayalam,
               fontSize: 12,
               color: isDark
                   ? colorScheme.onSurface.withValues(alpha: 0.7)
@@ -1370,7 +1392,8 @@ class _SurahScreenState extends State<SurahScreen> {
           const SizedBox(height: 2),
           Text(
             value,
-            style: TextStyle(
+            style: AppTextTheme.localizedLabel(
+              isMalayalam: isMalayalam,
               fontSize: 14,
               fontWeight: FontWeight.bold,
               color: isDark
@@ -1885,7 +1908,7 @@ class _SurahScreenState extends State<SurahScreen> {
               children: [
                 // Drag handle
                 Padding(
-                  padding: const EdgeInsets.only(top: 12, bottom: 8),
+                  padding: const EdgeInsets.only(top: 12, bottom: 4),
                   child: Center(
                     child: Container(
                       width: 40,
@@ -1901,6 +1924,9 @@ class _SurahScreenState extends State<SurahScreen> {
                   surahHeader: surahHeader,
                   metadataLabel: metadataLabel,
                   onClose: () => Navigator.of(ctx).pop(),
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+                  titleSpacing: 0,
+                  compactCloseButton: true,
                 ),
                 const Divider(height: 1),
                 // Content

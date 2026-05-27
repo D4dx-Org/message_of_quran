@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
@@ -43,6 +44,12 @@ class HomeScreenBanner extends StatelessWidget {
                 ? readingProgress.surahProgress(surahNum)
                 : 0.0;
             final progressPct = (progress * 100).toStringAsFixed(0);
+            final lastReadTitle = lastRead.hasLastRead
+                ? '${lastRead.surahNumber}. ${lastRead.surahName}'
+                : 'Start Reading';
+            final lastReadTitleUsesMalayalamFont = RegExp(
+              r'[\u0D00-\u0D7F]',
+            ).hasMatch(lastReadTitle);
 
             return Semantics(
               button: lastRead.hasLastRead,
@@ -107,7 +114,8 @@ class HomeScreenBanner extends StatelessWidget {
                                 if (!isLandscape)
                                   Text(
                                     'വിശുദ്ധ ഖുര്‍ആന്‍ വിവര്‍ത്തനം',
-                                    style: TextStyle(
+                                    style: AppTextTheme.localizedLabel(
+                                      isMalayalam: true,
                                       color: Colors.white,
                                       fontSize: 18 * scale,
                                       fontWeight: FontWeight.w800,
@@ -125,7 +133,7 @@ class HomeScreenBanner extends StatelessWidget {
                                     ),
                                     Text(
                                       'Last Read',
-                                      style: TextStyle(
+                                      style: AppTextTheme.popinsDefault(
                                         color: Colors.white
                                             .withValues(alpha: 0.8),
                                         fontSize: 12 * scale,
@@ -136,10 +144,10 @@ class HomeScreenBanner extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
-                                  lastRead.hasLastRead
-                                      ? '${lastRead.surahNumber}. ${lastRead.surahName}'
-                                      : 'Start Reading',
-                                  style: const TextStyle(
+                                  lastReadTitle,
+                                  style: AppTextTheme.localizedLabel(
+                                    isMalayalam:
+                                        lastReadTitleUsesMalayalamFont,
                                     color: Colors.white,
                                     fontSize: 15,
                                     fontWeight: FontWeight.w700,
@@ -149,7 +157,7 @@ class HomeScreenBanner extends StatelessWidget {
                                   const SizedBox(height: 2),
                                   Text(
                                     'Ayah ${lastRead.ayahId}',
-                                    style: TextStyle(
+                                    style: AppTextTheme.popinsDefault(
                                       color: Colors.white
                                           .withValues(alpha: 0.75),
                                       fontSize: 13,
@@ -179,7 +187,7 @@ class HomeScreenBanner extends StatelessWidget {
                                   Center(
                                     child: Text(
                                       '$progressPct%',
-                                      style: const TextStyle(
+                                      style: AppTextTheme.popinsDefault(
                                         color: Colors.white,
                                         fontSize: 13,
                                         fontWeight: FontWeight.w700,

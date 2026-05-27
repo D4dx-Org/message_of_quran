@@ -148,6 +148,7 @@ class _MainScreenState extends State<MainScreen> {
       : const Color.fromRGBO(255, 250, 234, 1);
     final inactiveColor = isDarkMode ? Colors.grey[400]! : const Color(0xFF4A4A4A);
     final displayIndex = controller.currentIndex;
+    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     final tablet = ResponsiveHelper.isTablet(context);
     final scale = ResponsiveHelper.scaleFactor(context);
       final navCornerRadius = 28.0 * scale;
@@ -161,12 +162,13 @@ class _MainScreenState extends State<MainScreen> {
             centerTitle: true,
             isActionsNeeded: displayIndex != 4 && displayIndex != 3,
             showLeading: true,
+            isMalayalam: displayIndex == 4 && isMalayalam,
             title: [
               'Home',
               'Bookmarks',
               'Mushaf',
               'Settings',
-              context.watch<LanguageProvider>().isMalayalam
+              isMalayalam
                   ? 'ഞങ്ങളെക്കുറിച്ച്'
                   : 'About Us',
             ][displayIndex.clamp(0, 4)],

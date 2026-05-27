@@ -38,8 +38,17 @@ class SplashBottomBranding extends StatelessWidget {
               child: SizedBox(
                 width: ellipseWidth,
                 height: ellipseHeight,
-                child: ColoredBox(
-                  color: SplashLayoutMetrics.footerFill,
+                child: DecoratedBox(
+                  decoration:  BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        SplashLayoutMetrics.footerFillTop,
+                        SplashLayoutMetrics.footerFillBottom,
+                      ],
+                    ),
+                  ),
                   child: Align(
                     alignment: Alignment(0, footerContentAlignment),
                     child: Column(

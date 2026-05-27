@@ -16,7 +16,7 @@ class SplashScreenLayout extends StatelessWidget {
         final size = constraints.biggest;
         final scale = ResponsiveHelper.scaleFactor(context);
         final viewPadding = MediaQuery.viewPaddingOf(context);
-        final horizontalPadding = (size.width * 0.09).clamp(24.0, 40.0).toDouble();
+        final horizontalPadding = (size.width * 0.03).clamp(12.0, 24.0).toDouble();
         final bottomReserved = SplashLayoutMetrics.bottomReserved(
           size.width,
           viewPadding.bottom,
@@ -24,11 +24,16 @@ class SplashScreenLayout extends StatelessWidget {
         final topReserved = SplashLayoutMetrics.topReserved(
           viewPadding.top,
           scale,
+          size.height,
         );
-        final contentMaxWidth =
-            (size.width * 0.72)
-                .clamp(280.0, 336.0 * scale)
-                .toDouble();
+        final brandTopPadding = SplashLayoutMetrics.brandTopPadding(
+          size.height,
+          scale,
+        );
+        final contentMaxWidth = SplashLayoutMetrics.contentMaxWidth(
+          size.width,
+          scale,
+        );
 
         return Stack(
           fit: StackFit.expand,
@@ -61,13 +66,14 @@ class SplashScreenLayout extends StatelessWidget {
               scale: scale,
               topInset: viewPadding.top,
               availableWidth: size.width,
+              screenHeight: size.height,
             ),
             Align(
-              alignment: const Alignment(0, -0.06),
+              alignment: Alignment.topCenter,
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
                   horizontalPadding,
-                  topReserved,
+                  topReserved + brandTopPadding,
                   horizontalPadding,
                   bottomReserved,
                 ),

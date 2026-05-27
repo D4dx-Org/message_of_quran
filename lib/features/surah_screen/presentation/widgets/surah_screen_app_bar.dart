@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
@@ -235,25 +236,17 @@ String _surahDisplayNameLine({
 String _surahPlaceLine(
   String place, {
   required bool isMalayalam,
-  required int surahNumber,
 }) {
   if (!isMalayalam) {
     return localizeSurahPeriodLabel(place, isMalayalam: false);
   }
 
-  switch (resolveSurahPlaceKind(place)) {
-    case SurahPlaceKind.makkah:
-      return 'മക്കാ കാലഘട്ടം';
-    case SurahPlaceKind.madinah:
-      return localizeSurahMadinahDisplayLabel(
-        place,
-        isMalayalam: true,
-        surahNumber: surahNumber,
-        fallback: 'അവതരണം മദീനയിൽ',
-      );
-    case null:
-      return localizeSurahPeriodLabel(place, isMalayalam: true);
+  final trimmedPlace = place.trim();
+  if (trimmedPlace.isNotEmpty) {
+    return trimmedPlace;
   }
+
+  return localizeSurahPeriodLabel(place, isMalayalam: true);
 }
 
 /// Surah info strip with book-style content ordering and nav arrows.
@@ -302,7 +295,6 @@ class SurahInfoStrip extends StatelessWidget {
     final placeLine = _surahPlaceLine(
       place,
       isMalayalam: isMalayalam,
-      surahNumber: surahNumber,
     );
 
     return Container(
@@ -334,7 +326,8 @@ class SurahInfoStrip extends StatelessWidget {
                 children: [
                   Text(
                     headerTitle,
-                    style: TextStyle(
+                    style: AppTextTheme.localizedLabel(
+                      isMalayalam: isMalayalam,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: Colors.white.withValues(alpha: 0.88),
@@ -353,7 +346,8 @@ class SurahInfoStrip extends StatelessWidget {
                       alignment: Alignment.center,
                       child: Text(
                         nameLine,
-                        style: const TextStyle(
+                        style: AppTextTheme.localizedTitle(
+                          isMalayalam: isMalayalam,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: Colors.white,
@@ -368,7 +362,8 @@ class SurahInfoStrip extends StatelessWidget {
                   const SizedBox(height: 3),
                   Text(
                     placeLine,
-                    style: TextStyle(
+                    style: AppTextTheme.localizedBody(
+                      isMalayalam: isMalayalam,
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
                       color: Colors.white.withValues(alpha: 0.85),

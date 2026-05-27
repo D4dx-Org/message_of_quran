@@ -80,6 +80,7 @@ class _LanguageChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final usesMalayalamFont = RegExp(r'[\u0D00-\u0D7F]').hasMatch(label);
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -100,7 +101,8 @@ class _LanguageChip extends StatelessWidget {
           children: [
             Text(
               label,
-              style: TextStyle(
+              style: AppTextTheme.localizedLabel(
+                isMalayalam: usesMalayalamFont,
                 fontSize: 12,
                 fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
                 color: selected ? AppTheme.appIconTheme : Colors.grey,

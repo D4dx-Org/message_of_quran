@@ -5,6 +5,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
 import 'package:the_message_of_the_quran/core/constants/useful_links.dart';
+import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/d4dx_branding_footer.dart';
@@ -74,10 +75,12 @@ class CommonDrawer extends StatelessWidget {
                         _DrawerExpansionTile(
                           title: 'ഖുർആന്റെ സന്ദേശം',
                           icon: Icons.menu_book_outlined,
+                          isMalayalam: true,
                           children: [
                             _DrawerSubTile(
                               title: 'മുഹമ്മദ് അസദ്',
                               icon: Icons.edit_outlined,
+                              isMalayalam: true,
                               onTap: () {
                                 Navigator.pop(context);
                                 Navigator.push(
@@ -91,6 +94,7 @@ class CommonDrawer extends StatelessWidget {
                             _DrawerSubTile(
                               title: 'വിവർത്തകൻ',
                               icon: Icons.translate_outlined,
+                              isMalayalam: true,
                               onTap: () {
                                 Navigator.pop(context);
                                 Navigator.push(
@@ -142,10 +146,12 @@ class CommonDrawer extends StatelessWidget {
                       _DrawerExpansionTile(
                         title: isMalayalam ? 'ലൈബ്രറി' : 'Library',
                         icon: Icons.auto_stories_outlined,
+                        isMalayalam: isMalayalam,
                         children: [
                           _DrawerSubTile(
                             title: isMalayalam ? 'മുഖവുര' : 'Foreword',
                             icon: Icons.history_edu_outlined,
+                            isMalayalam: isMalayalam,
                             onTap: () {
                               Navigator.pop(context);
                               Navigator.push(
@@ -159,6 +165,7 @@ class CommonDrawer extends StatelessWidget {
                           _DrawerSubTile(
                             title: isMalayalam ? 'അനുബന്ധം' : 'Appendix',
                             icon: Icons.note_alt_outlined,
+                            isMalayalam: isMalayalam,
                             onTap: () {
                               Navigator.pop(context);
                               Navigator.push(
@@ -191,6 +198,7 @@ class CommonDrawer extends StatelessWidget {
                             ? 'സുജൂദിന്റെ ആയത്തുകൾ'
                             : 'Prostration Verses',
                         icon: Icons.mosque_outlined,
+                        isMalayalam: isMalayalam,
                         onTap: () {
                           Navigator.pop(context);
                           Navigator.push(
@@ -451,11 +459,13 @@ class _DrawerTile extends StatelessWidget {
     required this.icon,
     this.onTap,
     this.assetPath,
+    this.isMalayalam = false,
   });
   final String title;
   final IconData icon;
   final VoidCallback? onTap;
   final String? assetPath;
+  final bool isMalayalam;
 
   @override
   Widget build(BuildContext context) {
@@ -477,7 +487,10 @@ class _DrawerTile extends StatelessWidget {
       leading: leadingWidget,
       title: Text(
         title,
-        style: theme.textTheme.bodyMedium?.copyWith(
+        style: AppTextTheme.localizedLabel(
+          isMalayalam: isMalayalam,
+          color: theme.textTheme.bodyMedium?.color,
+          fontSize: theme.textTheme.bodyMedium?.fontSize ?? 14,
           fontWeight: FontWeight.w500,
         ),
         maxLines: 1,
@@ -500,10 +513,12 @@ class _DrawerExpansionTile extends StatelessWidget {
     required this.title,
     required this.icon,
     required this.children,
+    this.isMalayalam = false,
   });
   final String title;
   final IconData icon;
   final List<Widget> children;
+  final bool isMalayalam;
 
   @override
   Widget build(BuildContext context) {
@@ -515,7 +530,10 @@ class _DrawerExpansionTile extends StatelessWidget {
       leading: Icon(icon, color: accentColor, size: 22 * scale),
       title: Text(
         title,
-        style: theme.textTheme.bodyMedium?.copyWith(
+        style: AppTextTheme.localizedLabel(
+          isMalayalam: isMalayalam,
+          color: theme.textTheme.bodyMedium?.color,
+          fontSize: theme.textTheme.bodyMedium?.fontSize ?? 14,
           fontWeight: FontWeight.w500,
         ),
         maxLines: 1,
@@ -536,10 +554,16 @@ class _DrawerExpansionTile extends StatelessWidget {
 }
 
 class _DrawerSubTile extends StatelessWidget {
-  const _DrawerSubTile({required this.title, required this.icon, this.onTap});
+  const _DrawerSubTile({
+    required this.title,
+    required this.icon,
+    this.onTap,
+    this.isMalayalam = false,
+  });
   final String title;
   final IconData icon;
   final VoidCallback? onTap;
+  final bool isMalayalam;
 
   @override
   Widget build(BuildContext context) {
@@ -552,7 +576,9 @@ class _DrawerSubTile extends StatelessWidget {
       leading: Icon(icon, color: accentColor, size: 20 * scale),
       title: Text(
         title,
-        style: theme.textTheme.bodyMedium?.copyWith(
+        style: AppTextTheme.localizedBody(
+          isMalayalam: isMalayalam,
+          color: theme.textTheme.bodyMedium?.color,
           fontWeight: FontWeight.w400,
           fontSize: 13,
         ),

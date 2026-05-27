@@ -206,10 +206,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('അല്\u200d-ഫാതിഹ'), findsOneWidget);
-      expect(find.text('പ്രാരംഭം'), findsOneWidget);
+      expect(find.text('പ്രാരംഭം'), findsNothing);
       expect(find.text('അല്\u200d-ഫാതിഹ (പ്രാരംഭം)'), findsNothing);
       expect(find.text('അല്‍-ബഖറ'), findsOneWidget);
-      expect(find.text('പശു'), findsOneWidget);
+      expect(find.text('പശു'), findsNothing);
       expect(find.text('അല്‍-ബഖറ (പശു)'), findsNothing);
       expect(find.text('The Opening'), findsNothing);
       expect(find.text('The Cow'), findsNothing);
@@ -258,12 +258,12 @@ void main() {
   });
 
   testWidgets(
-    'home tile shows the Malayalam translation on a second line for Surah 1',
+    'home tile shows the localized Malayalam name for Surah 1',
     (tester) async {
       await pumpHomeTile(tester, languageCode: LanguageProvider.malayalam);
 
       expect(find.text('അല്‍-ഫാതിഹ'), findsOneWidget);
-      expect(find.text('പ്രാരംഭം'), findsOneWidget);
+      expect(find.text('പ്രാരംഭം'), findsNothing);
       expect(find.text('അല്‍-ഫാതിഹ (പ്രാരംഭം)'), findsNothing);
       expect(find.text('മക്ക'), findsOneWidget);
       expect(find.text('7 ആയത്ത്'), findsOneWidget);
@@ -272,7 +272,7 @@ void main() {
   );
 
   testWidgets(
-    'home tile shows the Malayalam translation on a second line for Surah 2',
+    'home tile shows the localized Malayalam name for Surah 2',
     (tester) async {
       await pumpHomeTile(
         tester,
@@ -281,7 +281,7 @@ void main() {
       );
 
       expect(find.text('അല്‍-ബഖറ'), findsOneWidget);
-      expect(find.text('പശു'), findsOneWidget);
+        expect(find.text('പശു'), findsNothing);
       expect(find.text('അല്‍-ബഖറ (പശു)'), findsNothing);
       expect(find.text('The Cow'), findsNothing);
       expect(find.text('മദീന'), findsOneWidget);
@@ -291,7 +291,7 @@ void main() {
   );
 
   testWidgets(
-    'home tile hides later-surah translation subtitles in Malayalam',
+    'home tile keeps long Malayalam period labels visible on one line',
     (tester) async {
       await pumpHomeTile(
         tester,
@@ -302,8 +302,13 @@ void main() {
       expect(find.text('ആലു ഇംറാൻ'), findsOneWidget);
       expect(find.text('Family of Imran'), findsNothing);
       expect(find.text('ആലു ഇംറാൻ (Family of Imran)'), findsNothing);
-      expect(find.text('മദീനാ കാലഘട്ടം'), findsOneWidget);
+      final placeText = tester.widget<Text>(find.text('കാലഘട്ടം അവ്യക്തം'));
+
+      expect(find.text('കാലഘട്ടം അവ്യക്തം'), findsOneWidget);
       expect(find.text('200 ആയത്ത്'), findsOneWidget);
+      expect(placeText.maxLines, 1);
+      expect(placeText.softWrap, isFalse);
+      expect(placeText.overflow, isNull);
     },
   );
 }
@@ -356,7 +361,7 @@ final List<SurahModel> _sampleSurahs = [
     malayalamName: 'ആലു ഇംറാൻ',
     description: 'Family of Imran',
     ayathCount: 200,
-    place: 'Madinah',
+    place: 'കാലഘട്ടം അവ്യക്തം',
     createdBy: '',
     createdByRole: '',
     isVerified: true,

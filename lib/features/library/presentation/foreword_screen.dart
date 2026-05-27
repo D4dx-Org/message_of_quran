@@ -87,7 +87,7 @@ class _MalayalamPrefaceScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'മുഖവുര',
-          style: AppTextTheme.titleRegular,
+          style: AppTextTheme.localizedTitle(isMalayalam: true),
         ),
       ),
       child: FutureBuilder<MlPrefaceModel?>(
@@ -97,19 +97,27 @@ class _MalayalamPrefaceScreen extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return const Center(
+            return Center(
               child: Text(
                 'മുഖവുര ലോഡ് ചെയ്യാനായില്ല.',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+                style: AppTextTheme.localizedBody(
+                  isMalayalam: true,
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
               ),
             );
           }
           final preface = snapshot.data;
           if (preface == null) {
-            return const Center(
+            return Center(
               child: Text(
                 'മുഖവുര ലഭ്യമല്ല.',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+                style: AppTextTheme.localizedBody(
+                  isMalayalam: true,
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
               ),
             );
           }
@@ -218,13 +226,19 @@ class _MalayalamPrefaceContentState extends State<_MalayalamPrefaceContent> {
             Text(
               verseText,
               textAlign: TextAlign.center,
-              style: AppTextTheme.forewordQuote(context),
+              style: AppTextTheme.forewordQuote(
+                context,
+                isMalayalam: true,
+              ),
             ),
             const SizedBox(height: 10),
             Text(
               ref,
               textAlign: TextAlign.center,
-              style: AppTextTheme.forewordVerseRef(context),
+              style: AppTextTheme.forewordVerseRef(
+                context,
+                isMalayalam: true,
+              ),
             ),
           ],
         ),
@@ -236,7 +250,7 @@ class _MalayalamPrefaceContentState extends State<_MalayalamPrefaceContent> {
       child: Text(
         text,
         textAlign: TextAlign.center,
-        style: AppTextTheme.forewordQuote(context),
+        style: AppTextTheme.forewordQuote(context, isMalayalam: true),
       ),
     );
   }
@@ -261,7 +275,7 @@ class _MalayalamPrefaceContentState extends State<_MalayalamPrefaceContent> {
       padding: const EdgeInsets.only(bottom: 14),
       child: Text(
         text,
-        style: AppTextTheme.forewordBody(context),
+        style: AppTextTheme.forewordBody(context, isMalayalam: true),
         textAlign: TextAlign.left,
       ),
     );
@@ -282,7 +296,7 @@ class _MalayalamPrefaceContentState extends State<_MalayalamPrefaceContent> {
       if (match.start > lastEnd) {
         spans.add(TextSpan(
           text: text.substring(lastEnd, match.start),
-          style: AppTextTheme.forewordBody(context),
+          style: AppTextTheme.forewordBody(context, isMalayalam: true),
         ));
       }
 
@@ -312,13 +326,15 @@ class _MalayalamPrefaceContentState extends State<_MalayalamPrefaceContent> {
     if (lastEnd < text.length) {
       spans.add(TextSpan(
         text: text.substring(lastEnd),
-        style: AppTextTheme.forewordBody(context),
+        style: AppTextTheme.forewordBody(context, isMalayalam: true),
       ));
     }
 
     if (spans.isEmpty) {
       return TextSpan(
-          text: text, style: AppTextTheme.forewordBody(context));
+        text: text,
+        style: AppTextTheme.forewordBody(context, isMalayalam: true),
+      );
     }
     return TextSpan(children: spans);
   }
@@ -336,7 +352,10 @@ class _MalayalamPrefaceContentState extends State<_MalayalamPrefaceContent> {
               width: 24,
               child: Text(
                 '${num ?? ""}.',
-                style: AppTextTheme.forewordFootnote(context).copyWith(
+                style: AppTextTheme.forewordFootnote(
+                  context,
+                  isMalayalam: true,
+                ).copyWith(
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -344,7 +363,10 @@ class _MalayalamPrefaceContentState extends State<_MalayalamPrefaceContent> {
             Expanded(
               child: Text(
                 fn.text.replaceFirst(RegExp(r'^\d+\.\s*'), ''),
-                style: AppTextTheme.forewordFootnote(context),
+                style: AppTextTheme.forewordFootnote(
+                  context,
+                  isMalayalam: true,
+                ),
                 textAlign: TextAlign.left,
               ),
             ),

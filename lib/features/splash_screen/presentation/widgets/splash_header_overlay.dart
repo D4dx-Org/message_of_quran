@@ -8,16 +8,22 @@ class SplashHeaderOverlay extends StatelessWidget {
     required this.scale,
     required this.topInset,
     required this.availableWidth,
+    required this.screenHeight,
   });
 
   final double scale;
   final double topInset;
   final double availableWidth;
+  final double screenHeight;
 
   @override
   Widget build(BuildContext context) {
     final ornamentWidth = SplashLayoutMetrics.ornamentWidth(availableWidth);
-    final headerTextTop = SplashLayoutMetrics.headerTextTop(topInset, scale);
+    final headerTextTop = SplashLayoutMetrics.headerTextTop(
+      topInset,
+      scale,
+      screenHeight,
+    );
 
     return IgnorePointer(
       child: SizedBox.expand(

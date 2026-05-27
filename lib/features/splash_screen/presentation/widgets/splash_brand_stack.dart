@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:the_message_of_the_quran/features/splash_screen/presentation/widgets/splash_layout_metrics.dart';
 
 class SplashBrandStack extends StatelessWidget {
   const SplashBrandStack({
@@ -12,22 +13,23 @@ class SplashBrandStack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final compact = screenHeight < 720;
     return LayoutBuilder(
       builder: (context, constraints) {
         final maxWidth = constraints.maxWidth.isFinite
             ? constraints.maxWidth
             : MediaQuery.sizeOf(context).width * 0.72;
-        final emblemWidth =
-          (maxWidth * (compact ? 1.16 : 1.18))
-            .clamp(266.0 * scale, 328.0 * scale)
-                .toDouble();
-        final titleWidth =
-          (maxWidth * (compact ? 0.94 : 0.96))
-            .clamp(236.0 * scale, 286.0 * scale)
-                .toDouble();
-        final gap = (compact ? 0.0 : 1.0) * scale;
-        final titleLift = (compact ? 8.0 : 10.0) * scale;
+        final emblemWidth = SplashLayoutMetrics.emblemWidth(
+          maxWidth,
+          scale,
+          screenHeight,
+        );
+        final titleWidth = SplashLayoutMetrics.titleWidth(
+          maxWidth,
+          scale,
+          screenHeight,
+        );
+        final gap = SplashLayoutMetrics.brandGap(screenHeight, scale);
+        final titleLift = SplashLayoutMetrics.titleLift(screenHeight, scale);
 
         return Column(
           mainAxisSize: MainAxisSize.min,

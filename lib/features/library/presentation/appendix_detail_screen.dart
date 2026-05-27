@@ -29,7 +29,7 @@ class AppendixDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           isMalayalam ? 'അനുബന്ധം' : 'Appendix',
-          style: AppTextTheme.titleRegular,
+          style: AppTextTheme.localizedTitle(isMalayalam: isMalayalam),
         ),
         actions: [
           IconButton(
@@ -98,7 +98,8 @@ class AppendixDetailScreen extends StatelessWidget {
                       Expanded(
                         child: Text(
                           appendix.title.toUpperCase(),
-                          style: const TextStyle(
+                          style: AppTextTheme.localizedLabel(
+                            isMalayalam: isMalayalam,
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
                             color: accentColor,
@@ -113,7 +114,12 @@ class AppendixDetailScreen extends StatelessWidget {
                 // Body text
                 Text(
                   appendix.body,
-                  style: TextStyle(fontSize: 15, height: 1.7, color: bodyColor),
+                  style: AppTextTheme.localizedBody(
+                    isMalayalam: isMalayalam,
+                    fontSize: 15,
+                    height: 1.7,
+                    color: bodyColor,
+                  ),
                 ),
               ],
             ),

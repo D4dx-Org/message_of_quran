@@ -122,21 +122,46 @@ class InterpretationSheetHeader extends StatelessWidget {
   final InterpretationSheetSurahHeaderText surahHeader;
   final String metadataLabel;
   final VoidCallback? onClose;
+  final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry closeButtonPadding;
+  final double titleSpacing;
+  final double metadataSpacing;
+  final bool compactCloseButton;
+  final Color? subtitleColor;
+  final Color? metadataColor;
 
   const InterpretationSheetHeader({
     super.key,
     required this.surahHeader,
     required this.metadataLabel,
     this.onClose,
+    this.padding = const EdgeInsets.symmetric(horizontal: 20),
+    this.closeButtonPadding = EdgeInsets.zero,
+    this.titleSpacing = 2,
+    this.metadataSpacing = 2,
+    this.compactCloseButton = false,
+    this.subtitleColor,
+    this.metadataColor,
   });
 
   @override
   Widget build(BuildContext context) {
     final hasSurahTitle = surahHeader.hasTitle;
     final hasSurahSubtitle = surahHeader.hasSubtitle;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final malayalamRegExp = RegExp(r'[\u0D00-\u0D7F]');
+    final titleIsMalayalam =
+      surahHeader.title != null && malayalamRegExp.hasMatch(surahHeader.title!);
+    final subtitleIsMalayalam = surahHeader.subtitle != null &&
+      malayalamRegExp.hasMatch(surahHeader.subtitle!);
+    final metadataIsMalayalam = malayalamRegExp.hasMatch(metadataLabel);
+    final resolvedSubtitleColor =
+        subtitleColor ?? (isDark ? Colors.white70 : Colors.grey[700]);
+    final resolvedMetadataColor =
+        metadataColor ?? (isDark ? Colors.white60 : Colors.grey[600]);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: padding,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -149,38 +174,53 @@ class InterpretationSheetHeader extends StatelessWidget {
                     surahHeader.title!,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: AppTextTheme.localizedLabel(
+                      isMalayalam: titleIsMalayalam,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
                   ),
                 if (hasSurahSubtitle) ...[
-                  if (hasSurahTitle) const SizedBox(height: 2),
+                  if (hasSurahTitle) SizedBox(height: titleSpacing),
                   Text(
                     surahHeader.subtitle!,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
+                    style: AppTextTheme.localizedLabel(
+                      isMalayalam: subtitleIsMalayalam,
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
-                      color: Colors.grey[700],
+                      color: resolvedSubtitleColor,
                     ),
                   ),
                 ],
                 if (hasSurahTitle || hasSurahSubtitle)
-                  const SizedBox(height: 2),
+                  SizedBox(height: metadataSpacing),
                 Text(
                   metadataLabel,
-                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                  style: AppTextTheme.localizedBody(
+                    isMalayalam: metadataIsMalayalam,
+                    fontSize: 12,
+                    color: resolvedMetadataColor,
+                  ),
                 ),
               ],
             ),
           ),
           if (onClose != null)
-            IconButton(
-              tooltip: 'Close',
-              onPressed: onClose,
-              icon: const Icon(Icons.close, size: 22),
+            Padding(
+              padding: closeButtonPadding,
+              child: IconButton(
+                tooltip: 'Close',
+                onPressed: onClose,
+                padding: compactCloseButton ? EdgeInsets.zero : null,
+                constraints: compactCloseButton
+                    ? const BoxConstraints.tightFor(width: 24, height: 24)
+                    : null,
+                visualDensity: compactCloseButton ? VisualDensity.compact : null,
+                splashRadius: compactCloseButton ? 18 : null,
+                icon: const Icon(Icons.close, size: 22),
+              ),
             ),
         ],
       ),
@@ -504,7 +544,8 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.center,
-                              style: const TextStyle(
+                              style: AppTextTheme.localizedLabel(
+                                isMalayalam: isMl,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 15,
                               ),
@@ -516,7 +557,7 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
                         Center(
                           child: Text(
                             'Verse Range ${widget.ayahNumber}',
-                            style: TextStyle(
+                            style: AppTextTheme.popinsDefault(
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
                               color: Colors.grey[600],

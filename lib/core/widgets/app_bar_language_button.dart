@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
@@ -68,7 +68,7 @@ class AppBarLanguageButton extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     isMalayalam ? 'ML' : 'EN',
-                    style: GoogleFonts.poppins(
+                    style: AppTextTheme.popinsDefault(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
                       color: buttonAccent,
@@ -119,7 +119,7 @@ class AppBarLanguageButton extends StatelessWidget {
               ),
               child: Text(
                 code,
-                style: GoogleFonts.poppins(
+                style: AppTextTheme.popinsDefault(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                   color: accentColor,
@@ -130,17 +130,12 @@ class AppBarLanguageButton extends StatelessWidget {
             Expanded(
               child: Text(
                 label,
-                style:
-                    (useMalayalamFont
-                            ? GoogleFonts.notoSerifMalayalam()
-                            : GoogleFonts.poppins())
-                        .copyWith(
-                          fontSize: 14,
-                          fontWeight: selected
-                              ? FontWeight.w600
-                              : FontWeight.w500,
-                          color: labelColor,
-                        ),
+                style: AppTextTheme.localizedLabel(
+                  isMalayalam: useMalayalamFont,
+                  fontSize: 14,
+                  fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                  color: labelColor,
+                ),
               ),
             ),
             if (selected)

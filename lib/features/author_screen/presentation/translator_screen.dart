@@ -30,7 +30,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
       appBar: AppBar(
         title: Text(
           'വിവർത്തകൻ',
-          style: AppTextTheme.titleRegular,
+          style: AppTextTheme.localizedTitle(isMalayalam: true),
         ),
       ),
       child: Padding(
@@ -44,7 +44,8 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
               return Center(
                 child: Text(
                   'വിവർത്തകനെ കുറിച്ചുള്ള വിവരങ്ങൾ ലഭ്യമല്ല.',
-                  style: AppTextTheme.popinsDefault(
+                  style: AppTextTheme.localizedBody(
+                    isMalayalam: true,
                     fontSize: 14,
                     color: Colors.grey,
                   ),
@@ -63,7 +64,8 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
                         child: Text(
                           author.name!,
                           textAlign: TextAlign.center,
-                          style: AppTextTheme.popinsDefault(
+                          style: AppTextTheme.localizedTitle(
+                            isMalayalam: true,
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
                             color: bodyColor,
@@ -89,14 +91,18 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
                     ...author.bio!.split('\n').where((p) => p.trim().isNotEmpty).expand((paragraph) => [
                       Text(
                         paragraph.trim(),
-                        style: AppTextTheme.popinsDefault(fontSize: 14, color: bodyColor),
+                        style: AppTextTheme.localizedBody(
+                          isMalayalam: true,
+                          fontSize: 14,
+                          color: bodyColor,
+                        ),
                       ),
                       const SizedBox(height: 14),
                     ]),
                   const SizedBox(height: 16),
                      if (author.mobile != null && author.mobile!.isNotEmpty)
                     Text(
-                      '${author.mobile!}',
+                        author.mobile!,
                       style: AppTextTheme.popinsDefault(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,

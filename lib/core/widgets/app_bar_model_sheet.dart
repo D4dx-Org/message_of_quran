@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
+import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
@@ -244,7 +244,8 @@ class _JumpToSheetState extends State<_JumpToSheet> {
                                 displayName,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.poppins(
+                                style: AppTextTheme.localizedLabel(
+                                  isMalayalam: isMalayalam,
                                   color: textColor,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 12 * scale,
@@ -255,7 +256,8 @@ class _JumpToSheetState extends State<_JumpToSheet> {
                                       description,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: GoogleFonts.poppins(
+                                      style: AppTextTheme.localizedBody(
+                                        isMalayalam: isMalayalam,
                                         fontSize: 11 * scale,
                                         color: subColor,
                                         fontWeight: FontWeight.w400,
@@ -272,7 +274,8 @@ class _JumpToSheetState extends State<_JumpToSheet> {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     textAlign: TextAlign.right,
-                                    style: GoogleFonts.poppins(
+                                    style: AppTextTheme.localizedLabel(
+                                      isMalayalam: isMalayalam,
                                       color: subColor,
                                       fontSize: 11 * scale,
                                       fontWeight: FontWeight.w600,
@@ -284,7 +287,8 @@ class _JumpToSheetState extends State<_JumpToSheet> {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     textAlign: TextAlign.right,
-                                    style: GoogleFonts.poppins(
+                                    style: AppTextTheme.localizedLabel(
+                                      isMalayalam: isMalayalam,
                                       fontSize: 10.5 * scale,
                                       color: subColor,
                                       fontWeight: FontWeight.w500,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
@@ -32,6 +32,7 @@ class HomeScreenListTile extends StatelessWidget {
         context.watch<LastReadProvider>().lastSurahTabSelection;
     final dividerColor = DividerTheme.of(context).color;
     final scale = ResponsiveHelper.scaleFactor(context);
+    final placeColumnWidth = isMl ? 126 * scale : 96 * scale;
     final displayText = formatSurahListDisplayText(
       isMalayalam: isMl,
       surahName: surah.name,
@@ -85,10 +86,11 @@ class HomeScreenListTile extends StatelessWidget {
                           displayName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.poppins(
+                          style: AppTextTheme.localizedLabel(
+                            isMalayalam: isMl,
                             color: textColor,
                             fontWeight: FontWeight.w600,
-                            fontSize: 12 * scale,
+                            fontSize: 14 * scale,
                           ),
                         ),
                         if (description.isNotEmpty) ...[
@@ -97,7 +99,8 @@ class HomeScreenListTile extends StatelessWidget {
                             description,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.poppins(
+                            style: AppTextTheme.localizedBody(
+                              isMalayalam: isMl,
                               fontSize: 11 * scale,
                               color: subColor,
                               fontWeight: FontWeight.w400,
@@ -110,20 +113,28 @@ class HomeScreenListTile extends StatelessWidget {
                   ),
                   SizedBox(width: 12 * scale),
                   SizedBox(
-                    width: 96 * scale,
+                    width: placeColumnWidth,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text(
-                          placeName,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.right,
-                          style: GoogleFonts.poppins(
-                            color: subColor,
-                            fontSize: 11 * scale,
-                            fontWeight: FontWeight.w600,
+                        SizedBox(
+                          width: double.infinity,
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              placeName,
+                              maxLines: 1,
+                              softWrap: false,
+                              textAlign: TextAlign.right,
+                              style: AppTextTheme.localizedLabel(
+                                isMalayalam: isMl,
+                                color: subColor,
+                                fontSize: 11 * scale,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -132,7 +143,8 @@ class HomeScreenListTile extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.right,
-                          style: GoogleFonts.poppins(
+                          style: AppTextTheme.localizedLabel(
+                            isMalayalam: isMl,
                             fontSize: 10.5 * scale,
                             color: subColor,
                             fontWeight: FontWeight.w500,

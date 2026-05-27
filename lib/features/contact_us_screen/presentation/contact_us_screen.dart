@@ -56,7 +56,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
       appBar: AppBar(
         title: Text(
           isMalayalam ? 'ഞങ്ങളെ ബന്ധപ്പെടുക' : 'Contact Us',
-          style: AppTextTheme.titleRegular,
+          style: AppTextTheme.localizedTitle(isMalayalam: isMalayalam),
         ),
       ),
       child: Container(
@@ -82,7 +82,8 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                     if (description != null) ...[
                       Text(
                         description,
-                        style: AppTextTheme.popinsDefault(
+                        style: AppTextTheme.localizedBody(
+                          isMalayalam: isMalayalam,
                           fontSize: 15,
                           height: 1.8,
                         ),
@@ -215,9 +216,11 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                         const SizedBox(height: 4),
                                         Text(
                                           address,
-                                          style: AppTextTheme.popinsDefault(
+                                          style: AppTextTheme.localizedBody(
+                                            isMalayalam: isMalayalam,
                                             fontSize: 16,
                                             fontWeight: FontWeight.w500,
+                                            height: 1.6,
                                           ),
                                         ),
                                       ],
