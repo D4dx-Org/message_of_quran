@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/features/force_update_screen/presentation/force_update_screen.dart';
@@ -14,6 +16,22 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  bool get _shouldOverrideSystemUi =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+
+  void _enterSplashSystemUi() {
+    if (!_shouldOverrideSystemUi) return;
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  }
+
+  Future<void> _restoreDefaultSystemUi() {
+    if (!_shouldOverrideSystemUi) return Future.value();
+    return SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: SystemUiOverlay.values,
+    );
+  }
+
   Route<void> _buildNextRoute(VersionCheckProvider controller) {
     final nextScreen = controller.isUpdateNeeded
         ? const ForceUpdateScreen()
@@ -29,6 +47,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    _enterSplashSystemUi();
     // Use addPostFrameCallback instead of Future.microtask so that
     // notifyListeners() is never called while the widget tree is locked.
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -44,12 +63,20 @@ class _SplashScreenState extends State<SplashScreen> {
       ]);
 
       if (!mounted) return;
+      await _restoreDefaultSystemUi();
+      if (!mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
         _buildNextRoute(controller),
         (route) => false,
       );
     });
+  }
+
+  @override
+  void dispose() {
+    _restoreDefaultSystemUi();
+    super.dispose();
   }
 
   @override
