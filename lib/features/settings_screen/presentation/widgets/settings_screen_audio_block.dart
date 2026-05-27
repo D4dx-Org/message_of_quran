@@ -6,6 +6,11 @@ import 'package:the_message_of_the_quran/features/settings_screen/presentation/w
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_list_tile.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/play_settings_provider.dart';
 
+const int _reciterVisibleItemCount = 4;
+const double _reciterMenuItemHeight = 48;
+const double _reciterMenuHeight =
+  _reciterVisibleItemCount * _reciterMenuItemHeight;
+
 class SettingsScreenAudioBlock extends StatelessWidget {
   const SettingsScreenAudioBlock({super.key});
 
@@ -13,6 +18,11 @@ class SettingsScreenAudioBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     final accentColor = appBarAccentColor(context);
     final accentTrackColor = appBarAccentFillColor(context, alpha: 0.35);
+    final reciterTextStyle = AppTextTheme.drawerStyle.copyWith(
+      fontWeight: FontWeight.w500,
+      color: Theme.of(context).colorScheme.onSurface,
+      height: 1.15,
+    );
 
     return Consumer<PlaySettingsProvider>(
       builder: (context, playSettings, _) {
@@ -32,7 +42,7 @@ class SettingsScreenAudioBlock extends StatelessWidget {
                         Icon(Icons.person, color: accentColor, size: 22),
                         const SizedBox(width: 16),
                         Text(
-                          'Reciter',
+                          'Reciters',
                           style: AppTextTheme.drawerStyle
                               .copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
                         ),
@@ -41,38 +51,60 @@ class SettingsScreenAudioBlock extends StatelessWidget {
                     const SizedBox(height: 6),
                     LayoutBuilder(
                       builder: (context, constraints) {
-                        return DropdownMenu<int>(
+                        return SizedBox(
                           width: constraints.maxWidth,
-                          inputDecorationTheme: const InputDecorationTheme(
-                              border: InputBorder.none),
-                          initialSelection:
-                              playSettings.selectedReciterIndex,
-                          textStyle: AppTextTheme.drawerStyle
-                              .copyWith(fontWeight: FontWeight.w500),
-                          menuStyle: MenuStyle(
-                            backgroundColor: WidgetStatePropertyAll(
-                              Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? Colors.grey.shade900
-                                  : Colors.white,
-                            ),
-                          ),
-                          onSelected: (value) {
-                            if (value != null){
-                               playSettings.setReciter(value);
-                            }
-                             
-                          },
-                          dropdownMenuEntries: List.generate(
-                            PlaySettingsProvider.reciters.length,
-                            (index) => DropdownMenuEntry<int>(
-                              value: index,
-                              label: PlaySettingsProvider
-                                  .reciters[index].name,
-                              style: ButtonStyle(
-                                textStyle: WidgetStatePropertyAll(
-                                  AppTextTheme.drawerStyle.copyWith(
-                                      fontWeight: FontWeight.w500),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<int>(
+                              value: playSettings.selectedReciterIndex,
+                              isExpanded: true,
+                              isDense: true,
+                              itemHeight: _reciterMenuItemHeight,
+                              menuMaxHeight: _reciterMenuHeight,
+                              menuWidth: constraints.maxWidth,
+                              dropdownColor:
+                                  Theme.of(context).brightness == Brightness.dark
+                                      ? Colors.grey.shade900
+                                      : Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              icon: Icon(
+                                Icons.arrow_drop_down,
+                                color: Theme.of(context).colorScheme.onSurface,
+                                size: 22,
+                              ),
+                              style: reciterTextStyle,
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8),
+                              selectedItemBuilder: (context) {
+                                return PlaySettingsProvider.reciters
+                                    .map(
+                                      (reciter) => Align(
+                                        alignment:
+                                            AlignmentDirectional.centerStart,
+                                        child: Text(
+                                          reciter.name,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: reciterTextStyle,
+                                        ),
+                                      ),
+                                    )
+                                    .toList();
+                              },
+                              onChanged: (value) {
+                                if (value != null) {
+                                  playSettings.setReciter(value);
+                                }
+                              },
+                              items: List.generate(
+                                PlaySettingsProvider.reciters.length,
+                                (index) => DropdownMenuItem<int>(
+                                  value: index,
+                                  child: Text(
+                                    PlaySettingsProvider.reciters[index].name,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: reciterTextStyle,
+                                  ),
                                 ),
                               ),
                             ),

@@ -64,7 +64,7 @@ class SplashHeaderOverlay extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: AppTextTheme.popinsDefault(
                       color: const Color(0xFFD6D9E2),
-                      fontSize: 11.8 * scale,
+                      fontSize: 15 * scale,
                       fontWeight: FontWeight.w400,
                       letterSpacing: 0.15,
                     ),

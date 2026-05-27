@@ -7,14 +7,18 @@ import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
 import 'package:the_message_of_the_quran/features/common_email/models/common_email_requests.dart';
 
 class CommonEmailApi {
-  CommonEmailApi({http.Client? client}) : _client = client;
+  CommonEmailApi({http.Client? client, String? feedbackApiKey})
+    : _client = client,
+      _feedbackApiKey = feedbackApiKey ?? ApiConstants.quranAsadEmailApiKey;
 
   final http.Client? _client;
+  final String _feedbackApiKey;
 
   Future<void> sendFeedback(FeedbackRequest request) {
     return _post(
       url: ApiConstants.feedbackUrl,
       body: request.toJson(),
+      headers: _feedbackHeaders,
       fallbackErrorMessage: 'Unable to send feedback right now.',
     );
   }
@@ -30,6 +34,7 @@ class CommonEmailApi {
   Future<void> _post({
     required String url,
     required Map<String, dynamic> body,
+    Map<String, String> headers = const {},
     required String fallbackErrorMessage,
   }) async {
     final ownsClient = _client == null;
@@ -39,7 +44,10 @@ class CommonEmailApi {
       final response = await client
           .post(
             Uri.parse(url),
-            headers: const {'Content-Type': 'application/json'},
+            headers: {
+              'Content-Type': 'application/json',
+              ...headers,
+            },
             body: jsonEncode(body),
           )
           .timeout(const Duration(seconds: 15));
@@ -68,6 +76,14 @@ class CommonEmailApi {
         client.close();
       }
     }
+  }
+
+  Map<String, String> get _feedbackHeaders {
+    if (_feedbackApiKey.trim().isEmpty) {
+      return const {};
+    }
+
+    return {'x-api-key': _feedbackApiKey.trim()};
   }
 
   String? _readErrorMessage(String responseBody) {

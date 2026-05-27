@@ -138,6 +138,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     final controller = Provider.of<HomeProvider>(context);
     final theme = Theme.of(context);
+    final bottomViewPadding = MediaQuery.viewPaddingOf(context).bottom;
     final isDarkMode = theme.brightness == Brightness.dark;
     final navBg = isDarkMode
         ? AppTheme.appThemePrimary
@@ -298,76 +299,79 @@ class _MainScreenState extends State<MainScreen> {
                   topRight: Radius.circular(navCornerRadius),
                 ),
               ),
-              child: SafeArea(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 6 * scale),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        children: List.generate(_navItems.length, (index) {
-                          final item = _navItems[index];
-                          final isSelected = displayIndex == index;
-                          final isMushaf = index == 2;
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  0,
+                  6 * scale,
+                  0,
+                  bottomViewPadding + (6 * scale),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: List.generate(_navItems.length, (index) {
+                        final item = _navItems[index];
+                        final isSelected = displayIndex == index;
+                        final isMushaf = index == 2;
 
-                          final color = isMushaf
-                              ? Colors.white
-                              : isSelected
-                              ? (isDarkMode ? Colors.white : AppTheme.appIconTheme)
-                              : inactiveColor;
+                        final color = isMushaf
+                            ? Colors.white
+                            : isSelected
+                            ? (isDarkMode ? Colors.white : AppTheme.appIconTheme)
+                            : inactiveColor;
 
-                          return Expanded(
-                            child: Semantics(
-                              button: true,
-                              label:
-                                  '${item.label} tab${isSelected ? ', selected' : ''}',
-                              excludeSemantics: true,
-                              child: InkWell(
-                                onTap: () => _onItemTapped(index),
-                                borderRadius: BorderRadius.circular(10 * scale),
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 6 * scale,
-                                    vertical: 4 * scale,
-                                  ),
-                                  margin: EdgeInsets.symmetric(
-                                    horizontal: 4 * scale,
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      if (item.label.isEmpty)
-                                        SizedBox.square(
-                                          dimension: _navItemSize(index) * scale,
-                                        )
-                                      else
-                                        _buildNavItemIcon(
-                                          index: index,
-                                          color: color,
-                                          size: _navItemSize(index) * scale,
-                                        ),
-                                      SizedBox(height: 3 * scale),
-                                      Text(
-                                        item.label,
-                                        style: TextStyle(
-                                          color: color,
-                                          fontSize: 10 * scale,
-                                          fontWeight: isSelected
-                                              ? FontWeight.w700
-                                              : FontWeight.w400,
-                                        ),
+                        return Expanded(
+                          child: Semantics(
+                            button: true,
+                            label:
+                                '${item.label} tab${isSelected ? ', selected' : ''}',
+                            excludeSemantics: true,
+                            child: InkWell(
+                              onTap: () => _onItemTapped(index),
+                              borderRadius: BorderRadius.circular(10 * scale),
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 6 * scale,
+                                  vertical: 4 * scale,
+                                ),
+                                margin: EdgeInsets.symmetric(
+                                  horizontal: 4 * scale,
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if (item.label.isEmpty)
+                                      SizedBox.square(
+                                        dimension: _navItemSize(index) * scale,
+                                      )
+                                    else
+                                      _buildNavItemIcon(
+                                        index: index,
+                                        color: color,
+                                        size: _navItemSize(index) * scale,
                                       ),
-                                    ],
-                                  ),
+                                    SizedBox(height: 3 * scale),
+                                    Text(
+                                      item.label,
+                                      style: TextStyle(
+                                        color: color,
+                                        fontSize: 10 * scale,
+                                        fontWeight: isSelected
+                                            ? FontWeight.w700
+                                            : FontWeight.w400,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
-                          );
-                        }),
-                      ),
-                    ],
-                  ),
+                          ),
+                        );
+                      }),
+                    ),
+                  ],
                 ),
               ),
             ),

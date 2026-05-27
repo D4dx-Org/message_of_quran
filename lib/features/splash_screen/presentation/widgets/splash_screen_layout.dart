@@ -63,7 +63,7 @@ class SplashScreenLayout extends StatelessWidget {
               availableWidth: size.width,
             ),
             Align(
-              alignment: const Alignment(0, -0.02),
+              alignment: const Alignment(0, -0.06),
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
                   horizontalPadding,

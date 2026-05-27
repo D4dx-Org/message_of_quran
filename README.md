@@ -2,6 +2,15 @@
 
 A new Flutter project.
 
+## Feedback API Key
+
+The feedback endpoint expects an `x-api-key` header. Provide it at build or run
+time with a Dart define:
+
+```bash
+flutter run --dart-define=QURAN_ASAD_EMAIL_API_KEY=your-key
+```
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.

@@ -1,12 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
 
 enum PlayMode { singleBlock, continuous }
 
+enum ReciterAudioSourceKind { everyAyah, customPerAyah }
+
+class ReciterAudioSource {
+  final ReciterAudioSourceKind kind;
+  final String reciterPath;
+  final String? baseUrl;
+
+  const ReciterAudioSource.everyAyah(this.reciterPath)
+    : kind = ReciterAudioSourceKind.everyAyah,
+      baseUrl = null;
+
+  const ReciterAudioSource.customPerAyah({
+    required this.reciterPath,
+    required this.baseUrl,
+  }) : kind = ReciterAudioSourceKind.customPerAyah;
+
+  bool get isConfigured {
+    if (kind == ReciterAudioSourceKind.everyAyah) {
+      return true;
+    }
+    return _normalizedBaseUrl(baseUrl).isNotEmpty;
+  }
+
+  String? buildAyahUrl(int surahNumber, int ayahId) {
+    final resolvedBaseUrl = switch (kind) {
+      ReciterAudioSourceKind.everyAyah => ApiConstants.everyAyahAudioBaseUrl,
+      ReciterAudioSourceKind.customPerAyah => _normalizedBaseUrl(baseUrl),
+    };
+    if (resolvedBaseUrl.isEmpty) {
+      return null;
+    }
+
+    final surah = surahNumber.toString().padLeft(3, '0');
+    final ayah = ayahId.toString().padLeft(3, '0');
+    return '$resolvedBaseUrl/$reciterPath/$surah$ayah.mp3';
+  }
+
+  static String _normalizedBaseUrl(String? value) {
+    final trimmed = value?.trim() ?? '';
+    if (trimmed.endsWith('/')) {
+      return trimmed.substring(0, trimmed.length - 1);
+    }
+    return trimmed;
+  }
+}
+
 class ReciterInfo {
   final String name;
-  final String folderName;
-  const ReciterInfo({required this.name, required this.folderName});
+  final ReciterAudioSource audioSource;
+
+  const ReciterInfo({required this.name, required this.audioSource});
+
+  String get folderName => audioSource.reciterPath;
 }
 
 class PlaySettingsProvider extends ChangeNotifier {
@@ -22,36 +72,61 @@ class PlaySettingsProvider extends ChangeNotifier {
   static const List<ReciterInfo> reciters = [
     ReciterInfo(
         name: 'Abdul Basit Abdul Samad (Mujawwad)',
-        folderName: 'Abdul_Basit_Mujawwad_128kbps'),
+        audioSource: ReciterAudioSource.everyAyah(
+          'Abdul_Basit_Mujawwad_128kbps',
+        )),
     ReciterInfo(
         name: 'Abdurrahmaan As-Sudais',
-        folderName: 'Abdurrahmaan_As-Sudais_192kbps'),
+        audioSource: ReciterAudioSource.everyAyah(
+          'Abdurrahmaan_As-Sudais_192kbps',
+        )),
     ReciterInfo(
         name: "Sa'ud Ash-Shuraym",
-        folderName: 'Saood_ash-Shuraym_128kbps'),
+        audioSource: ReciterAudioSource.everyAyah(
+          'Saood_ash-Shuraym_128kbps',
+        )),
     ReciterInfo(
         name: 'Abdulrahman Al-Ossi',
-        folderName: 'Abdulrahman_Al-Ossi_128kbps'),
+        audioSource: ReciterAudioSource.customPerAyah(
+          reciterPath: 'Abdulrahman_Al-Ossi_128kbps',
+          baseUrl: ApiConstants.abdulrahmanAlOssiAudioBaseUrl,
+        )),
     ReciterInfo(
-        name: 'Abdullah Basfar', folderName: 'Abdullah_Basfar_192kbps'),
+        name: 'Abdullah Basfar',
+        audioSource: ReciterAudioSource.everyAyah('Abdullah_Basfar_192kbps')),
     ReciterInfo(
         name: 'Ahmed ibn Ali Al-Ajamy',
-        folderName: 'Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net'),
-    ReciterInfo(name: 'Ali Jaber', folderName: 'Ali_Jaber_64kbps'),
-    ReciterInfo(name: 'Fares Abbad', folderName: 'Fares_Abbad_64kbps'),
+        audioSource: ReciterAudioSource.everyAyah(
+          'Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net',
+        )),
     ReciterInfo(
-        name: 'Muhsin Al Qasim', folderName: 'Muhsin_Al_Qasim_192kbps'),
+        name: 'Ali Jaber',
+        audioSource: ReciterAudioSource.everyAyah('Ali_Jaber_64kbps')),
     ReciterInfo(
-        name: 'Nasser Alqatami', folderName: 'Nasser_Alqatami_128kbps'),
+        name: 'Fares Abbad',
+        audioSource: ReciterAudioSource.everyAyah('Fares_Abbad_64kbps')),
+    ReciterInfo(
+        name: 'Muhsin Al Qasim',
+        audioSource: ReciterAudioSource.everyAyah('Muhsin_Al_Qasim_192kbps')),
+    ReciterInfo(
+        name: 'Nasser Alqatami',
+        audioSource: ReciterAudioSource.everyAyah('Nasser_Alqatami_128kbps')),
     ReciterInfo(
         name: 'Abdullah Awwaad Al-Juhayni',
-        folderName: 'Abdullaah_3awwaad_Al-Juhaynee_128kbps'),
+        audioSource: ReciterAudioSource.everyAyah(
+          'Abdullaah_3awwaad_Al-Juhaynee_128kbps',
+        )),
     ReciterInfo(
-        name: 'Mahmoud Khalil Al-Husary', folderName: 'Husary_128kbps'),
+        name: 'Mahmoud Khalil Al-Husary',
+        audioSource: ReciterAudioSource.everyAyah('Husary_128kbps')),
     ReciterInfo(
         name: 'Muhammad Siddiq Al-Minshawi (Mujawwad)',
-        folderName: 'Minshawy_Mujawwad_192kbps'),
-    ReciterInfo(name: 'Saad Al-Ghamdi', folderName: 'Ghamadi_40kbps'),
+        audioSource: ReciterAudioSource.everyAyah(
+          'Minshawy_Mujawwad_192kbps',
+        )),
+    ReciterInfo(
+        name: 'Saad Al-Ghamdi',
+        audioSource: ReciterAudioSource.everyAyah('Ghamadi_40kbps')),
   ];
 
   PlayMode _playMode = PlayMode.continuous;

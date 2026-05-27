@@ -10,18 +10,23 @@ import 'package:the_message_of_the_quran/features/common_email/models/common_ema
 void main() {
   group('CommonEmailApi', () {
     test(
-      'sendFeedback posts the documented payload to the public endpoint',
+      'sendFeedback posts the documented payload and API key header',
       () async {
         late Uri requestedUri;
         late Map<String, dynamic> requestBody;
+        late Map<String, String> requestHeaders;
 
         final client = MockClient((request) async {
           requestedUri = request.url;
           requestBody = jsonDecode(request.body) as Map<String, dynamic>;
+          requestHeaders = request.headers;
           return http.Response('{"success": true}', 200);
         });
 
-        final api = CommonEmailApi(client: client);
+        final api = CommonEmailApi(
+          client: client,
+          feedbackApiKey: 'test-feedback-key',
+        );
 
         await api.sendFeedback(
           const FeedbackRequest(
@@ -36,7 +41,11 @@ void main() {
           ),
         );
 
-        expect(requestedUri.toString(), ApiConstants.feedbackUrl);
+        expect(
+          requestedUri.toString(),
+          ApiConstants.feedbackUrl,
+        );
+        expect(requestHeaders['x-api-key'], 'test-feedback-key');
         expect(requestBody, {
           'name': 'Ali Rahman',
           'email': 'ali@example.com',
@@ -55,10 +64,12 @@ void main() {
       () async {
         late Uri requestedUri;
         late Map<String, dynamic> requestBody;
+        late Map<String, String> requestHeaders;
 
         final client = MockClient((request) async {
           requestedUri = request.url;
           requestBody = jsonDecode(request.body) as Map<String, dynamic>;
+          requestHeaders = request.headers;
           return http.Response('{"success": true}', 200);
         });
 
@@ -79,7 +90,11 @@ void main() {
           ),
         );
 
-        expect(requestedUri.toString(), ApiConstants.featureRequestUrl);
+        expect(
+          requestedUri.toString(),
+          ApiConstants.featureRequestUrl,
+        );
+        expect(requestHeaders.containsKey('x-api-key'), isFalse);
         expect(requestBody, {
           'name': 'Fathima Zahra',
           'email': 'fathima@example.com',

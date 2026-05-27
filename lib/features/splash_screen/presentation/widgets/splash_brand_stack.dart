@@ -19,14 +19,15 @@ class SplashBrandStack extends StatelessWidget {
             ? constraints.maxWidth
             : MediaQuery.sizeOf(context).width * 0.72;
         final emblemWidth =
-          (maxWidth * (compact ? 0.86 : 0.88))
-            .clamp(210.0 * scale, 248.0 * scale)
+          (maxWidth * (compact ? 1.16 : 1.18))
+            .clamp(266.0 * scale, 328.0 * scale)
                 .toDouble();
         final titleWidth =
-          (maxWidth * (compact ? 0.82 : 0.84))
-            .clamp(214.0 * scale, 252.0 * scale)
+          (maxWidth * (compact ? 0.94 : 0.96))
+            .clamp(236.0 * scale, 286.0 * scale)
                 .toDouble();
-        final gap = (compact ? 2.0 : 6.0) * scale;
+        final gap = (compact ? 0.0 : 1.0) * scale;
+        final titleLift = (compact ? 8.0 : 10.0) * scale;
 
         return Column(
           mainAxisSize: MainAxisSize.min,
@@ -38,11 +39,14 @@ class SplashBrandStack extends StatelessWidget {
               filterQuality: FilterQuality.high,
             ),
             SizedBox(height: gap),
-            Image.asset(
-              'assets/images/splash_text_logo.png',
-              width: titleWidth,
-              fit: BoxFit.contain,
-              filterQuality: FilterQuality.high,
+            Transform.translate(
+              offset: Offset(0, -titleLift),
+              child: Image.asset(
+                'assets/images/splash_text_logo.png',
+                width: titleWidth,
+                fit: BoxFit.contain,
+                filterQuality: FilterQuality.high,
+              ),
             ),
           ],
         );

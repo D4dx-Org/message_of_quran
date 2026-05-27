@@ -32,6 +32,7 @@ class AudioProvider extends ChangeNotifier {
   bool _isPlaying = false;
   bool _isPaused = false;
   bool _isLoading = false;
+  String? _pendingPlaybackErrorMessage;
 
   int? get currentSurahNumber => _currentSurahNumber;
   int? get currentAyahId => _currentAyahId;
@@ -43,6 +44,12 @@ class AudioProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isActive => _isPlaying || _isPaused || _isLoading;
   bool get isProgrammaticSurahTransition => _isProgrammaticSurahTransition;
+
+  String? consumePendingPlaybackError() {
+    final message = _pendingPlaybackErrorMessage;
+    _pendingPlaybackErrorMessage = null;
+    return message;
+  }
 
   /// Called when all ayahs in the block finish.
   /// Receives (surahNumber, completedTranslationIndex).
@@ -60,10 +67,15 @@ class AudioProvider extends ChangeNotifier {
     _isProgrammaticSurahTransition = value;
   }
 
-  static String buildUrl(String folderName, int surahNumber, int ayahId) {
-    final surah = surahNumber.toString().padLeft(3, '0');
-    final ayah = ayahId.toString().padLeft(3, '0');
-    return 'https://everyayah.com/data/$folderName/$surah$ayah.mp3';
+  static String? buildUrl(ReciterInfo reciter, int surahNumber, int ayahId) {
+    return reciter.audioSource.buildAyahUrl(surahNumber, ayahId);
+  }
+
+  void _queuePlaybackError(String message, {bool notify = true}) {
+    _pendingPlaybackErrorMessage = message;
+    if (notify) {
+      notifyListeners();
+    }
   }
 
   /// Updates the media notification with current track info.
@@ -85,11 +97,19 @@ class AudioProvider extends ChangeNotifier {
     required int ayahId,     // ayaStart
     required int ayahEndId,  // ayaEnd  (pass == ayahId for single-ayah rows)
     required int translationIndex,
-    required String reciterFolder,
+    required ReciterInfo reciter,
     double playbackSpeed = 1.0,
-    String? reciterName,
   }) async {
+    final initialUrl = buildUrl(reciter, surahNumber, ayahId);
+    if (initialUrl == null) {
+      _queuePlaybackError(
+        '${reciter.name} audio source is not configured yet.',
+      );
+      return;
+    }
+
     final gen = ++_playGeneration;
+    _pendingPlaybackErrorMessage = null;
 
     await _playerStateSub?.cancel();
     await _indexSub?.cancel();
@@ -117,18 +137,24 @@ class AudioProvider extends ChangeNotifier {
     _updateMediaItem(
       surahNumber: surahNumber,
       ayahId: ayahId,
-      reciterName: reciterName,
+      reciterName: reciter.name,
     );
 
     // Build a playlist for every individual ayah in the range.
     final count = (ayahEndId - ayahId).abs() + 1;
     final sources = List<AudioSource>.generate(count, (i) {
-      final url = buildUrl(reciterFolder, surahNumber, ayahId + i);
+      final url = buildUrl(reciter, surahNumber, ayahId + i);
+      if (url == null) {
+        throw StateError('Audio source missing for ${reciter.name}');
+      }
       log('AudioProvider: queuing $url');
       return AudioSource.uri(Uri.parse(url));
     });
     final playlist = ConcatenatingAudioSource(children: sources);
-    log('AudioProvider: playlist has $count track(s) – surah=$surahNumber ayah=$ayahId..$ayahEndId reciter=$reciterFolder');
+    log(
+      'AudioProvider: playlist has $count track(s) – surah=$surahNumber '
+      'ayah=$ayahId..$ayahEndId reciter=${reciter.audioSource.reciterPath}',
+    );
 
     try {
       log('AudioProvider: setting audio source…');
@@ -140,13 +166,17 @@ class AudioProvider extends ChangeNotifier {
       // Subscribe AFTER setAudioSource so the BehaviorSubject replays
       // "ready" state instead of stale "completed" from the previous
       // playlist.  This prevents onAyahComplete from re-firing.
-      _setupStreamListeners(gen, ayahId, reciterName);
+      _setupStreamListeners(gen, ayahId, reciter.name);
 
       log('AudioProvider: calling play()');
       _player.play(); // intentionally NOT awaited
     } catch (e) {
       log('AudioProvider: playAyah ERROR – $e');
       if (gen != _playGeneration) return;
+      _queuePlaybackError(
+        'Unable to play ${reciter.name} right now. Try another reciter or try again later.',
+        notify: false,
+      );
       _isLoading = false;
       _isPlaying = false;
       _currentAyahId = null;
@@ -157,7 +187,7 @@ class AudioProvider extends ChangeNotifier {
     }
   }
 
-  void _setupStreamListeners(int gen, int baseAyahId, String? reciterName) {
+  void _setupStreamListeners(int gen, int baseAyahId, String reciterName) {
     // Track which individual ayah within the block is currently playing.
     _indexSub = _player.currentIndexStream.listen((idx) {
       if (gen != _playGeneration) return;
@@ -234,6 +264,10 @@ class AudioProvider extends ChangeNotifier {
     }, onError: (e) {
       log('AudioProvider: playerStateStream error – $e');
       if (gen != _playGeneration) return;
+      _queuePlaybackError(
+        'Unable to continue ${reciterName} audio. Try another reciter or try again later.',
+        notify: false,
+      );
       _isLoading = false;
       _isPlaying = false;
       _isPaused = false;
@@ -439,7 +473,7 @@ class AudioProvider extends ChangeNotifier {
       ayahId: ayahStart,
       ayahEndId: ayahEnd,
       translationIndex: translationIndex,
-      reciterFolder: playSettings.selectedReciter.folderName,
+      reciter: playSettings.selectedReciter,
       playbackSpeed: playSettings.playbackSpeed,
     );
   }

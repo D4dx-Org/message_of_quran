@@ -326,7 +326,7 @@ class _SurahScreenState extends State<SurahScreen> {
               ayahId: nextAyaStart,
               ayahEndId: nextAyaEnd,
               translationIndex: nextIndex,
-              reciterFolder: playSettings.selectedReciter.folderName,
+              reciter: playSettings.selectedReciter,
               playbackSpeed: playSettings.playbackSpeed,
             );
           } else {
@@ -557,7 +557,7 @@ class _SurahScreenState extends State<SurahScreen> {
       ayahId: ayahStart,
       ayahEndId: ayahEnd,
       translationIndex: 0,
-      reciterFolder: playSettings.selectedReciter.folderName,
+      reciter: playSettings.selectedReciter,
       playbackSpeed: playSettings.playbackSpeed,
     );
   }
@@ -796,7 +796,7 @@ class _SurahScreenState extends State<SurahScreen> {
               ayahId: ayahStart,
               ayahEndId: ayahEnd,
               translationIndex: translationIndex,
-              reciterFolder: playSettings.selectedReciter.folderName,
+              reciter: playSettings.selectedReciter,
               playbackSpeed: playSettings.playbackSpeed,
             );
           },
@@ -845,6 +845,10 @@ class _SurahScreenState extends State<SurahScreen> {
   void _onAudioProviderChanged() {
     final audio = _listeningAudioProv;
     if (audio == null) return;
+    final playbackError = audio.consumePendingPlaybackError();
+    if (playbackError != null) {
+      _showAudioPlaybackError(playbackError);
+    }
     final playingId = audio.playingAyahId;
 
     // Reset the dedup guard when audio becomes fully inactive so that
@@ -863,6 +867,17 @@ class _SurahScreenState extends State<SurahScreen> {
     // next track is still buffering.
     _lastScrolledPlayingAyahId = playingId;
     _scrollToPlayingAyah(playingId);
+  }
+
+  void _showAudioPlaybackError(String message) {
+    if (!mounted) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      messenger
+        ?..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(message)));
+    });
   }
 
   /// Scrolls so that the translation row containing [ayahId] is visible.
@@ -2339,7 +2354,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                                         ayahId: ayaStart,
                                                                                         ayahEndId: ayaEnd,
                                                                                         translationIndex: index,
-                                                                                        reciterFolder: ps.selectedReciter.folderName,
+                                                                                        reciter: ps.selectedReciter,
                                                                                         playbackSpeed: ps.playbackSpeed,
                                                                                       );
                                                                                     }
@@ -2575,9 +2590,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                       ayahId: prevStart,
                                       ayahEndId: prevEnd,
                                       translationIndex: prevIdx,
-                                      reciterFolder: playSettings
-                                          .selectedReciter
-                                          .folderName,
+                                      reciter: playSettings.selectedReciter,
                                       playbackSpeed: playSettings.playbackSpeed,
                                     );
                                   }
@@ -2627,9 +2640,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                       ayahId: nextStart,
                                       ayahEndId: nextEnd,
                                       translationIndex: nextIdx,
-                                      reciterFolder: playSettings
-                                          .selectedReciter
-                                          .folderName,
+                                      reciter: playSettings.selectedReciter,
                                       playbackSpeed: playSettings.playbackSpeed,
                                     );
                                   }

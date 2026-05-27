@@ -14,6 +14,18 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  Route<void> _buildNextRoute(VersionCheckProvider controller) {
+    final nextScreen = controller.isUpdateNeeded
+        ? const ForceUpdateScreen()
+        : const MainScreen();
+
+    return PageRouteBuilder<void>(
+      transitionDuration: Duration.zero,
+      reverseTransitionDuration: Duration.zero,
+      pageBuilder: (context, animation, secondaryAnimation) => nextScreen,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -34,11 +46,7 @@ class _SplashScreenState extends State<SplashScreen> {
       if (!mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(
-          builder: (context) => controller.isUpdateNeeded
-              ? const ForceUpdateScreen()
-              : const MainScreen(),
-        ),
+        _buildNextRoute(controller),
         (route) => false,
       );
     });
@@ -46,21 +54,24 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: AppTheme.appThemeSplash,
-      // Legacy full-image splash kept for future reference.
-      /*
-      body: SizedBox(
-        width: double.infinity,
-        height: double.infinity,
-        child: Image(
-          image: AssetImage('assets/images/splash-nw.png'),
-          fit: BoxFit.cover,
-          alignment: Alignment.center,
+    return const PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: AppTheme.appThemeSplash,
+        // Legacy full-image splash kept for future reference.
+        /*
+        body: SizedBox(
+          width: double.infinity,
+          height: double.infinity,
+          child: Image(
+            image: AssetImage('assets/images/splash-nw.png'),
+            fit: BoxFit.cover,
+            alignment: Alignment.center,
+          ),
         ),
+        */
+        body: SplashScreenLayout(),
       ),
-      */
-      body: SplashScreenLayout(),
     );
   }
 }

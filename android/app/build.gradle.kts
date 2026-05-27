@@ -1,8 +1,31 @@
+import java.util.Base64
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+}
+
+val localProperties = Properties().apply {
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.inputStream().use { load(it) }
+    }
+}
+
+val quranAsadEmailApiKey = localProperties.getProperty("quran.asad.email.api.key")?.trim()
+if (!quranAsadEmailApiKey.isNullOrEmpty()) {
+    val encodedFeedbackApiKey = Base64.getEncoder().encodeToString(
+        "QURAN_ASAD_EMAIL_API_KEY=$quranAsadEmailApiKey".toByteArray(Charsets.UTF_8)
+    )
+    val existingDartDefines = findProperty("dart-defines")?.toString()
+    extensions.extraProperties["dart-defines"] = if (existingDartDefines.isNullOrEmpty()) {
+        encodedFeedbackApiKey
+    } else {
+        "$existingDartDefines,$encodedFeedbackApiKey"
+    }
 }
 
 android {
