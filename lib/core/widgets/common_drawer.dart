@@ -109,7 +109,7 @@ class CommonDrawer extends StatelessWidget {
                         )
                       else
                         _DrawerExpansionTile(
-                          title: 'The Message of the Qur\'an',
+                          title: 'Message of the Qur\'an',
                           icon: Icons.menu_book_outlined,
                           children: [
                             _DrawerSubTile(

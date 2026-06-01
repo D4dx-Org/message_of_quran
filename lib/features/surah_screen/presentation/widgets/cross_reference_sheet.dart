@@ -478,7 +478,9 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
     final fontSettings = Provider.of<FontSizeChangerProvider>(context);
     final isMl = context.read<LanguageProvider>().isMalayalam;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final actionColor = isDark ? Colors.white : Colors.black;
+    final actionColor = isDark
+        ? const Color(0xff5B9BD5)
+        : AppTheme.appIconTheme;
     final surahTitle = _surahTitle(isMl);
 
     return ConstrainedBox(
@@ -550,7 +552,6 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
                   tooltip: 'Close',
                   onPressed: () => Navigator.of(context).pop(),
                   icon: Icons.close,
-                  color: actionColor,
                 ),
               ],
             ),

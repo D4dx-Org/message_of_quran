@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
@@ -73,6 +74,58 @@ class BaseScreenLayout extends StatelessWidget {
 
   Widget _buildBody(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final useDesktopWebShell =
+        kIsWeb && MediaQuery.sizeOf(context).width >= 1024;
+
+    if (useDesktopWebShell) {
+      return SafeArea(
+        top: false,
+        child: ResponsiveContentWrapper(
+          maxWidth: 1180,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+          child: Column(
+            children: [
+              if (headerContent != null) ...[
+                headerContent!,
+                const SizedBox(height: 20),
+              ],
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(topBorderRadius),
+                      topRight: Radius.circular(topBorderRadius),
+                    ),
+                    gradient: isDarkMode
+                        ? null
+                        : const LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Color.fromRGBO(255, 255, 255, 1),
+                              Color.fromRGBO(255, 250, 234, 1),
+                            ],
+                          ),
+                    color: isDarkMode ? const Color(0xff0c2d52) : null,
+                    boxShadow:
+                        contentCardBoxShadows ??
+                        const [
+                          BoxShadow(
+                            color: Color.fromRGBO(0, 0, 0, 0.25),
+                            blurRadius: 4,
+                            offset: Offset(0, -2),
+                          ),
+                        ],
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: child,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     return SafeArea(
       top: false,

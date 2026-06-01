@@ -1,16 +1,20 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
+import 'package:the_message_of_the_quran/core/widgets/app_bar_language_button.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
+import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
 import 'package:the_message_of_the_quran/features/about_screen/presentation/about_screen.dart';
 import 'package:the_message_of_the_quran/features/bookmark_screen/presentation/bookmark_screen.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/home_screen.dart';
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/mushaf/screens/mushaf_landing_screen.dart';
+import 'package:the_message_of_the_quran/features/search_screen/presentation/search_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
@@ -32,6 +36,8 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   static const double _navIconSize = 24;
+  static const double _webShellBreakpoint = 1024;
+  static const double _webShellMaxWidth = 1180;
 
   static const List<({String label, IconData? iconData, String? assetPath})>
   _navItems = [
@@ -134,6 +140,180 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  bool _useWebShell(BuildContext context) {
+    if (!kIsWeb) return false;
+    return MediaQuery.sizeOf(context).width >= _webShellBreakpoint;
+  }
+
+  Widget _buildWebNavButton({
+    required int index,
+    required String label,
+    required int selectedIndex,
+    required Color accentColor,
+  }) {
+    final isSelected = index == selectedIndex;
+
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      label: '$label navigation item',
+      child: InkWell(
+        onTap: () => _onItemTapped(index),
+        borderRadius: BorderRadius.circular(999),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 8),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                curve: Curves.easeOut,
+                height: 2.5,
+                width: isSelected ? 32 : 0,
+                decoration: BoxDecoration(
+                  color: accentColor,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWebShell(BuildContext context, Widget pageBody, int displayIndex) {
+    final navLabels = const ['Quran', 'Bookmarks', 'Mushaf', 'Settings', 'About'];
+    final theme = Theme.of(context);
+    final shellColor = AppTheme.appThemePrimary;
+    final accentColor = AppTheme.appBarForegroundColor;
+    final outlineColor = Colors.black.withValues(alpha: 0.10);
+    final actionSurface = accentColor.withValues(alpha: 0.10);
+
+    return PopScope(
+      canPop: displayIndex == 0,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _onItemTapped(0);
+      },
+      child: Scaffold(
+        key: _scaffoldKey,
+        backgroundColor: theme.scaffoldBackgroundColor,
+        drawer: const CommonDrawer(),
+        body: Column(
+          children: [
+            SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+                child: ResponsiveContentWrapper(
+                  maxWidth: _webShellMaxWidth,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: shellColor,
+                      borderRadius: BorderRadius.circular(26),
+                      boxShadow: [
+                        BoxShadow(
+                          color: outlineColor,
+                          blurRadius: 22,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 16,
+                      ),
+                      child: Row(
+                        children: [
+                          Image.asset(
+                            'assets/images/Group-logo.png',
+                            height: 40,
+                            fit: BoxFit.contain,
+                            semanticLabel: 'Quran Asad Malayalam logo',
+                          ),
+                          const SizedBox(width: 36),
+                          Expanded(
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: List.generate(
+                                  navLabels.length,
+                                  (index) => _buildWebNavButton(
+                                    index: index,
+                                    label: navLabels[index],
+                                    selectedIndex: displayIndex,
+                                    accentColor: accentColor,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: actionSurface,
+                              borderRadius: BorderRadius.circular(999),
+                              border: Border.all(
+                                color: accentColor.withValues(alpha: 0.18),
+                              ),
+                            ),
+                            child: IconButton(
+                              tooltip: 'Search',
+                              onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => SearchScreen(),
+                                ),
+                              ),
+                              icon: const Icon(
+                                Icons.search,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          AppBarLanguageButton(),
+                          const SizedBox(width: 12),
+                          Builder(
+                            builder: (context) => DecoratedBox(
+                              decoration: BoxDecoration(
+                                color: actionSurface,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: accentColor.withValues(alpha: 0.18),
+                                ),
+                              ),
+                              child: IconButton(
+                                tooltip: 'Open menu',
+                                onPressed: () => Scaffold.of(context).openDrawer(),
+                                icon: const Icon(Icons.menu, color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Expanded(child: pageBody),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<HomeProvider>(context);
@@ -154,6 +334,10 @@ class _MainScreenState extends State<MainScreen> {
       final navCornerRadius = 28.0 * scale;
 
     final pageBody = IndexedStack(index: displayIndex, children: _pages);
+
+      if (_useWebShell(context)) {
+        return _buildWebShell(context, pageBody, displayIndex);
+      }
 
     final appBar = displayIndex == 0
         ? CommonAppBar.homeAppBar(context)

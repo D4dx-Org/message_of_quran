@@ -46,6 +46,10 @@ class CommonAppBar {
   /// Primary-themed app bar for the home screen matching the current brand.
   static PreferredSizeWidget homeAppBar(BuildContext ctx) {
     final scale = ResponsiveHelper.scaleFactor(ctx);
+    final ornamentTop = -48.0 * scale;
+    final ornamentOverflow = 75.0 * scale;
+    final ornamentWidth = 137.0 * scale;
+    final ornamentHeight = 146.0 * scale;
     return AppBar(
       automaticallyImplyLeading: false,
       backgroundColor: AppTheme.appThemePrimary,
@@ -54,13 +58,13 @@ class CommonAppBar {
       flexibleSpace: Stack(
         clipBehavior: Clip.none,
         children: [
-          Positioned(
-            top: -48,
-            left: 298,
+          PositionedDirectional(
+            top: ornamentTop,
+            end: -ornamentOverflow,
             child: Image.asset(
               'assets/images/home_side_image.png',
-              width: 137,
-              height: 146,
+              width: ornamentWidth,
+              height: ornamentHeight,
               fit: BoxFit.contain,
               color: AppTheme.appThemeRawChips,
               colorBlendMode: BlendMode.srcIn,

@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
+import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/core/widgets/d4dx_branding_footer.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_app_block.dart';
@@ -17,50 +19,128 @@ import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_pr
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
+  bool _useDesktopWebLayout(BuildContext context) {
+    return kIsWeb && MediaQuery.sizeOf(context).width >= 1024;
+  }
+
+  Widget _buildSectionGroup(
+    BuildContext context, {
+    required String label,
+    required Widget child,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionLabel(label),
+        const SizedBox(height: 8),
+        child,
+      ],
+    );
+  }
+
+  Widget _buildDesktopBody(BuildContext context) {
+    final hPad = ResponsiveHelper.horizontalPadding(context);
+
+    return ListView(
+      padding: EdgeInsets.fromLTRB(hPad, 24, hPad, 24),
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSectionGroup(
+                    context,
+                    label: 'Theme & Language',
+                    child: const _ThemeLanguageCard(),
+                  ),
+                  const SizedBox(height: 24),
+                  _buildSectionGroup(
+                    context,
+                    label: 'Font',
+                    child: const _FontSettingsCard(),
+                  ),
+                  const SizedBox(height: 24),
+                  _buildSectionGroup(
+                    context,
+                    label: 'Layout',
+                    child: const SettingsScreenLayoutBlock(),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 24),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSectionGroup(
+                    context,
+                    label: 'Tajweed',
+                    child: const SettingsScreenTajweedBlock(),
+                  ),
+                  const SizedBox(height: 24),
+                  _buildSectionGroup(
+                    context,
+                    label: 'Audio',
+                    child: const SettingsScreenAudioBlock(),
+                  ),
+                  const SizedBox(height: 24),
+                  _buildSectionGroup(
+                    context,
+                    label: 'General',
+                    child: const SettingsScreenAppBlock(),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 24),
+        const D4dxBrandingFooter(),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final useDesktopWebLayout = _useDesktopWebLayout(context);
+
     return BaseScreenLayout(
       contentCardBoxShadows: const [],
-      child: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        children: const [
-          // ── Theme & Language ──────────────────────────────────
-          _SectionLabel('Theme & Language'),
-          SizedBox(height: 8),
-          _ThemeLanguageCard(),
-          SizedBox(height: 24),
-
-          // ── Font Settings ────────────────────────────────────
-          _SectionLabel('Font'),
-          SizedBox(height: 8),
-          _FontSettingsCard(),
-          SizedBox(height: 24),
-
-          // ── Layout ───────────────────────────────────────────
-          _SectionLabel('Layout'),
-          SizedBox(height: 8),
-          SettingsScreenLayoutBlock(),
-          SizedBox(height: 24),
-
-          // ── Tajweed ──────────────────────────────────────────
-          _SectionLabel('Tajweed'),
-          SizedBox(height: 8),
-          SettingsScreenTajweedBlock(),
-          SizedBox(height: 24),
-
-          // ── Audio ──────────────────────────────────────────
-          _SectionLabel('Audio'),
-          SizedBox(height: 8),
-          SettingsScreenAudioBlock(),
-          SizedBox(height: 24),
-
-          // ── General ────────────────────────────────────────
-          _SectionLabel('General'),
-          SizedBox(height: 8),
-          SettingsScreenAppBlock(),
-          D4dxBrandingFooter(),
-        ],
-      ),
+      child: useDesktopWebLayout
+          ? _buildDesktopBody(context)
+          : ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              children: const [
+                _SectionLabel('Theme & Language'),
+                SizedBox(height: 8),
+                _ThemeLanguageCard(),
+                SizedBox(height: 24),
+                _SectionLabel('Font'),
+                SizedBox(height: 8),
+                _FontSettingsCard(),
+                SizedBox(height: 24),
+                _SectionLabel('Layout'),
+                SizedBox(height: 8),
+                SettingsScreenLayoutBlock(),
+                SizedBox(height: 24),
+                _SectionLabel('Tajweed'),
+                SizedBox(height: 8),
+                SettingsScreenTajweedBlock(),
+                SizedBox(height: 24),
+                _SectionLabel('Audio'),
+                SizedBox(height: 8),
+                SettingsScreenAudioBlock(),
+                SizedBox(height: 24),
+                _SectionLabel('General'),
+                SizedBox(height: 8),
+                SettingsScreenAppBlock(),
+                D4dxBrandingFooter(),
+              ],
+            ),
     );
   }
 }

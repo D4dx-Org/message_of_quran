@@ -9,6 +9,7 @@ import 'package:the_message_of_the_quran/core/services/audio_handler.dart';
 import 'package:the_message_of_the_quran/core/services/database/database_helper.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
+import 'package:the_message_of_the_quran/features/main_screen/presentation/main_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
 import 'package:the_message_of_the_quran/features/splash_screen/presentation/splash_screen.dart';
 import 'package:the_message_of_the_quran/features/splash_screen/presentation/widgets/splash_screen_layout.dart';
@@ -205,6 +206,21 @@ class _BootstrapLoadingApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (kIsWeb) {
+      return const MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          body: Center(
+            child: SizedBox(
+              width: 28,
+              height: 28,
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        ),
+      );
+    }
+
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(body: SplashScreenLayout()),
@@ -361,7 +377,7 @@ class MyApp extends StatelessWidget {
             theme: value.lightTheme,
             darkTheme: value.darkTheme,
             themeMode: value.themeMode,
-            home: const SplashScreen(),
+            home: kIsWeb ? MainScreen() : SplashScreen(),
             builder: (context, child) {
               var data = MediaQuery.of(context);
               final view = View.of(context);
