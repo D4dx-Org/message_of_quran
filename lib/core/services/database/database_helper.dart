@@ -63,8 +63,7 @@ class DatabaseHelper {
     final storedAsadVersion =
         prefs.getInt(DbConstants.quranAsadDbVersionKey) ?? 0;
     if (storedAsadVersion < DbConstants.quranAsadDbVersion) {
-      final databasesPath2 = await getDatabasesPath();
-      final asadPath = join(databasesPath2, DbConstants.quranAsadDbName);
+      final asadPath = await _databasePathFor(DbConstants.quranAsadDbName);
       // Delete the old database and its journal files
       await db_io.deleteFileIfExists(asadPath);
       await db_io.deleteWalShmFiles(asadPath);
@@ -83,9 +82,9 @@ class DatabaseHelper {
     final storedMalayalamVersion =
         prefs.getInt(DbConstants.quranAsadMalayalamDbVersionKey) ?? 0;
     if (storedMalayalamVersion < DbConstants.quranAsadMalayalamDbVersion) {
-      final databasesPathMl = await getDatabasesPath();
-      final mlPath =
-          join(databasesPathMl, DbConstants.quranAsadMalayalamDbName);
+      final mlPath = await _databasePathFor(
+        DbConstants.quranAsadMalayalamDbName,
+      );
       await db_io.deleteFileIfExists(mlPath);
       await db_io.deleteWalShmFiles(mlPath);
     }
@@ -99,8 +98,7 @@ class DatabaseHelper {
       DbConstants.quranAsadMalayalamDbVersion,
     );
 
-    final databasesPath = await getDatabasesPath();
-    final userDbPath = join(databasesPath, DbConstants.userDbName);
+    final userDbPath = await _databasePathFor(DbConstants.userDbName);
     userDatabase = await openDatabase(
       userDbPath,
       version: 5,
@@ -177,8 +175,7 @@ class DatabaseHelper {
     required String name,
     required String dbName,
   }) async {
-    var databasesPath = await getDatabasesPath();
-    var path = join(databasesPath, name);
+    final path = await _databasePathFor(name);
 
     Future<void> copyFromAsset() async {
       final data = await rootBundle.load(join(DbConstants.dbLocation, dbName));
@@ -202,11 +199,20 @@ class DatabaseHelper {
     }
 
     try {
-      return await openDatabase(path, readOnly: true);
+      return await openDatabase(path, readOnly: !kIsWeb);
     } catch (e) {
       debugPrint("database helper : Re-copying asset due to open failure: $e");
       await copyFromAsset();
-      return await openDatabase(path, readOnly: true);
+      return await openDatabase(path, readOnly: !kIsWeb);
     }
+  }
+
+  static Future<String> _databasePathFor(String name) async {
+    if (kIsWeb) {
+      return name;
+    }
+
+    final databasesPath = await getDatabasesPath();
+    return join(databasesPath, name);
   }
 }

@@ -47,6 +47,33 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  Future<void> pumpCrossReferenceSheet(
+    WidgetTester tester, {
+    required int surahNumber,
+    required int ayahNumber,
+    int? noteNumber,
+  }) async {
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => LanguageProvider()),
+          ChangeNotifierProvider(create: (_) => FontSizeChangerProvider()),
+        ],
+        child: MaterialApp(
+          home: Scaffold(
+            body: CrossReferenceSheet(
+              surahNumber: surahNumber,
+              ayahNumber: ayahNumber,
+              noteNumber: noteNumber,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+  }
+
   Future<void> pumpInterpretationHeader(
     WidgetTester tester, {
     required InterpretationSheetSurahHeaderText surahHeader,
@@ -307,6 +334,51 @@ void main() {
     expect(title.style?.height, 1.0);
   });
 
+  testWidgets('ayah reference sheet uses compact top action controls', (
+    tester,
+  ) async {
+    await pumpCrossReferenceSheet(
+      tester,
+      surahNumber: 2,
+      ayahNumber: 255,
+    );
+
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is Padding &&
+            widget.padding == const EdgeInsets.only(top: 8, bottom: 2),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is Padding &&
+            widget.padding == const EdgeInsets.fromLTRB(20, 0, 12, 8),
+      ),
+      findsOneWidget,
+    );
+
+    final actionButtons = tester.widgetList<IconButton>(find.byType(IconButton));
+    expect(actionButtons, hasLength(3));
+    for (final button in actionButtons) {
+      expect(button.padding, EdgeInsets.zero);
+      expect(
+        button.constraints,
+        const BoxConstraints.tightFor(width: 24, height: 24),
+      );
+      expect(button.visualDensity, VisualDensity.compact);
+      expect(button.splashRadius, 18);
+    }
+
+    final upwardOffsets = find.byWidgetPredicate(
+      (widget) =>
+          widget is Transform && widget.transform.storage[13] == -10.0,
+    );
+    expect(upwardOffsets, findsNWidgets(3));
+  });
+
   testWidgets('note-only reference opens explanation sheet', (tester) async {
     await pumpReferenceHost(
       tester,
@@ -324,6 +396,22 @@ void main() {
     expect(find.text('Surah 2 • Interpretation 247'), findsOneWidget);
     expect(find.text('Verse Range 1'), findsNothing);
     expect(find.text('No explanation found'), findsOneWidget);
+
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is Padding &&
+            widget.padding == const EdgeInsets.only(top: 8, bottom: 2),
+      ),
+      findsOneWidget,
+    );
+
+    final iconButton = tester.widget<IconButton>(find.byType(IconButton));
+    expect(iconButton.padding, EdgeInsets.zero);
+    expect(
+      iconButton.constraints,
+      const BoxConstraints.tightFor(width: 24, height: 24),
+    );
   });
 
   testWidgets('ayah reference opens verse sheet', (tester) async {

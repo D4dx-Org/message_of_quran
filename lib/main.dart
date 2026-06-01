@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
@@ -9,6 +11,7 @@ import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
 import 'package:the_message_of_the_quran/features/splash_screen/presentation/splash_screen.dart';
+import 'package:the_message_of_the_quran/features/splash_screen/presentation/widgets/splash_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/splash_screen/providers/version_check_provider.dart';
 import 'package:the_message_of_the_quran/features/about_screen/provider/about_providers.dart';
 import 'package:the_message_of_the_quran/features/contact_us_screen/presentation/provider/contact_provider.dart';
@@ -46,7 +49,7 @@ String? pendingNotificationRoute;
 const String ayahOfTheDayNotificationRoute = 'ayah_of_the_day';
 const String surahAlKahfNotificationRoute = 'surah_18';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Show a simple error widget in release mode instead of the red error screen.
@@ -62,9 +65,30 @@ void main() async {
     debugPrint('FlutterError: ${details.exceptionAsString()}');
   };
 
-  await DatabaseHelper.initializeServices();
+  // Catch async errors that escape the Flutter framework.
+  PlatformDispatcher.instance.onError = (error, stack) {
+    debugPrint('Uncaught async error: $error\n$stack');
+    return true;
+  };
 
-  // Initialize audio service for background playback & media notifications
+  runApp(const AppBootstrap());
+}
+
+Future<void> _initializeAppServices() async {
+  debugPrint('Bootstrap: initializing database services');
+  await DatabaseHelper.initializeServices().timeout(
+    const Duration(seconds: 20),
+    onTimeout: () => throw TimeoutException(
+      'Database initialization timed out.',
+    ),
+  );
+
+  debugPrint('Bootstrap: initializing audio services');
+  if (kIsWeb) {
+    audioHandler ??= QuranAudioHandler();
+    return;
+  }
+
   audioHandler = await AudioService.init(
     builder: () => QuranAudioHandler(),
     config: const AudioServiceConfig(
@@ -74,70 +98,170 @@ void main() async {
       androidNotificationOngoing: true,
       androidStopForegroundOnPause: true,
     ),
+  ).timeout(
+    const Duration(seconds: 10),
+    onTimeout: () => throw TimeoutException(
+      'Audio service initialization timed out.',
+    ),
   );
 
-  // Mobile-only services: push notifications, local notifications, downloads
-  if (!kIsWeb) {
-    await OneSignalService.initialize();
-    await MushafDownloadManager.instance.syncWithPersistedState();
+  debugPrint('Bootstrap: initializing mobile-only services');
+  await OneSignalService.initialize();
+  await MushafDownloadManager.instance.syncWithPersistedState();
 
-    await AwesomeNotifications().initialize(
-      null, // use default app icon
-      [
-        NotificationChannel(
-          channelKey: 'mushaf_download',
-          channelName: 'Mushaf Download',
-          channelDescription: 'Shows Mushaf font download progress',
-          importance: NotificationImportance.Low,
-          enableVibration: false,
-          playSound: false,
-          onlyAlertOnce: true,
-        ),
-        NotificationChannel(
-          channelKey: 'daily_reminder',
-          channelName: 'Daily Reminder',
-          channelDescription: 'Daily Quran reading reminders',
-          importance: NotificationImportance.High,
-          enableVibration: true,
-          playSound: true,
-        ),
-        NotificationChannel(
-          channelKey: 'progression_reminder',
-          channelName: 'Progression Reminder',
-          channelDescription: 'Quran progression learning reminders',
-          importance: NotificationImportance.High,
-          enableVibration: true,
-          playSound: true,
-        ),
-      ],
-      debug: false,
-    );
+  await AwesomeNotifications().initialize(
+    null,
+    [
+      NotificationChannel(
+        channelKey: 'mushaf_download',
+        channelName: 'Mushaf Download',
+        channelDescription: 'Shows Mushaf font download progress',
+        importance: NotificationImportance.Low,
+        enableVibration: false,
+        playSound: false,
+        onlyAlertOnce: true,
+      ),
+      NotificationChannel(
+        channelKey: 'daily_reminder',
+        channelName: 'Daily Reminder',
+        channelDescription: 'Daily Quran reading reminders',
+        importance: NotificationImportance.High,
+        enableVibration: true,
+        playSound: true,
+      ),
+      NotificationChannel(
+        channelKey: 'progression_reminder',
+        channelName: 'Progression Reminder',
+        channelDescription: 'Quran progression learning reminders',
+        importance: NotificationImportance.High,
+        enableVibration: true,
+        playSound: true,
+      ),
+    ],
+    debug: false,
+  );
 
-    // Wire up notification tap listeners
-    AwesomeNotifications().setListeners(
-      onActionReceivedMethod: _onNotificationTap,
-      onNotificationCreatedMethod:
-          NotificationController.onNotificationCreatedMethod,
-      onNotificationDisplayedMethod:
-          NotificationController.onNotificationDisplayedMethod,
-      onDismissActionReceivedMethod:
-          NotificationController.onDismissActionReceivedMethod,
-    );
+  AwesomeNotifications().setListeners(
+    onActionReceivedMethod: _onNotificationTap,
+    onNotificationCreatedMethod:
+        NotificationController.onNotificationCreatedMethod,
+    onNotificationDisplayedMethod:
+        NotificationController.onNotificationDisplayedMethod,
+    onDismissActionReceivedMethod:
+        NotificationController.onDismissActionReceivedMethod,
+  );
 
-    final initialAction = await AwesomeNotifications()
-        .getInitialNotificationAction(removeFromActionEvents: false);
-    if (initialAction != null) {
-      await _onNotificationTap(initialAction);
-    }
+  final initialAction = await AwesomeNotifications()
+      .getInitialNotificationAction(removeFromActionEvents: false);
+  if (initialAction != null) {
+    await _onNotificationTap(initialAction);
+  }
+}
+
+class AppBootstrap extends StatefulWidget {
+  const AppBootstrap({super.key});
+
+  @override
+  State<AppBootstrap> createState() => _AppBootstrapState();
+}
+
+class _AppBootstrapState extends State<AppBootstrap> {
+  late Future<void> _bootstrapFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _bootstrapFuture = _initializeAppServices();
   }
 
-  // Catch async errors that escape the Flutter framework.
-  PlatformDispatcher.instance.onError = (error, stack) {
-    debugPrint('Uncaught async error: $error\n$stack');
-    return true;
-  };
+  void _retry() {
+    setState(() {
+      _bootstrapFuture = _initializeAppServices();
+    });
+  }
 
-  runApp(const MyApp());
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<void>(
+      future: _bootstrapFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const _BootstrapLoadingApp();
+        }
+        if (snapshot.hasError) {
+          return _BootstrapErrorApp(
+            error: snapshot.error,
+            onRetry: _retry,
+          );
+        }
+        return const MyApp();
+      },
+    );
+  }
+}
+
+class _BootstrapLoadingApp extends StatelessWidget {
+  const _BootstrapLoadingApp();
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(body: SplashScreenLayout()),
+    );
+  }
+}
+
+class _BootstrapErrorApp extends StatelessWidget {
+  const _BootstrapErrorApp({required this.error, required this.onRetry});
+
+  final Object? error;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final details = error?.toString() ?? 'Unknown startup error';
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: SafeArea(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.error_outline, size: 48),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'The app could not finish starting.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      details,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    FilledButton(
+                      onPressed: onRetry,
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 @pragma("vm:entry-point")
