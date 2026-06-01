@@ -1,6 +1,7 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:the_message_of_the_quran/core/utils/platform_helper.dart';
 
 class ReminderProvider extends ChangeNotifier {
   static const _enabledKey = 'daily_reminder_enabled';
@@ -16,6 +17,7 @@ class ReminderProvider extends ChangeNotifier {
 
   bool get isEnabled => _isEnabled;
   TimeOfDay get time => _time;
+  bool get isSupported => !PlatformHelper.isWeb;
 
   ReminderProvider() {
     WidgetsBinding.instance.addPostFrameCallback((_) => _load());
@@ -28,6 +30,15 @@ class ReminderProvider extends ChangeNotifier {
       hour: prefs.getInt(_hourKey) ?? 20,
       minute: prefs.getInt(_minuteKey) ?? 0,
     );
+    if (!isSupported) {
+      if (_isEnabled) {
+        _isEnabled = false;
+        await prefs.setBool(_enabledKey, false);
+      }
+      notifyListeners();
+      return;
+    }
+
     final notificationsAllowed =
         await AwesomeNotifications().isNotificationAllowed();
     if (notificationsAllowed) {
@@ -46,6 +57,9 @@ class ReminderProvider extends ChangeNotifier {
   /// Returns `true` if the toggle was successful, `false` if permission was
   /// denied and the reminder could not be enabled.
   Future<bool> toggleReminder(bool enabled) async {
+    if (!isSupported) {
+      return false;
+    }
     if (_isEnabled == enabled) return true;
 
     if (enabled) {

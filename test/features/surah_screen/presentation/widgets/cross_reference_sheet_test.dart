@@ -55,6 +55,7 @@ void main() {
     VoidCallback? onClose,
     EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 20),
     EdgeInsetsGeometry closeButtonPadding = const EdgeInsets.only(right: 20),
+    Offset closeButtonOffset = Offset.zero,
     double titleSpacing = 2,
     bool compactCloseButton = false,
   }) async {
@@ -68,6 +69,7 @@ void main() {
             onClose: onClose,
             padding: padding,
             closeButtonPadding: closeButtonPadding,
+            closeButtonOffset: closeButtonOffset,
             titleSpacing: titleSpacing,
             compactCloseButton: compactCloseButton,
           ),
@@ -238,6 +240,71 @@ void main() {
     final closeTop = tester.getTopLeft(find.byType(IconButton)).dy;
     final titleTop = tester.getTopLeft(find.text('Al-Fatihah')).dy;
     expect(closeTop, lessThanOrEqualTo(titleTop));
+  });
+
+  testWidgets('interpretation header can nudge close button upward', (
+    tester,
+  ) async {
+    await pumpInterpretationHeader(
+      tester,
+      surahHeader: const InterpretationSheetSurahHeaderText(
+        title: 'Al-Fatihah',
+        subtitle: 'The Opening',
+      ),
+      metadataLabel: 'Surah 1 • Interpretation 1 • Verse 1',
+      onClose: () {},
+      padding: const EdgeInsets.fromLTRB(20, 0, 12, 8),
+      compactCloseButton: true,
+      titleSpacing: 0,
+    );
+
+    final defaultCloseTop = tester.getTopLeft(find.byType(IconButton)).dy;
+
+    await pumpInterpretationHeader(
+      tester,
+      surahHeader: const InterpretationSheetSurahHeaderText(
+        title: 'Al-Fatihah',
+        subtitle: 'The Opening',
+      ),
+      metadataLabel: 'Surah 1 • Interpretation 1 • Verse 1',
+      onClose: () {},
+      padding: const EdgeInsets.fromLTRB(20, 0, 12, 8),
+      closeButtonOffset: const Offset(0, -4),
+      compactCloseButton: true,
+      titleSpacing: 0,
+    );
+
+    final adjustedCloseTop = tester.getTopLeft(find.byType(IconButton)).dy;
+    final titleTop = tester.getTopLeft(find.text('Al-Fatihah')).dy;
+    final iconButton = tester.widget<IconButton>(find.byType(IconButton));
+
+    expect(adjustedCloseTop, moreOrLessEquals(defaultCloseTop - 4, epsilon: 0.1));
+    expect(adjustedCloseTop, lessThanOrEqualTo(titleTop));
+    expect(
+      iconButton.constraints,
+      const BoxConstraints.tightFor(width: 24, height: 24),
+    );
+  });
+
+  testWidgets('interpretation header title uses compact line height', (
+    tester,
+  ) async {
+    await pumpInterpretationHeader(
+      tester,
+      surahHeader: const InterpretationSheetSurahHeaderText(
+        title: 'Al-Fatihah',
+        subtitle: 'The Opening',
+      ),
+      metadataLabel: 'Surah 1 • Interpretation 1 • Verse 1',
+      onClose: () {},
+      padding: const EdgeInsets.fromLTRB(20, 0, 12, 8),
+      closeButtonOffset: const Offset(0, -4),
+      compactCloseButton: true,
+      titleSpacing: 0,
+    );
+
+    final title = tester.widget<Text>(find.text('Al-Fatihah'));
+    expect(title.style?.height, 1.0);
   });
 
   testWidgets('note-only reference opens explanation sheet', (tester) async {

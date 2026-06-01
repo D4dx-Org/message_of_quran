@@ -1,69 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
 
 enum PlayMode { singleBlock, continuous }
 
-enum ReciterAudioSourceKind { everyAyah, customPerAyah }
-
-class ReciterAudioSource {
-  final ReciterAudioSourceKind kind;
-  final String reciterPath;
-  final String? baseUrl;
-
-  const ReciterAudioSource.everyAyah(this.reciterPath)
-    : kind = ReciterAudioSourceKind.everyAyah,
-      baseUrl = null;
-
-  const ReciterAudioSource.customPerAyah({
-    required this.reciterPath,
-    required this.baseUrl,
-  }) : kind = ReciterAudioSourceKind.customPerAyah;
-
-  bool get isConfigured {
-    if (kind == ReciterAudioSourceKind.everyAyah) {
-      return true;
-    }
-    return _normalizedBaseUrl(baseUrl).isNotEmpty;
-  }
-
-  String? buildAyahUrl(int surahNumber, int ayahId) {
-    final resolvedBaseUrl = switch (kind) {
-      ReciterAudioSourceKind.everyAyah => ApiConstants.everyAyahAudioBaseUrl,
-      ReciterAudioSourceKind.customPerAyah => _normalizedBaseUrl(baseUrl),
-    };
-    if (resolvedBaseUrl.isEmpty) {
-      return null;
-    }
-
-    final surah = surahNumber.toString().padLeft(3, '0');
-    final ayah = ayahId.toString().padLeft(3, '0');
-    return '$resolvedBaseUrl/$reciterPath/$surah$ayah.mp3';
-  }
-
-  static String _normalizedBaseUrl(String? value) {
-    final trimmed = value?.trim() ?? '';
-    if (trimmed.endsWith('/')) {
-      return trimmed.substring(0, trimmed.length - 1);
-    }
-    return trimmed;
-  }
-}
-
 class ReciterInfo {
   final String name;
-  final ReciterAudioSource audioSource;
-
-  const ReciterInfo({required this.name, required this.audioSource});
-
-  String get folderName => audioSource.reciterPath;
+  final String folderName;
+  const ReciterInfo({required this.name, required this.folderName});
 }
 
 class PlaySettingsProvider extends ChangeNotifier {
   // v2 key — old 'play_mode' stored singleBlock(0) as default, so a fresh
   // key ensures all users start with continuous until they explicitly change it.
   static const _playModeKey = 'play_mode_v2';
-  static const _reciterKey = 'reciter_index';
+  static const _reciterKey = 'reciter_index_v2';
+  static const _legacyReciterKey = 'reciter_index';
+  static const _removedReciterLegacyIndex = 3;
   static const _showTranslationKey = 'show_translation';
   static const _speedKey = 'playback_speed';
 
@@ -72,61 +24,33 @@ class PlaySettingsProvider extends ChangeNotifier {
   static const List<ReciterInfo> reciters = [
     ReciterInfo(
         name: 'Abdul Basit Abdul Samad (Mujawwad)',
-        audioSource: ReciterAudioSource.everyAyah(
-          'Abdul_Basit_Mujawwad_128kbps',
-        )),
+        folderName: 'Abdul_Basit_Mujawwad_128kbps'),
     ReciterInfo(
         name: 'Abdurrahmaan As-Sudais',
-        audioSource: ReciterAudioSource.everyAyah(
-          'Abdurrahmaan_As-Sudais_192kbps',
-        )),
+        folderName: 'Abdurrahmaan_As-Sudais_192kbps'),
     ReciterInfo(
         name: "Sa'ud Ash-Shuraym",
-        audioSource: ReciterAudioSource.everyAyah(
-          'Saood_ash-Shuraym_128kbps',
-        )),
+        folderName: 'Saood_ash-Shuraym_128kbps'),
     ReciterInfo(
-        name: 'Abdulrahman Al-Ossi',
-        audioSource: ReciterAudioSource.customPerAyah(
-          reciterPath: 'Abdulrahman_Al-Ossi_128kbps',
-          baseUrl: ApiConstants.abdulrahmanAlOssiAudioBaseUrl,
-        )),
-    ReciterInfo(
-        name: 'Abdullah Basfar',
-        audioSource: ReciterAudioSource.everyAyah('Abdullah_Basfar_192kbps')),
+        name: 'Abdullah Basfar', folderName: 'Abdullah_Basfar_192kbps'),
     ReciterInfo(
         name: 'Ahmed ibn Ali Al-Ajamy',
-        audioSource: ReciterAudioSource.everyAyah(
-          'Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net',
-        )),
+        folderName: 'Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net'),
+    ReciterInfo(name: 'Ali Jaber', folderName: 'Ali_Jaber_64kbps'),
+    ReciterInfo(name: 'Fares Abbad', folderName: 'Fares_Abbad_64kbps'),
     ReciterInfo(
-        name: 'Ali Jaber',
-        audioSource: ReciterAudioSource.everyAyah('Ali_Jaber_64kbps')),
+        name: 'Muhsin Al Qasim', folderName: 'Muhsin_Al_Qasim_192kbps'),
     ReciterInfo(
-        name: 'Fares Abbad',
-        audioSource: ReciterAudioSource.everyAyah('Fares_Abbad_64kbps')),
-    ReciterInfo(
-        name: 'Muhsin Al Qasim',
-        audioSource: ReciterAudioSource.everyAyah('Muhsin_Al_Qasim_192kbps')),
-    ReciterInfo(
-        name: 'Nasser Alqatami',
-        audioSource: ReciterAudioSource.everyAyah('Nasser_Alqatami_128kbps')),
+        name: 'Nasser Alqatami', folderName: 'Nasser_Alqatami_128kbps'),
     ReciterInfo(
         name: 'Abdullah Awwaad Al-Juhayni',
-        audioSource: ReciterAudioSource.everyAyah(
-          'Abdullaah_3awwaad_Al-Juhaynee_128kbps',
-        )),
+        folderName: 'Abdullaah_3awwaad_Al-Juhaynee_128kbps'),
     ReciterInfo(
-        name: 'Mahmoud Khalil Al-Husary',
-        audioSource: ReciterAudioSource.everyAyah('Husary_128kbps')),
+        name: 'Mahmoud Khalil Al-Husary', folderName: 'Husary_128kbps'),
     ReciterInfo(
         name: 'Muhammad Siddiq Al-Minshawi (Mujawwad)',
-        audioSource: ReciterAudioSource.everyAyah(
-          'Minshawy_Mujawwad_192kbps',
-        )),
-    ReciterInfo(
-        name: 'Saad Al-Ghamdi',
-        audioSource: ReciterAudioSource.everyAyah('Ghamadi_40kbps')),
+        folderName: 'Minshawy_Mujawwad_192kbps'),
+    ReciterInfo(name: 'Saad Al-Ghamdi', folderName: 'Ghamadi_40kbps'),
   ];
 
   PlayMode _playMode = PlayMode.continuous;
@@ -147,14 +71,32 @@ class PlaySettingsProvider extends ChangeNotifier {
     WidgetsBinding.instance.addPostFrameCallback((_) => _load());
   }
 
+  static int _migrateLegacyReciterIndex(int index) {
+    if (index < 0) {
+      return 0;
+    }
+    if (index == _removedReciterLegacyIndex) {
+      return 0;
+    }
+    if (index > _removedReciterLegacyIndex) {
+      return index - 1;
+    }
+    return index;
+  }
+
   Future<void> _load() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final modeIndex = prefs.getInt(_playModeKey) ?? PlayMode.continuous.index;
       _playMode =
           PlayMode.values[modeIndex.clamp(0, PlayMode.values.length - 1)];
-      _selectedReciterIndex =
-          (prefs.getInt(_reciterKey) ?? 0).clamp(0, reciters.length - 1);
+      final savedReciterIndex = prefs.containsKey(_reciterKey)
+          ? prefs.getInt(_reciterKey) ?? 0
+          : _migrateLegacyReciterIndex(prefs.getInt(_legacyReciterKey) ?? 0);
+      _selectedReciterIndex = savedReciterIndex.clamp(0, reciters.length - 1);
+      if (!prefs.containsKey(_reciterKey)) {
+        await prefs.setInt(_reciterKey, _selectedReciterIndex);
+      }
       _showTranslation = prefs.getBool(_showTranslationKey) ?? true;
       final savedSpeed = prefs.getDouble(_speedKey) ?? 1.0;
       _playbackSpeed = speedPresets.contains(savedSpeed) ? savedSpeed : 1.0;

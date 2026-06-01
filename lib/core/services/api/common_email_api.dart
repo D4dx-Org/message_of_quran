@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
@@ -63,7 +62,7 @@ class CommonEmailApi {
       throw const CommonEmailApiException(
         'The request timed out. Please try again.',
       );
-    } on SocketException {
+    } on http.ClientException {
       throw const CommonEmailApiException(
         'No internet connection. Please try again.',
       );

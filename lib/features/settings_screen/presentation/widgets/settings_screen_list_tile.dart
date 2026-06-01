@@ -7,10 +7,12 @@ class SettingsScreenListTile extends StatelessWidget {
     super.key,
     required this.title,
     required this.icon,
+    this.subtitle,
     this.trailing,
   });
   final String title;
   final IconData icon;
+  final String? subtitle;
   final Widget? trailing;
   @override
   Widget build(BuildContext context) {
@@ -24,6 +26,12 @@ class SettingsScreenListTile extends StatelessWidget {
         title,
         style: AppTextTheme.drawerStyle.copyWith(fontWeight: FontWeight.w600),
       ),
+      subtitle: subtitle == null
+          ? null
+          : Text(
+              subtitle!,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
       trailing: trailing,
     );
   }

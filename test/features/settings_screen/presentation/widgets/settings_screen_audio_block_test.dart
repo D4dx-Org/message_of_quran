@@ -8,8 +8,11 @@ import 'package:the_message_of_the_quran/features/settings_screen/providers/play
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  Future<void> pumpAudioBlock(WidgetTester tester) async {
-    SharedPreferences.setMockInitialValues(const {'reciter_index': 0});
+  Future<void> pumpAudioBlock(
+    WidgetTester tester, {
+    Map<String, Object> initialValues = const {'reciter_index_v2': 0},
+  }) async {
+    SharedPreferences.setMockInitialValues(initialValues);
 
     await tester.pumpWidget(
       ChangeNotifierProvider(
@@ -66,6 +69,20 @@ void main() {
 
     final context = tester.element(find.byType(SettingsScreenAudioBlock));
     expect(context.read<PlaySettingsProvider>().selectedReciter.name, targetReciter);
+  });
+
+  testWidgets('legacy saved reciter index keeps the same reciter after removal',
+      (tester) async {
+    await pumpAudioBlock(
+      tester,
+      initialValues: const {'reciter_index': 4},
+    );
+
+    final context = tester.element(find.byType(SettingsScreenAudioBlock));
+    expect(
+      context.read<PlaySettingsProvider>().selectedReciter.name,
+      'Abdullah Basfar',
+    );
   });
 
   testWidgets('reciter labels use single-line ellipsis', (tester) async {

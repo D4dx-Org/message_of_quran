@@ -23,39 +23,50 @@ class SettingsScreenAppBlock extends StatelessWidget {
             children: [
               SettingsScreenListTile(
                 title: 'Keep Screen On',
+                subtitle: wakelockProvider.isSupported
+                    ? null
+                    : 'Not available in browser mode.',
                 icon: Icons.light_mode_outlined,
                 trailing: Switch.adaptive(
-                  value: wakelockProvider.keepScreenOn,
+                  value: wakelockProvider.isSupported &&
+                      wakelockProvider.keepScreenOn,
                   activeThumbColor: accentColor,
                   activeTrackColor: accentTrackColor,
-                  onChanged: (value) {
-                    wakelockProvider.toggleKeepScreenOn(value);
-                  },
+                  onChanged: wakelockProvider.isSupported
+                      ? (value) {
+                          wakelockProvider.toggleKeepScreenOn(value);
+                        }
+                      : null,
                 ),
               ),
               const Divider(height: 1, indent: 16, endIndent: 16),
               SettingsScreenListTile(
                 title: 'Daily Reminder',
+                subtitle: provider.isSupported
+                    ? null
+                    : 'Daily notifications are not available in browser mode.',
                 icon: Icons.notifications_outlined,
                 trailing: Switch.adaptive(
-                  value: provider.isEnabled,
+                  value: provider.isSupported && provider.isEnabled,
                   activeThumbColor: accentColor,
                   activeTrackColor: accentTrackColor,
-                  onChanged: (value) async {
-                    final success = await provider.toggleReminder(value);
-                    if (!success && context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Notification permission is required for reminders.',
-                          ),
-                        ),
-                      );
-                    }
-                  },
+                  onChanged: provider.isSupported
+                      ? (value) async {
+                          final success = await provider.toggleReminder(value);
+                          if (!success && context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Notification permission is required for reminders.',
+                                ),
+                              ),
+                            );
+                          }
+                        }
+                      : null,
                 ),
               ),
-              if (provider.isEnabled) ...[
+              if (provider.isSupported && provider.isEnabled) ...[
                 const Divider(height: 1, indent: 16, endIndent: 16),
                 SettingsScreenListTile(
                   title: 'Reminder Time',

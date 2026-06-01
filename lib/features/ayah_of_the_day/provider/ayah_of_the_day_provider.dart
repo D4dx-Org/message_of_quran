@@ -1,11 +1,10 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:the_message_of_the_quran/features/ayah_of_the_day/data/ayah_of_the_day_model.dart';
 import 'package:the_message_of_the_quran/features/ayah_of_the_day/services/ayah_of_the_day_service.dart';
@@ -60,12 +59,14 @@ class AyahOfTheDayProvider extends ChangeNotifier {
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       if (byteData == null) return;
 
-      final tempDir = await getTemporaryDirectory();
-      final file = File('${tempDir.path}/ayah_of_the_day.png');
-      await file.writeAsBytes(byteData.buffer.asUint8List());
-
       await Share.shareXFiles(
-        [XFile(file.path)],
+        [
+          XFile.fromData(
+            Uint8List.fromList(byteData.buffer.asUint8List()),
+            mimeType: 'image/png',
+            name: 'ayah_of_the_day.png',
+          ),
+        ],
         subject: 'Ayah of the Day',
         text: '${_todaysAyah?.surahNameArabic ?? ''} – Ayah ${_todaysAyah?.ayahNo ?? ''}',
       );

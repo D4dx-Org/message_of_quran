@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/core/utils/platform_helper.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
@@ -107,15 +106,14 @@ class ForceUpdateScreen extends StatelessWidget {
               ),
               child: ElevatedButton(
                 onPressed: () async {
-                  if (Platform.isAndroid) {
-                    final uri = Uri.parse(
-                      "https://play.google.com/store/games?hl=en_IN",
-                    );
-                    try {
-                      await launchUrl(uri);
-                    } catch (e) {
-                      debugPrint('ForceUpdate: failed to launch store URL — $e');
-                    }
+                  final uri = PlatformHelper.publicAppUri;
+                  final launchMode = PlatformHelper.isWeb
+                      ? LaunchMode.platformDefault
+                      : LaunchMode.externalApplication;
+                  try {
+                    await launchUrl(uri, mode: launchMode);
+                  } catch (e) {
+                    debugPrint('ForceUpdate: failed to launch update URL — $e');
                   }
                 },
                 style: ElevatedButton.styleFrom(

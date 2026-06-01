@@ -1908,7 +1908,7 @@ class _SurahScreenState extends State<SurahScreen> {
               children: [
                 // Drag handle
                 Padding(
-                  padding: const EdgeInsets.only(top: 12, bottom: 4),
+                  padding: const EdgeInsets.only(top: 8, bottom: 2),
                   child: Center(
                     child: Container(
                       width: 40,
@@ -1924,7 +1924,8 @@ class _SurahScreenState extends State<SurahScreen> {
                   surahHeader: surahHeader,
                   metadataLabel: metadataLabel,
                   onClose: () => Navigator.of(ctx).pop(),
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+                  padding: const EdgeInsets.fromLTRB(20, 0, 12, 8),
+                  closeButtonOffset: const Offset(0, -4),
                   titleSpacing: 0,
                   compactCloseButton: true,
                 ),

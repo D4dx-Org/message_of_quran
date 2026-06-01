@@ -5,6 +5,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
 import 'package:the_message_of_the_quran/core/services/audio_handler.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/play_settings_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_audio_skip.dart';
@@ -67,8 +68,10 @@ class AudioProvider extends ChangeNotifier {
     _isProgrammaticSurahTransition = value;
   }
 
-  static String? buildUrl(ReciterInfo reciter, int surahNumber, int ayahId) {
-    return reciter.audioSource.buildAyahUrl(surahNumber, ayahId);
+  static String buildUrl(ReciterInfo reciter, int surahNumber, int ayahId) {
+    final surah = surahNumber.toString().padLeft(3, '0');
+    final ayah = ayahId.toString().padLeft(3, '0');
+    return '${ApiConstants.everyAyahAudioBaseUrl}/${reciter.folderName}/$surah$ayah.mp3';
   }
 
   void _queuePlaybackError(String message, {bool notify = true}) {
@@ -100,14 +103,6 @@ class AudioProvider extends ChangeNotifier {
     required ReciterInfo reciter,
     double playbackSpeed = 1.0,
   }) async {
-    final initialUrl = buildUrl(reciter, surahNumber, ayahId);
-    if (initialUrl == null) {
-      _queuePlaybackError(
-        '${reciter.name} audio source is not configured yet.',
-      );
-      return;
-    }
-
     final gen = ++_playGeneration;
     _pendingPlaybackErrorMessage = null;
 
@@ -144,16 +139,13 @@ class AudioProvider extends ChangeNotifier {
     final count = (ayahEndId - ayahId).abs() + 1;
     final sources = List<AudioSource>.generate(count, (i) {
       final url = buildUrl(reciter, surahNumber, ayahId + i);
-      if (url == null) {
-        throw StateError('Audio source missing for ${reciter.name}');
-      }
       log('AudioProvider: queuing $url');
       return AudioSource.uri(Uri.parse(url));
     });
     final playlist = ConcatenatingAudioSource(children: sources);
     log(
       'AudioProvider: playlist has $count track(s) – surah=$surahNumber '
-      'ayah=$ayahId..$ayahEndId reciter=${reciter.audioSource.reciterPath}',
+      'ayah=$ayahId..$ayahEndId reciter=${reciter.folderName}',
     );
 
     try {

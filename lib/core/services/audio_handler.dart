@@ -35,6 +35,10 @@ class QuranAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   Future<void> _configureAudioSession() async {
+    if (kIsWeb) {
+      return;
+    }
+
     try {
       final session = await AudioSession.instance;
       await session.configure(const AudioSessionConfiguration(

@@ -124,6 +124,7 @@ class InterpretationSheetHeader extends StatelessWidget {
   final VoidCallback? onClose;
   final EdgeInsetsGeometry padding;
   final EdgeInsetsGeometry closeButtonPadding;
+  final Offset closeButtonOffset;
   final double titleSpacing;
   final double metadataSpacing;
   final bool compactCloseButton;
@@ -137,6 +138,7 @@ class InterpretationSheetHeader extends StatelessWidget {
     this.onClose,
     this.padding = const EdgeInsets.symmetric(horizontal: 20),
     this.closeButtonPadding = EdgeInsets.zero,
+    this.closeButtonOffset = Offset.zero,
     this.titleSpacing = 2,
     this.metadataSpacing = 2,
     this.compactCloseButton = false,
@@ -178,6 +180,7 @@ class InterpretationSheetHeader extends StatelessWidget {
                       isMalayalam: titleIsMalayalam,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
+                      height: 1.0,
                     ),
                   ),
                 if (hasSurahSubtitle) ...[
@@ -210,16 +213,19 @@ class InterpretationSheetHeader extends StatelessWidget {
           if (onClose != null)
             Padding(
               padding: closeButtonPadding,
-              child: IconButton(
-                tooltip: 'Close',
-                onPressed: onClose,
-                padding: compactCloseButton ? EdgeInsets.zero : null,
-                constraints: compactCloseButton
-                    ? const BoxConstraints.tightFor(width: 24, height: 24)
-                    : null,
-                visualDensity: compactCloseButton ? VisualDensity.compact : null,
-                splashRadius: compactCloseButton ? 18 : null,
-                icon: const Icon(Icons.close, size: 22),
+              child: Transform.translate(
+                offset: closeButtonOffset,
+                child: IconButton(
+                  tooltip: 'Close',
+                  onPressed: onClose,
+                  padding: compactCloseButton ? EdgeInsets.zero : null,
+                  constraints: compactCloseButton
+                      ? const BoxConstraints.tightFor(width: 24, height: 24)
+                      : null,
+                  visualDensity: compactCloseButton ? VisualDensity.compact : null,
+                  splashRadius: compactCloseButton ? 18 : null,
+                  icon: const Icon(Icons.close, size: 22),
+                ),
               ),
             ),
         ],
