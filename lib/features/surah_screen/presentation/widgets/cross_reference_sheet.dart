@@ -224,7 +224,7 @@ class InterpretationSheetHeader extends StatelessWidget {
                       : null,
                   visualDensity: compactCloseButton ? VisualDensity.compact : null,
                   splashRadius: compactCloseButton ? 18 : null,
-                  icon: const Icon(Icons.close, size: 22),
+                  icon: const Icon(Icons.close, size: 24),
                 ),
               ),
             ),
