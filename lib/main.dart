@@ -62,80 +62,115 @@ void main() async {
     debugPrint('FlutterError: ${details.exceptionAsString()}');
   };
 
-  await DatabaseHelper.initializeServices();
-
-  // Initialize audio service for background playback & media notifications
-  audioHandler = await AudioService.init(
-    builder: () => QuranAudioHandler(),
-    config: const AudioServiceConfig(
-      androidNotificationChannelId:
-          'com.d4dx.the_message_of_the_quran.audio',
-      androidNotificationChannelName: 'Quran Audio',
-      androidNotificationOngoing: true,
-      androidStopForegroundOnPause: true,
-    ),
-  );
-
-  // Mobile-only services: push notifications, local notifications, downloads
-  if (!kIsWeb) {
-    await OneSignalService.initialize();
-    await MushafDownloadManager.instance.syncWithPersistedState();
-
-    await AwesomeNotifications().initialize(
-      null, // use default app icon
-      [
-        NotificationChannel(
-          channelKey: 'mushaf_download',
-          channelName: 'Mushaf Download',
-          channelDescription: 'Shows Mushaf font download progress',
-          importance: NotificationImportance.Low,
-          enableVibration: false,
-          playSound: false,
-          onlyAlertOnce: true,
-        ),
-        NotificationChannel(
-          channelKey: 'daily_reminder',
-          channelName: 'Daily Reminder',
-          channelDescription: 'Daily Quran reading reminders',
-          importance: NotificationImportance.High,
-          enableVibration: true,
-          playSound: true,
-        ),
-        NotificationChannel(
-          channelKey: 'progression_reminder',
-          channelName: 'Progression Reminder',
-          channelDescription: 'Quran progression learning reminders',
-          importance: NotificationImportance.High,
-          enableVibration: true,
-          playSound: true,
-        ),
-      ],
-      debug: false,
-    );
-
-    // Wire up notification tap listeners
-    AwesomeNotifications().setListeners(
-      onActionReceivedMethod: _onNotificationTap,
-      onNotificationCreatedMethod:
-          NotificationController.onNotificationCreatedMethod,
-      onNotificationDisplayedMethod:
-          NotificationController.onNotificationDisplayedMethod,
-      onDismissActionReceivedMethod:
-          NotificationController.onDismissActionReceivedMethod,
-    );
-
-    final initialAction = await AwesomeNotifications()
-        .getInitialNotificationAction(removeFromActionEvents: false);
-    if (initialAction != null) {
-      await _onNotificationTap(initialAction);
-    }
-  }
-
   // Catch async errors that escape the Flutter framework.
+  // Must be set BEFORE any awaited operations so failures don't go unhandled.
   PlatformDispatcher.instance.onError = (error, stack) {
     debugPrint('Uncaught async error: $error\n$stack');
     return true;
   };
+
+  // Kick off the heavy DB copy in the background immediately.
+  // The SplashScreen will await completion before navigating.
+  // This prevents a 60-second hang on first launch (copying ~70 MB of assets)
+  // that would starve the Dart VM Service and trigger iOS watchdog timeouts.
+  DatabaseHelper.initializeServices().catchError((Object e, StackTrace st) {
+    debugPrint('DB init failed: $e\n$st');
+  });
+
+  // Initialize audio service for background playback & media notifications.
+  // This is fast (< 1 s on subsequent launches) so we await it before runApp.
+  try {
+    audioHandler = await AudioService.init(
+      builder: () => QuranAudioHandler(),
+      config: const AudioServiceConfig(
+        androidNotificationChannelId:
+            'com.d4dx.quranasadmalayalam.audio',
+        androidNotificationChannelName: 'Quran Audio',
+        androidNotificationOngoing: true,
+        androidStopForegroundOnPause: true,
+      ),
+    ).timeout(const Duration(seconds: 15));
+  } catch (e, st) {
+    debugPrint('AudioService init failed: $e\n$st');
+    // Fall back to an unregistered handler so audioHandler is non-null.
+    audioHandler ??= QuranAudioHandler();
+  }
+
+  // Mobile-only services: push notifications, local notifications, downloads
+  if (!kIsWeb) {
+    try {
+      await OneSignalService.initialize();
+    } catch (e, st) {
+      debugPrint('OneSignal init failed: $e\n$st');
+    }
+
+    try {
+      await MushafDownloadManager.instance.syncWithPersistedState();
+    } catch (e, st) {
+      debugPrint('MushafDownloadManager sync failed: $e\n$st');
+    }
+
+    try {
+      await AwesomeNotifications().initialize(
+        null, // use default app icon
+        [
+          NotificationChannel(
+            channelKey: 'mushaf_download',
+            channelName: 'Mushaf Download',
+            channelDescription: 'Shows Mushaf font download progress',
+            importance: NotificationImportance.Low,
+            enableVibration: false,
+            playSound: false,
+            onlyAlertOnce: true,
+          ),
+          NotificationChannel(
+            channelKey: 'daily_reminder',
+            channelName: 'Daily Reminder',
+            channelDescription: 'Daily Quran reading reminders',
+            importance: NotificationImportance.High,
+            enableVibration: true,
+            playSound: true,
+          ),
+          NotificationChannel(
+            channelKey: 'progression_reminder',
+            channelName: 'Progression Reminder',
+            channelDescription: 'Quran progression learning reminders',
+            importance: NotificationImportance.High,
+            enableVibration: true,
+            playSound: true,
+          ),
+        ],
+        debug: false,
+      );
+    } catch (e, st) {
+      debugPrint('AwesomeNotifications init failed: $e\n$st');
+    }
+
+    // Wire up notification tap listeners
+    try {
+      AwesomeNotifications().setListeners(
+        onActionReceivedMethod: _onNotificationTap,
+        onNotificationCreatedMethod:
+            NotificationController.onNotificationCreatedMethod,
+        onNotificationDisplayedMethod:
+            NotificationController.onNotificationDisplayedMethod,
+        onDismissActionReceivedMethod:
+            NotificationController.onDismissActionReceivedMethod,
+      );
+    } catch (e, st) {
+      debugPrint('AwesomeNotifications setListeners failed: $e\n$st');
+    }
+
+    try {
+      final initialAction = await AwesomeNotifications()
+          .getInitialNotificationAction(removeFromActionEvents: false);
+      if (initialAction != null) {
+        await _onNotificationTap(initialAction);
+      }
+    } catch (e, st) {
+      debugPrint('AwesomeNotifications initial action failed: $e\n$st');
+    }
+  }
 
   runApp(const MyApp());
 }

@@ -29,7 +29,7 @@ if (!quranAsadEmailApiKey.isNullOrEmpty()) {
 }
 
 android {
-    namespace = "com.d4dx.the_message_of_the_quran"
+    namespace = "com.d4dx.quranasadmalayalam"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -44,7 +44,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.d4dx.the_message_of_the_quran"
+        applicationId = "com.d4dx.quranasadmalayalam"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

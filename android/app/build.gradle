@@ -32,7 +32,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace 'com.d4dx.the_message_of_the_quran'
+    namespace 'com.d4dx.quranasadmalayalam'
     compileSdk flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
@@ -58,7 +58,7 @@ android {
     }
 
     defaultConfig {
-        applicationId 'com.d4dx.the_message_of_the_quran'
+        applicationId 'com.d4dx.quranasadmalayalam'
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutter.versionCode
