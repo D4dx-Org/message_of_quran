@@ -50,6 +50,20 @@ void main() {
     expect(emblemTop - authorBottom, lessThan(52.0));
   });
 
+  testWidgets('short phone layout avoids brand stack overflow', (tester) async {
+    await pumpSplashLayout(tester, const Size(390, 667));
+
+    expect(tester.takeException(), isNull);
+
+    final emblemFinder = assetImage('assets/images/splash_logo.png');
+    final titleFinder = assetImage('assets/images/splash_text_logo.png');
+    final emblemTop = tester.getTopLeft(emblemFinder).dy;
+    final titleBottom = tester.getBottomLeft(titleFinder).dy;
+
+    expect(emblemTop, greaterThanOrEqualTo(0.0));
+    expect(titleBottom, lessThanOrEqualTo(667.0));
+  });
+
   testWidgets('large layout preserves the enlarged lockup without overflow', (
     tester,
   ) async {
