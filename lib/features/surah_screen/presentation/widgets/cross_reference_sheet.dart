@@ -118,6 +118,43 @@ String _formatInterpretationAyahNumbers(List<int> ayahNumbers) {
   return normalized.join(', ');
 }
 
+const _kInterpretationSheetDragHandlePadding = EdgeInsets.only(
+  top: 8,
+  bottom: 2,
+);
+const _kInterpretationSheetHeaderPadding = EdgeInsets.fromLTRB(20, 0, 12, 8);
+const _kInterpretationSheetActionOffset = Offset(0, -10);
+const _kInterpretationSheetActionConstraints = BoxConstraints.tightFor(
+  width: 24,
+  height: 24,
+);
+const _kInterpretationSheetActionIconSize = 24.0;
+const _kInterpretationSheetActionSplashRadius = 18.0;
+
+Widget _buildCompactSheetActionButton({
+  required String tooltip,
+  required VoidCallback? onPressed,
+  required IconData icon,
+  Color? color,
+}) {
+  return Transform.translate(
+    offset: _kInterpretationSheetActionOffset,
+    child: IconButton(
+      tooltip: tooltip,
+      onPressed: onPressed,
+      padding: EdgeInsets.zero,
+      constraints: _kInterpretationSheetActionConstraints,
+      visualDensity: VisualDensity.compact,
+      splashRadius: _kInterpretationSheetActionSplashRadius,
+      icon: Icon(
+        icon,
+        size: _kInterpretationSheetActionIconSize,
+        color: color,
+      ),
+    ),
+  );
+}
+
 class InterpretationSheetHeader extends StatelessWidget {
   final InterpretationSheetSurahHeaderText surahHeader;
   final String metadataLabel;
@@ -220,11 +257,16 @@ class InterpretationSheetHeader extends StatelessWidget {
                   onPressed: onClose,
                   padding: compactCloseButton ? EdgeInsets.zero : null,
                   constraints: compactCloseButton
-                      ? const BoxConstraints.tightFor(width: 24, height: 24)
+                      ? _kInterpretationSheetActionConstraints
                       : null,
                   visualDensity: compactCloseButton ? VisualDensity.compact : null,
-                  splashRadius: compactCloseButton ? 18 : null,
-                  icon: const Icon(Icons.close, size: 22),
+                  splashRadius: compactCloseButton
+                      ? _kInterpretationSheetActionSplashRadius
+                      : null,
+                  icon: const Icon(
+                    Icons.close,
+                    size: _kInterpretationSheetActionIconSize,
+                  ),
                 ),
               ),
             ),
@@ -435,6 +477,8 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
   Widget build(BuildContext context) {
     final fontSettings = Provider.of<FontSizeChangerProvider>(context);
     final isMl = context.read<LanguageProvider>().isMalayalam;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final actionColor = isDark ? Colors.white : Colors.black;
     final surahTitle = _surahTitle(isMl);
 
     return ConstrainedBox(
@@ -446,7 +490,7 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
         children: [
           // Drag handle
           Padding(
-            padding: const EdgeInsets.only(top: 12, bottom: 8),
+            padding: _kInterpretationSheetDragHandlePadding,
             child: Center(
               child: Container(
                 width: 40,
@@ -458,13 +502,13 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
               ),
             ),
           ),
-          // Header: close + title + copy/share
+          // Header actions
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: _kInterpretationSheetHeaderPadding,
             child: Row(
               children: [
                 // Copy
-                IconButton(
+                _buildCompactSheetActionButton(
                   tooltip: 'Copy',
                   onPressed: _loading
                       ? null
@@ -482,19 +526,12 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
                             }
                           }
                         },
-                  icon: Builder(
-                    builder: (ctx) {
-                      final isDark = Theme.of(ctx).brightness == Brightness.dark;
-                      return Icon(
-                        Icons.copy_outlined,
-                        size: 20,
-                                                color: _loading ? Colors.grey[400] : (isDark ? const Color(0xff5B9BD5) : AppTheme.appIconTheme),
-                      );
-                    },
-                  ),
+                  icon: Icons.copy_outlined,
+                  color: _loading ? Colors.grey[400] : actionColor,
                 ),
+                const SizedBox(width: 8),
                 // Share
-                IconButton(
+                _buildCompactSheetActionButton(
                   tooltip: 'Share',
                   onPressed: _loading
                       ? null
@@ -504,23 +541,16 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
                             await Share.share(text);
                           }
                         },
-                  icon: Builder(
-                    builder: (ctx) {
-                      final isDark = Theme.of(ctx).brightness == Brightness.dark;
-                      return Icon(
-                        Icons.share_outlined,
-                        size: 20,
-                        color: _loading ? Colors.grey[400] : (isDark ? const Color(0xff5B9BD5) : AppTheme.appIconTheme),
-                      );
-                    },
-                  ),
+                  icon: Icons.share_outlined,
+                  color: _loading ? Colors.grey[400] : actionColor,
                 ),
                 const Spacer(),
                 // Close
-                IconButton(
+                _buildCompactSheetActionButton(
                   tooltip: 'Close',
                   onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.close, size: 22),
+                  icon: Icons.close,
+                  color: actionColor,
                 ),
               ],
             ),
@@ -848,7 +878,7 @@ class _NestedInterpretationSheetState
         children: [
           // Drag handle
           Padding(
-            padding: const EdgeInsets.only(top: 12, bottom: 8),
+            padding: _kInterpretationSheetDragHandlePadding,
             child: Center(
               child: Container(
                 width: 40,
@@ -865,6 +895,10 @@ class _NestedInterpretationSheetState
             surahHeader: surahHeader,
             metadataLabel: metadataLabel,
             onClose: () => Navigator.of(context).pop(),
+            padding: _kInterpretationSheetHeaderPadding,
+            closeButtonOffset: _kInterpretationSheetActionOffset,
+            titleSpacing: 0,
+            compactCloseButton: true,
           ),
           const Divider(height: 1),
           Flexible(

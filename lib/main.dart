@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
@@ -9,6 +11,7 @@ import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
 import 'package:the_message_of_the_quran/features/splash_screen/presentation/splash_screen.dart';
+import 'package:the_message_of_the_quran/features/splash_screen/presentation/widgets/splash_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/splash_screen/providers/version_check_provider.dart';
 import 'package:the_message_of_the_quran/features/about_screen/provider/about_providers.dart';
 import 'package:the_message_of_the_quran/features/contact_us_screen/presentation/provider/contact_provider.dart';
@@ -46,7 +49,7 @@ String? pendingNotificationRoute;
 const String ayahOfTheDayNotificationRoute = 'ayah_of_the_day';
 const String surahAlKahfNotificationRoute = 'surah_18';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Show a simple error widget in release mode instead of the red error screen.

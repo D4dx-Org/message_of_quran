@@ -1925,7 +1925,7 @@ class _SurahScreenState extends State<SurahScreen> {
                   metadataLabel: metadataLabel,
                   onClose: () => Navigator.of(ctx).pop(),
                   padding: const EdgeInsets.fromLTRB(20, 0, 12, 8),
-                  closeButtonOffset: const Offset(0, -4),
+                  closeButtonOffset: const Offset(0, -10),
                   titleSpacing: 0,
                   compactCloseButton: true,
                 ),

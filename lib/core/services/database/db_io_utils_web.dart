@@ -25,7 +25,7 @@ Future<void> deleteWalShmFiles(String dbPath) async {
 
 /// Set the global databaseFactory to the web FFI implementation.
 void initDatabaseFactory() {
-  sqflite.databaseFactory = databaseFactoryFfiWeb;
+  sqflite.databaseFactory = databaseFactoryFfiWebNoWebWorker;
 }
 
 /// On web, write database bytes via the web databaseFactory.
