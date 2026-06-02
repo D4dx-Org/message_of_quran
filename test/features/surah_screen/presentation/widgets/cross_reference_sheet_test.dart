@@ -17,11 +17,15 @@ void main() {
   Future<void> pumpReferenceHost(
     WidgetTester tester, {
     required CrossReference reference,
+    String languageCode = LanguageProvider.english,
   }) async {
+    SharedPreferences.setMockInitialValues({'app_language': languageCode});
+    final languageProvider = LanguageProvider();
+
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => LanguageProvider()),
+          ChangeNotifierProvider<LanguageProvider>.value(value: languageProvider),
           ChangeNotifierProvider(create: (_) => FontSizeChangerProvider()),
         ],
         child: MaterialApp(
@@ -45,6 +49,10 @@ void main() {
     );
 
     await tester.pumpAndSettle();
+    if (languageProvider.currentLanguage != languageCode) {
+      await languageProvider.setLanguage(languageCode);
+      await tester.pumpAndSettle();
+    }
   }
 
   Future<void> pumpCrossReferenceSheet(
@@ -52,11 +60,15 @@ void main() {
     required int surahNumber,
     required int ayahNumber,
     int? noteNumber,
+    String languageCode = LanguageProvider.english,
   }) async {
+    SharedPreferences.setMockInitialValues({'app_language': languageCode});
+    final languageProvider = LanguageProvider();
+
     await tester.pumpWidget(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => LanguageProvider()),
+          ChangeNotifierProvider<LanguageProvider>.value(value: languageProvider),
           ChangeNotifierProvider(create: (_) => FontSizeChangerProvider()),
         ],
         child: MaterialApp(
@@ -72,6 +84,10 @@ void main() {
     );
 
     await tester.pumpAndSettle();
+    if (languageProvider.currentLanguage != languageCode) {
+      await languageProvider.setLanguage(languageCode);
+      await tester.pumpAndSettle();
+    }
   }
 
   Future<void> pumpInterpretationHeader(

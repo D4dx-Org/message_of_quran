@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/ayah_bookmark_model.dart';
@@ -462,6 +463,47 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
     }
   }
 
+  bool _useDesktopWebReaderLayout(BuildContext context) {
+    if (!kIsWeb) return false;
+    return MediaQuery.sizeOf(context).width >= 1180;
+  }
+
+  int _lastReadablePage() {
+    return _p.fontsInstalled
+        ? MushafReaderProvider.totalPages
+        : MushafReaderProvider.previewLimit;
+  }
+
+  void _goToHigherPage() {
+    final next = _p.currentPage + 1;
+    if (next <= _lastReadablePage()) {
+      _p.tryNavigateTo(next);
+    }
+  }
+
+  void _goToLowerPage() {
+    final prev = _p.currentPage - 1;
+    if (prev >= 1) {
+      _p.tryNavigateTo(prev);
+    }
+  }
+
+  void _toggleReaderViewMode() {
+    final wasListView = _p.isListView;
+    final targetPage = _p.currentPage;
+    _p.isAutoNavigating = true;
+    _setJumpTarget(targetPage);
+    _p.toggleListView();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!wasListView) {
+        _scrollListToPage(targetPage);
+      } else {
+        _p.pageController?.jumpToPage(targetPage - 1);
+        _p.isAutoNavigating = false;
+      }
+    });
+  }
+
   double _landscapeFontSize(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final isLandscape =
@@ -472,51 +514,221 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
     return _kDefaultFontSize * ratio;
   }
 
+  Widget _buildReaderViewport(BuildContext context, double fontSize) {
+    return _p.isListView
+        ? _buildListView()
+        : PageView.builder(
+            controller: _p.pageController!,
+            reverse: true,
+            itemCount: _p.fontsInstalled
+                ? MushafReaderProvider.totalPages
+                : MushafReaderProvider.previewLimit,
+            onPageChanged: _onPageChanged,
+            itemBuilder: (context, index) {
+              return MushafPageView(
+                pageNo: index + 1,
+                repository: _p.repository,
+                selectedAyaId: _p.selectedAyaId,
+                playingAyaId: _p.audioPlayingAyaId,
+                onAyaTap: _toggleBars,
+                onAyaLongPress: _p.onAyaTap,
+                onDismissSelection: _p.clearSelection,
+                quranFontSize: fontSize,
+                actionRow: _p.selectedAyaId != null
+                    ? _buildAyaActionRow()
+                    : null,
+              );
+            },
+          );
+  }
+
+  Widget _buildDesktopReaderToolbar(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final surfaceColor = isDark ? const Color(0xff163d6e) : Colors.white;
+    final titleColor = isDark ? Colors.white : _kSecondaryDark;
+    final subtitleColor = isDark ? Colors.white70 : _kNeutral500;
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.black.withValues(alpha: 0.08);
+    final totalPages = _lastReadablePage();
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: surfaceColor,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: borderColor),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.18 : 0.08),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        child: Row(
+          children: [
+            IconButton(
+              tooltip: 'Back',
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(Icons.arrow_back_ios_new_rounded, color: titleColor),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Mushaf Reader',
+                    style: AppTextTheme.popinsDefault(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: titleColor,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Page ${_p.currentPage} of $totalPages • ${_p.isListView ? 'List view' : 'Page view'}',
+                    style: AppTextTheme.popinsDefault(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: subtitleColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (_p.isLoadingAudio)
+              const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            else
+              IconButton(
+                tooltip: _p.isPlaying ? 'Pause audio' : 'Play audio',
+                onPressed: _p.isPlaying || _p.playingLabel != null
+                    ? _p.togglePlayPause
+                    : _p.onPlayPressed,
+                icon: Icon(
+                  _p.isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                  color: titleColor,
+                ),
+              ),
+            const SizedBox(width: 4),
+            IconButton(
+              tooltip: 'Switch view',
+              onPressed: _toggleReaderViewMode,
+              icon: Icon(
+                _p.isListView
+                    ? Icons.view_day_rounded
+                    : Icons.view_carousel_rounded,
+                color: titleColor,
+              ),
+            ),
+            const SizedBox(width: 12),
+            IconButton(
+              tooltip: 'Higher page number',
+              onPressed: _p.currentPage < totalPages ? _goToHigherPage : null,
+              icon: const Icon(Icons.chevron_left_rounded),
+              color: titleColor,
+            ),
+            Text(
+              '${_p.currentPage}',
+              style: AppTextTheme.popinsDefault(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: titleColor,
+              ),
+            ),
+            IconButton(
+              tooltip: 'Lower page number',
+              onPressed: _p.currentPage > 1 ? _goToLowerPage : null,
+              icon: const Icon(Icons.chevron_right_rounded),
+              color: titleColor,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDesktopReaderScaffold(BuildContext context, double fontSize) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.black.withValues(alpha: 0.08);
+    final viewportColor = isDark ? const Color(0xff163d6e) : Colors.white;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+      child: Column(
+        children: [
+          _buildDesktopReaderToolbar(context),
+          const SizedBox(height: 20),
+          Expanded(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 920),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: viewportColor,
+                    borderRadius: BorderRadius.circular(26),
+                    border: Border.all(color: borderColor),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: isDark ? 0.18 : 0.08),
+                        blurRadius: 22,
+                        offset: const Offset(0, 12),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(26),
+                    child: _buildReaderViewport(context, fontSize),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildScaffold(BuildContext context) {
     final fontSize = _landscapeFontSize(context);
+    final floatingActionButton =
+        (!_p.fontsInstalled &&
+            _p.currentPage == MushafReaderProvider.previewLimit)
+        ? FloatingActionButton.extended(
+            onPressed: () => _showDownloadPrompt(
+              targetPage: MushafReaderProvider.previewLimit + 1,
+            ),
+            icon: const Icon(Icons.download_rounded),
+            label: const Text('Continue Reading'),
+            backgroundColor: _kPrimaryColor,
+            foregroundColor: Colors.white,
+          )
+        : null;
+
+    if (_useDesktopWebReaderLayout(context)) {
+      return BaseScreenLayout(
+        topBorderRadius: 0,
+        floatingActionButton: floatingActionButton,
+        child: _buildDesktopReaderScaffold(context, fontSize),
+      );
+    }
+
     return BaseScreenLayout(
       topBorderRadius: 0,
-      floatingActionButton:
-          (!_p.fontsInstalled &&
-              _p.currentPage == MushafReaderProvider.previewLimit)
-          ? FloatingActionButton.extended(
-              onPressed: () => _showDownloadPrompt(
-                targetPage: MushafReaderProvider.previewLimit + 1,
-              ),
-              icon: const Icon(Icons.download_rounded),
-              label: const Text('Continue Reading'),
-              backgroundColor: _kPrimaryColor,
-              foregroundColor: Colors.white,
-            )
-          : null,
+      floatingActionButton: floatingActionButton,
       child: Stack(
         children: [
           Positioned.fill(
-            child: _p.isListView
-                ? _buildListView()
-                : PageView.builder(
-                    controller: _p.pageController!,
-                    reverse: true,
-                    itemCount: _p.fontsInstalled
-                        ? MushafReaderProvider.totalPages
-                        : MushafReaderProvider.previewLimit,
-                    onPageChanged: _onPageChanged,
-                    itemBuilder: (context, index) {
-                      return MushafPageView(
-                        pageNo: index + 1,
-                        repository: _p.repository,
-                        selectedAyaId: _p.selectedAyaId,
-                        playingAyaId: _p.audioPlayingAyaId,
-                        onAyaTap: _toggleBars,
-                        onAyaLongPress: _p.onAyaTap,
-                        onDismissSelection: _p.clearSelection,
-                        quranFontSize: fontSize,
-                        actionRow: _p.selectedAyaId != null
-                            ? _buildAyaActionRow()
-                            : null,
-                      );
-                    },
-                  ),
+            child: _buildReaderViewport(context, fontSize),
           ),
           // Animated AppBar
           Positioned(
@@ -590,21 +802,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
                   : Icons.view_carousel_rounded,
               color: textColor,
             ),
-            onPressed: () {
-              final wasListView = _p.isListView;
-              final targetPage = _p.currentPage;
-              _p.isAutoNavigating = true;
-              _setJumpTarget(targetPage);
-              _p.toggleListView();
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (!wasListView) {
-                  _scrollListToPage(targetPage);
-                } else {
-                  _p.pageController?.jumpToPage(targetPage - 1);
-                  _p.isAutoNavigating = false;
-                }
-              });
-            },
+            onPressed: _toggleReaderViewMode,
           ),
         ],
       ),
@@ -639,14 +837,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
             IconButton(
               icon: const Icon(Icons.chevron_left_rounded),
               color: textColor,
-              onPressed: () {
-                final next = _p.currentPage + 1;
-                if (next <= MushafReaderProvider.totalPages &&
-                    (_p.fontsInstalled ||
-                        next <= MushafReaderProvider.previewLimit)) {
-                  _p.tryNavigateTo(next);
-                }
-              },
+              onPressed: _goToHigherPage,
             )
           else
             SizedBox(width: 48 * ResponsiveHelper.scaleFactor(context)),
@@ -687,10 +878,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
             IconButton(
               icon: const Icon(Icons.chevron_right_rounded),
               color: textColor,
-              onPressed: () {
-                final prev = _p.currentPage - 1;
-                if (prev >= 1) _p.tryNavigateTo(prev);
-              },
+              onPressed: _goToLowerPage,
             )
           else
             SizedBox(width: 48 * ResponsiveHelper.scaleFactor(context)),

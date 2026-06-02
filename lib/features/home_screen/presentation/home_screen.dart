@@ -573,8 +573,8 @@ class _HomeScreenState extends State<HomeScreen>
         ? Theme.of(context).scaffoldBackgroundColor
         : Colors.white;
     final sectionLabels = isMalayalam
-      ? const ['സൂറത്ത്', 'ജുസ്', 'അവതരണ ക്രമം', 'സജ്ദ']
-      : const ['Surah', 'Juz', 'Revelation Order', 'Sajdah'];
+      ? const ['സൂറത്ത്', 'ജുസ്']
+      : const ['Surah', 'Juz'];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -739,70 +739,6 @@ class _HomeScreenState extends State<HomeScreen>
           },
         );
       case 2:
-        final revelationSurahs = _webRevelationOrder
-            .map((surahNumber) => surahByNumber[surahNumber])
-            .whereType<SurahModel>()
-            .toList(growable: false);
-        return _buildWebCardGrid(
-          itemCount: revelationSurahs.length,
-          itemBuilder: (context, index) {
-            final surah = revelationSurahs[index];
-            final displayText = formatSurahListDisplayText(
-              isMalayalam: isMalayalam,
-              surahName: surah.name,
-              surahTranslation: surah.description,
-              malayalamName: surah.malayalamName,
-              surahNumber: surah.surahNumber,
-            );
-            return _WebSectionCard(
-              leadingNumber: '${revelationIndexBySurah[surah.surahNumber] ?? index + 1}',
-              title: displayText.title,
-              subtitle: displayText.subtitle,
-              trailingTop: isMalayalam
-                  ? 'സൂറത്ത് ${surah.surahNumber}'
-                  : 'Surah ${surah.surahNumber}',
-              trailingBottom: isMalayalam
-                  ? '${surah.ayathCount} ആയത്തുകൾ'
-                  : '${surah.ayathCount} Ayahs',
-              onTap: () => _openSurah(context, surahNumber: surah.surahNumber),
-            );
-          },
-        );
-      case 3:
-        return FutureBuilder<List<ProstrationVerseModel>>(
-          future: _prostrationVersesFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            final verses = snapshot.data ?? const <ProstrationVerseModel>[];
-            return _buildWebCardGrid(
-              itemCount: verses.length,
-              itemBuilder: (context, index) {
-                final verse = verses[index];
-                return _WebSectionCard(
-                  leadingNumber: '${verse.order}',
-                  title: verse.displaySurahName(isMalayalam: isMalayalam),
-                  subtitle: isMalayalam
-                      ? 'സജ്ദ റഫറൻസ്'
-                      : 'Prostration reference',
-                  trailingTop: isMalayalam
-                      ? 'സൂറത്ത് ${verse.surahNumber}'
-                      : 'Surah ${verse.surahNumber}',
-                  trailingBottom: isMalayalam
-                      ? 'ആയത്ത് ${verse.ayahNumber}'
-                      : 'Verse ${verse.ayahNumber}',
-                  onTap: () => _openSurah(
-                    context,
-                    surahNumber: verse.surahNumber,
-                    ayahId: verse.ayahNumber,
-                  ),
-                );
-              },
-            );
-          },
-        );
       case 0:
       default:
         if (surahProvider.isSurahLoading) {

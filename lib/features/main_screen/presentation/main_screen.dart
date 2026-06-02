@@ -152,6 +152,7 @@ class _MainScreenState extends State<MainScreen> {
     required Color accentColor,
   }) {
     final isSelected = index == selectedIndex;
+    final iconColor = accentColor.withValues(alpha: isSelected ? 1.0 : 0.78);
 
     return Semantics(
       button: true,
@@ -159,17 +160,23 @@ class _MainScreenState extends State<MainScreen> {
       label: '$label navigation item',
       child: InkWell(
         onTap: () => _onItemTapped(index),
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(18),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              _buildNavItemIcon(
+                index: index,
+                color: iconColor,
+                size: _navItemSize(index) * 0.95,
+              ),
+              const SizedBox(height: 8),
               Text(
                 label,
                 style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
+                  color: accentColor,
+                  fontSize: 13.5,
                   fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                 ),
               ),
@@ -178,7 +185,7 @@ class _MainScreenState extends State<MainScreen> {
                 duration: const Duration(milliseconds: 180),
                 curve: Curves.easeOut,
                 height: 2.5,
-                width: isSelected ? 32 : 0,
+                width: isSelected ? 28 : 0,
                 decoration: BoxDecoration(
                   color: accentColor,
                   borderRadius: BorderRadius.circular(999),
@@ -235,13 +242,30 @@ class _MainScreenState extends State<MainScreen> {
                       ),
                       child: Row(
                         children: [
+                          Builder(
+                            builder: (context) => DecoratedBox(
+                              decoration: BoxDecoration(
+                                color: actionSurface,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: accentColor.withValues(alpha: 0.18),
+                                ),
+                              ),
+                              child: IconButton(
+                                tooltip: 'Open menu',
+                                onPressed: () => Scaffold.of(context).openDrawer(),
+                                icon: const Icon(Icons.menu, color: Colors.white),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
                           Image.asset(
                             'assets/images/Group-logo.png',
                             height: 40,
                             fit: BoxFit.contain,
                             semanticLabel: 'Quran Asad Malayalam logo',
                           ),
-                          const SizedBox(width: 36),
+                          const SizedBox(width: 28),
                           Expanded(
                             child: SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
@@ -283,23 +307,6 @@ class _MainScreenState extends State<MainScreen> {
                           ),
                           const SizedBox(width: 12),
                           AppBarLanguageButton(),
-                          const SizedBox(width: 12),
-                          Builder(
-                            builder: (context) => DecoratedBox(
-                              decoration: BoxDecoration(
-                                color: actionSurface,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: accentColor.withValues(alpha: 0.18),
-                                ),
-                              ),
-                              child: IconButton(
-                                tooltip: 'Open menu',
-                                onPressed: () => Scaffold.of(context).openDrawer(),
-                                icon: const Icon(Icons.menu, color: Colors.white),
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                     ),

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -199,6 +200,129 @@ class _SurahScreenState extends State<SurahScreen> {
     setState(() {
       _hasPreface = prefaces.isNotEmpty;
     });
+  }
+
+  bool _useDesktopWebReaderLayout(BuildContext context) {
+    if (!kIsWeb) return false;
+    return MediaQuery.sizeOf(context).width >= 1180;
+  }
+
+  Widget _buildDesktopReaderActionButton({
+    required BuildContext context,
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final foregroundColor = isDarkMode ? Colors.white : AppTheme.appIconTheme;
+
+    return OutlinedButton.icon(
+      onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        foregroundColor: foregroundColor,
+        side: BorderSide(color: foregroundColor.withValues(alpha: 0.16)),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        textStyle: AppTextTheme.popinsDefault(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: foregroundColor,
+        ),
+      ),
+      icon: Icon(icon, size: 18),
+      label: Text(label),
+    );
+  }
+
+  Widget _buildDesktopReaderHeader(
+    BuildContext context,
+    SurahProvider controller,
+  ) {
+    if (controller.surahList.isEmpty || controller.index >= controller.surahList.length) {
+      return const SizedBox.shrink();
+    }
+
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
+    final surah = controller.surahList[controller.index];
+
+    return Column(
+      children: [
+        SurahInfoStrip(
+          surahName: surah.name,
+          surahTranslation: surah.description,
+          malayalamName: surah.malayalamName,
+          place: surah.place,
+          ordinalLabel: surah.ordinalLabel,
+          surahNumber: surah.surahNumber,
+          isMalayalam: isMalayalam,
+          showPrevious: controller.index < controller.surahList.length - 1,
+          showNext: controller.index > 0,
+          onPrevious: () => controller.onSwipe(false),
+          onNext: () => controller.onSwipe(true),
+        ),
+        const SizedBox(height: 12),
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: isDarkMode ? theme.cardColor : Colors.white.withValues(alpha: 0.9),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: (isDarkMode ? Colors.white : AppTheme.appIconTheme).withValues(alpha: 0.08),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDarkMode ? 0.14 : 0.08),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+            child: Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              alignment: WrapAlignment.center,
+              children: [
+                _buildDesktopReaderActionButton(
+                  context: context,
+                  icon: Icons.home_outlined,
+                  label: isMalayalam ? 'ഹോം' : 'Home',
+                  onPressed: () => _navigateToMainTab(0),
+                ),
+                _buildDesktopReaderActionButton(
+                  context: context,
+                  icon: Icons.format_list_numbered_rounded,
+                  label: isMalayalam ? 'ആയത്തിലേക്ക് പോകുക' : 'Jump to ayah',
+                  onPressed: () => _showJumpTo(context, controller.arabicBlockList),
+                ),
+                _buildDesktopReaderActionButton(
+                  context: context,
+                  icon: Icons.play_circle_outline_rounded,
+                  label: isMalayalam ? 'ആരംഭത്തിൽ നിന്ന് കേൾക്കുക' : 'Play from beginning',
+                  onPressed: _restartSurahPlayback,
+                ),
+                _buildDesktopReaderActionButton(
+                  context: context,
+                  icon: Icons.settings_outlined,
+                  label: isMalayalam ? 'സെറ്റിംഗ്സ്' : 'Settings',
+                  onPressed: () => _navigateToMainTab(3),
+                ),
+                if (_hasPreface)
+                  _buildDesktopReaderActionButton(
+                    context: context,
+                    icon: Icons.info_outline_rounded,
+                    label: isMalayalam ? 'സൂറത്ത് വിവരങ്ങൾ' : 'Surah info',
+                    onPressed: () => _showSurahInfo(context, controller),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   Future<void> _toggleSurahBookmark({
@@ -1585,6 +1709,7 @@ class _SurahScreenState extends State<SurahScreen> {
     int currentSurahNumber,
     bool justify,
   ) {
+    final isMalayalam = context.read<LanguageProvider>().isMalayalam;
     final segments = parseForCrossReferences(text, currentSurahNumber);
     // Fast path: no cross-references found
     if (segments.length == 1 && !segments.first.isCrossReference) {
@@ -1592,15 +1717,18 @@ class _SurahScreenState extends State<SurahScreen> {
         text,
         style: AppTextTheme.surahInterpretationStyle(
           context,
-          isMalayalam: context.read<LanguageProvider>().isMalayalam,
+          isMalayalam: isMalayalam,
         ),
-        textAlign: justify ? TextAlign.justify : TextAlign.start,
+        textAlign: resolveInterpretationTextAlign(
+          isMalayalam: isMalayalam,
+          justifyInterpretation: justify,
+        ),
       );
     }
 
     final baseStyle = AppTextTheme.surahInterpretationStyle(
       context,
-      isMalayalam: context.read<LanguageProvider>().isMalayalam,
+      isMalayalam: isMalayalam,
     );
     final isDarkLink = Theme.of(context).brightness == Brightness.dark;
     final linkColor = isDarkLink ? const Color(0xff5B9BD5) : AppTheme.appIconTheme;
@@ -1630,7 +1758,10 @@ class _SurahScreenState extends State<SurahScreen> {
 
     return Text.rich(
       TextSpan(children: spans),
-      textAlign: justify ? TextAlign.justify : TextAlign.start,
+      textAlign: resolveInterpretationTextAlign(
+        isMalayalam: isMalayalam,
+        justifyInterpretation: justify,
+      ),
     );
   }
 
@@ -1924,6 +2055,7 @@ class _SurahScreenState extends State<SurahScreen> {
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<SurahProvider>(context);
+    final useDesktopWebReaderLayout = _useDesktopWebReaderLayout(context);
     final rootBottomInset = MediaQuery.viewPaddingOf(context).bottom;
     final actionDockBottomPadding = resolveSurahActionDockBottomPadding(
       rootBottomInset: rootBottomInset,
@@ -1931,6 +2063,9 @@ class _SurahScreenState extends State<SurahScreen> {
     final actionDockClearance = resolveSurahActionDockClearance(
       rootBottomInset: rootBottomInset,
     );
+    final readerBottomClearance = useDesktopWebReaderLayout
+        ? 28.0
+        : actionDockClearance;
 
     return PopScope(
       canPop: true,
@@ -1948,6 +2083,9 @@ class _SurahScreenState extends State<SurahScreen> {
               ? () => _showSurahInfo(context, controller)
               : null,
         ),
+        headerContent: useDesktopWebReaderLayout
+            ? _buildDesktopReaderHeader(context, controller)
+            : null,
         drawer: const CommonDrawer(),
         floatingActionButton: Column(
           mainAxisSize: MainAxisSize.min,
@@ -2038,7 +2176,12 @@ class _SurahScreenState extends State<SurahScreen> {
                                             controller: _scrollController,
                                             cacheExtent: _deepLinkCacheExtent,
                                             slivers: [
-                                              const SurahScreenAppBar(),
+                                              if (!useDesktopWebReaderLayout)
+                                                const SurahScreenAppBar()
+                                              else
+                                                const SliverToBoxAdapter(
+                                                  child: SizedBox(height: 12),
+                                                ),
                                               if (showDecorativeBismillah)
                                                 SliverToBoxAdapter(
                                                   child: _SurahBismillahHeader(
@@ -2339,7 +2482,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                               ),
                                               SliverToBoxAdapter(
                                                 child: SizedBox(
-                                                  height: actionDockClearance,
+                                                  height: readerBottomClearance,
                                                 ),
                                               ),
                                             ],
@@ -2354,7 +2497,7 @@ class _SurahScreenState extends State<SurahScreen> {
                               },
                             ),
                     ),
-                    if (controller.arabicBlockList.isNotEmpty)
+                    if (controller.arabicBlockList.isNotEmpty && !useDesktopWebReaderLayout)
                       SurahActionDock(
                         visible: _showActionDock,
                         bottomPadding: actionDockBottomPadding,

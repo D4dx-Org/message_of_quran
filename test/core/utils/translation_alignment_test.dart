@@ -53,4 +53,55 @@ void main() {
       },
     );
   });
+
+  group('resolveInterpretationTextAlign', () {
+    test(
+      'keeps Malayalam interpretations left aligned when justify is enabled',
+      () {
+        expect(
+          resolveInterpretationTextAlign(
+            isMalayalam: true,
+            justifyInterpretation: true,
+          ),
+          TextAlign.start,
+        );
+      },
+    );
+
+    test(
+      'keeps Malayalam interpretations left aligned when justify is disabled',
+      () {
+        expect(
+          resolveInterpretationTextAlign(
+            isMalayalam: true,
+            justifyInterpretation: false,
+          ),
+          TextAlign.start,
+        );
+      },
+    );
+
+    test('keeps English interpretations justified when justify is enabled', () {
+      expect(
+        resolveInterpretationTextAlign(
+          isMalayalam: false,
+          justifyInterpretation: true,
+        ),
+        TextAlign.justify,
+      );
+    });
+
+    test(
+      'keeps English interpretations left aligned when justify is disabled',
+      () {
+        expect(
+          resolveInterpretationTextAlign(
+            isMalayalam: false,
+            justifyInterpretation: false,
+          ),
+          TextAlign.start,
+        );
+      },
+    );
+  });
 }

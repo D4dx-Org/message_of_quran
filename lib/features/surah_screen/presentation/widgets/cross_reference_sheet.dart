@@ -419,7 +419,6 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
       );
     }
 
-    // For Malayalam, compute per-surah min footnote number for display offset
     int mlMin = 0;
     if (isMl) {
       final range = await InterpretationsDbHelper.getInterpretationRange(
@@ -478,9 +477,7 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
     final fontSettings = Provider.of<FontSizeChangerProvider>(context);
     final isMl = context.read<LanguageProvider>().isMalayalam;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final actionColor = isDark
-        ? const Color(0xff5B9BD5)
-        : AppTheme.appIconTheme;
+    final sheetForegroundColor = isDark ? Colors.white : Colors.black;
     final surahTitle = _surahTitle(isMl);
 
     return ConstrainedBox(
@@ -529,7 +526,7 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
                           }
                         },
                   icon: Icons.copy_outlined,
-                  color: _loading ? Colors.grey[400] : actionColor,
+                  color: _loading ? Colors.grey[400] : sheetForegroundColor,
                 ),
                 const SizedBox(width: 8),
                 // Share
@@ -544,7 +541,7 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
                           }
                         },
                   icon: Icons.share_outlined,
-                  color: _loading ? Colors.grey[400] : actionColor,
+                  color: _loading ? Colors.grey[400] : sheetForegroundColor,
                 ),
                 const Spacer(),
                 // Close
@@ -552,6 +549,7 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
                   tooltip: 'Close',
                   onPressed: () => Navigator.of(context).pop(),
                   icon: Icons.close,
+                  color: sheetForegroundColor,
                 ),
               ],
             ),
@@ -597,7 +595,7 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
                             style: AppTextTheme.popinsDefault(
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
-                              color: Colors.grey[600],
+                              color: sheetForegroundColor,
                             ),
                           ),
                         ),
@@ -751,6 +749,8 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
     int currentSurahNumber,
   ) {
     final isMl = context.read<LanguageProvider>().isMalayalam;
+    final justifyInterpretation =
+        context.watch<FontSizeChangerProvider>().interpretationJustify;
     final segments = parseForCrossReferences(text, currentSurahNumber);
     if (segments.length == 1 && !segments.first.isCrossReference) {
       return Text(
@@ -758,6 +758,10 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
         style: AppTextTheme.surahInterpretationStyle(
           context,
           isMalayalam: isMl,
+        ),
+        textAlign: resolveInterpretationTextAlign(
+          isMalayalam: isMl,
+          justifyInterpretation: justifyInterpretation,
         ),
       );
     }
@@ -795,7 +799,13 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
       }
     }
 
-    return Text.rich(TextSpan(children: spans));
+    return Text.rich(
+      TextSpan(children: spans),
+      textAlign: resolveInterpretationTextAlign(
+        isMalayalam: isMl,
+        justifyInterpretation: justifyInterpretation,
+      ),
+    );
   }
 }
 
@@ -941,6 +951,8 @@ class _NestedInterpretationSheetState
     String text,
     int currentSurahNumber,
   ) {
+    final justifyInterpretation =
+        context.watch<FontSizeChangerProvider>().interpretationJustify;
     final segments = parseForCrossReferences(text, currentSurahNumber);
     if (segments.length == 1 && !segments.first.isCrossReference) {
       return Text(
@@ -948,6 +960,10 @@ class _NestedInterpretationSheetState
         style: AppTextTheme.surahInterpretationStyle(
           context,
           isMalayalam: widget.isMalayalam,
+        ),
+        textAlign: resolveInterpretationTextAlign(
+          isMalayalam: widget.isMalayalam,
+          justifyInterpretation: justifyInterpretation,
         ),
       );
     }
@@ -985,6 +1001,12 @@ class _NestedInterpretationSheetState
       }
     }
 
-    return Text.rich(TextSpan(children: spans));
+    return Text.rich(
+      TextSpan(children: spans),
+      textAlign: resolveInterpretationTextAlign(
+        isMalayalam: widget.isMalayalam,
+        justifyInterpretation: justifyInterpretation,
+      ),
+    );
   }
 }

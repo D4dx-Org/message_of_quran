@@ -10,3 +10,14 @@ TextAlign resolveTranslationTextAlign({
 
   return TextAlign.justify;
 }
+
+TextAlign resolveInterpretationTextAlign({
+  required bool isMalayalam,
+  required bool justifyInterpretation,
+}) {
+  if (isMalayalam || !justifyInterpretation) {
+    return TextAlign.start;
+  }
+
+  return TextAlign.justify;
+}
