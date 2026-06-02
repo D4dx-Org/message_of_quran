@@ -9,6 +9,8 @@ class AppTextTheme {
 
   static const _malayalamFont = GoogleFonts.notoSerifMalayalam;
   static const _englishFont = GoogleFonts.poppins;
+  static String get englishFontFamily => _englishFont().fontFamily!;
+  static String get malayalamFontFamily => _malayalamFont().fontFamily!;
 
   static TextTheme englishTextTheme(TextTheme base) =>
       GoogleFonts.poppinsTextTheme(base);
@@ -65,6 +67,10 @@ class AppTextTheme {
       decoration: decoration,
       fontStyle: fontStyle,
     );
+  }
+
+  static String localizedFontFamily({required bool isMalayalam}) {
+    return isMalayalam ? malayalamFontFamily : englishFontFamily;
   }
 
   static TextStyle localizedTitle({

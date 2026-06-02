@@ -39,6 +39,7 @@ class _AboutScreenState extends State<AboutScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     return BaseScreenLayout(
       contentCardBoxShadows: const [],
       child: Consumer<AboutProvider>(
@@ -51,7 +52,7 @@ class _AboutScreenState extends State<AboutScreen> {
               child: Text(
                 'No Data',
                 textAlign: TextAlign.center,
-                style: AppTextTheme.subTitleblack.copyWith(
+                style: AppTextTheme.popinsDefault(
                   fontSize: 14,
                   color: Colors.grey.shade500,
                   fontWeight: FontWeight.w400,
@@ -73,8 +74,12 @@ class _AboutScreenState extends State<AboutScreen> {
                         Text(
                           about.description!,
                           textAlign: TextAlign.left,
-                          style:
-                              AppTextTheme.subTitleblack.copyWith(height: 1.7),
+                          style: AppTextTheme.localizedBody(
+                            isMalayalam: isMalayalam,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            height: 1.7,
+                          ),
                         ),
                       const SizedBox(height: 16),
                       if (about.signedBy != null && about.signedBy!.isNotEmpty)
@@ -84,9 +89,12 @@ class _AboutScreenState extends State<AboutScreen> {
                             onTap: _launchD4dxUrl,
                             child: Text(
                               '- ${about.signedBy!}',
-                              style: AppTextTheme.subTitleblack.copyWith(
+                              style: AppTextTheme.localizedLabel(
+                                isMalayalam: isMalayalam,
+                                fontSize: 15,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.blue,
+                              ).copyWith(
                                 decoration: TextDecoration.underline,
                                 decorationColor: Colors.blue,
                               ),

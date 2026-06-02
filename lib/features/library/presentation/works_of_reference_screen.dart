@@ -9,8 +9,36 @@ import 'package:url_launcher/url_launcher.dart';
 class WorksOfReferenceScreen extends StatelessWidget {
   const WorksOfReferenceScreen({super.key});
 
+  Map<String, Style> _htmlStyles({required Color bodyColor}) {
+    return {
+      'body': Style(
+        margin: Margins.zero,
+        padding: HtmlPaddings.zero,
+        color: bodyColor,
+        fontSize: FontSize(14),
+        fontFamily: AppTextTheme.englishFontFamily,
+      ),
+      'p': Style(
+        color: bodyColor,
+        fontSize: FontSize(14),
+        fontFamily: AppTextTheme.englishFontFamily,
+      ),
+      'h2': Style(
+        display: Display.none,
+        fontFamily: AppTextTheme.englishFontFamily,
+      ),
+      'a': Style(
+        textDecoration: TextDecoration.none,
+        color: bodyColor,
+        fontFamily: AppTextTheme.englishFontFamily,
+      ),
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bodyColor = isDark ? Colors.white70 : Colors.black87;
     return BaseScreenLayout(
       appBar: AppBar(
         title: Text(
@@ -72,21 +100,16 @@ class WorksOfReferenceScreen extends StatelessWidget {
                             }
                           },
                           style: {
-                            'body': Style(
-                              margin: Margins.zero,
-                              padding: HtmlPaddings.zero,
-                            ),
-                            'h2': Style(
-                              display: Display.none,
-                            ),
-                            'a': Style(
-                              textDecoration: TextDecoration.none,
-                            ),
+                            ..._htmlStyles(bodyColor: bodyColor),
                           },
                         )
                       : Text(
                           'No Content available',
-                          style: AppTextTheme.subTitleblack,
+                          style: AppTextTheme.popinsDefault(
+                            fontSize: 15,
+                            color: bodyColor,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                 );
               },

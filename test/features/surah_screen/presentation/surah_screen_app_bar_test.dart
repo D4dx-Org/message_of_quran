@@ -61,6 +61,27 @@ void main() {
       },
     );
 
+    testWidgets('renders uncertain period with the DB wording order reversed', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        buildTestApp(
+          child: const SurahInfoStrip(
+            surahName: 'Aal-e-Imran',
+            surahTranslation: 'Family of Imran',
+            place: 'Period Uncertain',
+            ordinalLabel: 'Third',
+            surahNumber: 3,
+          ),
+        ),
+      );
+
+      expect(find.text('The Third Surah'), findsOneWidget);
+      expect(find.text('Aal-e-Imran (Family of Imran)'), findsOneWidget);
+      expect(find.text('Period Uncertain'), findsOneWidget);
+      expect(find.text('Uncertain Period'), findsNothing);
+    });
+
     testWidgets('renders exact Malayalam content for Surah 1', (
       WidgetTester tester,
     ) async {

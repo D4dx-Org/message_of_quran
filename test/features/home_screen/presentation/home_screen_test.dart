@@ -28,9 +28,10 @@ void main() {
     WidgetTester tester, {
     String languageCode = LanguageProvider.english,
     int index = 0,
+    List<SurahModel>? surahs,
   }) async {
     SharedPreferences.setMockInitialValues({'app_language': languageCode});
-    final surahProvider = _TestSurahProvider(_sampleSurahs);
+    final surahProvider = _TestSurahProvider(surahs ?? _sampleSurahs);
 
     await tester.pumpWidget(
       MultiProvider(
@@ -231,6 +232,36 @@ void main() {
       expect(find.text('الفاتحة'), findsNothing);
     },
   );
+
+  testWidgets('home tile keeps English uncertain label without period prefix', (
+    tester,
+  ) async {
+    await pumpHomeTile(
+      tester,
+      surahs: [
+        SurahModel(
+          id: '4',
+          surahNumber: 4,
+          name: 'An-Nisa',
+          searchName: 'an-nisa',
+          arabicName: 'النساء',
+          malayalamName: 'അന്‍-നിസാ',
+          description: 'The Women',
+          ayathCount: 176,
+          place: 'Period Uncertain',
+          createdBy: '',
+          createdByRole: '',
+          isVerified: true,
+        ),
+      ],
+    );
+
+    expect(find.text('An-Nisa'), findsOneWidget);
+    expect(find.text('The Women'), findsOneWidget);
+    expect(find.text('Uncertain'), findsOneWidget);
+    expect(find.text('Period Uncertain'), findsNothing);
+    expect(find.text('176 Ayahs'), findsOneWidget);
+  });
 
   testWidgets('home tile uses tighter vertical spacing around the divider', (
     tester,

@@ -6,6 +6,22 @@ void main() {
     test('canonicalizes English source variants', () {
       expect(localizeSurahPlace('Mecca', isMalayalam: false), 'Makkah');
       expect(localizeSurahPlace('Medina', isMalayalam: false), 'Madinah');
+      expect(
+        localizeSurahPlace('Uncertain', isMalayalam: false),
+        'Period Uncertain',
+      );
+      expect(
+        localizeSurahPlace('Period Uncertain', isMalayalam: false),
+        'Period Uncertain',
+      );
+      expect(
+        localizeSurahPlace(
+          'Period Uncertain',
+          isMalayalam: false,
+          preferBareUncertain: true,
+        ),
+        'Uncertain',
+      );
     });
 
     test('maps known place names to Malayalam labels', () {
@@ -23,8 +39,20 @@ void main() {
         'Makkah Period',
       );
       expect(
+        localizeSurahPeriodLabel('Uncertain', isMalayalam: false),
+        'Period Uncertain',
+      );
+      expect(
+        localizeSurahPeriodLabel('Period Uncertain', isMalayalam: false),
+        'Period Uncertain',
+      );
+      expect(
         localizeSurahPeriodLabel('Medina', isMalayalam: true),
         'മദീനാ കാലഘട്ടം',
+      );
+      expect(
+        localizeSurahPeriodLabel('കാലഘട്ടം അവ്യക്തം', isMalayalam: true),
+        'കാലഘട്ടം അവ്യക്തം',
       );
     });
   });

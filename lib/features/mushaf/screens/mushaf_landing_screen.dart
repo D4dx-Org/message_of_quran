@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/theme/app_text_theme.dart';
 import '../../../core/utils/responsive_helper.dart';
 import '../../../core/widgets/base_screen_layout.dart';
 import '../../../core/widgets/responsive_content_wrapper.dart';
@@ -486,7 +486,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                       ),
                       child: Text(
                         _downloadBannerMessage ?? '',
-                        style: GoogleFonts.poppins(
+                        style: AppTextTheme.popinsDefault(
                           color: isDarkMode
                               ? Colors.white
                               : const Color(0xFF22304A),
@@ -610,7 +610,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                 Expanded(
                   child: Text(
                     'Download Required',
-                    style: GoogleFonts.poppins(
+                    style: AppTextTheme.popinsDefault(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -622,14 +622,14 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
               'Pages 1–2 are available offline.\n'
               'Download the Mushaf font pack to read the full Quran.\n\n'
               'The download will continue in the background.',
-              style: GoogleFonts.poppins(fontSize: 14),
+              style: AppTextTheme.popinsDefault(fontSize: 14),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(),
                 child: Text(
                   'Cancel',
-                  style: GoogleFonts.poppins(
+                  style: AppTextTheme.popinsDefault(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                     color: const Color(0xFF525866),
@@ -653,7 +653,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                 ),
                 child: Text(
                   'Download',
-                  style: GoogleFonts.poppins(
+                  style: AppTextTheme.popinsDefault(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
@@ -973,7 +973,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                   padding: const EdgeInsets.only(bottom: 6),
                   child: Text(
                     'Surah',
-                    style: GoogleFonts.poppins(
+                    style: AppTextTheme.popinsDefault(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -986,7 +986,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                   padding: const EdgeInsets.only(bottom: 6),
                   child: Text(
                     "Juz'",
-                    style: GoogleFonts.poppins(
+                    style: AppTextTheme.popinsDefault(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -999,7 +999,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                   padding: const EdgeInsets.only(bottom: 6),
                   child: Text(
                     'Revelation',
-                    style: GoogleFonts.poppins(
+                    style: AppTextTheme.popinsDefault(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -1196,7 +1196,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                     children: [
                       Text(
                         meta.name,
-                        style: GoogleFonts.poppins(
+                        style: AppTextTheme.popinsDefault(
                           color: textColor,
                           fontWeight: FontWeight.w500,
                           fontSize: 14,
@@ -1221,7 +1221,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                           const SizedBox(width: 4),
                           Text(
                             '${meta.ayahs}',
-                            style: GoogleFonts.poppins(
+                            style: AppTextTheme.popinsDefault(
                               fontSize: 10,
                               color: subColor,
                             ),
@@ -1232,7 +1232,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                               meta.meaning,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.poppins(
+                              style: AppTextTheme.popinsDefault(
                                 fontSize: 10,
                                 color: subColor,
                               ),

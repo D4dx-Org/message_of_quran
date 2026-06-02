@@ -91,6 +91,41 @@ class _AuthorScreenState extends State<AuthorScreen> {
     };
   }
 
+  Map<String, Style> _buildHtmlStyles({
+    required bool isMalayalam,
+    required Color bodyColor,
+  }) {
+    final fontFamily = AppTextTheme.localizedFontFamily(
+      isMalayalam: isMalayalam,
+    );
+    return {
+      'body': Style(
+        margin: Margins.zero,
+        padding: HtmlPaddings.zero,
+        color: bodyColor,
+        fontSize: FontSize(14),
+        fontFamily: fontFamily,
+      ),
+      'p': Style(
+        color: bodyColor,
+        fontSize: FontSize(14),
+        fontFamily: fontFamily,
+      ),
+      'h2': Style(
+        textAlign: TextAlign.center,
+        color: bodyColor,
+        fontSize: FontSize(18),
+        fontWeight: FontWeight.w600,
+        fontFamily: fontFamily,
+      ),
+      'a': Style(
+        textDecoration: TextDecoration.none,
+        color: bodyColor,
+        fontFamily: fontFamily,
+      ),
+    };
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -179,28 +214,10 @@ class _AuthorScreenState extends State<AuthorScreen> {
                               }
                             }
                           },
-                          style: {
-                            'body': Style(
-                              margin: Margins.zero,
-                              padding: HtmlPaddings.zero,
-                              color: bodyColor,
-                              fontSize: FontSize(14),
-                            ),
-                            'p': Style(
-                              color: bodyColor,
-                              fontSize: FontSize(14),
-                            ),
-                            'h2': Style(
-                              textAlign: TextAlign.center,
-                              color: bodyColor,
-                              fontSize: FontSize(18),
-                              fontWeight: FontWeight.w600,
-                            ),
-                            'a': Style(
-                              textDecoration: TextDecoration.none,
-                              color: bodyColor,
-                            ),
-                          },
+                          style: _buildHtmlStyles(
+                            isMalayalam: isMalayalam,
+                            bodyColor: bodyColor,
+                          ),
                         ),
                       if (signature != null) ...[
                         const SizedBox(height: 16),
@@ -208,19 +225,13 @@ class _AuthorScreenState extends State<AuthorScreen> {
                           alignment: Alignment.centerLeft,
                           child: Text(
                             signature,
-                            style: isMalayalam
-                                ? AppTextTheme.subTitleblack.copyWith(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    color: bodyColor,
-                                    height: 1.4,
-                                  )
-                                : AppTextTheme.popinsDefault(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
-                                    color: bodyColor,
-                                    height: 1.4,
-                                  ),
+                            style: AppTextTheme.localizedBody(
+                              isMalayalam: isMalayalam,
+                              fontSize: isMalayalam ? 16 : 15,
+                              fontWeight: FontWeight.w700,
+                              color: bodyColor,
+                              height: 1.4,
+                            ),
                           ),
                         ),
                       ],
@@ -241,32 +252,18 @@ class _AuthorScreenState extends State<AuthorScreen> {
                               }
                             }
                           },
-                          style: {
-                            'body': Style(
-                              margin: Margins.zero,
-                              padding: HtmlPaddings.zero,
-                              color: bodyColor,
-                              fontSize: FontSize(14),
-                            ),
-                            'p': Style(
-                              color: bodyColor,
-                              fontSize: FontSize(14),
-                            ),
-                            'h2': Style(
-                              textAlign: TextAlign.center,
-                              color: bodyColor,
-                              fontSize: FontSize(18),
-                              fontWeight: FontWeight.w600,
-                            ),
-                            'a': Style(
-                              textDecoration: TextDecoration.none,
-                              color: bodyColor,
-                            ),
-                          },
+                          style: _buildHtmlStyles(
+                            isMalayalam: isMalayalam,
+                            bodyColor: bodyColor,
+                          ),
                         )
                       : Text(
                           'No Content available',
-                          style: AppTextTheme.subTitleblack,
+                          style: AppTextTheme.popinsDefault(
+                            fontSize: 15,
+                            color: bodyColor,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                 );
               },

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/ayah_of_the_day/provider/ayah_of_the_day_provider.dart';
@@ -34,7 +34,7 @@ class _AyahOfTheDayScreenState extends State<AyahOfTheDayScreen> {
           header: true,
           child: Text(
             'Ayah of the Day',
-            style: GoogleFonts.poppins(
+            style: AppTextTheme.popinsDefault(
               fontWeight: FontWeight.w600,
               fontSize: 18,
             ),

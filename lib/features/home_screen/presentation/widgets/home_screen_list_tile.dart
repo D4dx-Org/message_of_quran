@@ -42,7 +42,11 @@ class HomeScreenListTile extends StatelessWidget {
     );
     final displayName = displayText.title;
     final description = displayText.subtitle;
-    final placeName = localizeSurahPlace(surah.place, isMalayalam: isMl);
+    final placeName = localizeSurahPlace(
+      surah.place,
+      isMalayalam: isMl,
+      preferBareUncertain: true,
+    );
     final ayahLabel = formatAyahCountLabel(
       surah.ayathCount,
       isMalayalam: isMl,

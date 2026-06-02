@@ -28,6 +28,7 @@ import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper
 import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/core/widgets/scroll_to_top_button.dart';
 import 'package:the_message_of_the_quran/features/bookmark_screen/presentation/bookmark_conflict_dialog.dart';
+import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/surah_action_dock.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/surah_screen_app_bar.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/cross_reference_sheet.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/interpretation_note_marker.dart';
@@ -101,10 +102,6 @@ class _SurahScreenState extends State<SurahScreen> {
   bool _showBottomSurahNavOverlay = false;
   bool _showActionDock = true;
   double? _deepLinkCacheExtent;
-
-  static const double _surahActionDockHeight = 56;
-  static const double _surahActionDockBottomOffset = 16;
-  static const double _surahActionDockSidePadding = 24;
 
   /// Cached provider references — safe to use in dispose().
   late SurahProvider _surahProv;
@@ -485,14 +482,6 @@ class _SurahScreenState extends State<SurahScreen> {
     );
   }
 
-  double _surahActionDockBottomPadding(BuildContext context) {
-    return MediaQuery.of(context).padding.bottom + _surahActionDockBottomOffset;
-  }
-
-  double _surahActionDockClearance(BuildContext context) {
-    return _surahActionDockBottomPadding(context) + _surahActionDockHeight + 12;
-  }
-
   bool _onScrollNotification(ScrollNotification notification) {
     if (!_showActionDock) return false;
 
@@ -559,152 +548,6 @@ class _SurahScreenState extends State<SurahScreen> {
       translationIndex: 0,
       reciter: playSettings.selectedReciter,
       playbackSpeed: playSettings.playbackSpeed,
-    );
-  }
-
-  Widget _buildSurahActionDockButton(
-    BuildContext context, {
-    required String tooltip,
-    IconData? icon,
-    String? assetPath,
-    required VoidCallback onPressed,
-  }) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final iconColor = isDarkMode ? Colors.white : AppTheme.appIconTheme;
-
-    final Widget iconWidget = assetPath != null
-        ? Image.asset(assetPath, width: 24, height: 24, color: iconColor)
-        : Icon(icon, color: iconColor, size: 24);
-
-    return Expanded(
-      child: Semantics(
-        button: true,
-        label: tooltip,
-        excludeSemantics: true,
-        child: Tooltip(
-          message: tooltip,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(14),
-            onTap: onPressed,
-            child: SizedBox(
-              height: _surahActionDockHeight,
-              child: Center(child: iconWidget),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSurahActionDock(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-    final dockBg = isDarkMode
-        ? const Color(0xff0c2d52)
-        : const Color.fromRGBO(255, 248, 235, 1);
-    final borderColor = isDarkMode
-        ? Colors.white.withValues(alpha: 0.12)
-        : AppTheme.appIconTheme.withValues(alpha: 0.16);
-    final dividerColor = isDarkMode
-        ? Colors.white.withValues(alpha: 0.10)
-        : theme.colorScheme.outlineVariant;
-
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: IgnorePointer(
-        ignoring: !_showActionDock,
-        child: AnimatedSlide(
-          duration: const Duration(milliseconds: 220),
-          curve: Curves.easeOutCubic,
-          offset: _showActionDock ? Offset.zero : const Offset(0, 0.35),
-          child: AnimatedOpacity(
-            duration: const Duration(milliseconds: 180),
-            curve: Curves.easeOut,
-            opacity: _showActionDock ? 1 : 0,
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(
-                _surahActionDockSidePadding,
-                0,
-                _surahActionDockSidePadding,
-                _surahActionDockBottomPadding(context),
-              ),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 296),
-                child: GestureDetector(
-                  onTap: () {},
-                  behavior: HitTestBehavior.opaque,
-                  child: Semantics(
-                    container: true,
-                    label: 'Surah quick actions',
-                    child: Material(
-                      color: dockBg,
-                      elevation: 10,
-                      shadowColor: Colors.black.withValues(alpha: 0.16),
-                      borderRadius: BorderRadius.circular(20),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: borderColor),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _buildSurahActionDockButton(
-                              context,
-                              tooltip: 'Home',
-                              assetPath: 'assets/icons/home-img.png',
-                              onPressed: () => _navigateToMainTab(0),
-                            ),
-                            Container(
-                              width: 1,
-                              height: 24,
-                              color: dividerColor,
-                            ),
-                            _buildSurahActionDockButton(
-                              context,
-                              tooltip: 'Jump to Ayah',
-                              icon: Icons.format_list_numbered,
-                              onPressed: () {
-                                _hideActionDock();
-                                _showJumpTo(
-                                  context,
-                                  _surahProv.arabicBlockList,
-                                );
-                              },
-                            ),
-                            Container(
-                              width: 1,
-                              height: 24,
-                              color: dividerColor,
-                            ),
-                            _buildSurahActionDockButton(
-                              context,
-                              tooltip: 'Play from beginning',
-                              icon: Icons.play_circle_outline_rounded,
-                              onPressed: _restartSurahPlayback,
-                            ),
-                            Container(
-                              width: 1,
-                              height: 24,
-                              color: dividerColor,
-                            ),
-                            _buildSurahActionDockButton(
-                              context,
-                              tooltip: 'Settings',
-                              assetPath: 'assets/icons/settings-img.png',
-                              onPressed: () => _navigateToMainTab(3),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 
@@ -1290,24 +1133,30 @@ class _SurahScreenState extends State<SurahScreen> {
                     return const Center(child: CircularProgressIndicator());
                   }
                   if (snapshot.hasError) {
-                    return const Center(
+                    return Center(
                       child: Padding(
-                        padding: EdgeInsets.all(24),
+                        padding: const EdgeInsets.all(24),
                         child: Text(
                           'Failed to load surah info.',
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                          style: AppTextTheme.popinsDefault(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
                     );
                   }
                   final prefaceList = snapshot.data ?? [];
                   if (prefaceList.isEmpty) {
-                    return const Center(
+                    return Center(
                       child: Padding(
-                        padding: EdgeInsets.all(24),
+                        padding: const EdgeInsets.all(24),
                         child: Text(
                           'No description available for this surah.',
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                          style: AppTextTheme.popinsDefault(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
                     );
@@ -2075,6 +1924,13 @@ class _SurahScreenState extends State<SurahScreen> {
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<SurahProvider>(context);
+    final rootBottomInset = MediaQuery.viewPaddingOf(context).bottom;
+    final actionDockBottomPadding = resolveSurahActionDockBottomPadding(
+      rootBottomInset: rootBottomInset,
+    );
+    final actionDockClearance = resolveSurahActionDockClearance(
+      rootBottomInset: rootBottomInset,
+    );
 
     return PopScope(
       canPop: true,
@@ -2483,10 +2339,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                               ),
                                               SliverToBoxAdapter(
                                                 child: SizedBox(
-                                                  height:
-                                                      _surahActionDockClearance(
-                                                        context,
-                                                      ),
+                                                  height: actionDockClearance,
                                                 ),
                                               ),
                                             ],
@@ -2502,7 +2355,17 @@ class _SurahScreenState extends State<SurahScreen> {
                             ),
                     ),
                     if (controller.arabicBlockList.isNotEmpty)
-                      _buildSurahActionDock(context),
+                      SurahActionDock(
+                        visible: _showActionDock,
+                        bottomPadding: actionDockBottomPadding,
+                        onHomePressed: () => _navigateToMainTab(0),
+                        onJumpToAyahPressed: () {
+                          _hideActionDock();
+                          _showJumpTo(context, _surahProv.arabicBlockList);
+                        },
+                        onPlayFromBeginningPressed: _restartSurahPlayback,
+                        onSettingsPressed: () => _navigateToMainTab(3),
+                      ),
                   ],
                 ),
               ),

@@ -147,11 +147,14 @@ class _JumpToSheetState extends State<_JumpToSheet> {
                   ),
                 ),
                 // ── Title ────────────────────────────────────────────
-                const Padding(
+                Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: Text(
                     'Jump to Surah',
-                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                    style: AppTextTheme.popinsDefault(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 // ── Search field ──────────────────────────────────────
@@ -195,7 +198,10 @@ class _JumpToSheetState extends State<_JumpToSheet> {
                             _query.isEmpty
                                 ? 'Loading surahs…'
                                 : 'No surah found for "$_query"',
-                            style: const TextStyle(color: Colors.grey),
+                            style: AppTextTheme.popinsDefault(
+                              color: Colors.grey,
+                              fontSize: 14,
+                            ),
                           ),
                         )
                       : ListView.separated(
