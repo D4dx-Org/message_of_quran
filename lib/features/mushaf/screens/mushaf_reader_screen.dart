@@ -464,8 +464,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
   }
 
   bool _useDesktopWebReaderLayout(BuildContext context) {
-    if (!kIsWeb) return false;
-    return MediaQuery.sizeOf(context).width >= 1180;
+    return kIsWeb;
   }
 
   int _lastReadablePage() {
@@ -567,15 +566,11 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        child: Row(
-          children: [
-            IconButton(
-              tooltip: 'Back',
-              onPressed: () => Navigator.of(context).pop(),
-              icon: Icon(Icons.arrow_back_ios_new_rounded, color: titleColor),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isCompactToolbar = constraints.maxWidth < 760;
+
+            final titleBlock = Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -599,57 +594,115 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
                   ),
                 ],
               ),
-            ),
-            if (_p.isLoadingAudio)
-              const SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-            else
-              IconButton(
-                tooltip: _p.isPlaying ? 'Pause audio' : 'Play audio',
-                onPressed: _p.isPlaying || _p.playingLabel != null
-                    ? _p.togglePlayPause
-                    : _p.onPlayPressed,
-                icon: Icon(
-                  _p.isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+            );
+
+            final playButton = _p.isLoadingAudio
+                ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : IconButton(
+                    tooltip: _p.isPlaying ? 'Pause audio' : 'Play audio',
+                    onPressed: _p.isPlaying || _p.playingLabel != null
+                        ? _p.togglePlayPause
+                        : _p.onPlayPressed,
+                    icon: Icon(
+                      _p.isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                      color: titleColor,
+                    ),
+                  );
+
+            final paginationRow = Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  tooltip: 'Higher page number',
+                  onPressed: _p.currentPage < totalPages ? _goToHigherPage : null,
+                  icon: const Icon(Icons.chevron_left_rounded),
                   color: titleColor,
                 ),
-              ),
-            const SizedBox(width: 4),
-            IconButton(
-              tooltip: 'Switch view',
-              onPressed: _toggleReaderViewMode,
-              icon: Icon(
-                _p.isListView
-                    ? Icons.view_day_rounded
-                    : Icons.view_carousel_rounded,
-                color: titleColor,
-              ),
-            ),
-            const SizedBox(width: 12),
-            IconButton(
-              tooltip: 'Higher page number',
-              onPressed: _p.currentPage < totalPages ? _goToHigherPage : null,
-              icon: const Icon(Icons.chevron_left_rounded),
-              color: titleColor,
-            ),
-            Text(
-              '${_p.currentPage}',
-              style: AppTextTheme.popinsDefault(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: titleColor,
-              ),
-            ),
-            IconButton(
-              tooltip: 'Lower page number',
-              onPressed: _p.currentPage > 1 ? _goToLowerPage : null,
-              icon: const Icon(Icons.chevron_right_rounded),
-              color: titleColor,
-            ),
-          ],
+                Text(
+                  '${_p.currentPage}',
+                  style: AppTextTheme.popinsDefault(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: titleColor,
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Lower page number',
+                  onPressed: _p.currentPage > 1 ? _goToLowerPage : null,
+                  icon: const Icon(Icons.chevron_right_rounded),
+                  color: titleColor,
+                ),
+              ],
+            );
+
+            if (isCompactToolbar) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      IconButton(
+                        tooltip: 'Back',
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: Icon(Icons.arrow_back_ios_new_rounded, color: titleColor),
+                      ),
+                      const SizedBox(width: 8),
+                      titleBlock,
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      playButton,
+                      const SizedBox(width: 4),
+                      IconButton(
+                        tooltip: 'Switch view',
+                        onPressed: _toggleReaderViewMode,
+                        icon: Icon(
+                          _p.isListView
+                              ? Icons.view_day_rounded
+                              : Icons.view_carousel_rounded,
+                          color: titleColor,
+                        ),
+                      ),
+                      const Spacer(),
+                      paginationRow,
+                    ],
+                  ),
+                ],
+              );
+            }
+
+            return Row(
+              children: [
+                IconButton(
+                  tooltip: 'Back',
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: Icon(Icons.arrow_back_ios_new_rounded, color: titleColor),
+                ),
+                const SizedBox(width: 8),
+                titleBlock,
+                playButton,
+                const SizedBox(width: 4),
+                IconButton(
+                  tooltip: 'Switch view',
+                  onPressed: _toggleReaderViewMode,
+                  icon: Icon(
+                    _p.isListView
+                        ? Icons.view_day_rounded
+                        : Icons.view_carousel_rounded,
+                    color: titleColor,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                paginationRow,
+              ],
+            );
+          },
         ),
       ),
     );

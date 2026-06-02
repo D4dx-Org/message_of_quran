@@ -431,8 +431,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
   }
 
   bool _useDesktopWebLayout(BuildContext context) {
-    if (!kIsWeb) return false;
-    return MediaQuery.sizeOf(context).width >= 1180;
+    return kIsWeb;
   }
 
   Widget _buildDownloadBanner(BuildContext context) {
@@ -745,158 +744,168 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
   }
 
   Widget _buildDesktopBody(BuildContext context, bool isDarkMode) {
+    final useTwoColumns = MediaQuery.sizeOf(context).width >= 980;
     final panelColor = isDarkMode ? _kGrey3C : Colors.white;
     final panelBorder = isDarkMode
         ? Colors.white.withValues(alpha: 0.08)
         : Colors.black.withValues(alpha: 0.08);
     final mutedColor = isDarkMode ? Colors.white70 : Colors.black54;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 320,
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _buildRecentlyReadSection(context, isDarkMode, true),
-                  const SizedBox(height: 18),
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: panelColor,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: panelBorder),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: isDarkMode ? 0.18 : 0.08),
-                          blurRadius: 18,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
+    final overviewPanel = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buildRecentlyReadSection(context, isDarkMode, useTwoColumns),
+        const SizedBox(height: 18),
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: panelColor,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: panelBorder),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDarkMode ? 0.18 : 0.08),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Mushaf Reading',
+                  style: AppTextTheme.popinsDefault(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: isDarkMode ? Colors.white : _kGrey3C,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Open the last page you reached, browse by surah or juz, and keep the reader controls within easy reach on desktop.',
+                  style: AppTextTheme.popinsDefault(
+                    fontSize: 13,
+                    height: 1.5,
+                    color: mutedColor,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () => _openPage(context, _p.lastRead?.page ?? 1),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _kSecondaryDark,
+                      foregroundColor: _kWhite,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Mushaf Reading',
-                            style: AppTextTheme.popinsDefault(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: isDarkMode ? Colors.white : _kGrey3C,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Open the last page you reached, browse by surah or juz, and keep the reader controls within easy reach on desktop.',
-                            style: AppTextTheme.popinsDefault(
-                              fontSize: 13,
-                              height: 1.5,
-                              color: mutedColor,
-                            ),
-                          ),
-                          const SizedBox(height: 18),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton.icon(
-                              onPressed: () => _openPage(context, _p.lastRead?.page ?? 1),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: _kSecondaryDark,
-                                foregroundColor: _kWhite,
-                                padding: const EdgeInsets.symmetric(vertical: 14),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                              ),
-                              icon: const Icon(Icons.menu_book_rounded),
-                              label: Text(
-                                _p.lastRead == null
-                                    ? 'Open Mushaf'
-                                    : 'Continue on page ${_p.lastRead?.page ?? 1}',
-                                style: AppTextTheme.popinsDefault(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: _kWhite,
-                                ),
-                              ),
-                            ),
-                          ),
-                          if (!_p.fontsInstalled) ...[
-                            const SizedBox(height: 10),
-                            SizedBox(
-                              width: double.infinity,
-                              child: OutlinedButton.icon(
-                                onPressed: () => _showDownloadDialog(context),
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: isDarkMode ? Colors.white : _kSecondaryDark,
-                                  side: BorderSide(
-                                    color: (isDarkMode ? Colors.white : _kSecondaryDark).withValues(alpha: 0.16),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                ),
-                                icon: const Icon(Icons.download_rounded),
-                                label: Text(
-                                  'Download full Mushaf',
-                                  style: AppTextTheme.popinsDefault(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: isDarkMode ? Colors.white : _kSecondaryDark,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ],
+                    icon: const Icon(Icons.menu_book_rounded),
+                    label: Text(
+                      _p.lastRead == null
+                          ? 'Open Mushaf'
+                          : 'Continue on page ${_p.lastRead?.page ?? 1}',
+                      style: AppTextTheme.popinsDefault(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: _kWhite,
+                      ),
+                    ),
+                  ),
+                ),
+                if (!_p.fontsInstalled) ...[
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () => _showDownloadDialog(context),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: isDarkMode ? Colors.white : _kSecondaryDark,
+                        side: BorderSide(
+                          color: (isDarkMode ? Colors.white : _kSecondaryDark).withValues(alpha: 0.16),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      icon: const Icon(Icons.download_rounded),
+                      label: Text(
+                        'Download full Mushaf',
+                        style: AppTextTheme.popinsDefault(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: isDarkMode ? Colors.white : _kSecondaryDark,
+                        ),
                       ),
                     ),
                   ),
                 ],
-              ),
+              ],
             ),
           ),
-          const SizedBox(width: 24),
+        ),
+      ],
+    );
+
+    final browserPanel = DecoratedBox(
+      decoration: BoxDecoration(
+        color: panelColor,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: panelBorder),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDarkMode ? 0.18 : 0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          const SizedBox(height: 10),
+          _buildTabBar(context, isDarkMode, useTwoColumns),
+          const SizedBox(height: 8),
           Expanded(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: panelColor,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: panelBorder),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: isDarkMode ? 0.18 : 0.08),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  const SizedBox(height: 10),
-                  _buildTabBar(context, isDarkMode, true),
-                  const SizedBox(height: 8),
-                  Expanded(
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: [
-                        _buildSurahTab(context, isDarkMode),
-                        _buildJuzTab(context, isDarkMode),
-                        _buildRevelationTab(context, isDarkMode),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildSurahTab(context, isDarkMode),
+                _buildJuzTab(context, isDarkMode),
+                _buildRevelationTab(context, isDarkMode),
+              ],
             ),
           ),
         ],
       ),
+    );
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+      child: useTwoColumns
+          ? Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: 320,
+                  child: SingleChildScrollView(child: overviewPanel),
+                ),
+                const SizedBox(width: 24),
+                Expanded(child: browserPanel),
+              ],
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                overviewPanel,
+                const SizedBox(height: 24),
+                Expanded(child: browserPanel),
+              ],
+            ),
     );
   }
 

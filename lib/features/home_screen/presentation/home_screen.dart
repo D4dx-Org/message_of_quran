@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +6,7 @@ import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
+import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
 import 'package:the_message_of_the_quran/core/widgets/scroll_to_top_button.dart';
@@ -17,6 +16,7 @@ import 'package:the_message_of_the_quran/features/home_screen/presentation/widge
 import 'package:the_message_of_the_quran/features/home_screen/providers/juz_hizb_provider.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
+import 'package:the_message_of_the_quran/features/mushaf/widgets/star_number.dart';
 import 'package:the_message_of_the_quran/features/prostration_verses/data/prostration_verse_model.dart';
 import 'package:the_message_of_the_quran/features/prostration_verses/services/prostration_verses_service.dart';
 import 'package:the_message_of_the_quran/features/search_screen/presentation/search_screen.dart';
@@ -24,7 +24,6 @@ import 'package:the_message_of_the_quran/features/settings_screen/providers/lang
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
-const List<int> _webFeaturedSurahs = [1, 36, 56, 55, 46, 44];
 const List<int> _webRevelationOrder = [
   96,
   68,
@@ -151,7 +150,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
-  static const double _webHomeBreakpoint = 1100;
   static const double _webHomeMaxWidth = 1140;
 
   final ScrollController _listController = ScrollController();
@@ -176,8 +174,7 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   bool _useWebHome(BuildContext context) {
-    if (!kIsWeb) return false;
-    return MediaQuery.sizeOf(context).width >= _webHomeBreakpoint;
+    return kIsWeb;
   }
 
   void _onScroll() {
@@ -389,6 +386,33 @@ class _HomeScreenState extends State<HomeScreen>
         : (theme.dividerTheme.color ?? theme.colorScheme.outlineVariant);
   }
 
+  double _webHorizontalPadding(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    return width < 640 ? 12.0 : 24.0;
+  }
+
+  bool _useCompactWebHome(BuildContext context) {
+    return MediaQuery.sizeOf(context).width < 760;
+  }
+
+  String _webFeaturedTitle({
+    required bool isMalayalam,
+    required SurahModel surah,
+    int? ayahId,
+  }) {
+    if (ayahId == 255) {
+      return formatAyatulKursiLabel(isMalayalam: isMalayalam);
+    }
+
+    return formatSurahListDisplayText(
+      isMalayalam: isMalayalam,
+      surahName: surah.name,
+      surahTranslation: surah.description,
+      malayalamName: surah.malayalamName,
+      surahNumber: surah.surahNumber,
+    ).title;
+  }
+
   BoxDecoration _webPanelDecoration(BuildContext context, {double radius = 20}) {
     return BoxDecoration(
       borderRadius: BorderRadius.circular(radius),
@@ -408,20 +432,15 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildWebHero(bool isMalayalam) {
+    final hintFontSize = isMalayalam ? 14.0 : 15.0;
+
     return Padding(
-      padding: const EdgeInsets.only(top: 26, bottom: 30),
+      padding: const EdgeInsets.only(top: 20, bottom: 30),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 920),
           child: Column(
             children: [
-              Image.asset(
-                'assets/images/Group-logo.png',
-                height: 132,
-                fit: BoxFit.contain,
-                semanticLabel: 'Quran Asad Malayalam logo',
-              ),
-              const SizedBox(height: 18),
               Text(
                 isMalayalam
                     ? 'സൂറത്തുകൾ എളുപ്പത്തിൽ തിരയുക, വായിക്കുക, വീണ്ടും തുടർക്കുക.'
@@ -438,10 +457,6 @@ class _HomeScreenState extends State<HomeScreen>
                 hintText: isMalayalam
                     ? 'സൂറത്ത് തിരയുക'
                     : 'Search surahs, verses, or references...',
-                leading: Icon(
-                  Icons.search,
-                  color: _webPrimaryText(context),
-                ),
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const SearchScreen()),
@@ -452,7 +467,7 @@ class _HomeScreenState extends State<HomeScreen>
                   BorderSide(color: _webSurfaceBorder(context)),
                 ),
                 padding: const WidgetStatePropertyAll(
-                  EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                  EdgeInsets.symmetric(horizontal: 14, vertical: 14),
                 ),
                 shape: const WidgetStatePropertyAll(
                   RoundedRectangleBorder(
@@ -469,7 +484,7 @@ class _HomeScreenState extends State<HomeScreen>
                 hintStyle: WidgetStatePropertyAll(
                   AppTextTheme.localizedBody(
                     isMalayalam: isMalayalam,
-                    fontSize: 15,
+                    fontSize: hintFontSize,
                     color: _webSecondaryText(context),
                   ),
                 ),
@@ -479,12 +494,9 @@ class _HomeScreenState extends State<HomeScreen>
                       : Colors.white,
                 ),
                 trailing: [
-                  IconButton(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const SearchScreen()),
-                    ),
-                    icon: Icon(
+                  Padding(
+                    padding: const EdgeInsets.only(right: 2),
+                    child: Icon(
                       Icons.arrow_forward_rounded,
                       color: _webPrimaryText(context),
                     ),
@@ -540,23 +552,70 @@ class _HomeScreenState extends State<HomeScreen>
     required bool isMalayalam,
     required List<SurahModel> surahList,
   }) {
-    final featured = _webFeaturedSurahs
-        .map(
-          (surahNumber) => surahList
-              .where((surah) => surah.surahNumber == surahNumber)
-              .firstOrNull,
-        )
-        .whereType<SurahModel>()
-        .toList(growable: false);
+    final featured = <({SurahModel surah, int? ayahId, String title})>[];
+    for (final chip in SurahChipRow.chips) {
+      final surah = surahList
+          .where((item) => item.surahNumber == chip.surahNumber)
+          .firstOrNull;
+      if (surah == null) continue;
+
+      featured.add(
+        (
+          surah: surah,
+          ayahId: chip.ayahId,
+          title: _webFeaturedTitle(
+            isMalayalam: isMalayalam,
+            surah: surah,
+            ayahId: chip.ayahId,
+          ),
+        ),
+      );
+    }
 
     if (featured.isEmpty) {
       return const SizedBox.shrink();
     }
 
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 940),
-        child: const SurahChipRow(),
+    final isCompactWebHome = _useCompactWebHome(context);
+    final cardHeight = isCompactWebHome ? 56.0 : 60.0;
+
+    return SizedBox(
+      height: cardHeight,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minWidth: constraints.maxWidth),
+              child: Align(
+                alignment: Alignment.center,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isCompactWebHome ? 8 : 12,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      for (var index = 0; index < featured.length; index++) ...[
+                        if (index > 0)
+                          SizedBox(width: isCompactWebHome ? 10 : 12),
+                        _WebPopularSurahCard(
+                          isMalayalam: isMalayalam,
+                          title: featured[index].title,
+                          onTap: () => _openSurah(
+                            context,
+                            surahNumber: featured[index].surah.surahNumber,
+                            ayahId: featured[index].ayahId,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -572,114 +631,145 @@ class _HomeScreenState extends State<HomeScreen>
     final fillColor = _isDarkWebSurface(context)
         ? Theme.of(context).scaffoldBackgroundColor
         : Colors.white;
+    final isCompactWebHome = _useCompactWebHome(context);
     final sectionLabels = isMalayalam
-      ? const ['സൂറത്ത്', 'ജുസ്']
-      : const ['Surah', 'Juz'];
+        ? const ['സൂറത്ത്', 'ജുസ്']
+        : const ['Surah', 'Juz'];
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Wrap(
-          alignment: WrapAlignment.start,
-          spacing: 24,
-          runSpacing: 12,
-          children: List.generate(sectionLabels.length, (index) {
-            final isSelected = _selectedWebSectionIndex == index;
-            return InkWell(
-              onTap: () => _selectWebSection(index),
-              borderRadius: BorderRadius.circular(999),
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      sectionLabels[index],
-                      style: TextStyle(
-                        color: isSelected
-                            ? primaryTextColor
-                            : secondaryTextColor,
-                        fontSize: 16,
-                        fontWeight: isSelected
-                            ? FontWeight.w700
-                            : FontWeight.w500,
-                      ),
+    Widget buildTabStrip() {
+      return Wrap(
+        alignment: WrapAlignment.start,
+        spacing: 24,
+        runSpacing: 8,
+        children: List.generate(sectionLabels.length, (index) {
+          final isSelected = _selectedWebSectionIndex == index;
+          return InkWell(
+            onTap: () => _selectWebSection(index),
+            borderRadius: BorderRadius.circular(999),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    sectionLabels[index],
+                    style: TextStyle(
+                      color: isSelected
+                          ? primaryTextColor
+                          : secondaryTextColor,
+                      fontSize: 16,
+                      fontWeight: isSelected
+                          ? FontWeight.w700
+                          : FontWeight.w500,
                     ),
-                    const SizedBox(height: 10),
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 180),
-                      curve: Curves.easeOut,
-                      height: 3,
-                      width: isSelected ? 48 : 0,
-                      decoration: BoxDecoration(
-                        color: AppTheme.appThemePrimary,
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }),
-        ),
-        const SizedBox(height: 16),
-        Align(
-          alignment: Alignment.centerRight,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 220),
-            child: DropdownButtonFormField<int>(
-              value: null,
-              isExpanded: true,
-              dropdownColor: _isDarkWebSurface(context)
-                  ? Theme.of(context).cardColor
-                  : Colors.white,
-              iconEnabledColor: primaryTextColor,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: fillColor,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: outlineColor),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppTheme.appThemePrimary),
-                ),
-              ),
-              style: TextStyle(color: primaryTextColor, fontSize: 14),
-              hint: Text(
-                isMalayalam ? 'സൂറത്ത് തിരഞ്ഞെടുക്കുക' : 'Select surah',
-                style: TextStyle(color: primaryTextColor),
-              ),
-              items: surahList.map((surah) {
-                final displayText = formatSurahListDisplayText(
-                  isMalayalam: isMalayalam,
-                  surahName: surah.name,
-                  surahTranslation: surah.description,
-                  malayalamName: surah.malayalamName,
-                  surahNumber: surah.surahNumber,
-                );
-                return DropdownMenuItem<int>(
-                  value: surah.surahNumber,
-                  child: Text(
-                    '${surah.surahNumber}. ${displayText.title}',
-                    overflow: TextOverflow.ellipsis,
                   ),
-                );
-              }).toList(growable: false),
-              onChanged: (surahNumber) {
-                if (surahNumber == null) return;
-                _openSurah(context, surahNumber: surahNumber);
-              },
+                  const SizedBox(height: 8),
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    curve: Curves.easeOut,
+                    height: 3,
+                    width: isSelected ? 48 : 0,
+                    decoration: BoxDecoration(
+                      color: AppTheme.appThemePrimary,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }),
+      );
+    }
+
+    Widget buildSurahDropdown(double width) {
+      return SizedBox(
+        width: width,
+        child: DropdownButtonFormField<int>(
+          value: null,
+          isExpanded: true,
+          dropdownColor: _isDarkWebSurface(context)
+              ? Theme.of(context).cardColor
+              : Colors.white,
+          iconEnabledColor: primaryTextColor,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: fillColor,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: outlineColor),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: AppTheme.appThemePrimary),
             ),
           ),
+          style: TextStyle(color: primaryTextColor, fontSize: 14),
+          hint: Text(
+            isMalayalam ? 'സൂറത്ത് തിരഞ്ഞെടുക്കുക' : 'Select surah',
+            style: TextStyle(color: primaryTextColor),
+          ),
+          items: surahList.map((surah) {
+            final displayText = formatSurahListDisplayText(
+              isMalayalam: isMalayalam,
+              surahName: surah.name,
+              surahTranslation: surah.description,
+              malayalamName: surah.malayalamName,
+              surahNumber: surah.surahNumber,
+            );
+            return DropdownMenuItem<int>(
+              value: surah.surahNumber,
+              child: Text(
+                '${surah.surahNumber}. ${displayText.title}',
+                overflow: TextOverflow.ellipsis,
+              ),
+            );
+          }).toList(growable: false),
+          onChanged: (surahNumber) {
+            if (surahNumber == null) return;
+            _openSurah(context, surahNumber: surahNumber);
+          },
         ),
-      ],
+      );
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const dropdownWidth = 220.0;
+        final stackedDropdownWidth = isCompactWebHome
+            ? constraints.maxWidth
+            : dropdownWidth;
+        final minInlineWidth = isMalayalam ? 560.0 : 520.0;
+        final canFitInlineHeader = constraints.maxWidth >= minInlineWidth;
+
+        if (canFitInlineHeader) {
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: buildTabStrip()),
+              const SizedBox(width: 16),
+              buildSurahDropdown(dropdownWidth),
+            ],
+          );
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            buildTabStrip(),
+            const SizedBox(height: 10),
+            Align(
+              alignment: Alignment.centerRight,
+              child: buildSurahDropdown(stackedDropdownWidth),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -692,10 +782,7 @@ class _HomeScreenState extends State<HomeScreen>
     final surahByNumber = {
       for (final surah in surahProvider.surahList) surah.surahNumber: surah,
     };
-    final revelationIndexBySurah = {
-      for (var index = 0; index < _webRevelationOrder.length; index++)
-        _webRevelationOrder[index]: index + 1,
-    };
+    final compactGridMaxCrossAxisExtent = isMalayalam ? 308.0 : 288.0;
 
     switch (_selectedWebSectionIndex) {
       case 1:
@@ -704,11 +791,20 @@ class _HomeScreenState extends State<HomeScreen>
         }
         return _buildWebCardGrid(
           itemCount: juzHizbProvider.juzList.length,
+          maxCrossAxisExtent: compactGridMaxCrossAxisExtent,
+          mainAxisExtent: 90,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
           itemBuilder: (context, index) {
             final juz = juzHizbProvider.juzList[index];
             final surah = surahByNumber[juz.surahNumber];
             final displayText = surah == null
-                ? null
+                ? SurahListDisplayText(
+                    title: isMalayalam
+                        ? 'സൂറത്ത് ${juz.surahNumber}'
+                        : 'Surah ${juz.surahNumber}',
+                    subtitle: '',
+                  )
                 : formatSurahListDisplayText(
                     isMalayalam: isMalayalam,
                     surahName: surah.name,
@@ -716,16 +812,18 @@ class _HomeScreenState extends State<HomeScreen>
                     malayalamName: surah.malayalamName,
                     surahNumber: surah.surahNumber,
                   );
-            return _WebSectionCard(
-              leadingNumber: '${juz.number}',
-              title: isMalayalam ? 'ജുസ് ${juz.number}' : 'Juz ${juz.number}',
-              subtitle: displayText?.title ?? 'Surah ${juz.surahNumber}',
-              trailingTop: isMalayalam
-                  ? 'സൂറത്ത് ${juz.surahNumber}'
-                  : 'Surah ${juz.surahNumber}',
-              trailingBottom: isMalayalam
-                  ? 'ആയത്ത് ${juz.ayahNumber}'
-                  : 'Verse ${juz.ayahNumber}',
+            final subtitle = displayText.subtitle.trim().isEmpty
+                ? (isMalayalam ? 'ജുസ് ${juz.number}' : 'Juz ${juz.number}')
+                : displayText.subtitle;
+            return _WebCompactJuzCard(
+              isMalayalam: isMalayalam,
+              number: juz.number,
+              title: displayText.title,
+              subtitle: subtitle,
+              ayahReferenceLabel: formatAyahReferenceLabel(
+                juz.ayahNumber,
+                isMalayalam: isMalayalam,
+              ),
               onTap: () async {
                 await _openSurah(
                   context,
@@ -746,6 +844,10 @@ class _HomeScreenState extends State<HomeScreen>
         }
         return _buildWebCardGrid(
           itemCount: surahProvider.surahList.length,
+          maxCrossAxisExtent: compactGridMaxCrossAxisExtent,
+          mainAxisExtent: 90,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
           itemBuilder: (context, index) {
             final surah = surahProvider.surahList[index];
             final displayText = formatSurahListDisplayText(
@@ -755,18 +857,19 @@ class _HomeScreenState extends State<HomeScreen>
               malayalamName: surah.malayalamName,
               surahNumber: surah.surahNumber,
             );
-            return _WebSectionCard(
-              leadingNumber: '${surah.surahNumber}',
+            return _WebCompactSurahCard(
+              isMalayalam: isMalayalam,
+              number: surah.surahNumber,
               title: displayText.title,
-              subtitle: displayText.subtitle,
-              trailingTop: surah.ordinalLabel.trim().isNotEmpty
-                  ? surah.ordinalLabel.trim()
-                  : (isMalayalam
-                        ? 'സൂറത്ത് ${surah.surahNumber}'
-                        : 'Surah ${surah.surahNumber}'),
-              trailingBottom: isMalayalam
-                  ? '${surah.ayathCount} ആയത്തുകൾ'
-                  : '${surah.ayathCount} Ayahs',
+              placeLabel: localizeSurahPlace(
+                surah.place,
+                isMalayalam: isMalayalam,
+                preferBareUncertain: true,
+              ),
+              ayahCountLabel: formatAyahCountLabel(
+                surah.ayathCount,
+                isMalayalam: isMalayalam,
+              ),
               onTap: () => _openSurah(context, surahNumber: surah.surahNumber),
             );
           },
@@ -777,16 +880,20 @@ class _HomeScreenState extends State<HomeScreen>
   Widget _buildWebCardGrid({
     required int itemCount,
     required IndexedWidgetBuilder itemBuilder,
+    double maxCrossAxisExtent = 460,
+    double mainAxisExtent = 132,
+    double crossAxisSpacing = 16,
+    double mainAxisSpacing = 16,
   }) {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: itemCount,
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 360,
-        mainAxisExtent: 112,
-        crossAxisSpacing: 14,
-        mainAxisSpacing: 14,
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: maxCrossAxisExtent,
+        mainAxisExtent: mainAxisExtent,
+        crossAxisSpacing: crossAxisSpacing,
+        mainAxisSpacing: mainAxisSpacing,
       ),
       itemBuilder: itemBuilder,
     );
@@ -796,6 +903,7 @@ class _HomeScreenState extends State<HomeScreen>
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     final surahProvider = context.watch<SurahProvider>();
     final juzHizbProvider = context.watch<JuzHizbProvider>();
+    final horizontalPadding = _webHorizontalPadding(context);
 
     return ColoredBox(
       color: Theme.of(context).scaffoldBackgroundColor,
@@ -807,7 +915,7 @@ class _HomeScreenState extends State<HomeScreen>
             children: [
               ResponsiveContentWrapper(
                 maxWidth: _webHomeMaxWidth,
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -837,21 +945,21 @@ class _HomeScreenState extends State<HomeScreen>
                             const SizedBox(height: 8),
                             Text(
                               isMalayalam
-                                  ? 'സൂറത്ത്, ജുസ്, അവതരണ ക്രമം, സജ്ദ എന്നിവ വേഗത്തിൽ തുറക്കാം.'
-                                  : 'Open surahs quickly by chapter, juz, revelation order, or sajdah.',
+                                  ? 'സൂറത്തുകളും ജുസുകളും വെബ്ബിൽ നിന്ന് വേഗത്തിൽ തുറക്കാം.'
+                                  : 'Open surahs and juz quickly in a web-first responsive layout.',
                               style: AppTextTheme.localizedBody(
                                 isMalayalam: isMalayalam,
                                 fontSize: 14,
                                 color: _webSecondaryText(context),
                               ),
                             ),
-                            const SizedBox(height: 18),
+                            const SizedBox(height: 14),
                             _buildWebSectionHeader(
                               context,
                               isMalayalam: isMalayalam,
                               surahList: surahProvider.surahList,
                             ),
-                            const SizedBox(height: 12),
+                            const SizedBox(height: 8),
                             _buildWebSectionBody(
                               context,
                               isMalayalam: isMalayalam,
@@ -940,6 +1048,11 @@ class _WebModeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final unselectedColor = isDarkMode
+        ? Colors.white70
+        : AppTheme.appThemePrimary.withValues(alpha: 0.92);
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(10),
@@ -953,10 +1066,12 @@ class _WebModeButton extends StatelessWidget {
         ),
         child: Text(
           label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: TextStyle(
             color: selected
                 ? AppTheme.appThemePrimary
-                : AppTheme.appBarForegroundColor.withValues(alpha: 0.84),
+                : unselectedColor,
             fontSize: 14,
             fontWeight: FontWeight.w700,
           ),
@@ -968,19 +1083,13 @@ class _WebModeButton extends StatelessWidget {
 
 class _WebPopularSurahCard extends StatelessWidget {
   const _WebPopularSurahCard({
-    required this.eyebrow,
+    required this.isMalayalam,
     required this.title,
-    required this.subtitle,
-    required this.arabicName,
-    required this.meta,
     required this.onTap,
   });
 
-  final String eyebrow;
+  final bool isMalayalam;
   final String title;
-  final String subtitle;
-  final String arabicName;
-  final String meta;
   final VoidCallback onTap;
 
   @override
@@ -991,95 +1100,35 @@ class _WebPopularSurahCard extends StatelessWidget {
     final borderColor = isDarkMode
         ? Colors.white.withValues(alpha: 0.10)
         : (theme.dividerTheme.color ?? theme.colorScheme.outlineVariant);
-    final primaryTextColor = isDarkMode ? Colors.white : AppTheme.appThemePrimary;
-    final secondaryTextColor = isDarkMode ? Colors.white70 : Colors.grey[600]!;
+    final titleColor = isDarkMode ? Colors.white : AppTheme.appThemePrimary;
 
     return Material(
       color: surfaceColor,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(999),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(999),
         child: Container(
+          alignment: Alignment.center,
           decoration: BoxDecoration(
             color: surfaceColor,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(999),
             border: Border.all(color: borderColor),
           ),
-          padding: const EdgeInsets.all(14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (eyebrow.trim().isNotEmpty) ...[
-                Text(
-                  eyebrow,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: secondaryTextColor,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 8),
-              ],
-              Text(
-                title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: primaryTextColor,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              if (subtitle.trim().isNotEmpty) ...[
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: secondaryTextColor,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-              const Spacer(),
-              Text(
-                arabicName,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: primaryTextColor,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      meta,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: secondaryTextColor,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Icon(
-                    Icons.arrow_forward_rounded,
-                    color: primaryTextColor,
-                    size: 18,
-                  ),
-                ],
-              ),
-            ],
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+          child: Text(
+            title,
+            maxLines: 1,
+            softWrap: false,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: AppTextTheme.localizedLabel(
+              isMalayalam: isMalayalam,
+              fontSize: isMalayalam ? 13 : 14,
+              fontWeight: FontWeight.w700,
+              color: titleColor,
+              height: 1.1,
+            ),
           ),
         ),
       ),
@@ -1087,21 +1136,21 @@ class _WebPopularSurahCard extends StatelessWidget {
   }
 }
 
-class _WebSectionCard extends StatelessWidget {
-  const _WebSectionCard({
-    required this.leadingNumber,
+class _WebCompactSurahCard extends StatelessWidget {
+  const _WebCompactSurahCard({
+    required this.isMalayalam,
+    required this.number,
     required this.title,
-    required this.subtitle,
-    required this.trailingTop,
-    required this.trailingBottom,
+    required this.placeLabel,
+    required this.ayahCountLabel,
     required this.onTap,
   });
 
-  final String leadingNumber;
+  final bool isMalayalam;
+  final int number;
   final String title;
-  final String subtitle;
-  final String trailingTop;
-  final String trailingBottom;
+  final String placeLabel;
+  final String ayahCountLabel;
   final VoidCallback onTap;
 
   @override
@@ -1129,11 +1178,11 @@ class _WebSectionCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: borderColor),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+          padding: const EdgeInsets.all(10),
           child: Row(
             children: [
-              _WebDiamondBadge(label: leadingNumber),
-              const SizedBox(width: 18),
+              StarNumber(number: number, size: 40),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1143,55 +1192,40 @@ class _WebSectionCard extends StatelessWidget {
                       title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: primaryTextColor,
-                        fontSize: 16,
+                      style: AppTextTheme.localizedLabel(
+                        isMalayalam: isMalayalam,
+                        fontSize: 14,
                         fontWeight: FontWeight.w700,
+                        color: primaryTextColor,
                       ),
                     ),
-                    if (subtitle.trim().isNotEmpty) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        subtitle,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: secondaryTextColor,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                        ),
+                    const SizedBox(height: 4),
+                    Text(
+                      placeLabel,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextTheme.localizedBody(
+                        isMalayalam: isMalayalam,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: secondaryTextColor,
                       ),
-                    ],
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(width: 12),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    trailingTop,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: primaryTextColor,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    trailingBottom,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: secondaryTextColor,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
+              const SizedBox(width: 10),
+              Text(
+                ayahCountLabel,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.right,
+                style: AppTextTheme.localizedBody(
+                  isMalayalam: isMalayalam,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: secondaryTextColor,
+                ),
               ),
             ],
           ),
@@ -1201,39 +1235,100 @@ class _WebSectionCard extends StatelessWidget {
   }
 }
 
-class _WebDiamondBadge extends StatelessWidget {
-  const _WebDiamondBadge({required this.label});
+class _WebCompactJuzCard extends StatelessWidget {
+  const _WebCompactJuzCard({
+    required this.isMalayalam,
+    required this.number,
+    required this.title,
+    required this.subtitle,
+    required this.ayahReferenceLabel,
+    required this.onTap,
+  });
 
-  final String label;
+  final bool isMalayalam;
+  final int number;
+  final String title;
+  final String subtitle;
+  final String ayahReferenceLabel;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 40,
-      height: 40,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Transform.rotate(
-            angle: math.pi / 4,
-            child: Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: AppTheme.appThemePrimary,
-                borderRadius: BorderRadius.circular(8),
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final surfaceColor = isDarkMode
+        ? theme.scaffoldBackgroundColor
+        : Colors.white;
+    final borderColor = isDarkMode
+        ? Colors.white.withValues(alpha: 0.10)
+        : (theme.dividerTheme.color ?? theme.colorScheme.outlineVariant);
+    final primaryTextColor = isDarkMode ? Colors.white : AppTheme.appThemePrimary;
+    final secondaryTextColor = isDarkMode ? Colors.white70 : Colors.grey[600]!;
+
+    return Material(
+      color: surfaceColor,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          decoration: BoxDecoration(
+            color: surfaceColor,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: borderColor),
+          ),
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            children: [
+              StarNumber(number: number, size: 40),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextTheme.localizedLabel(
+                        isMalayalam: isMalayalam,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: primaryTextColor,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextTheme.localizedBody(
+                        isMalayalam: isMalayalam,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: secondaryTextColor,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
+              const SizedBox(width: 10),
+              Text(
+                ayahReferenceLabel,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.right,
+                style: AppTextTheme.localizedBody(
+                  isMalayalam: isMalayalam,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: secondaryTextColor,
+                ),
+              ),
+            ],
           ),
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

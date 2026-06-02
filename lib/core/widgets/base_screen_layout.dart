@@ -58,11 +58,14 @@ class BaseScreenLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final body = _buildBody(context);
+    final theme = Theme.of(context);
 
     if (!useScaffold) return body;
 
     return Scaffold(
-      backgroundColor: AppTheme.appThemePrimary,
+      backgroundColor: kIsWeb
+          ? theme.scaffoldBackgroundColor
+          : AppTheme.appThemePrimary,
       appBar: appBar,
       drawer: drawer,
       endDrawer: endDrawer,
@@ -74,20 +77,30 @@ class BaseScreenLayout extends StatelessWidget {
 
   Widget _buildBody(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final useDesktopWebShell =
-        kIsWeb && MediaQuery.sizeOf(context).width >= 1024;
+    final theme = Theme.of(context);
+    final useDesktopWebShell = kIsWeb;
+    final webCardBorderColor = isDarkMode
+        ? Colors.white.withValues(alpha: 0.08)
+        : (theme.dividerTheme.color ?? theme.colorScheme.outlineVariant);
 
     if (useDesktopWebShell) {
+      final width = MediaQuery.sizeOf(context).width;
+      final horizontalPadding = width < 640 ? 12.0 : 24.0;
+      final verticalPadding = width < 640 ? 16.0 : 24.0;
+
       return SafeArea(
         top: false,
         child: ResponsiveContentWrapper(
           maxWidth: 1180,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+          padding: EdgeInsets.symmetric(
+            horizontal: horizontalPadding,
+            vertical: verticalPadding,
+          ),
           child: Column(
             children: [
               if (headerContent != null) ...[
                 headerContent!,
-                const SizedBox(height: 20),
+                SizedBox(height: width < 640 ? 16 : 20),
               ],
               Expanded(
                 child: Container(
@@ -107,6 +120,7 @@ class BaseScreenLayout extends StatelessWidget {
                             ],
                           ),
                     color: isDarkMode ? const Color(0xff0c2d52) : null,
+                            border: Border.all(color: webCardBorderColor),
                     boxShadow:
                         contentCardBoxShadows ??
                         const [

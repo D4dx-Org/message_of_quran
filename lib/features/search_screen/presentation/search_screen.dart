@@ -15,7 +15,7 @@ class SearchScreen extends StatelessWidget {
   const SearchScreen({super.key});
 
   bool _useDesktopWebLayout(BuildContext context) {
-    return kIsWeb && MediaQuery.sizeOf(context).width >= 1024;
+    return kIsWeb;
   }
 
   Widget _buildSearchField(BuildContext context, SurahProvider controller) {

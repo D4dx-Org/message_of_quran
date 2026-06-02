@@ -11,7 +11,7 @@ import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_pr
 class SurahChipRow extends StatelessWidget {
   const SurahChipRow({super.key});
 
-  static const List<({int surahNumber, int? ayahId})> _chips = [
+  static const List<({int surahNumber, int? ayahId})> chips = [
     (surahNumber: 2, ayahId: 255),
     (surahNumber: 36, ayahId: null),
     (surahNumber: 67, ayahId: null),
@@ -52,10 +52,10 @@ class SurahChipRow extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: _chips.length,
+        itemCount: chips.length,
         separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
-          final chip = _chips[index];
+          final chip = chips[index];
           final label = _chipLabel(
             isMalayalam: isMalayalam,
             surahList: surahList,

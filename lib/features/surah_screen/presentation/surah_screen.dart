@@ -203,19 +203,27 @@ class _SurahScreenState extends State<SurahScreen> {
   }
 
   bool _useDesktopWebReaderLayout(BuildContext context) {
-    if (!kIsWeb) return false;
-    return MediaQuery.sizeOf(context).width >= 1180;
+    return kIsWeb;
   }
 
   Widget _buildDesktopReaderActionButton({
     required BuildContext context,
-    required IconData icon,
+    IconData? icon,
+    String? assetPath,
     required String label,
     required VoidCallback onPressed,
   }) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final foregroundColor = isDarkMode ? Colors.white : AppTheme.appIconTheme;
+    final iconWidget = assetPath != null
+        ? Image.asset(
+            assetPath,
+            width: 19,
+            height: 19,
+            color: foregroundColor,
+          )
+        : Icon(icon, size: 18);
 
     return OutlinedButton.icon(
       onPressed: onPressed,
@@ -230,7 +238,7 @@ class _SurahScreenState extends State<SurahScreen> {
           color: foregroundColor,
         ),
       ),
-      icon: Icon(icon, size: 18),
+      icon: iconWidget,
       label: Text(label),
     );
   }
@@ -288,7 +296,7 @@ class _SurahScreenState extends State<SurahScreen> {
               children: [
                 _buildDesktopReaderActionButton(
                   context: context,
-                  icon: Icons.home_outlined,
+                  assetPath: 'assets/icons/home-img.png',
                   label: isMalayalam ? 'ഹോം' : 'Home',
                   onPressed: () => _navigateToMainTab(0),
                 ),
@@ -306,7 +314,7 @@ class _SurahScreenState extends State<SurahScreen> {
                 ),
                 _buildDesktopReaderActionButton(
                   context: context,
-                  icon: Icons.settings_outlined,
+                  assetPath: 'assets/icons/settings-img.png',
                   label: isMalayalam ? 'സെറ്റിംഗ്സ്' : 'Settings',
                   onPressed: () => _navigateToMainTab(3),
                 ),

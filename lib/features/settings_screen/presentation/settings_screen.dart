@@ -20,7 +20,7 @@ class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   bool _useDesktopWebLayout(BuildContext context) {
-    return kIsWeb && MediaQuery.sizeOf(context).width >= 1024;
+    return kIsWeb;
   }
 
   Widget _buildSectionGroup(
@@ -40,6 +40,40 @@ class SettingsScreen extends StatelessWidget {
 
   Widget _buildDesktopBody(BuildContext context) {
     final hPad = ResponsiveHelper.horizontalPadding(context);
+    final useTwoColumns = MediaQuery.sizeOf(context).width >= 980;
+
+    if (!useTwoColumns) {
+      return ListView(
+        padding: EdgeInsets.fromLTRB(hPad, 24, hPad, 24),
+        children: const [
+          _SectionLabel('Theme & Language'),
+          SizedBox(height: 8),
+          _ThemeLanguageCard(),
+          SizedBox(height: 24),
+          _SectionLabel('Font'),
+          SizedBox(height: 8),
+          _FontSettingsCard(),
+          SizedBox(height: 24),
+          _SectionLabel('Layout'),
+          SizedBox(height: 8),
+          SettingsScreenLayoutBlock(),
+          SizedBox(height: 24),
+          _SectionLabel('Tajweed'),
+          SizedBox(height: 8),
+          SettingsScreenTajweedBlock(),
+          SizedBox(height: 24),
+          _SectionLabel('Audio'),
+          SizedBox(height: 8),
+          SettingsScreenAudioBlock(),
+          SizedBox(height: 24),
+          _SectionLabel('General'),
+          SizedBox(height: 8),
+          SettingsScreenAppBlock(),
+          SizedBox(height: 24),
+          D4dxBrandingFooter(),
+        ],
+      );
+    }
 
     return ListView(
       padding: EdgeInsets.fromLTRB(hPad, 24, hPad, 24),

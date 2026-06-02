@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
@@ -280,6 +281,9 @@ class SurahInfoStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final useDesktopWebSurface = kIsWeb;
     final headerTitle = _surahHeaderTitle(
       isMalayalam: isMalayalam,
       ordinalLabel: ordinalLabel,
@@ -296,28 +300,58 @@ class SurahInfoStrip extends StatelessWidget {
       place,
       isMalayalam: isMalayalam,
     );
+    final primaryTextColor = useDesktopWebSurface
+        ? (isDarkMode ? Colors.white : AppTheme.appThemePrimary)
+        : Colors.white;
+    final secondaryTextColor = useDesktopWebSurface
+        ? (isDarkMode ? Colors.white70 : Colors.grey[600]!)
+        : Colors.white.withValues(alpha: 0.86);
+    final stripDecoration = useDesktopWebSurface
+        ? BoxDecoration(
+            color: isDarkMode ? theme.cardColor : Colors.white,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: isDarkMode
+                  ? Colors.white.withValues(alpha: 0.10)
+                  : (theme.dividerTheme.color ?? theme.colorScheme.outlineVariant),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDarkMode ? 0.12 : 0.07),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          )
+        : BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [AppTheme.appThemePrimary, Color(0xFF123B69)],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: [
+              BoxShadow(
+                color: AppTheme.appThemePrimary.withValues(alpha: 0.3),
+                blurRadius: 8,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          );
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppTheme.appThemePrimary, Color(0xFF123B69)],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.appThemePrimary.withValues(alpha: 0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
+      decoration: stripDecoration,
       child: Row(
         children: [
-          _navBtn(Icons.arrow_back_ios_new, showPrevious, onPrevious),
+          _navBtn(
+            context,
+            Icons.arrow_back_ios_new,
+            showPrevious,
+            onPrevious,
+            useDesktopWebSurface: useDesktopWebSurface,
+          ),
           const SizedBox(width: 4),
           Expanded(
             child: LayoutBuilder(
@@ -330,7 +364,7 @@ class SurahInfoStrip extends StatelessWidget {
                       isMalayalam: isMalayalam,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: Colors.white.withValues(alpha: 0.88),
+                      color: secondaryTextColor,
                       letterSpacing: 0.4,
                       height: 1.2,
                     ),
@@ -350,7 +384,7 @@ class SurahInfoStrip extends StatelessWidget {
                           isMalayalam: isMalayalam,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                          color: primaryTextColor,
                           height: 1.15,
                         ),
                         textAlign: TextAlign.center,
@@ -366,7 +400,7 @@ class SurahInfoStrip extends StatelessWidget {
                       isMalayalam: isMalayalam,
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
-                      color: Colors.white.withValues(alpha: 0.85),
+                      color: secondaryTextColor,
                       letterSpacing: 0.2,
                       height: 1.2,
                     ),
@@ -379,13 +413,41 @@ class SurahInfoStrip extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 4),
-          _navBtn(Icons.arrow_forward_ios_rounded, showNext, onNext),
+          _navBtn(
+            context,
+            Icons.arrow_forward_ios_rounded,
+            showNext,
+            onNext,
+            useDesktopWebSurface: useDesktopWebSurface,
+          ),
         ],
       ),
     );
   }
 
-  Widget _navBtn(IconData icon, bool visible, VoidCallback? onPressed) {
+  Widget _navBtn(
+    BuildContext context,
+    IconData icon,
+    bool visible,
+    VoidCallback? onPressed, {
+    required bool useDesktopWebSurface,
+  }) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final foregroundColor = useDesktopWebSurface
+        ? (isDarkMode ? Colors.white70 : AppTheme.appThemePrimary)
+        : Colors.white.withValues(alpha: 0.9);
+    final borderColor = useDesktopWebSurface
+        ? (isDarkMode
+            ? Colors.white.withValues(alpha: 0.16)
+            : AppTheme.appThemePrimary.withValues(alpha: 0.16))
+        : AppTheme.appIconTheme.withValues(alpha: 0.4);
+    final fillColor = useDesktopWebSurface
+        ? (isDarkMode
+            ? Colors.white.withValues(alpha: 0.06)
+            : AppTheme.appThemePrimary.withValues(alpha: 0.06))
+        : Colors.white.withValues(alpha: 0.08);
+
     return Visibility(
       maintainSize: true,
       maintainAnimation: true,
@@ -398,14 +460,14 @@ class SurahInfoStrip extends StatelessWidget {
           onPressed: onPressed,
           padding: EdgeInsets.zero,
           iconSize: 16,
-          color: Colors.white.withValues(alpha: 0.9),
+          color: foregroundColor,
           style: IconButton.styleFrom(
             shape: CircleBorder(
               side: BorderSide(
-                color: AppTheme.appIconTheme.withValues(alpha: 0.4),
+                color: borderColor,
               ),
             ),
-            backgroundColor: Colors.white.withValues(alpha: 0.08),
+            backgroundColor: fillColor,
           ),
           icon: Icon(icon),
         ),

@@ -36,7 +36,6 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   static const double _navIconSize = 24;
-  static const double _webShellBreakpoint = 1024;
   static const double _webShellMaxWidth = 1180;
 
   static const List<({String label, IconData? iconData, String? assetPath})>
@@ -141,8 +140,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   bool _useWebShell(BuildContext context) {
-    if (!kIsWeb) return false;
-    return MediaQuery.sizeOf(context).width >= _webShellBreakpoint;
+    return kIsWeb;
   }
 
   Widget _buildWebNavButton({
@@ -199,7 +197,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _buildWebShell(BuildContext context, Widget pageBody, int displayIndex) {
-    final navLabels = const ['Quran', 'Bookmarks', 'Mushaf', 'Settings', 'About'];
+    final navLabels = const ['Home', 'Bookmarks', 'Mushaf', 'Settings', 'About'];
     final theme = Theme.of(context);
     final shellColor = AppTheme.appThemePrimary;
     final accentColor = AppTheme.appBarForegroundColor;
@@ -240,74 +238,159 @@ class _MainScreenState extends State<MainScreen> {
                         horizontal: 24,
                         vertical: 16,
                       ),
-                      child: Row(
-                        children: [
-                          Builder(
-                            builder: (context) => DecoratedBox(
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final isCompactShell = constraints.maxWidth < 980;
+                          final hideHeaderLogo = constraints.maxWidth < 720;
+
+                          Widget buildMenuButton() {
+                            return Builder(
+                              builder: (context) => DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: actionSurface,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: accentColor.withValues(alpha: 0.18),
+                                  ),
+                                ),
+                                child: IconButton(
+                                  tooltip: 'Open menu',
+                                  onPressed: () => Scaffold.of(context).openDrawer(),
+                                  icon: const Icon(Icons.menu, color: Colors.white),
+                                ),
+                              ),
+                            );
+                          }
+
+                          Widget buildSearchButton() {
+                            return DecoratedBox(
                               decoration: BoxDecoration(
                                 color: actionSurface,
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(999),
                                 border: Border.all(
                                   color: accentColor.withValues(alpha: 0.18),
                                 ),
                               ),
                               child: IconButton(
-                                tooltip: 'Open menu',
-                                onPressed: () => Scaffold.of(context).openDrawer(),
-                                icon: const Icon(Icons.menu, color: Colors.white),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Image.asset(
-                            'assets/images/Group-logo.png',
-                            height: 40,
-                            fit: BoxFit.contain,
-                            semanticLabel: 'Quran Asad Malayalam logo',
-                          ),
-                          const SizedBox(width: 28),
-                          Expanded(
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: List.generate(
-                                  navLabels.length,
-                                  (index) => _buildWebNavButton(
-                                    index: index,
-                                    label: navLabels[index],
-                                    selectedIndex: displayIndex,
-                                    accentColor: accentColor,
+                                tooltip: 'Search',
+                                onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => SearchScreen(),
                                   ),
                                 ),
+                                icon: const Icon(Icons.search, color: Colors.white),
                               ),
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: actionSurface,
-                              borderRadius: BorderRadius.circular(999),
-                              border: Border.all(
-                                color: accentColor.withValues(alpha: 0.18),
-                              ),
-                            ),
-                            child: IconButton(
-                              tooltip: 'Search',
-                              onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => SearchScreen(),
+                            );
+                          }
+
+                          Widget buildLeadingGroup() {
+                            return Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                buildMenuButton(),
+                                const SizedBox(width: 16),
+                                Image.asset(
+                                  'assets/images/Group-logo.png',
+                                  height: 40,
+                                  fit: BoxFit.contain,
+                                  semanticLabel: 'Quran Asad Malayalam logo',
+                                ),
+                              ],
+                            );
+                          }
+
+                          Widget buildTrailingGroup() {
+                            return Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                buildSearchButton(),
+                                const SizedBox(width: 12),
+                                AppBarLanguageButton(),
+                              ],
+                            );
+                          }
+
+                          Widget buildNavScroller({required bool centerItems}) {
+                            final navRow = Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: List.generate(
+                                navLabels.length,
+                                (index) => _buildWebNavButton(
+                                  index: index,
+                                  label: navLabels[index],
+                                  selectedIndex: displayIndex,
+                                  accentColor: accentColor,
                                 ),
                               ),
-                              icon: const Icon(
-                                Icons.search,
-                                color: Colors.white,
+                            );
+
+                            if (!centerItems) {
+                              return SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: navRow,
+                              );
+                            }
+
+                            return Center(
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: navRow,
                               ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          AppBarLanguageButton(),
-                        ],
+                            );
+                          }
+
+                          if (isCompactShell) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    buildMenuButton(),
+                                    const Spacer(),
+                                    buildSearchButton(),
+                                    const SizedBox(width: 12),
+                                    AppBarLanguageButton(),
+                                  ],
+                                ),
+                                if (!hideHeaderLogo) ...[
+                                  const SizedBox(height: 14),
+                                  Image.asset(
+                                    'assets/images/Group-logo.png',
+                                    height: 34,
+                                    fit: BoxFit.contain,
+                                    semanticLabel: 'Quran Asad Malayalam logo',
+                                  ),
+                                ],
+                                const SizedBox(height: 16),
+                                buildNavScroller(centerItems: false),
+                              ],
+                            );
+                          }
+
+                          return Row(
+                            children: [
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: buildLeadingGroup(),
+                                ),
+                              ),
+                              const SizedBox(width: 24),
+                              Expanded(
+                                flex: 2,
+                                child: buildNavScroller(centerItems: true),
+                              ),
+                              const SizedBox(width: 24),
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: buildTrailingGroup(),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ),
                   ),

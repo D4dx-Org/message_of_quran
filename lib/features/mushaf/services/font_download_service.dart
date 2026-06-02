@@ -17,7 +17,6 @@ class FontDownloadService {
 
   static const String _baseUrl = 'http://lalithasaram.net/downloads/qfonts/';
   static const int _maxRetries = 3;
-
   bool _isCancelled = false;
 
   Future<Directory> get fontsDir async {
