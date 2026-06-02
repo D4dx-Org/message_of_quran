@@ -3,6 +3,9 @@ import 'dart:typed_data';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 
+final sqflite.DatabaseFactory _webDatabaseFactory =
+  databaseFactoryFfiWebNoWebWorker;
+
 Future<void> deleteFileIfExists(String path) async {
   // No file system on web; handled by databaseFactory.
 }
@@ -25,12 +28,12 @@ Future<void> deleteWalShmFiles(String dbPath) async {
 
 /// Set the global databaseFactory to the web FFI implementation.
 void initDatabaseFactory() {
-  sqflite.databaseFactory = databaseFactoryFfiWebNoWebWorker;
+  sqflite.databaseFactory = _webDatabaseFactory;
 }
 
 /// On web, write database bytes via the web databaseFactory.
 Future<void> writeAssetDatabase(String dbPath, List<int> bytes) async {
-  await databaseFactoryFfiWeb.writeDatabaseBytes(
+  await _webDatabaseFactory.writeDatabaseBytes(
     dbPath,
     Uint8List.fromList(bytes),
   );
@@ -38,5 +41,9 @@ Future<void> writeAssetDatabase(String dbPath, List<int> bytes) async {
 
 /// On web, use the web databaseFactory to check existence.
 Future<bool> databaseExistsAt(String path) async {
-  return databaseFactoryFfiWeb.databaseExists(path);
+  try {
+    return await _webDatabaseFactory.databaseExists(path);
+  } catch (_) {
+    return false;
+  }
 }
