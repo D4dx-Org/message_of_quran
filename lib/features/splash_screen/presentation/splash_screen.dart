@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/core/services/database/database_helper.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/features/force_update_screen/presentation/force_update_screen.dart';
 import 'package:the_message_of_the_quran/features/main_screen/presentation/main_screen.dart';
@@ -56,9 +57,11 @@ class _SplashScreenState extends State<SplashScreen> {
         context,
         listen: false,
       );
-      // Run the version check and a minimum 3-second splash display in parallel
+      // Run the version check, DB init (started in background from main),
+      // and a minimum 3-second splash display in parallel.
       await Future.wait([
         controller.checkUpdate(),
+        DatabaseHelper.initializeServices().catchError((Object _) {}),
         Future.delayed(const Duration(seconds: 3)),
       ]);
 

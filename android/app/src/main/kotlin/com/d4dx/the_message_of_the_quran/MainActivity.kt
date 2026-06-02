@@ -1,4 +1,4 @@
-package com.d4dx.the_message_of_the_quran
+package com.d4dx.quranasadmalayalam
 
 import com.ryanheise.audioservice.AudioServiceFragmentActivity
 

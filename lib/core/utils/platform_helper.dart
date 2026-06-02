@@ -5,7 +5,7 @@ class PlatformHelper {
   PlatformHelper._();
 
   static const String _androidStoreUrl =
-      'https://play.google.com/store/apps/details?id=com.d4dx.the_message_of_the_quran';
+      'https://play.google.com/store/apps/details?id=com.d4dx.quranasadmalayalam';
 
   static bool get isWeb => kIsWeb;
 
