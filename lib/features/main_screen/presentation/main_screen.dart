@@ -300,43 +300,52 @@ class _MainScreenState extends State<MainScreen> {
                             );
                           }
 
-                          Widget buildTrailingGroup() {
+                          Widget buildNavScroller({required Alignment alignment}) {
+                            return LayoutBuilder(
+                              builder: (context, constraints) {
+                                final navRow = Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: List.generate(
+                                    navLabels.length,
+                                    (index) => _buildWebNavButton(
+                                      index: index,
+                                      label: navLabels[index],
+                                      selectedIndex: displayIndex,
+                                      accentColor: accentColor,
+                                    ),
+                                  ),
+                                );
+
+                                return SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      minWidth: constraints.maxWidth,
+                                    ),
+                                    child: Align(
+                                      alignment: alignment,
+                                      child: navRow,
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          }
+
+                          Widget buildTrailingCluster({required bool compact}) {
                             return Row(
-                              mainAxisSize: MainAxisSize.min,
+                              mainAxisSize: MainAxisSize.max,
                               children: [
+                                Expanded(
+                                  child: buildNavScroller(
+                                    alignment: Alignment.centerRight,
+                                  ),
+                                ),
+                                SizedBox(width: compact ? 8 : 12),
                                 buildSearchButton(),
                                 const SizedBox(width: 12),
                                 const AppBarLanguageButton(),
                               ],
-                            );
-                          }
-
-                          Widget buildNavScroller({required bool centerItems}) {
-                            final navRow = Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: List.generate(
-                                navLabels.length,
-                                (index) => _buildWebNavButton(
-                                  index: index,
-                                  label: navLabels[index],
-                                  selectedIndex: displayIndex,
-                                  accentColor: accentColor,
-                                ),
-                              ),
-                            );
-
-                            if (!centerItems) {
-                              return SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: navRow,
-                              );
-                            }
-
-                            return Center(
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: navRow,
-                              ),
                             );
                           }
 
@@ -347,10 +356,10 @@ class _MainScreenState extends State<MainScreen> {
                                 Row(
                                   children: [
                                     buildMenuButton(),
-                                    const Spacer(),
-                                    buildSearchButton(),
                                     const SizedBox(width: 12),
-                                    const AppBarLanguageButton(),
+                                    Expanded(
+                                      child: buildTrailingCluster(compact: true),
+                                    ),
                                   ],
                                 ),
                                 if (!hideHeaderLogo) ...[
@@ -362,8 +371,6 @@ class _MainScreenState extends State<MainScreen> {
                                     semanticLabel: 'Quran Asad Malayalam logo',
                                   ),
                                 ],
-                                const SizedBox(height: 16),
-                                buildNavScroller(centerItems: false),
                               ],
                             );
                           }
@@ -378,15 +385,8 @@ class _MainScreenState extends State<MainScreen> {
                               ),
                               const SizedBox(width: 24),
                               Expanded(
-                                flex: 2,
-                                child: buildNavScroller(centerItems: true),
-                              ),
-                              const SizedBox(width: 24),
-                              Expanded(
-                                child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: buildTrailingGroup(),
-                                ),
+                                flex: 3,
+                                child: buildTrailingCluster(compact: false),
                               ),
                             ],
                           );
