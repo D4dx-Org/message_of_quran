@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
+import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/features/common_email/models/common_email_requests.dart';
 
 class CommonEmailApi {
@@ -78,11 +79,18 @@ class CommonEmailApi {
   }
 
   Map<String, String> get _feedbackHeaders {
+    final headers = <String, String>{
+      'x-app-theme-primary': AppTheme.appThemePrimaryHex,
+      'x-app-theme-secondary': AppTheme.appThemeSecondaryHex,
+      'x-app-theme-on-primary': AppTheme.appBarForegroundHex,
+    };
+
     if (_feedbackApiKey.trim().isEmpty) {
-      return const {};
+      return headers;
     }
 
-    return {'x-api-key': _feedbackApiKey.trim()};
+    headers['x-api-key'] = _feedbackApiKey.trim();
+    return headers;
   }
 
   String? _readErrorMessage(String responseBody) {

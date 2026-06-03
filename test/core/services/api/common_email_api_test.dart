@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
 import 'package:the_message_of_the_quran/core/services/api/common_email_api.dart';
+import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/features/common_email/models/common_email_requests.dart';
 
 void main() {
@@ -46,6 +47,18 @@ void main() {
           ApiConstants.feedbackUrl,
         );
         expect(requestHeaders['x-api-key'], 'test-feedback-key');
+        expect(
+          requestHeaders['x-app-theme-primary'],
+          AppTheme.appThemePrimaryHex,
+        );
+        expect(
+          requestHeaders['x-app-theme-secondary'],
+          AppTheme.appThemeSecondaryHex,
+        );
+        expect(
+          requestHeaders['x-app-theme-on-primary'],
+          AppTheme.appBarForegroundHex,
+        );
         expect(requestBody, {
           'name': 'Ali Rahman',
           'email': 'ali@example.com',

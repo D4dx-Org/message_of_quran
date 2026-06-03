@@ -10,6 +10,17 @@ class AppTheme {
   static const Color appThemeRawChips = Color(0xff103564);
   static const Color appBarForegroundColor = Colors.white;
 
+  static String get appThemePrimaryHex => colorToHex(appThemePrimary);
+  static String get appThemeSecondaryHex => colorToHex(appThemeSecondary);
+  static String get appBarForegroundHex => colorToHex(appBarForegroundColor);
+
+  static String colorToHex(Color color, {bool includeAlpha = false}) {
+    final argb = color.toARGB32();
+    final hexValue = includeAlpha ? argb : (argb & 0x00FFFFFF);
+    final width = includeAlpha ? 8 : 6;
+    return '#${hexValue.toRadixString(16).padLeft(width, '0').toUpperCase()}';
+  }
+
   static ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
     primaryColor: appThemePrimary,

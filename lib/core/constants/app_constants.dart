@@ -7,7 +7,8 @@ class AppConstants {
   /// Display name used in share text and branding.
   static const String appName = 'Quran Asad Malayalam';
 
-  /// Store URLs appended to ayah share text; empty until published.
-  static const String androidStoreUrl = '';
+  /// Store URLs appended to ayah share text.
+  static const String androidStoreUrl =
+      'https://play.google.com/store/apps/details?id=com.d4dx.quranasadmalayalam';
   static const String iosStoreUrl = '';
 }
