@@ -377,7 +377,7 @@ class MyApp extends StatelessWidget {
             theme: value.lightTheme,
             darkTheme: value.darkTheme,
             themeMode: value.themeMode,
-            home: kIsWeb ? MainScreen() : SplashScreen(),
+            home: kIsWeb ? const MainScreen() : const SplashScreen(),
             builder: (context, child) {
               var data = MediaQuery.of(context);
               final view = View.of(context);

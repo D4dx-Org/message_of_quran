@@ -283,7 +283,7 @@ class SurahInfoStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    final useDesktopWebSurface = kIsWeb;
+    const useDesktopWebSurface = kIsWeb;
     final headerTitle = _surahHeaderTitle(
       isMalayalam: isMalayalam,
       ordinalLabel: ordinalLabel,

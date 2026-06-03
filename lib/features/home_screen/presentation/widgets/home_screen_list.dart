@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
+import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_list_row_text_styles.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_screen_list_tile.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
@@ -30,7 +31,7 @@ class HomeScreenList extends StatelessWidget {
         }
         return ListView.builder(
           controller: scrollController,
-          padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 0),
+          padding: EdgeInsets.fromLTRB(hPad, homeListTopPadding, hPad, 0),
           itemCount: surahProvider.surahList.length,
           itemBuilder: (context, index) {
             return HomeScreenListTile(

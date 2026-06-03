@@ -15,11 +15,11 @@ import '../../../core/widgets/base_screen_layout.dart';
 import '../../../core/theme/app_text_theme.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../surah_screen/provider/surah_provider.dart';
+import '../widgets/mushaf_download_required_dialog.dart';
 import '../widgets/mushaf_page_view.dart';
 
 const _kPrimaryColor = AppTheme.appIconTheme;
 const _kSecondaryDark = AppTheme.appIconTheme;
-const _kWhite = Color(0xffFFFFFF);
 const _kNeutral500 = Color(0xFF525866);
 const _kDefaultFontSize = 24.0;
 
@@ -105,7 +105,11 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
 
     final scrollPage = _p.consumePendingScrollPage();
     if (scrollPage != null) {
-      _scrollListToPage(scrollPage);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _scrollListToPage(scrollPage);
+        }
+      });
     }
   }
 
@@ -210,70 +214,23 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
         return Center(
           child: ConstrainedBox(
             constraints: BoxConstraints(maxWidth: maxW ?? double.infinity),
-            child: AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              title: Row(
-                children: [
-                  const Icon(Icons.download_rounded, color: _kSecondaryDark),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Download Required',
-                      style: AppTextTheme.popinsDefault(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+            child: MushafDownloadRequiredDialog(
+              onCancel: () => Navigator.of(ctx).pop(),
+              onDownload: () {
+                Navigator.of(ctx).pop();
+                dm.startDownload();
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context)
+                  ..clearSnackBars()
+                  ..showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Mushaf download started. You can continue using the app.',
                       ),
+                      duration: Duration(seconds: 3),
                     ),
-                  ),
-                ],
-              ),
-              content: Text(
-                'Pages 1\u20132 are available offline.\n'
-                'Download the Mushaf font pack to read the full Quran.\n\n'
-                'The download will continue in the background.',
-                style: AppTextTheme.popinsDefault(fontSize: 14),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(ctx).pop(),
-                  child: Text(
-                    'Cancel',
-                    style: AppTextTheme.popinsDefault(
-                      fontSize: 14,
-                      color: _kNeutral500,
-                    ),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(ctx).pop();
-                    dm.startDownload();
-                    ScaffoldMessenger.of(context)
-                      ..clearSnackBars()
-                      ..showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Mushaf download started. You can continue using the app.',
-                          ),
-                          duration: Duration(seconds: 3),
-                        ),
-                      );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _kSecondaryDark,
-                    foregroundColor: _kWhite,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: Text(
-                    'Download',
-                    style: AppTextTheme.popinsDefault(fontSize: 14),
-                  ),
-                ),
-              ],
+                  );
+              },
             ),
           ),
         );

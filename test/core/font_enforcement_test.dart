@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:path/path.dart' as p;
@@ -179,7 +178,7 @@ _CommentStripResult _stripDartComments(
     if (insideBlockComment) {
       final endIndex = line.indexOf('*/', index);
       if (endIndex == -1) {
-        return _CommentStripResult('', inBlockComment: true);
+        return const _CommentStripResult('', inBlockComment: true);
       }
       insideBlockComment = false;
       index = endIndex + 2;

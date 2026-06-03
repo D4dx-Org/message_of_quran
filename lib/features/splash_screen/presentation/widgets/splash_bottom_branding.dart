@@ -39,7 +39,7 @@ class SplashBottomBranding extends StatelessWidget {
                 width: ellipseWidth,
                 height: ellipseHeight,
                 child: DecoratedBox(
-                  decoration:  BoxDecoration(
+                  decoration: const BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,

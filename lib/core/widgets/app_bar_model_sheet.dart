@@ -148,7 +148,7 @@ class _JumpToSheetState extends State<_JumpToSheet> {
                 ),
                 // ── Title ────────────────────────────────────────────
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Text(
                     'Jump to Surah',
                     style: AppTextTheme.popinsDefault(

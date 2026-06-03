@@ -257,7 +257,7 @@ class AudioProvider extends ChangeNotifier {
       log('AudioProvider: playerStateStream error – $e');
       if (gen != _playGeneration) return;
       _queuePlaybackError(
-        'Unable to continue ${reciterName} audio. Try another reciter or try again later.',
+        'Unable to continue $reciterName audio. Try another reciter or try again later.',
         notify: false,
       );
       _isLoading = false;

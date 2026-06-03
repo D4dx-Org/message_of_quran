@@ -13,6 +13,7 @@ import '../provider/mushaf_landing_provider.dart';
 import '../services/mushaf_download_manager.dart';
 import '../utils/surah_unicode.dart';
 import '../../../core/theme/app_theme.dart';
+import '../widgets/mushaf_download_required_dialog.dart';
 import '../widgets/star_number.dart';
 import 'mushaf_reader_screen.dart';
 
@@ -604,67 +605,15 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
       builder: (ctx) => Center(
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: maxW ?? double.infinity),
-          child: AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: Row(
-              children: [
-                const Icon(Icons.download_rounded, color: _kSecondaryDark),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Download Required',
-                    style: AppTextTheme.popinsDefault(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            content: Text(
-              'Pages 1–2 are available offline.\n'
-              'Download the Mushaf font pack to read the full Quran.\n\n'
-              'The download will continue in the background.',
-              style: AppTextTheme.popinsDefault(fontSize: 14),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                child: Text(
-                  'Cancel',
-                  style: AppTextTheme.popinsDefault(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: const Color(0xFF525866),
-                  ),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                  _downloadManager.startDownload();
-                  _showDownloadBanner(
-                    'Mushaf download started. You can continue using the app.',
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _kSecondaryDark,
-                  foregroundColor: _kWhite,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Text(
-                  'Download',
-                  style: AppTextTheme.popinsDefault(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
+          child: MushafDownloadRequiredDialog(
+            onCancel: () => Navigator.of(ctx).pop(),
+            onDownload: () {
+              Navigator.of(ctx).pop();
+              _downloadManager.startDownload();
+              _showDownloadBanner(
+                'Mushaf download started. You can continue using the app.',
+              );
+            },
           ),
         ),
       ),
@@ -1192,6 +1141,8 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
 
   Widget _buildSurahTab(BuildContext context, bool isDarkMode) {
     final surahs = _p.sortAscending ? _surahMeta : _surahMeta.reversed.toList();
+    final sortLabelColor = isDarkMode ? Colors.white54 : Colors.black45;
+    final sortStatusColor = isDarkMode ? sortLabelColor : _kPrimaryColor;
 
     return Column(
       children: [
@@ -1211,16 +1162,16 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                       'SORT BY: ',
                       style: TextStyle(
                         fontSize: 11,
-                        color: isDarkMode ? Colors.white54 : Colors.black45,
+                        color: sortLabelColor,
                         fontWeight: FontWeight.w500,
                         letterSpacing: 0.5,
                       ),
                     ),
                     Text(
                       _p.sortAscending ? 'ASCENDING' : 'DESCENDING',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
-                        color: _kPrimaryColor,
+                        color: sortStatusColor,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 0.5,
                       ),
@@ -1231,7 +1182,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                           ? Icons.keyboard_arrow_up
                           : Icons.keyboard_arrow_down,
                       size: 16,
-                      color: _kPrimaryColor,
+                      color: sortStatusColor,
                     ),
                   ],
                 ),
@@ -1478,10 +1429,11 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
           ),
           child: Row(
             children: [
-              _buildDiamondBadge(
-                juzNo,
-                isDarkMode,
+              StarNumber(
+                number: juzNo,
+                outlineOnly: true,
                 isHighlighted: _p.lastMushafJuzSelection == juzNo,
+                size: 42,
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -1500,64 +1452,24 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                     Text(
                       juzName,
                       style: TextStyle(color: subColor, fontSize: 12),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
               ),
-              Text(
-                startsSurah,
-                style: TextStyle(color: subColor, fontSize: 11),
-                textAlign: TextAlign.end,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDiamondBadge(
-    int number,
-    bool isDarkMode, {
-    bool isHighlighted = false,
-  }) {
-    return SizedBox(
-      width: 40,
-      height: 40,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Transform.rotate(
-            angle: 0.785,
-            child: Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: isHighlighted
-                    ? _kPrimaryColor
-                    : isDarkMode
-                        ? _kPrimaryColor.withValues(alpha: 0.15)
-                        : _kPrimaryColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(
-                  color: isHighlighted
-                      ? _kPrimaryColor
-                      : _kPrimaryColor.withValues(alpha: 0.5),
-                  width: 1.2,
-                ),
-              ),
-            ),
-          ),
-          Text(
-            '$number',
-            style: TextStyle(
-              color: isHighlighted ? Colors.white : _kPrimaryColor,
-              fontWeight: FontWeight.w700,
-              fontSize: number > 99 ? 10 : 13,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+               const SizedBox(width: 12),
+               Text(
+                 startsSurah,
+                 style: TextStyle(
+                   color: subColor,
+                   fontSize: 11,
+                 ),
+                 textAlign: TextAlign.end,
+               ),
+             ],
+           ),
+         ),
+       ),
+     );
+   }
 }

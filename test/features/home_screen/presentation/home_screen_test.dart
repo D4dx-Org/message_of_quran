@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_message_of_the_quran/core/models/juz_hizb_model.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/home_screen.dart';
+import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_list_row_text_styles.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_screen_list.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_screen_list_tile.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/juz_hizb_provider.dart';
@@ -19,6 +20,25 @@ void main() {
   Finder findJuzStar(int number) => find.byWidgetPredicate(
     (widget) => widget is StarNumber && widget.number == number,
   );
+
+  void expectMatchingTextStyle(Text actual, Text expected) {
+    expect(actual.style, isNotNull);
+    expect(expected.style, isNotNull);
+    expect(actual.style?.color, expected.style?.color);
+    expect(actual.style?.fontSize, expected.style?.fontSize);
+    expect(actual.style?.fontWeight, expected.style?.fontWeight);
+    expect(actual.style?.letterSpacing, expected.style?.letterSpacing);
+    expect(actual.style?.height, expected.style?.height);
+  }
+
+  void expectMatchingStyleFields(Text actual, Text expected) {
+    expect(actual.style, isNotNull);
+    expect(expected.style, isNotNull);
+    expect(actual.style!.color, expected.style!.color);
+    expect(actual.style!.fontSize, expected.style!.fontSize);
+    expect(actual.style!.fontWeight, expected.style!.fontWeight);
+    expect(actual.style!.letterSpacing, expected.style!.letterSpacing);
+  }
 
   setUp(() {
     SharedPreferences.setMockInitialValues({});
@@ -178,6 +198,70 @@ void main() {
         actualAyahStyle?.letterSpacing,
         expectedAyahStyle?.letterSpacing,
       );
+    },
+  );
+
+  testWidgets(
+    'home screen Juz tab matches Surah tile title and subtitle typography',
+    (tester) async {
+      await pumpHomeTile(tester);
+
+      final homeTitleText = tester.widget<Text>(find.text('Al-Fatihah'));
+      final homeSubtitleText = tester.widget<Text>(find.text('The Opening'));
+
+      await pumpHomeScreen(tester);
+      await tester.tap(find.text("Juz'e"));
+      await tester.pumpAndSettle();
+
+      final juzTitleText = tester.widget<Text>(find.text('Al-Fatihah'));
+      final juzSubtitleText = tester.widget<Text>(find.text('The Opening'));
+
+      expectMatchingTextStyle(juzTitleText, homeTitleText);
+      expectMatchingTextStyle(juzSubtitleText, homeSubtitleText);
+    },
+  );
+
+  testWidgets(
+    'home screen Juz tab uses the same top padding as the Surah list',
+    (tester) async {
+      await pumpHomeScreen(tester);
+
+      final surahListView = tester.widget<ListView>(
+        find.descendant(
+          of: find.byType(HomeScreenList),
+          matching: find.byType(ListView),
+        ),
+      );
+
+      await tester.tap(find.text("Juz'e"));
+      await tester.pumpAndSettle();
+
+      final juzListView = tester.widget<ListView>(find.byType(ListView).last);
+      final surahPadding = surahListView.padding! as EdgeInsets;
+      final juzPadding = juzListView.padding! as EdgeInsets;
+
+      expect(surahPadding.top, homeListTopPadding);
+      expect(juzPadding.top, surahPadding.top);
+    },
+  );
+
+  testWidgets(
+    'home screen Juz tab uses the same title and subtitle styles as Surah tiles',
+    (tester) async {
+      await pumpHomeTile(tester);
+
+      final homeTitleText = tester.widget<Text>(find.text('Al-Fatihah'));
+      final homeSubtitleText = tester.widget<Text>(find.text('The Opening'));
+
+      await pumpHomeScreen(tester);
+      await tester.tap(find.text("Juz'e"));
+      await tester.pumpAndSettle();
+
+      final juzTitleText = tester.widget<Text>(find.text('Al-Fatihah'));
+      final juzSubtitleText = tester.widget<Text>(find.text('The Opening'));
+
+      expectMatchingStyleFields(juzTitleText, homeTitleText);
+      expectMatchingStyleFields(juzSubtitleText, homeSubtitleText);
     },
   );
 

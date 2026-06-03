@@ -12,6 +12,8 @@ import 'package:the_message_of_the_quran/features/settings_screen/providers/lang
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
+import 'home_list_row_text_styles.dart';
+
 class JuzColumn extends StatelessWidget {
   const JuzColumn({super.key});
 
@@ -49,7 +51,7 @@ class JuzColumn extends StatelessWidget {
         }
 
         return ListView.builder(
-          padding: EdgeInsets.fromLTRB(hPad, 8, hPad, 0),
+          padding: EdgeInsets.fromLTRB(hPad, homeListTopPadding, hPad, 0),
           itemCount: provider.juzList.length,
           itemBuilder: (context, index) {
             final juz = provider.juzList[index];
@@ -113,10 +115,7 @@ class JuzColumn extends StatelessWidget {
                       }
                     : null,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 4,
-                  ),
+                  padding: homeListRowPadding,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -127,9 +126,9 @@ class JuzColumn extends StatelessWidget {
                             outlineOnly: true,
                             isHighlighted:
                                 provider.selectedJuzNumber == juz.number,
-                            size: 42,
+                            size: homeListBadgeSize,
                           ),
-                          const SizedBox(width: 14),
+                          const SizedBox(width: homeListLeadingGap),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,11 +138,10 @@ class JuzColumn extends StatelessWidget {
                                   title,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: AppTextTheme.localizedLabel(
+                                  style: homeListPrimaryTextStyle(
                                     isMalayalam: isMalayalam,
                                     color: primaryColor,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 12 * scale,
+                                    scale: scale,
                                   ),
                                 ),
                                 if (subtitle.isNotEmpty) ...[
@@ -152,19 +150,17 @@ class JuzColumn extends StatelessWidget {
                                     subtitle,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: AppTextTheme.localizedBody(
+                                    style: homeListSubtitleTextStyle(
                                       isMalayalam: isMalayalam,
-                                      fontSize: 11 * scale,
                                       color: secondaryColor,
-                                      fontWeight: FontWeight.w500,
-                                      letterSpacing: 0.2,
+                                      scale: scale,
                                     ),
                                   ),
                                 ],
                               ],
                             ),
                           ),
-                          SizedBox(width: 12 * scale),
+                          const SizedBox(width: homeListTrailingGap),
                           SizedBox(
                             width: 96 * scale,
                             child: Column(
@@ -176,21 +172,19 @@ class JuzColumn extends StatelessWidget {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   textAlign: TextAlign.right,
-                                  style: AppTextTheme.localizedLabel(
+                                  style: homeListAyahMetaTextStyle(
                                     isMalayalam: isMalayalam,
                                     color: secondaryColor,
-                                    fontSize: 10.5 * scale,
-                                    fontWeight: FontWeight.w500,
-                                    letterSpacing: 0.3,
+                                    scale: scale,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: homeListEndGap),
                         ],
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: homeListRowBottomGap),
                       Divider(
                         height: 1,
                         thickness: 1,

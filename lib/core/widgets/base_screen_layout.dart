@@ -78,7 +78,7 @@ class BaseScreenLayout extends StatelessWidget {
   Widget _buildBody(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final theme = Theme.of(context);
-    final useDesktopWebShell = kIsWeb;
+    const useDesktopWebShell = kIsWeb;
     final webCardBorderColor = isDarkMode
         ? Colors.white.withValues(alpha: 0.08)
         : (theme.dividerTheme.color ?? theme.colorScheme.outlineVariant);

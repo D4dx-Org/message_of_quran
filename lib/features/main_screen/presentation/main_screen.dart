@@ -197,10 +197,10 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _buildWebShell(BuildContext context, Widget pageBody, int displayIndex) {
-    final navLabels = const ['Home', 'Bookmarks', 'Mushaf', 'Settings', 'About'];
+    const navLabels = ['Home', 'Bookmarks', 'Mushaf', 'Settings', 'About'];
     final theme = Theme.of(context);
-    final shellColor = AppTheme.appThemePrimary;
-    final accentColor = AppTheme.appBarForegroundColor;
+    const shellColor = AppTheme.appThemePrimary;
+    const accentColor = AppTheme.appBarForegroundColor;
     final outlineColor = Colors.black.withValues(alpha: 0.10);
     final actionSurface = accentColor.withValues(alpha: 0.10);
 
@@ -276,7 +276,7 @@ class _MainScreenState extends State<MainScreen> {
                                 onPressed: () => Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => SearchScreen(),
+                                    builder: (_) => const SearchScreen(),
                                   ),
                                 ),
                                 icon: const Icon(Icons.search, color: Colors.white),
@@ -306,7 +306,7 @@ class _MainScreenState extends State<MainScreen> {
                               children: [
                                 buildSearchButton(),
                                 const SizedBox(width: 12),
-                                AppBarLanguageButton(),
+                                const AppBarLanguageButton(),
                               ],
                             );
                           }
@@ -350,7 +350,7 @@ class _MainScreenState extends State<MainScreen> {
                                     const Spacer(),
                                     buildSearchButton(),
                                     const SizedBox(width: 12),
-                                    AppBarLanguageButton(),
+                                    const AppBarLanguageButton(),
                                   ],
                                 ),
                                 if (!hideHeaderLogo) ...[

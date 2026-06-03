@@ -10,6 +10,8 @@ import 'package:the_message_of_the_quran/features/mushaf/widgets/star_number.dar
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
+import 'home_list_row_text_styles.dart';
+
 class HomeScreenListTile extends StatelessWidget {
   const HomeScreenListTile({super.key, required this.index, this.onTap});
   final int index;
@@ -67,7 +69,7 @@ class HomeScreenListTile extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+          padding: homeListRowPadding,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -78,9 +80,9 @@ class HomeScreenListTile extends StatelessWidget {
                     outlineOnly: true,
                     isHighlighted:
                         lastSurahTabSelection == surah.surahNumber,
-                    size: 42,
+                    size: homeListBadgeSize,
                   ),
-                  const SizedBox(width: 14),
+                  const SizedBox(width: homeListLeadingGap),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,11 +92,10 @@ class HomeScreenListTile extends StatelessWidget {
                           displayName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: AppTextTheme.localizedLabel(
+                          style: homeListPrimaryTextStyle(
                             isMalayalam: isMl,
                             color: textColor,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14 * scale,
+                            scale: scale,
                           ),
                         ),
                         if (description.isNotEmpty) ...[
@@ -103,19 +104,17 @@ class HomeScreenListTile extends StatelessWidget {
                             description,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: AppTextTheme.localizedBody(
+                            style: homeListSubtitleTextStyle(
                               isMalayalam: isMl,
-                              fontSize: 11 * scale,
                               color: subColor,
-                              fontWeight: FontWeight.w400,
-                              letterSpacing: 0.2,
+                              scale: scale,
                             ),
                           ),
                         ],
                       ],
                     ),
                   ),
-                  SizedBox(width: 12 * scale),
+                  const SizedBox(width: homeListTrailingGap),
                   SizedBox(
                     width: placeColumnWidth,
                     child: Column(
@@ -132,11 +131,10 @@ class HomeScreenListTile extends StatelessWidget {
                               maxLines: 1,
                               softWrap: false,
                               textAlign: TextAlign.right,
-                              style: AppTextTheme.localizedLabel(
+                              style: homeListPlaceTextStyle(
                                 isMalayalam: isMl,
                                 color: subColor,
-                                fontSize: 11 * scale,
-                                fontWeight: FontWeight.w600,
+                                scale: scale,
                               ),
                             ),
                           ),
@@ -147,21 +145,19 @@ class HomeScreenListTile extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.right,
-                          style: AppTextTheme.localizedLabel(
+                          style: homeListAyahMetaTextStyle(
                             isMalayalam: isMl,
-                            fontSize: 10.5 * scale,
                             color: subColor,
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: 0.3,
+                            scale: scale,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: homeListEndGap),
                 ],
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: homeListRowBottomGap),
               Divider(
                 height: 1,
                 thickness: 1,
