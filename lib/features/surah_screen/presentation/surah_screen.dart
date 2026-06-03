@@ -32,6 +32,7 @@ import 'package:the_message_of_the_quran/features/bookmark_screen/presentation/b
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/surah_action_dock.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/surah_screen_app_bar.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/cross_reference_sheet.dart';
+import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/show_translation_gate.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/interpretation_note_marker.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_auto_advance.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
@@ -2325,18 +2326,22 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                       ],
                                                                     ),
                                                                   ),
-                                                                if (controller
-                                                                    .translationBlockList
-                                                                    .isNotEmpty)
-                                                                  _buildTranslationBlocks(
-                                                                    context,
-                                                                    controller
-                                                                        .translationBlockList,
-                                                                    ayaStart,
-                                                                    ayaEnd,
-                                                                    surahNumber,
-                                                                    controller,
-                                                                  ),
+                                                                ShowTranslationGate(
+                                                                  hasTranslation:
+                                                                      controller
+                                                                          .translationBlockList
+                                                                          .isNotEmpty,
+                                                                  builder:
+                                                                      (context) =>
+                                                                          _buildTranslationBlocks(
+                                                                            context,
+                                                                            controller.translationBlockList,
+                                                                            ayaStart,
+                                                                            ayaEnd,
+                                                                            surahNumber,
+                                                                            controller,
+                                                                          ),
+                                                                ),
                                                                 Builder(
                                                                   builder: (context) {
                                                                     final isBookmarked =
@@ -3007,7 +3012,7 @@ class _AyahNumberBadge extends StatelessWidget {
       '\uFD3E${_toArabicNumerals(number)}\uFD3F',
       textDirection: TextDirection.ltr,
       style: TextStyle(
-        fontFamily: 'Uthmani',
+        fontFamily: 'Scheherazade',
         fontSize: 20,
         color: highlighted
             ? AppTheme.appIconTheme

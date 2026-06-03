@@ -20,6 +20,7 @@ import 'package:the_message_of_the_quran/core/utils/translation_alignment.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/interpretation_note_marker.dart';
+import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/show_translation_gate.dart';
 
 class InterpretationSheetSurahHeaderText {
   const InterpretationSheetSurahHeaderText({this.title, this.subtitle});
@@ -613,13 +614,15 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
                         if (_arabic?.arabicText != null)
                           const SizedBox(height: 16),
                         // Translation text with tappable footnotes
-                        if (_translation?.translationText != null)
-                          _buildTranslationRichText(
+                        ShowTranslationGate(
+                          hasTranslation: _translation?.translationText != null,
+                          builder: (context) => _buildTranslationRichText(
                             context,
                             _translation!.translationText!,
                             fontSettings,
                             isMl,
                           ),
+                        ),
                         // Interpretation (if noteNumber was provided)
                         if (_interpretation.isNotEmpty) ...[
                           const Divider(height: 24),

@@ -9,10 +9,10 @@ import 'package:the_message_of_the_quran/core/widgets/d4dx_branding_footer.dart'
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_app_block.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_audio_block.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_card.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_font_block.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_layout_block.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_list_tile.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_tajweed_block.dart';
-import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
@@ -52,7 +52,7 @@ class SettingsScreen extends StatelessWidget {
           SizedBox(height: 24),
           _SectionLabel('Font'),
           SizedBox(height: 8),
-          _FontSettingsCard(),
+          SettingsScreenFontBlock(),
           SizedBox(height: 24),
           _SectionLabel('Layout'),
           SizedBox(height: 8),
@@ -94,7 +94,7 @@ class SettingsScreen extends StatelessWidget {
                   _buildSectionGroup(
                     context,
                     label: 'Font',
-                    child: const _FontSettingsCard(),
+                    child: const SettingsScreenFontBlock(),
                   ),
                   const SizedBox(height: 24),
                   _buildSectionGroup(
@@ -155,7 +155,7 @@ class SettingsScreen extends StatelessWidget {
                 SizedBox(height: 24),
                 _SectionLabel('Font'),
                 SizedBox(height: 8),
-                _FontSettingsCard(),
+                SettingsScreenFontBlock(),
                 SizedBox(height: 24),
                 _SectionLabel('Layout'),
                 SizedBox(height: 8),
@@ -289,205 +289,6 @@ class _ThemeLanguageCard extends StatelessWidget {
                       ],
                     );
                   },
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─── Font Settings Card ──────────────────────────────────────────────────────
-
-class _FontSettingsCard extends StatelessWidget {
-  const _FontSettingsCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final accentColor = appBarAccentColor(context);
-    final controller = Provider.of<FontSizeChangerProvider>(context);
-
-    return SettingsScreenCard(
-      child: Column(
-        children: [
-          // Font picker
-          Consumer<FontSizeChangerProvider>(
-            builder: (context, value, _) => SettingsScreenListTile(
-              title: "Qur'an Font",
-              icon: Icons.font_download,
-              trailing: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: value.fontType,
-                  icon: Icon(Icons.arrow_drop_down, color: accentColor),
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: Theme.of(context).textTheme.bodyMedium?.color,
-                  ),
-                  dropdownColor: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(12),
-                  onChanged: (val) {
-                    if (val != null) value.setFont(val);
-                  },
-                  selectedItemBuilder: (context) {
-                    return FontSizeChangerProvider.availableFonts.map((font) {
-                      return Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          FontSizeChangerProvider.fontDisplayNames[font] ??
-                              font,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: accentColor,
-                          ),
-                        ),
-                      );
-                    }).toList();
-                  },
-                  items: FontSizeChangerProvider.availableFonts.map((font) {
-                    final isSelected = value.fontType == font;
-                    return DropdownMenuItem<String>(
-                      value: font,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            FontSizeChangerProvider.fontDisplayNames[font] ??
-                                font,
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: isSelected
-                                  ? FontWeight.w600
-                                  : FontWeight.w400,
-                              color: isSelected
-                                  ? accentColor
-                                  : Theme.of(
-                                      context,
-                                    ).textTheme.bodyMedium?.color,
-                            ),
-                          ),
-                          if (isSelected) ...[
-                            const SizedBox(width: 6),
-                            Icon(Icons.check, size: 16, color: accentColor),
-                          ],
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
-            ),
-          ),
-          const Divider(height: 1, indent: 16, endIndent: 16),
-          // Qur'an font size
-          SettingsScreenListTile(
-            title: "Qur'an Font Size",
-            icon: Icons.format_size_outlined,
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  onPressed: () => controller.decrement(true),
-                  icon: const Icon(Icons.remove_circle_outline_rounded),
-                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                  padding: EdgeInsets.zero,
-                ),
-                Consumer<FontSizeChangerProvider>(
-                  builder: (context, value, child) {
-                    return SizedBox(
-                      width: 28,
-                      child: Text(
-                        '${value.quranFontSize}',
-                        textAlign: TextAlign.center,
-                        style: AppTextTheme.surahTitle.copyWith(
-                          color: accentColor,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                IconButton(
-                  onPressed: () => controller.increment(true),
-                  icon: const Icon(Icons.add_circle_outline),
-                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                  padding: EdgeInsets.zero,
-                ),
-              ],
-            ),
-          ),
-          const Divider(height: 1, indent: 16, endIndent: 16),
-          // Translation font size
-          SettingsScreenListTile(
-            title: 'Translation Font Size',
-            icon: Icons.translate,
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  onPressed: () => controller.decrement(false),
-                  icon: const Icon(Icons.remove_circle_outline_rounded),
-                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                  padding: EdgeInsets.zero,
-                ),
-                Consumer<FontSizeChangerProvider>(
-                  builder: (context, value, child) {
-                    return SizedBox(
-                      width: 28,
-                      child: Text(
-                        '${value.quranTransaltionFontSize}',
-                        textAlign: TextAlign.center,
-                        style: AppTextTheme.surahTitle.copyWith(
-                          color: accentColor,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                IconButton(
-                  onPressed: () => controller.increment(false),
-                  icon: const Icon(Icons.add_circle_outline),
-                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                  padding: EdgeInsets.zero,
-                ),
-              ],
-            ),
-          ),
-          const Divider(height: 1, indent: 16, endIndent: 16),
-          // Interpretation font size
-          SettingsScreenListTile(
-            title: 'Interpretation Font Size',
-            icon: Icons.menu_book_outlined,
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  onPressed: () => controller.decrementInterpretation(),
-                  icon: const Icon(Icons.remove_circle_outline_rounded),
-                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                  padding: EdgeInsets.zero,
-                ),
-                Consumer<FontSizeChangerProvider>(
-                  builder: (context, value, child) {
-                    return SizedBox(
-                      width: 28,
-                      child: Text(
-                        '${value.interpretationFontSize}',
-                        textAlign: TextAlign.center,
-                        style: AppTextTheme.surahTitle.copyWith(
-                          color: accentColor,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                IconButton(
-                  onPressed: () => controller.incrementInterpretation(),
-                  icon: const Icon(Icons.add_circle_outline),
-                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                  padding: EdgeInsets.zero,
                 ),
               ],
             ),

@@ -8,9 +8,8 @@ class FontSizeChangerProvider extends ChangeNotifier {
   static const _quranJustifyKey = 'quran_justify';
 
   static const List<String> availableFonts = [
-    'Amiri',
-    'Uthmani',
     'Scheherazade',
+    'Amiri',
     'Lateef',
     'AmiriQuran',
     'QuranTaha',
@@ -18,7 +17,6 @@ class FontSizeChangerProvider extends ChangeNotifier {
 
   static const Map<String, String> fontDisplayNames = {
     'Amiri': 'Amiri',
-    'Uthmani': 'Uthmani',
     'Scheherazade': 'Scheherazade',
     'Lateef': 'Lateef',
     'AmiriQuran': 'Amiri Quran',
@@ -32,7 +30,7 @@ class FontSizeChangerProvider extends ChangeNotifier {
   bool interpretationJustify = true;
   bool quranJustify = true;
   // Default font for the Qur'an text (used when SharedPreferences has no value yet).
-  String fontType = "Uthmani";
+  String fontType = 'Scheherazade';
 
   FontSizeChangerProvider() {
     WidgetsBinding.instance.addPostFrameCallback((_) => _load());
@@ -40,7 +38,7 @@ class FontSizeChangerProvider extends ChangeNotifier {
 
   Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
-    String defaultFont = 'Uthmani';
+    const defaultFont = 'Scheherazade';
     final savedFont = prefs.getString(_fontTypeKey) ?? defaultFont;
     fontType = availableFonts.contains(savedFont) ? savedFont : defaultFont;
     translationJustify = prefs.getBool(_translationJustifyKey) ?? true;

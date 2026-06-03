@@ -4,12 +4,10 @@ import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_card.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_list_tile.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_selector_dropdown.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/play_settings_provider.dart';
 
 const int _reciterVisibleItemCount = 4;
-const double _reciterMenuItemHeight = 48;
-const double _reciterMenuHeight =
-  _reciterVisibleItemCount * _reciterMenuItemHeight;
 
 class SettingsScreenAudioBlock extends StatelessWidget {
   const SettingsScreenAudioBlock({super.key});
@@ -18,11 +16,6 @@ class SettingsScreenAudioBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     final accentColor = appBarAccentColor(context);
     final accentTrackColor = appBarAccentFillColor(context, alpha: 0.35);
-    final reciterTextStyle = AppTextTheme.drawerStyle.copyWith(
-      fontWeight: FontWeight.w500,
-      color: Theme.of(context).colorScheme.onSurface,
-      height: 1.15,
-    );
 
     return Consumer<PlaySettingsProvider>(
       builder: (context, playSettings, _) {
@@ -30,91 +23,23 @@ class SettingsScreenAudioBlock extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── Reciter picker ──────────────────────────────────
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.person, color: accentColor, size: 22),
-                        const SizedBox(width: 16),
-                        Text(
-                          'Reciters',
-                          style: AppTextTheme.drawerStyle
-                              .copyWith(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        return SizedBox(
-                          width: constraints.maxWidth,
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<int>(
-                              value: playSettings.selectedReciterIndex,
-                              isExpanded: true,
-                              isDense: true,
-                              itemHeight: _reciterMenuItemHeight,
-                              menuMaxHeight: _reciterMenuHeight,
-                              menuWidth: constraints.maxWidth,
-                              dropdownColor:
-                                  Theme.of(context).brightness == Brightness.dark
-                                      ? Colors.grey.shade900
-                                      : Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              icon: Icon(
-                                Icons.arrow_drop_down,
-                                color: Theme.of(context).colorScheme.onSurface,
-                                size: 22,
-                              ),
-                              style: reciterTextStyle,
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 8),
-                              selectedItemBuilder: (context) {
-                                return PlaySettingsProvider.reciters
-                                    .map(
-                                      (reciter) => Align(
-                                        alignment:
-                                            AlignmentDirectional.centerStart,
-                                        child: Text(
-                                          reciter.name,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: reciterTextStyle,
-                                        ),
-                                      ),
-                                    )
-                                    .toList();
-                              },
-                              onChanged: (value) {
-                                if (value != null) {
-                                  playSettings.setReciter(value);
-                                }
-                              },
-                              items: List.generate(
-                                PlaySettingsProvider.reciters.length,
-                                (index) => DropdownMenuItem<int>(
-                                  value: index,
-                                  child: Text(
-                                    PlaySettingsProvider.reciters[index].name,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: reciterTextStyle,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
+              SettingsScreenSelectorDropdown<int>(
+                title: 'Reciters',
+                icon: Icons.person,
+                value: playSettings.selectedReciterIndex,
+                items: List<int>.generate(
+                  PlaySettingsProvider.reciters.length,
+                  (index) => index,
                 ),
+                labelBuilder: (index) => PlaySettingsProvider.reciters[index].name,
+                visibleItemCount: _reciterVisibleItemCount,
+                onChanged: (value) {
+                  if (value != null) {
+                    playSettings.setReciter(value);
+                  }
+                },
               ),
+              const Divider(height: 1, indent: 16, endIndent: 16),
 
               // ── Translation visibility ────────────────────────
               SettingsScreenListTile(
@@ -127,6 +52,7 @@ class SettingsScreenAudioBlock extends StatelessWidget {
                   onChanged: (v) => playSettings.setShowTranslation(v),
                 ),
               ),
+              const Divider(height: 1, indent: 16, endIndent: 16),
 
               // ── Playback speed ───────────────────────────────────
               Padding(
@@ -167,6 +93,7 @@ class SettingsScreenAudioBlock extends StatelessWidget {
                   ],
                 ),
               ),
+              const Divider(height: 1, indent: 16, endIndent: 16),
 
               // ── Play mode ────────────────────────────────────────
               Padding(

@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_message_of_the_quran/core/utils/cross_reference_parser.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/providers/play_settings_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/cross_reference_sheet.dart';
 
 void main() {
@@ -18,8 +19,12 @@ void main() {
     WidgetTester tester, {
     required CrossReference reference,
     String languageCode = LanguageProvider.english,
+    bool showTranslation = true,
   }) async {
-    SharedPreferences.setMockInitialValues({'app_language': languageCode});
+    SharedPreferences.setMockInitialValues({
+      'app_language': languageCode,
+      'show_translation': showTranslation,
+    });
     final languageProvider = LanguageProvider();
 
     await tester.pumpWidget(
@@ -27,6 +32,7 @@ void main() {
         providers: [
           ChangeNotifierProvider<LanguageProvider>.value(value: languageProvider),
           ChangeNotifierProvider(create: (_) => FontSizeChangerProvider()),
+          ChangeNotifierProvider(create: (_) => PlaySettingsProvider()),
         ],
         child: MaterialApp(
           home: Scaffold(
@@ -61,8 +67,12 @@ void main() {
     required int ayahNumber,
     int? noteNumber,
     String languageCode = LanguageProvider.english,
+    bool showTranslation = true,
   }) async {
-    SharedPreferences.setMockInitialValues({'app_language': languageCode});
+    SharedPreferences.setMockInitialValues({
+      'app_language': languageCode,
+      'show_translation': showTranslation,
+    });
     final languageProvider = LanguageProvider();
 
     await tester.pumpWidget(
@@ -70,6 +80,7 @@ void main() {
         providers: [
           ChangeNotifierProvider<LanguageProvider>.value(value: languageProvider),
           ChangeNotifierProvider(create: (_) => FontSizeChangerProvider()),
+          ChangeNotifierProvider(create: (_) => PlaySettingsProvider()),
         ],
         child: MaterialApp(
           home: Scaffold(

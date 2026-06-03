@@ -38,11 +38,12 @@ void main() {
     expect(find.text('Justify Quran Ayahs & Tajweed'), findsOneWidget);
   });
 
-  testWidgets('hides translation justify toggle in Malayalam', (tester) async {
+  testWidgets('hides translation and interpretation justify toggles in Malayalam',
+      (tester) async {
     await pumpLayoutBlock(tester, languageCode: LanguageProvider.malayalam);
 
     expect(find.text('Justify Translation'), findsNothing);
-    expect(find.text('Justify Interpretation'), findsOneWidget);
+    expect(find.text('Justify Interpretation'), findsNothing);
     expect(find.text('Justify Quran Ayahs & Tajweed'), findsOneWidget);
   });
 }

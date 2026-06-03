@@ -122,7 +122,7 @@ A comprehensive Quran companion app featuring Muhammad Asad's acclaimed English 
 ## ⚙️ Customization & Settings
 
 ### Fonts & Typography
-- **6 Arabic font choices**: Amiri, Uthmani (KFGQPC), Scheherazade, Lateef, Amiri Quran, Quran Taha
+- **5 Arabic font choices**: Amiri, Scheherazade, Lateef, Amiri Quran, Quran Taha
 - Adjustable Arabic text size
 - Adjustable translation text size
 - Adjustable interpretation/commentary text size

@@ -116,10 +116,6 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: Uthmani
-      fonts:
-        - asset: "assets/fonts/KFGQPC Uthman Taha Naskh Regular.ttf"
-
     - family: Scheherazade
       fonts:
         - asset: assets/fonts/ScheherazadeNew-Regular.ttf

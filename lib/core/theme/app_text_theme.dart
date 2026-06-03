@@ -197,7 +197,6 @@ class AppTextTheme {
 
   static const Map<String, double> _arabicLineHeights = {
     'Lateef': 1.5,
-    'Uthmani': 1.5,
     'Amiri': 2.0,
     'Scheherazade': 2.0,
     'AmiriQuran': 2.0,
