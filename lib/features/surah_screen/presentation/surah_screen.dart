@@ -2450,12 +2450,10 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                           tooltip:
                                                                               'Share',
                                                                           onPressed: () async {
-                                                                            final surah =
-                                                                                controller.surahList[controller.index];
                                                                             final shareText =
-                                                                                '${surah.name} – Ayah $ayaStartText\n\n'
-                                                                                '${arabicText.isNotEmpty ? '$arabicText\n\n' : ''}'
-                                                                                '$translationText';
+                                                                                controller.getAyahText(
+                                                                                  ayaStart,
+                                                                                );
                                                                             if (shareText.trim().isNotEmpty) {
                                                                               await Share.share(
                                                                                 shareText,

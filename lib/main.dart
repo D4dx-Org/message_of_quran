@@ -53,10 +53,12 @@ const String surahAlKahfNotificationRoute = 'surah_18';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Show a simple error widget in release mode instead of the red error screen.
+  // Keep release errors visible so startup failures do not collapse into a
+  // blank white screen.
   if (kReleaseMode) {
     ErrorWidget.builder = (FlutterErrorDetails details) {
-      return const SizedBox.shrink();
+      debugPrint('Release ErrorWidget: ${details.exceptionAsString()}');
+      return _ReleaseErrorWidget(details: details);
     };
   }
 
@@ -75,87 +77,229 @@ void main() {
   runApp(const AppBootstrap());
 }
 
-Future<void> _initializeAppServices() async {
-  debugPrint('Bootstrap: initializing database services');
-  await DatabaseHelper.initializeServices().timeout(
-    const Duration(seconds: 20),
-    onTimeout: () => throw TimeoutException(
-      'Database initialization timed out.',
+Future<T> _runStartupStep<T>(
+  String label,
+  Future<T> Function() action,
+) async {
+  final stopwatch = Stopwatch()..start();
+  debugPrint('Bootstrap: $label started');
+  try {
+    final result = await action();
+    debugPrint(
+      'Bootstrap: $label finished in ${stopwatch.elapsedMilliseconds}ms',
+    );
+    return result;
+  } catch (error, stackTrace) {
+    debugPrint(
+      'Bootstrap: $label failed after ${stopwatch.elapsedMilliseconds}ms: '
+      '$error',
+    );
+    debugPrintStack(stackTrace: stackTrace);
+    rethrow;
+  }
+}
+
+Future<void> _runBestEffortStartupStep(
+  String label,
+  Future<void> Function() action,
+) async {
+  final stopwatch = Stopwatch()..start();
+  debugPrint('Bootstrap: $label started');
+  try {
+    await action();
+    debugPrint(
+      'Bootstrap: $label finished in ${stopwatch.elapsedMilliseconds}ms',
+    );
+  } catch (error, stackTrace) {
+    debugPrint(
+      'Bootstrap: $label failed after ${stopwatch.elapsedMilliseconds}ms: '
+      '$error',
+    );
+    debugPrintStack(stackTrace: stackTrace);
+  }
+}
+
+List<NotificationChannel> _notificationChannels() {
+  return [
+    NotificationChannel(
+      channelKey: 'mushaf_download',
+      channelName: 'Mushaf Download',
+      channelDescription: 'Shows Mushaf font download progress',
+      importance: NotificationImportance.Low,
+      enableVibration: false,
+      playSound: false,
+      onlyAlertOnce: true,
+    ),
+    NotificationChannel(
+      channelKey: 'daily_reminder',
+      channelName: 'Daily Reminder',
+      channelDescription: 'Daily Quran reading reminders',
+      importance: NotificationImportance.High,
+      enableVibration: true,
+      playSound: true,
+    ),
+    NotificationChannel(
+      channelKey: 'progression_reminder',
+      channelName: 'Progression Reminder',
+      channelDescription: 'Quran progression learning reminders',
+      importance: NotificationImportance.High,
+      enableVibration: true,
+      playSound: true,
+    ),
+  ];
+}
+
+Future<void> _initializeDeferredMobileServices() async {
+  await _runBestEffortStartupStep(
+    'initializing OneSignal',
+    () => OneSignalService.initialize().timeout(
+      const Duration(seconds: 10),
+      onTimeout: () => throw TimeoutException(
+        'OneSignal initialization timed out.',
+      ),
     ),
   );
 
-  debugPrint('Bootstrap: initializing audio services');
+  await _runBestEffortStartupStep(
+    'syncing Mushaf state',
+    () => MushafDownloadManager.instance.syncWithPersistedState().timeout(
+      const Duration(seconds: 5),
+      onTimeout: () => throw TimeoutException(
+        'Mushaf state sync timed out.',
+      ),
+    ),
+  );
+
+  await _runBestEffortStartupStep('initializing notifications', () async {
+    await AwesomeNotifications().initialize(
+      null,
+      _notificationChannels(),
+      debug: false,
+    ).timeout(
+      const Duration(seconds: 10),
+      onTimeout: () => throw TimeoutException(
+        'Notification initialization timed out.',
+      ),
+    );
+
+    AwesomeNotifications().setListeners(
+      onActionReceivedMethod: _onNotificationTap,
+      onNotificationCreatedMethod:
+          NotificationController.onNotificationCreatedMethod,
+      onNotificationDisplayedMethod:
+          NotificationController.onNotificationDisplayedMethod,
+      onDismissActionReceivedMethod:
+          NotificationController.onDismissActionReceivedMethod,
+    );
+  });
+
+  await _runBestEffortStartupStep(
+    'checking initial notification action',
+    () async {
+      final initialAction = await AwesomeNotifications()
+          .getInitialNotificationAction(removeFromActionEvents: false)
+          .timeout(
+            const Duration(seconds: 5),
+            onTimeout: () => throw TimeoutException(
+              'Initial notification lookup timed out.',
+            ),
+          );
+      if (initialAction != null) {
+        await _onNotificationTap(initialAction);
+      }
+    },
+  );
+}
+
+Future<void> _initializeAppServices() async {
+  await _runStartupStep(
+    'initializing database services',
+    () => DatabaseHelper.initializeServices().timeout(
+      const Duration(seconds: 20),
+      onTimeout: () => throw TimeoutException(
+        'Database initialization timed out.',
+      ),
+    ),
+  );
+
   if (kIsWeb) {
     audioHandler ??= QuranAudioHandler();
     return;
   }
 
-  audioHandler = await AudioService.init(
-    builder: () => QuranAudioHandler(),
-    config: const AudioServiceConfig(
-      androidNotificationChannelId:
-          'com.d4dx.the_message_of_the_quran.audio',
-      androidNotificationChannelName: 'Quran Audio',
-      androidNotificationOngoing: true,
-      androidStopForegroundOnPause: true,
+  audioHandler = await _runStartupStep(
+    'initializing audio services',
+    () => AudioService.init(
+      builder: () => QuranAudioHandler(),
+      config: const AudioServiceConfig(
+        androidNotificationChannelId:
+            'com.d4dx.the_message_of_the_quran.audio',
+        androidNotificationChannelName: 'Quran Audio',
+        androidNotificationOngoing: true,
+        androidStopForegroundOnPause: true,
+      ),
+    ).timeout(
+      const Duration(seconds: 10),
+      onTimeout: () => throw TimeoutException(
+        'Audio service initialization timed out.',
+      ),
     ),
-  ).timeout(
-    const Duration(seconds: 10),
-    onTimeout: () => throw TimeoutException(
-      'Audio service initialization timed out.',
-    ),
   );
 
-  debugPrint('Bootstrap: initializing mobile-only services');
-  await OneSignalService.initialize();
-  await MushafDownloadManager.instance.syncWithPersistedState();
+  unawaited(_initializeDeferredMobileServices());
+}
 
-  await AwesomeNotifications().initialize(
-    null,
-    [
-      NotificationChannel(
-        channelKey: 'mushaf_download',
-        channelName: 'Mushaf Download',
-        channelDescription: 'Shows Mushaf font download progress',
-        importance: NotificationImportance.Low,
-        enableVibration: false,
-        playSound: false,
-        onlyAlertOnce: true,
-      ),
-      NotificationChannel(
-        channelKey: 'daily_reminder',
-        channelName: 'Daily Reminder',
-        channelDescription: 'Daily Quran reading reminders',
-        importance: NotificationImportance.High,
-        enableVibration: true,
-        playSound: true,
-      ),
-      NotificationChannel(
-        channelKey: 'progression_reminder',
-        channelName: 'Progression Reminder',
-        channelDescription: 'Quran progression learning reminders',
-        importance: NotificationImportance.High,
-        enableVibration: true,
-        playSound: true,
-      ),
-    ],
-    debug: false,
-  );
+class _ReleaseErrorWidget extends StatelessWidget {
+  const _ReleaseErrorWidget({required this.details});
 
-  AwesomeNotifications().setListeners(
-    onActionReceivedMethod: _onNotificationTap,
-    onNotificationCreatedMethod:
-        NotificationController.onNotificationCreatedMethod,
-    onNotificationDisplayedMethod:
-        NotificationController.onNotificationDisplayedMethod,
-    onDismissActionReceivedMethod:
-        NotificationController.onDismissActionReceivedMethod,
-  );
+  final FlutterErrorDetails details;
 
-  final initialAction = await AwesomeNotifications()
-      .getInitialNotificationAction(removeFromActionEvents: false);
-  if (initialAction != null) {
-    await _onNotificationTap(initialAction);
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: ColoredBox(
+        color: Colors.white,
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: DefaultTextStyle(
+                style: const TextStyle(
+                  color: Colors.black87,
+                  fontSize: 14,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      size: 44,
+                      color: Colors.black87,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'The app hit an unexpected error.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      details.exceptionAsString(),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 
