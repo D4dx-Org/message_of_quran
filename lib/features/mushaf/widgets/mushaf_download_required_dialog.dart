@@ -7,11 +7,19 @@ class MushafDownloadRequiredDialog extends StatelessWidget {
   const MushafDownloadRequiredDialog({
     super.key,
     required this.onCancel,
-    required this.onDownload,
+    this.onDownload,
+    this.title = 'Download Required',
+    this.message,
+    this.cancelLabel = 'Cancel',
+    this.downloadLabel = 'Download',
   });
 
   final VoidCallback onCancel;
-  final VoidCallback onDownload;
+  final VoidCallback? onDownload;
+  final String title;
+  final String? message;
+  final String cancelLabel;
+  final String downloadLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +40,7 @@ class MushafDownloadRequiredDialog extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              'Download Required',
+              title,
               style: AppTextTheme.popinsDefault(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -42,16 +50,17 @@ class MushafDownloadRequiredDialog extends StatelessWidget {
         ],
       ),
       content: Text(
-        'Pages 1–2 are available offline.\n'
-        'Download the Mushaf font pack to read the full Quran.\n\n'
-        'The download will continue in the background.',
+        message ??
+            'Pages 1–2 are available offline.\n'
+                'Download the Mushaf font pack to read the full Quran.\n\n'
+                'The download will continue in the background.',
         style: AppTextTheme.popinsDefault(fontSize: 14),
       ),
       actions: [
         TextButton(
           onPressed: onCancel,
           child: Text(
-            'Cancel',
+            cancelLabel,
             style: AppTextTheme.popinsDefault(
               fontSize: 14,
               fontWeight: FontWeight.w500,
@@ -59,23 +68,24 @@ class MushafDownloadRequiredDialog extends StatelessWidget {
             ),
           ),
         ),
-        ElevatedButton(
-          onPressed: onDownload,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppTheme.appIconTheme,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+        if (onDownload != null)
+          ElevatedButton(
+            onPressed: onDownload,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.appIconTheme,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Text(
+              downloadLabel,
+              style: AppTextTheme.popinsDefault(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
-          child: Text(
-            'Download',
-            style: AppTextTheme.popinsDefault(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
       ],
     );
   }

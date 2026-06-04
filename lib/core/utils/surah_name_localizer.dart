@@ -1,3 +1,6 @@
+import 'package:the_message_of_the_quran/core/models/juz_hizb_model.dart';
+import 'package:the_message_of_the_quran/core/models/surah_model.dart';
+
 String _surahNameLine(String surahName, String surahTranslation) {
   final trimmedTranslation = surahTranslation.trim();
   if (trimmedTranslation.isEmpty) {
@@ -92,4 +95,31 @@ String formatSurahDisplayNameLine({
   }
 
   return '${displayText.title} (${displayText.subtitle})';
+}
+
+String formatJuzSelectorItemLabel({
+  required JuzHizbModel juz,
+  required List<SurahModel> surahList,
+  required bool isMalayalam,
+}) {
+  final surahIndex = surahList.indexWhere(
+    (surah) => surah.surahNumber == juz.surahNumber,
+  );
+  if (surahIndex < 0) {
+    final fallbackLabel = isMalayalam
+        ? 'സൂറത്ത് ${juz.surahNumber}'
+        : 'Surah ${juz.surahNumber}';
+    return '${juz.number}. $fallbackLabel';
+  }
+
+  final surah = surahList[surahIndex];
+  final displayText = formatSurahListDisplayText(
+    isMalayalam: isMalayalam,
+    surahName: surah.name,
+    surahTranslation: surah.description,
+    malayalamName: surah.malayalamName,
+    surahNumber: surah.surahNumber,
+  );
+
+  return '${juz.number}. ${displayText.title}';
 }

@@ -8,7 +8,7 @@ import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/app_bar_language_button.dart';
 import 'package:the_message_of_the_quran/core/widgets/app_bar_model_sheet.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_screen_svg.dart';
-import 'package:the_message_of_the_quran/features/search_screen/presentation/search_screen.dart';
+import 'package:the_message_of_the_quran/features/search_screen/presentation/widgets/surah_quick_search.dart';
 
 class CommonAppBar {
   CommonAppBar._();
@@ -75,9 +75,7 @@ class CommonAppBar {
       titleSpacing: 4 * scale,
       title: _brandLogo(scale),
       centerTitle: false,
-      leading: Builder(
-        builder: (context) => _drawerMenuButton(context),
-      ),
+      leading: Builder(builder: (context) => _drawerMenuButton(context)),
       actions: [
         const AppBarLanguageButton(),
         const SizedBox(width: 8),
@@ -86,10 +84,7 @@ class CommonAppBar {
           tooltip: 'Search',
           padding: EdgeInsets.zero,
           visualDensity: VisualDensity.compact,
-          onPressed: () => Navigator.push(
-            ctx,
-            MaterialPageRoute(builder: (_) => const SearchScreen()),
-          ),
+          onPressed: () => showSurahQuickSearchDialog(ctx),
         ),
         const SizedBox(width: 8),
       ],
@@ -134,9 +129,7 @@ class CommonAppBar {
                     : null)),
       centerTitle: showBrandLogo ? false : centerTitle,
       leading: showLeading
-          ? Builder(
-              builder: (context) => _drawerMenuButton(context),
-            )
+          ? Builder(builder: (context) => _drawerMenuButton(context))
           : null,
       actions: isActionsNeeded
           ? [
@@ -169,10 +162,7 @@ class CommonAppBar {
                 tooltip: 'Search',
                 padding: EdgeInsets.zero,
                 visualDensity: VisualDensity.compact,
-                onPressed: () => Navigator.push(
-                  ctx,
-                  MaterialPageRoute(builder: (_) => const SearchScreen()),
-                ),
+                onPressed: () => showSurahQuickSearchDialog(ctx),
               ),
               const SizedBox(width: 8),
             ]

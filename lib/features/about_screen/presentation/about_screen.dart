@@ -41,7 +41,6 @@ class _AboutScreenState extends State<AboutScreen> {
   Widget build(BuildContext context) {
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     return BaseScreenLayout(
-      contentCardBoxShadows: const [],
       child: Consumer<AboutProvider>(
         builder: (context, provider, _) {
           if (provider.isAboutLoading) {

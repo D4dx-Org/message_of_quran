@@ -26,9 +26,19 @@ class MushafDownloadManager extends ChangeNotifier {
   String? get error => _error;
   bool get isDownloading => _status == MushafDownloadStatus.downloading;
   bool get isDone => _status == MushafDownloadStatus.completed;
+  bool get isDownloadSupported => FontDownloadService.isDownloadSupported;
 
   Future<void> startDownload() async {
     if (_status == MushafDownloadStatus.downloading) return;
+
+    if (!isDownloadSupported) {
+      _progress = 0;
+      _error = FontDownloadService.unsupportedPlatformMessage;
+      _status = MushafDownloadStatus.error;
+      notifyListeners();
+      _dismissNotification();
+      return;
+    }
 
     _status = MushafDownloadStatus.downloading;
     _progress = 0;

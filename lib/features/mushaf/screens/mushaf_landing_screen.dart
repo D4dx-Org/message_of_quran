@@ -600,6 +600,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
 
   void _showDownloadDialog(BuildContext context) {
     final maxW = ResponsiveHelper.bottomSheetMaxWidth(context);
+    final isDownloadSupported = _downloadManager.isDownloadSupported;
     showDialog<void>(
       context: context,
       builder: (ctx) => Center(
@@ -607,13 +608,22 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
           constraints: BoxConstraints(maxWidth: maxW ?? double.infinity),
           child: MushafDownloadRequiredDialog(
             onCancel: () => Navigator.of(ctx).pop(),
-            onDownload: () {
-              Navigator.of(ctx).pop();
-              _downloadManager.startDownload();
-              _showDownloadBanner(
-                'Mushaf download started. You can continue using the app.',
-              );
-            },
+            onDownload: isDownloadSupported
+                ? () {
+                    Navigator.of(ctx).pop();
+                    _downloadManager.startDownload();
+                    _showDownloadBanner(
+                      'Mushaf download started. You can continue using the app.',
+                    );
+                  }
+                : null,
+            title:
+                isDownloadSupported ? 'Download Required' : 'Preview Only on Web',
+            message: isDownloadSupported
+                ? null
+                : 'Pages 1–2 are available in the browser.\n'
+                    'Full Mushaf download is currently available only in the app.',
+            cancelLabel: isDownloadSupported ? 'Cancel' : 'Close',
           ),
         ),
       ),
@@ -703,7 +713,11 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
     final overviewPanel = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buildRecentlyReadSection(context, isDarkMode, useTwoColumns),
+        _buildRecentlyReadSection(
+          context,
+          isDarkMode,
+          useTwoColumns,
+        ),
         const SizedBox(height: 18),
         DecoratedBox(
           decoration: BoxDecoration(
@@ -782,9 +796,11 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                           borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      icon: const Icon(Icons.download_rounded),
+                      icon: const Icon(
+                        kIsWeb ? Icons.info_outline_rounded : Icons.download_rounded,
+                      ),
                       label: Text(
-                        'Download full Mushaf',
+                        kIsWeb ? 'Preview only on web' : 'Download full Mushaf',
                         style: AppTextTheme.popinsDefault(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -882,93 +898,131 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
         ? _surahMeta[suraNo - 1]
         : _surahMeta[0];
     final arabicGlyph = SurahUnicodeData.getSurahNameUnicode(suraNo);
-
     final hPad = ResponsiveHelper.horizontalPadding(context);
+    final topSpacing = isLandscape ? 12.0 : 20.0;
+    final sectionGap = SizedBox(height: isLandscape ? 6 : 8);
+    const quickAccessPadding = kIsWeb
+      ? EdgeInsets.only(left: 16, right: 20)
+        : EdgeInsets.zero;
+
+    final recentlyReadContent = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Recently Read',
+          style: TextStyle(
+            color: textColor,
+            fontSize: isLandscape ? 12 : 14,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        SizedBox(height: isLandscape ? 6 : 8),
+        GestureDetector(
+          onTap: () => _openPage(context, _p.lastRead?.page ?? 1),
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: isLandscape ? 8 : 12,
+              vertical: isLandscape ? 6 : 8,
+            ),
+            decoration: BoxDecoration(
+              color: cardBg,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isDarkMode
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : Colors.grey.withValues(alpha: 0.18),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: isDarkMode
+                      ? Colors.black.withValues(alpha: 0.25)
+                      : Colors.grey.withValues(alpha: 0.12),
+                  blurRadius: 6,
+                  offset: const Offset(0, 1),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Text(
+                  arabicGlyph,
+                  style: TextStyle(
+                    fontSize: isLandscape ? 18 : 22,
+                    fontFamily: 'sura_names',
+                    color: textColor,
+                    height: 1.1,
+                  ),
+                ),
+                SizedBox(width: isLandscape ? 8 : 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Surah ${meta.name}',
+                        style: TextStyle(
+                          color: textColor,
+                          fontSize: isLandscape ? 13 : 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        '${meta.meaning} • Ayah $ayaNo',
+                        style: TextStyle(
+                          color: subColor,
+                          fontSize: isLandscape ? 10 : 11,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: subColor,
+                  size: isLandscape ? 18 : 20,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+
+    if (kIsWeb) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(top: topSpacing),
+            child: _buildQuickAccessWrap(
+              context,
+              isDarkMode,
+              isLandscape,
+              padding: quickAccessPadding,
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(hPad, isLandscape ? 6 : 8, hPad, 0),
+            child: recentlyReadContent,
+          ),
+        ],
+      );
+    }
+
     return Padding(
-      padding: EdgeInsets.fromLTRB(hPad, isLandscape ? 12 : 20, hPad, 0),
+      padding: EdgeInsets.fromLTRB(hPad, topSpacing, hPad, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildQuickAccessWrap(context, isDarkMode, isLandscape),
-          SizedBox(height: isLandscape ? 6 : 8),
-          Text(
-            'Recently Read',
-            style: TextStyle(
-              color: textColor,
-              fontSize: isLandscape ? 12 : 14,
-              fontWeight: FontWeight.w600,
-            ),
+          _buildQuickAccessWrap(
+            context,
+            isDarkMode,
+            isLandscape,
+            padding: quickAccessPadding,
           ),
-          SizedBox(height: isLandscape ? 6 : 8),
-          GestureDetector(
-            onTap: () => _openPage(context, _p.lastRead?.page ?? 1),
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: isLandscape ? 8 : 12,
-                vertical: isLandscape ? 6 : 8,
-              ),
-              decoration: BoxDecoration(
-                color: cardBg,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: isDarkMode
-                      ? Colors.white.withValues(alpha: 0.08)
-                      : Colors.grey.withValues(alpha: 0.18),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: isDarkMode
-                        ? Colors.black.withValues(alpha: 0.25)
-                        : Colors.grey.withValues(alpha: 0.12),
-                    blurRadius: 6,
-                    offset: const Offset(0, 1),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Text(
-                    arabicGlyph,
-                    style: TextStyle(
-                      fontSize: isLandscape ? 18 : 22,
-                      fontFamily: 'sura_names',
-                      color: textColor,
-                      height: 1.1,
-                    ),
-                  ),
-                  SizedBox(width: isLandscape ? 8 : 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Surah ${meta.name}',
-                          style: TextStyle(
-                            color: textColor,
-                            fontSize: isLandscape ? 13 : 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          '${meta.meaning} • Ayah $ayaNo',
-                          style: TextStyle(
-                            color: subColor,
-                            fontSize: isLandscape ? 10 : 11,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Icon(
-                    Icons.chevron_right_rounded,
-                    color: subColor,
-                    size: isLandscape ? 18 : 20,
-                  ),
-                ],
-              ),
-            ),
-          ),
+          sectionGap,
+          recentlyReadContent,
         ],
       ),
     );
@@ -977,12 +1031,14 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
   Widget _buildQuickAccessWrap(
     BuildContext context,
     bool isDarkMode,
-    bool isLandscape,
-  ) {
-    final spacing = isLandscape ? 6.0 : 8.0;
+    bool isLandscape, {
+    EdgeInsetsGeometry padding = EdgeInsets.zero,
+  }) {
+    final spacing = kIsWeb ? 4.0 : (isLandscape ? 6.0 : 8.0);
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
+      padding: padding,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: List.generate(_quickAccessItems.length, (index) {
@@ -1015,6 +1071,8 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
         ? AppTheme.appIconTheme.withValues(alpha: 0.12)
         : Colors.white;
     final labelColor = isDarkMode ? Colors.white : Colors.black87;
+    final horizontalPadding = kIsWeb ? 8.0 : (isLandscape ? 10.0 : 12.0);
+    final verticalPadding = kIsWeb ? 6.0 : (isLandscape ? 6.0 : 7.0);
 
     return Material(
       color: Colors.transparent,
@@ -1032,8 +1090,8 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
         },
         child: Ink(
           padding: EdgeInsets.symmetric(
-            horizontal: isLandscape ? 10 : 12,
-            vertical: isLandscape ? 6 : 7,
+            horizontal: horizontalPadding,
+            vertical: verticalPadding,
           ),
           decoration: BoxDecoration(
             color: chipBg,

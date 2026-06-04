@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math' show min;
 
 import 'package:archive/archive_io.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
@@ -15,11 +16,22 @@ class FontDownloadService {
 
   static final FontDownloadService instance = FontDownloadService._();
 
-  static const String _baseUrl = 'http://lalithasaram.net/downloads/qfonts/';
+  static const String _baseUrl = 'https://lalithasaram.net/downloads/qfonts/';
+  static const String unsupportedPlatformMessage =
+      'Full Mushaf download is not available on web.';
   static const int _maxRetries = 3;
   bool _isCancelled = false;
 
+  static bool get isDownloadSupported => !kIsWeb;
+
+  void _ensureDownloadSupported() {
+    if (!isDownloadSupported) {
+      throw Exception(unsupportedPlatformMessage);
+    }
+  }
+
   Future<Directory> get fontsDir async {
+    _ensureDownloadSupported();
     final docs = await getApplicationDocumentsDirectory();
     final dir = Directory('${docs.path}/mushaf_fonts');
     await dir.create(recursive: true);
@@ -27,6 +39,7 @@ class FontDownloadService {
   }
 
   Stream<double> downloadFontPack() async* {
+    _ensureDownloadSupported();
     _isCancelled = false;
     log('FontDownload: starting font pack download');
 
@@ -125,6 +138,11 @@ class FontDownloadService {
   void cancel() => _isCancelled = true;
 
   Future<void> clearFontPack() async {
+    if (!isDownloadSupported) {
+      await MushafInstallState.instance.setFullFontsInstalled(value: false);
+      return;
+    }
+
     final dir = await fontsDir;
     if (await dir.exists()) await dir.delete(recursive: true);
     await MushafInstallState.instance.setFullFontsInstalled(value: false);

@@ -14,7 +14,7 @@ import 'package:the_message_of_the_quran/features/bookmark_screen/presentation/b
 import 'package:the_message_of_the_quran/features/home_screen/presentation/home_screen.dart';
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/mushaf/screens/mushaf_landing_screen.dart';
-import 'package:the_message_of_the_quran/features/search_screen/presentation/search_screen.dart';
+import 'package:the_message_of_the_quran/features/search_screen/presentation/widgets/surah_quick_search.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
@@ -37,6 +37,12 @@ class _MainScreenState extends State<MainScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   static const double _navIconSize = 24;
   static const double _webShellMaxWidth = 1180;
+  static const List<({String label, int pageIndex})> _webNavItems = [
+    (label: 'Home', pageIndex: 0),
+    (label: 'Bookmarks', pageIndex: 1),
+    (label: 'About', pageIndex: 4),
+    (label: 'Settings', pageIndex: 3),
+  ];
 
   static const List<({String label, IconData? iconData, String? assetPath})>
   _navItems = [
@@ -46,11 +52,7 @@ class _MainScreenState extends State<MainScreen> {
       iconData: null,
       assetPath: 'assets/icons/bookmark-img.png',
     ),
-    (
-      label: '',
-      iconData: null,
-      assetPath: 'assets/icons/mushaf-img-2.png',
-    ),
+    (label: '', iconData: null, assetPath: 'assets/icons/mushaf-img-2.png'),
     (
       label: 'Settings',
       iconData: null,
@@ -131,12 +133,7 @@ class _MainScreenState extends State<MainScreen> {
         colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
       );
     }
-    return Image.asset(
-      assetPath,
-      width: size,
-      height: size,
-      color: color,
-    );
+    return Image.asset(assetPath, width: size, height: size, color: color);
   }
 
   bool _useWebShell(BuildContext context) {
@@ -144,12 +141,12 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _buildWebNavButton({
-    required int index,
+    required int pageIndex,
     required String label,
     required int selectedIndex,
     required Color accentColor,
   }) {
-    final isSelected = index == selectedIndex;
+    final isSelected = pageIndex == selectedIndex;
     final iconColor = accentColor.withValues(alpha: isSelected ? 1.0 : 0.78);
 
     return Semantics(
@@ -157,7 +154,7 @@ class _MainScreenState extends State<MainScreen> {
       selected: isSelected,
       label: '$label navigation item',
       child: InkWell(
-        onTap: () => _onItemTapped(index),
+        onTap: () => _onItemTapped(pageIndex),
         borderRadius: BorderRadius.circular(18),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -165,9 +162,9 @@ class _MainScreenState extends State<MainScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               _buildNavItemIcon(
-                index: index,
+                index: pageIndex,
                 color: iconColor,
-                size: _navItemSize(index) * 0.95,
+                size: _navItemSize(pageIndex) * 0.95,
               ),
               const SizedBox(height: 8),
               Text(
@@ -196,8 +193,60 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  Widget _buildWebShell(BuildContext context, Widget pageBody, int displayIndex) {
-    const navLabels = ['Home', 'Bookmarks', 'Mushaf', 'Settings', 'About'];
+  Widget _buildWebReadModeToggle({
+    required BuildContext context,
+    required int displayIndex,
+    required bool isMalayalam,
+  }) {
+    if (displayIndex != 0 && displayIndex != 2) {
+      return const SizedBox.shrink();
+    }
+
+    const headerAccent = AppTheme.appThemePrimary;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+      child: ResponsiveContentWrapper(
+        maxWidth: _webShellMaxWidth,
+        child: Align(
+          alignment: Alignment.center,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: headerAccent.withValues(alpha: 0.06),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: headerAccent.withValues(alpha: 0.18)),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(4),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _WebReadModeButton(
+                    label: isMalayalam ? 'ഖുർആൻ വായനം' : 'Read Al-Qur\'an',
+                    selected: displayIndex == 0,
+                    onTap: () => _onItemTapped(0),
+                  ),
+                  const SizedBox(width: 4),
+                  _WebReadModeButton(
+                    label: isMalayalam ? 'മുഷ്ഹഫ്' : 'Read Mushaf',
+                    selected: displayIndex == 2,
+                    onTap: () => _onItemTapped(2),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWebShell(
+    BuildContext context,
+    Widget pageBody,
+    int displayIndex,
+    bool isMalayalam,
+  ) {
     final theme = Theme.of(context);
     const shellColor = AppTheme.appThemePrimary;
     const accentColor = AppTheme.appBarForegroundColor;
@@ -255,8 +304,12 @@ class _MainScreenState extends State<MainScreen> {
                                 ),
                                 child: IconButton(
                                   tooltip: 'Open menu',
-                                  onPressed: () => Scaffold.of(context).openDrawer(),
-                                  icon: const Icon(Icons.menu, color: Colors.white),
+                                  onPressed: () =>
+                                      Scaffold.of(context).openDrawer(),
+                                  icon: const Icon(
+                                    Icons.menu,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             );
@@ -273,13 +326,12 @@ class _MainScreenState extends State<MainScreen> {
                               ),
                               child: IconButton(
                                 tooltip: 'Search',
-                                onPressed: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const SearchScreen(),
-                                  ),
+                                onPressed: () =>
+                                    showSurahQuickSearchDialog(context),
+                                icon: const Icon(
+                                  Icons.search,
+                                  color: Colors.white,
                                 ),
-                                icon: const Icon(Icons.search, color: Colors.white),
                               ),
                             );
                           }
@@ -300,17 +352,21 @@ class _MainScreenState extends State<MainScreen> {
                             );
                           }
 
-                          Widget buildNavScroller({required Alignment alignment}) {
+                          Widget buildNavScroller({
+                            required Alignment alignment,
+                          }) {
                             return LayoutBuilder(
                               builder: (context, constraints) {
                                 final navRow = Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: List.generate(
-                                    navLabels.length,
+                                    _webNavItems.length,
                                     (index) => _buildWebNavButton(
-                                      index: index,
-                                      label: navLabels[index],
-                                      selectedIndex: displayIndex,
+                                      pageIndex: _webNavItems[index].pageIndex,
+                                      label: _webNavItems[index].label,
+                                      selectedIndex: displayIndex == 2
+                                          ? 0
+                                          : displayIndex,
                                       accentColor: accentColor,
                                     ),
                                   ),
@@ -358,7 +414,9 @@ class _MainScreenState extends State<MainScreen> {
                                     buildMenuButton(),
                                     const SizedBox(width: 12),
                                     Expanded(
-                                      child: buildTrailingCluster(compact: true),
+                                      child: buildTrailingCluster(
+                                        compact: true,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -397,6 +455,11 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ),
             ),
+            _buildWebReadModeToggle(
+              context: context,
+              displayIndex: displayIndex,
+              isMalayalam: isMalayalam,
+            ),
             Expanded(child: pageBody),
           ],
         ),
@@ -414,20 +477,22 @@ class _MainScreenState extends State<MainScreen> {
         ? AppTheme.appThemePrimary
         : Colors.white; // AppTheme.appThemeSecondary;
     final navCornerFillColor = isDarkMode
-      ? const Color(0xff0c2d52)
-      : const Color.fromRGBO(255, 250, 234, 1);
-    final inactiveColor = isDarkMode ? Colors.grey[400]! : const Color(0xFF4A4A4A);
+        ? const Color(0xff0c2d52)
+        : const Color.fromRGBO(255, 250, 234, 1);
+    final inactiveColor = isDarkMode
+        ? Colors.grey[400]!
+        : const Color(0xFF4A4A4A);
     final displayIndex = controller.currentIndex;
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     final tablet = ResponsiveHelper.isTablet(context);
     final scale = ResponsiveHelper.scaleFactor(context);
-      final navCornerRadius = 28.0 * scale;
+    final navCornerRadius = 28.0 * scale;
 
     final pageBody = IndexedStack(index: displayIndex, children: _pages);
 
-      if (_useWebShell(context)) {
-        return _buildWebShell(context, pageBody, displayIndex);
-      }
+    if (_useWebShell(context)) {
+      return _buildWebShell(context, pageBody, displayIndex, isMalayalam);
+    }
 
     final appBar = displayIndex == 0
         ? CommonAppBar.homeAppBar(context)
@@ -442,9 +507,7 @@ class _MainScreenState extends State<MainScreen> {
               'Bookmarks',
               'Mushaf',
               'Settings',
-              isMalayalam
-                  ? 'ഞങ്ങളെക്കുറിച്ച്'
-                  : 'About Us',
+              isMalayalam ? 'ഞങ്ങളെക്കുറിച്ച്' : 'About Us',
             ][displayIndex.clamp(0, 4)],
           );
 
@@ -466,7 +529,9 @@ class _MainScreenState extends State<MainScreen> {
               _navItems[2].assetPath!,
               width: _navIconSize,
               height: _navIconSize,
-              color: isDarkMode && displayIndex != 2 ? inactiveColor : Colors.white,
+              color: isDarkMode && displayIndex != 2
+                  ? inactiveColor
+                  : Colors.white,
             ),
           ),
           floatingActionButtonLocation:
@@ -545,7 +610,9 @@ class _MainScreenState extends State<MainScreen> {
               _navItems[2].assetPath!,
               width: _navIconSize * scale,
               height: _navIconSize * scale,
-              color: isDarkMode && displayIndex != 2 ? inactiveColor : Colors.white,
+              color: isDarkMode && displayIndex != 2
+                  ? inactiveColor
+                  : Colors.white,
             ),
           ),
         ),
@@ -594,7 +661,9 @@ class _MainScreenState extends State<MainScreen> {
                         final color = isMushaf
                             ? Colors.white
                             : isSelected
-                            ? (isDarkMode ? Colors.white : AppTheme.appIconTheme)
+                            ? (isDarkMode
+                                  ? Colors.white
+                                  : AppTheme.appIconTheme)
                             : inactiveColor;
 
                         return Expanded(
@@ -658,6 +727,50 @@ class _MainScreenState extends State<MainScreen> {
   }
 }
 
+class _WebReadModeButton extends StatelessWidget {
+  const _WebReadModeButton({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final unselectedColor = isDarkMode
+        ? Colors.white70
+        : AppTheme.appThemePrimary.withValues(alpha: 0.92);
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: selected ? AppTheme.appThemeSecondary : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: selected ? AppTheme.appThemePrimary : unselectedColor,
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _NavCornerFillPainter extends CustomPainter {
   const _NavCornerFillPainter({required this.color, required this.radius});
 
@@ -688,12 +801,7 @@ class _NavCornerFillPainter extends CustomPainter {
 
     final rightSquare = Path()
       ..addRect(
-        Rect.fromLTWH(
-          size.width - wedgeExtent,
-          0,
-          wedgeExtent,
-          wedgeExtent,
-        ),
+        Rect.fromLTWH(size.width - wedgeExtent, 0, wedgeExtent, wedgeExtent),
       );
     final rightCircle = Path()
       ..addOval(

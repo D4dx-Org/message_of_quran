@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
@@ -9,7 +10,13 @@ import 'package:the_message_of_the_quran/features/surah_screen/presentation/sura
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
 class SurahChipRow extends StatelessWidget {
-  const SurahChipRow({super.key});
+  const SurahChipRow({super.key, this.useCompactWebLayout});
+
+  static const double _webChipPadding = 6;
+  static const double _webChipGap = 6;
+  static const double _webRowHorizontalPadding = 12;
+
+  final bool? useCompactWebLayout;
 
   static const List<({int surahNumber, int? ayahId})> chips = [
     (surahNumber: 2, ayahId: 255),
@@ -46,6 +53,42 @@ class SurahChipRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     final surahList = context.watch<SurahProvider>().surahList;
+    final shouldUseCompactWebLayout = useCompactWebLayout ?? kIsWeb;
+
+    if (shouldUseCompactWebLayout) {
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(
+          horizontal: _webRowHorizontalPadding,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: List.generate(chips.length, (index) {
+            final chip = chips[index];
+            final label = _chipLabel(
+              isMalayalam: isMalayalam,
+              surahList: surahList,
+              surahNumber: chip.surahNumber,
+              ayahId: chip.ayahId,
+            );
+
+            return Padding(
+              padding: EdgeInsets.only(
+                right: index == chips.length - 1 ? 0 : _webChipGap,
+              ),
+              child: _SurahChip(
+                label: label,
+                isMalayalam: isMalayalam,
+                ayahId: chip.ayahId,
+                surahNumber: chip.surahNumber,
+                compact: true,
+                compactPadding: _webChipPadding,
+              ),
+            );
+          }),
+        ),
+      );
+    }
 
     return SizedBox(
       height: 40,
@@ -63,49 +106,80 @@ class SurahChipRow extends StatelessWidget {
             ayahId: chip.ayahId,
           );
 
-          return GestureDetector(
-            onTap: () {
-              // Open the surah EXACTLY like the other chips (Yaseen,
-              // Al Mulk, etc.) — just assignIndex and push immediately.
-              // SurahScreen loads its data and, when scrollToAyahId is
-              // non-null (e.g. Ayatul Kursi = 255), automatically scrolls
-              // to that ayah once the layout is ready. Avoiding any
-              // pre-navigation `await` here removes the visible tap-lag
-              // and the double-screen flash on the home screen.
-              final surahProv = context.read<SurahProvider>();
-              final idx = surahProv.surahList.indexWhere(
-                (s) => s.surahNumber == chip.surahNumber,
-              );
-              if (idx < 0) return;
-              surahProv.assignIndex(idx);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => SurahScreen(
-                    scrollToAyahId: chip.ayahId,
-                  ),
-                ),
-              );
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: AppTheme.appThemeRawChips,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                label,
-                style: AppTextTheme.localizedLabel(
-                  isMalayalam: isMalayalam,
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
+          return _SurahChip(
+            label: label,
+            isMalayalam: isMalayalam,
+            ayahId: chip.ayahId,
+            surahNumber: chip.surahNumber,
+            compact: false,
           );
         },
+      ),
+    );
+  }
+}
+
+class _SurahChip extends StatelessWidget {
+  const _SurahChip({
+    required this.label,
+    required this.isMalayalam,
+    required this.surahNumber,
+    required this.compact,
+    this.compactPadding = 12,
+    this.ayahId,
+  });
+
+  final String label;
+  final bool isMalayalam;
+  final int surahNumber;
+  final int? ayahId;
+  final bool compact;
+  final double compactPadding;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        // Open the surah EXACTLY like the other chips (Yaseen,
+        // Al Mulk, etc.) — just assignIndex and push immediately.
+        // SurahScreen loads its data and, when scrollToAyahId is
+        // non-null (e.g. Ayatul Kursi = 255), automatically scrolls
+        // to that ayah once the layout is ready. Avoiding any
+        // pre-navigation `await` here removes the visible tap-lag
+        // and the double-screen flash on the home screen.
+        final surahProv = context.read<SurahProvider>();
+        final idx = surahProv.surahList.indexWhere(
+          (s) => s.surahNumber == surahNumber,
+        );
+        if (idx < 0) return;
+        surahProv.assignIndex(idx);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => SurahScreen(
+              scrollToAyahId: ayahId,
+            ),
+          ),
+        );
+      },
+      child: Container(
+        padding: compact
+            ? EdgeInsets.all(compactPadding)
+            : const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: AppTheme.appThemeRawChips,
+          borderRadius: BorderRadius.circular(compact ? 16 : 20),
+        ),
+        alignment: compact ? null : Alignment.center,
+        child: Text(
+          label,
+          style: AppTextTheme.localizedLabel(
+            isMalayalam: isMalayalam,
+            color: Colors.white,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ),
     );
   }

@@ -193,6 +193,7 @@ class ThemeProvider extends ChangeNotifier {
         iconColor: WidgetStatePropertyAll(AppTheme.appThemeSecondary),
       ),
     ),
+    dialogBackgroundColor: const Color(0xff0c2d52),
     dialogTheme: const DialogThemeData(
       backgroundColor: Color(0xff0c2d52),
     ),

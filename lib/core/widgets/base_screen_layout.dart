@@ -18,7 +18,8 @@ class BaseScreenLayout extends StatelessWidget {
     this.floatingActionButton,
     this.drawer,
     this.useScaffold = true,
-    this.topBorderRadius = 40,
+    this.topBorderRadius,
+    this.bottomBorderRadius,
     this.endDrawer,
     this.resizeToAvoidBottomInset,
   });
@@ -50,7 +51,12 @@ class BaseScreenLayout extends StatelessWidget {
   final bool useScaffold;
 
   /// The border radius for the top corners of the content card.
-  final double topBorderRadius;
+  /// Defaults to `18` on desktop/web and `40` on mobile.
+  final double? topBorderRadius;
+
+  /// The border radius for the bottom corners of the content card.
+  /// Defaults to the desktop/web top radius and `0` on mobile.
+  final double? bottomBorderRadius;
 
   /// Whether the body should resize when the keyboard appears.
   final bool? resizeToAvoidBottomInset;
@@ -79,6 +85,18 @@ class BaseScreenLayout extends StatelessWidget {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final theme = Theme.of(context);
     const useDesktopWebShell = kIsWeb;
+    final resolvedTopBorderRadius =
+        topBorderRadius ??
+        (useDesktopWebShell ? AppTheme.desktopContentCardRadius : 40);
+    final resolvedBottomBorderRadius =
+        bottomBorderRadius ??
+        (useDesktopWebShell ? resolvedTopBorderRadius : 0);
+    final contentCardBorderRadius = BorderRadius.only(
+      topLeft: Radius.circular(resolvedTopBorderRadius),
+      topRight: Radius.circular(resolvedTopBorderRadius),
+      bottomLeft: Radius.circular(resolvedBottomBorderRadius),
+      bottomRight: Radius.circular(resolvedBottomBorderRadius),
+    );
     final webCardBorderColor = isDarkMode
         ? Colors.white.withValues(alpha: 0.08)
         : (theme.dividerTheme.color ?? theme.colorScheme.outlineVariant);
@@ -105,10 +123,7 @@ class BaseScreenLayout extends StatelessWidget {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(topBorderRadius),
-                      topRight: Radius.circular(topBorderRadius),
-                    ),
+                    borderRadius: contentCardBorderRadius,
                     gradient: isDarkMode
                         ? null
                         : const LinearGradient(
@@ -150,10 +165,7 @@ class BaseScreenLayout extends StatelessWidget {
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(topBorderRadius),
-                    topRight: Radius.circular(topBorderRadius),
-                  ),
+                  borderRadius: contentCardBorderRadius,
                   gradient: isDarkMode
                       ? null
                       : const LinearGradient(

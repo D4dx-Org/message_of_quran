@@ -309,7 +309,9 @@ class SurahInfoStrip extends StatelessWidget {
     final stripDecoration = useDesktopWebSurface
         ? BoxDecoration(
             color: isDarkMode ? theme.cardColor : Colors.white,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(
+              AppTheme.desktopContentCardRadius,
+            ),
             border: Border.all(
               color: isDarkMode
                   ? Colors.white.withValues(alpha: 0.10)

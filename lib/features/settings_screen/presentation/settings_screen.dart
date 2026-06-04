@@ -1,8 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
+import 'package:the_message_of_the_quran/core/utils/platform_helper.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/core/widgets/d4dx_branding_footer.dart';
@@ -11,6 +11,7 @@ import 'package:the_message_of_the_quran/features/settings_screen/presentation/w
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_card.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_layout_block.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_list_tile.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_selector_dropdown.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_tajweed_block.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
@@ -20,7 +21,11 @@ class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   bool _useDesktopWebLayout(BuildContext context) {
-    return kIsWeb;
+    return PlatformHelper.isWeb;
+  }
+
+  static bool shouldShowGeneralSection({required bool isWeb}) {
+    return !isWeb;
   }
 
   Widget _buildSectionGroup(
@@ -41,36 +46,41 @@ class SettingsScreen extends StatelessWidget {
   Widget _buildDesktopBody(BuildContext context) {
     final hPad = ResponsiveHelper.horizontalPadding(context);
     final useTwoColumns = MediaQuery.sizeOf(context).width >= 980;
+    final showGeneralSection = shouldShowGeneralSection(
+      isWeb: PlatformHelper.isWeb,
+    );
 
     if (!useTwoColumns) {
       return ListView(
         padding: EdgeInsets.fromLTRB(hPad, 24, hPad, 24),
-        children: const [
-          _SectionLabel('Theme & Language'),
-          SizedBox(height: 8),
-          _ThemeLanguageCard(),
-          SizedBox(height: 24),
-          _SectionLabel('Font'),
-          SizedBox(height: 8),
-          _FontSettingsCard(),
-          SizedBox(height: 24),
-          _SectionLabel('Layout'),
-          SizedBox(height: 8),
-          SettingsScreenLayoutBlock(),
-          SizedBox(height: 24),
-          _SectionLabel('Tajweed'),
-          SizedBox(height: 8),
-          SettingsScreenTajweedBlock(),
-          SizedBox(height: 24),
-          _SectionLabel('Audio'),
-          SizedBox(height: 8),
-          SettingsScreenAudioBlock(),
-          SizedBox(height: 24),
-          _SectionLabel('General'),
-          SizedBox(height: 8),
-          SettingsScreenAppBlock(),
-          SizedBox(height: 24),
-          D4dxBrandingFooter(),
+        children: [
+          const _SectionLabel('Theme & Language'),
+          const SizedBox(height: 8),
+          const _ThemeLanguageCard(),
+          const SizedBox(height: 24),
+          const _SectionLabel('Font'),
+          const SizedBox(height: 8),
+          const _FontSettingsCard(),
+          const SizedBox(height: 24),
+          const _SectionLabel('Layout'),
+          const SizedBox(height: 8),
+          const SettingsScreenLayoutBlock(),
+          const SizedBox(height: 24),
+          const _SectionLabel('Tajweed'),
+          const SizedBox(height: 8),
+          const SettingsScreenTajweedBlock(),
+          const SizedBox(height: 24),
+          const _SectionLabel('Audio'),
+          const SizedBox(height: 8),
+          const SettingsScreenAudioBlock(),
+          if (showGeneralSection) ...[
+            const SizedBox(height: 24),
+            const _SectionLabel('General'),
+            const SizedBox(height: 8),
+            const SettingsScreenAppBlock(),
+          ],
+          const SizedBox(height: 24),
+          const D4dxBrandingFooter(),
         ],
       );
     }
@@ -121,12 +131,14 @@ class SettingsScreen extends StatelessWidget {
                     label: 'Audio',
                     child: const SettingsScreenAudioBlock(),
                   ),
-                  const SizedBox(height: 24),
-                  _buildSectionGroup(
-                    context,
-                    label: 'General',
-                    child: const SettingsScreenAppBlock(),
-                  ),
+                  if (showGeneralSection) ...[
+                    const SizedBox(height: 24),
+                    _buildSectionGroup(
+                      context,
+                      label: 'General',
+                      child: const SettingsScreenAppBlock(),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -141,6 +153,9 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final useDesktopWebLayout = _useDesktopWebLayout(context);
+    final showGeneralSection = shouldShowGeneralSection(
+      isWeb: PlatformHelper.isWeb,
+    );
 
     return BaseScreenLayout(
       contentCardBoxShadows: const [],
@@ -148,31 +163,33 @@ class SettingsScreen extends StatelessWidget {
           ? _buildDesktopBody(context)
           : ListView(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              children: const [
-                _SectionLabel('Theme & Language'),
-                SizedBox(height: 8),
-                _ThemeLanguageCard(),
-                SizedBox(height: 24),
-                _SectionLabel('Font'),
-                SizedBox(height: 8),
-                _FontSettingsCard(),
-                SizedBox(height: 24),
-                _SectionLabel('Layout'),
-                SizedBox(height: 8),
-                SettingsScreenLayoutBlock(),
-                SizedBox(height: 24),
-                _SectionLabel('Tajweed'),
-                SizedBox(height: 8),
-                SettingsScreenTajweedBlock(),
-                SizedBox(height: 24),
-                _SectionLabel('Audio'),
-                SizedBox(height: 8),
-                SettingsScreenAudioBlock(),
-                SizedBox(height: 24),
-                _SectionLabel('General'),
-                SizedBox(height: 8),
-                SettingsScreenAppBlock(),
-                D4dxBrandingFooter(),
+              children: [
+                const _SectionLabel('Theme & Language'),
+                const SizedBox(height: 8),
+                const _ThemeLanguageCard(),
+                const SizedBox(height: 24),
+                const _SectionLabel('Font'),
+                const SizedBox(height: 8),
+                const _FontSettingsCard(),
+                const SizedBox(height: 24),
+                const _SectionLabel('Layout'),
+                const SizedBox(height: 8),
+                const SettingsScreenLayoutBlock(),
+                const SizedBox(height: 24),
+                const _SectionLabel('Tajweed'),
+                const SizedBox(height: 8),
+                const SettingsScreenTajweedBlock(),
+                const SizedBox(height: 24),
+                const _SectionLabel('Audio'),
+                const SizedBox(height: 8),
+                const SettingsScreenAudioBlock(),
+                if (showGeneralSection) ...[
+                  const SizedBox(height: 24),
+                  const _SectionLabel('General'),
+                  const SizedBox(height: 8),
+                  const SettingsScreenAppBlock(),
+                ],
+                const D4dxBrandingFooter(),
               ],
             ),
     );
@@ -304,6 +321,17 @@ class _ThemeLanguageCard extends StatelessWidget {
 class _FontSettingsCard extends StatelessWidget {
   const _FontSettingsCard();
 
+  List<SettingsScreenSelectorItem<String>> _fontItems() {
+    return FontSizeChangerProvider.availableFonts
+        .map(
+          (font) => SettingsScreenSelectorItem<String>(
+            value: font,
+            label: FontSizeChangerProvider.fontDisplayNames[font] ?? font,
+          ),
+        )
+        .toList(growable: false);
+  }
+
   @override
   Widget build(BuildContext context) {
     final accentColor = appBarAccentColor(context);
@@ -314,72 +342,92 @@ class _FontSettingsCard extends StatelessWidget {
         children: [
           // Font picker
           Consumer<FontSizeChangerProvider>(
-            builder: (context, value, _) => SettingsScreenListTile(
-              title: "Qur'an Font",
-              icon: Icons.font_download,
-              trailing: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
+            builder: (context, value, _) {
+              if (PlatformHelper.isWeb) {
+                return SettingsScreenSelectorDropdown<String>(
+                  title: "Qur'an Font",
+                  icon: Icons.font_download,
                   value: value.fontType,
-                  icon: Icon(Icons.arrow_drop_down, color: accentColor),
-                  style: TextStyle(
+                  items: _fontItems(),
+                  buttonLabelWidth: 115,
+                  menuLabelWidth: 150,
+                  labelTextStyle: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
-                    color: Theme.of(context).textTheme.bodyMedium?.color,
                   ),
-                  dropdownColor: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(12),
-                  onChanged: (val) {
-                    if (val != null) value.setFont(val);
+                  onSelected: (font) {
+                    value.setFont(font);
                   },
-                  selectedItemBuilder: (context) {
-                    return FontSizeChangerProvider.availableFonts.map((font) {
-                      return Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          FontSizeChangerProvider.fontDisplayNames[font] ??
-                              font,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: accentColor,
-                          ),
-                        ),
-                      );
-                    }).toList();
-                  },
-                  items: FontSizeChangerProvider.availableFonts.map((font) {
-                    final isSelected = value.fontType == font;
-                    return DropdownMenuItem<String>(
-                      value: font,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
+                );
+              }
+
+              return SettingsScreenListTile(
+                title: "Qur'an Font",
+                icon: Icons.font_download,
+                trailing: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: value.fontType,
+                    icon: Icon(Icons.arrow_drop_down, color: accentColor),
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                    ),
+                    dropdownColor: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(12),
+                    onChanged: (val) {
+                      if (val != null) value.setFont(val);
+                    },
+                    selectedItemBuilder: (context) {
+                      return FontSizeChangerProvider.availableFonts.map((font) {
+                        return Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
                             FontSizeChangerProvider.fontDisplayNames[font] ??
                                 font,
                             style: TextStyle(
                               fontSize: 13,
-                              fontWeight: isSelected
-                                  ? FontWeight.w600
-                                  : FontWeight.w400,
-                              color: isSelected
-                                  ? accentColor
-                                  : Theme.of(
-                                      context,
-                                    ).textTheme.bodyMedium?.color,
+                              fontWeight: FontWeight.w600,
+                              color: accentColor,
                             ),
                           ),
-                          if (isSelected) ...[
-                            const SizedBox(width: 6),
-                            Icon(Icons.check, size: 16, color: accentColor),
+                        );
+                      }).toList();
+                    },
+                    items: FontSizeChangerProvider.availableFonts.map((font) {
+                      final isSelected = value.fontType == font;
+                      return DropdownMenuItem<String>(
+                        value: font,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              FontSizeChangerProvider.fontDisplayNames[font] ??
+                                  font,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.w400,
+                                color: isSelected
+                                    ? accentColor
+                                    : Theme.of(
+                                        context,
+                                      ).textTheme.bodyMedium?.color,
+                              ),
+                            ),
+                            if (isSelected) ...[
+                              const SizedBox(width: 6),
+                              Icon(Icons.check, size: 16, color: accentColor),
+                            ],
                           ],
-                        ],
-                      ),
-                    );
-                  }).toList(),
+                        ),
+                      );
+                    }).toList(),
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
           const Divider(height: 1, indent: 16, endIndent: 16),
           // Qur'an font size

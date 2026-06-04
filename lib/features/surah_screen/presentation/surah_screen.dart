@@ -2084,6 +2084,12 @@ class _SurahScreenState extends State<SurahScreen> {
         }
       },
       child: BaseScreenLayout(
+        topBorderRadius: useDesktopWebReaderLayout
+            ? AppTheme.desktopContentCardRadius
+            : 40,
+        bottomBorderRadius: useDesktopWebReaderLayout
+            ? AppTheme.desktopContentCardRadius
+            : 0,
         appBar: CommonAppBar.appBar(
           context,
           showBrandLogo: true,

@@ -6,11 +6,12 @@ class FontSizeChangerProvider extends ChangeNotifier {
   static const _translationJustifyKey = 'translation_justify';
   static const _interpretationJustifyKey = 'interpretation_justify';
   static const _quranJustifyKey = 'quran_justify';
+  static const String defaultFont = 'Scheherazade';
+  static const String removedFont = 'Uthmani';
 
   static const List<String> availableFonts = [
-    'Amiri',
-    'Uthmani',
     'Scheherazade',
+    'Amiri',
     'Lateef',
     'AmiriQuran',
     'QuranTaha',
@@ -32,7 +33,7 @@ class FontSizeChangerProvider extends ChangeNotifier {
   bool interpretationJustify = true;
   bool quranJustify = true;
   // Default font for the Qur'an text (used when SharedPreferences has no value yet).
-  String fontType = "Uthmani";
+  String fontType = defaultFont;
 
   FontSizeChangerProvider() {
     WidgetsBinding.instance.addPostFrameCallback((_) => _load());
@@ -40,13 +41,23 @@ class FontSizeChangerProvider extends ChangeNotifier {
 
   Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
-    String defaultFont = 'Uthmani';
-    final savedFont = prefs.getString(_fontTypeKey) ?? defaultFont;
-    fontType = availableFonts.contains(savedFont) ? savedFont : defaultFont;
+    final savedFont = prefs.getString(_fontTypeKey);
+    fontType = normalizeFont(savedFont);
+    if (savedFont != fontType) {
+      await prefs.setString(_fontTypeKey, fontType);
+    }
     translationJustify = prefs.getBool(_translationJustifyKey) ?? true;
     interpretationJustify = prefs.getBool(_interpretationJustifyKey) ?? true;
     quranJustify = prefs.getBool(_quranJustifyKey) ?? true;
     notifyListeners();
+  }
+
+  static String normalizeFont(String? savedFont) {
+    if (savedFont == null || savedFont == removedFont) {
+      return defaultFont;
+    }
+
+    return availableFonts.contains(savedFont) ? savedFont : defaultFont;
   }
 
   void increment(bool isQuran) {

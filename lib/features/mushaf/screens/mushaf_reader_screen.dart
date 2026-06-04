@@ -211,26 +211,36 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
       context: context,
       builder: (ctx) {
         final maxW = ResponsiveHelper.bottomSheetMaxWidth(ctx);
+        final isDownloadSupported = dm.isDownloadSupported;
         return Center(
           child: ConstrainedBox(
             constraints: BoxConstraints(maxWidth: maxW ?? double.infinity),
             child: MushafDownloadRequiredDialog(
               onCancel: () => Navigator.of(ctx).pop(),
-              onDownload: () {
-                Navigator.of(ctx).pop();
-                dm.startDownload();
-                if (!context.mounted) return;
-                ScaffoldMessenger.of(context)
-                  ..clearSnackBars()
-                  ..showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Mushaf download started. You can continue using the app.',
-                      ),
-                      duration: Duration(seconds: 3),
-                    ),
-                  );
-              },
+              onDownload: isDownloadSupported
+                  ? () {
+                      Navigator.of(ctx).pop();
+                      dm.startDownload();
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context)
+                        ..clearSnackBars()
+                        ..showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Mushaf download started. You can continue using the app.',
+                            ),
+                            duration: Duration(seconds: 3),
+                          ),
+                        );
+                    }
+                  : null,
+              title:
+                  isDownloadSupported ? 'Download Required' : 'Preview Only on Web',
+              message: isDownloadSupported
+                  ? null
+                  : 'Pages 1–2 are available in the browser.\n'
+                      'Full Mushaf download is currently available only in the app.',
+              cancelLabel: isDownloadSupported ? 'Cancel' : 'Close',
             ),
           ),
         );

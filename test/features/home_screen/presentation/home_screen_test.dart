@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_message_of_the_quran/core/models/juz_hizb_model.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
+import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/home_screen.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_list_row_text_styles.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_screen_list.dart';
@@ -43,6 +44,66 @@ void main() {
   setUp(() {
     SharedPreferences.setMockInitialValues({});
   });
+
+  test(
+    'formatJuzSelectorItemLabel uses numbered English starting surah labels',
+    () {
+      expect(
+        formatJuzSelectorItemLabel(
+          juz: _sampleJuz[0],
+          surahList: _sampleSurahs,
+          isMalayalam: false,
+        ),
+        '1. Al-Fatihah',
+      );
+      expect(
+        formatJuzSelectorItemLabel(
+          juz: _sampleJuz[1],
+          surahList: _sampleSurahs,
+          isMalayalam: false,
+        ),
+        '2. Al-Baqarah',
+      );
+    },
+  );
+
+  test(
+    'formatJuzSelectorItemLabel localizes Malayalam titles and preserves numeric fallback order',
+    () {
+      expect(
+        formatJuzSelectorItemLabel(
+          juz: _sampleJuz[0],
+          surahList: _sampleSurahs,
+          isMalayalam: true,
+        ),
+        '1. അല്‍-ഫാതിഹ',
+      );
+
+      final missingSurahJuz = JuzHizbModel(
+        id: 30,
+        number: 30,
+        surahNumber: 99,
+        ayahNumber: 1,
+      );
+
+      expect(
+        formatJuzSelectorItemLabel(
+          juz: missingSurahJuz,
+          surahList: _sampleSurahs,
+          isMalayalam: false,
+        ),
+        '30. Surah 99',
+      );
+      expect(
+        formatJuzSelectorItemLabel(
+          juz: missingSurahJuz,
+          surahList: _sampleSurahs,
+          isMalayalam: true,
+        ),
+        '30. സൂറത്ത് 99',
+      );
+    },
+  );
 
   Future<void> pumpHomeTile(
     WidgetTester tester, {

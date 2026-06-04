@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/core/models/juz_hizb_model.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
@@ -14,9 +15,8 @@ import 'package:the_message_of_the_quran/features/home_screen/presentation/widge
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/surah_chip_row.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/juz_hizb_provider.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
-import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/mushaf/widgets/star_number.dart';
-import 'package:the_message_of_the_quran/features/search_screen/presentation/search_screen.dart';
+import 'package:the_message_of_the_quran/features/search_screen/presentation/widgets/surah_quick_search.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
@@ -31,11 +31,21 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   static const double _webHomeMaxWidth = 1140;
+  static const double _webPopularCompactSidePadding = 6;
+  static const double _webPopularRegularSidePadding = 8;
+  static const double _webPopularCompactGap = 8;
+  static const double _webPopularRegularGap = 10;
+  static const double _webPopularToBrowseGap = 18;
+  static const EdgeInsets _webPopularChipPadding = EdgeInsets.symmetric(
+    horizontal: 14,
+    vertical: 6,
+  );
 
   final ScrollController _listController = ScrollController();
   bool _showScrollToTop = false;
   late final TabController _tabController;
   int _selectedWebSectionIndex = 0;
+  bool _isWebSearchActive = false;
 
   @override
   void initState() {
@@ -108,12 +118,23 @@ class _HomeScreenState extends State<HomeScreen>
     surahProvider.assignIndex(index);
     await Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => SurahScreen(scrollToAyahId: ayahId),
-      ),
+      MaterialPageRoute(builder: (_) => SurahScreen(scrollToAyahId: ayahId)),
     );
     if (!context.mounted) return;
     context.read<LastReadProvider>().saveLastSurahTabSelection(surahNumber);
+  }
+
+  Future<void> _openJuz(
+    BuildContext context, {
+    required JuzHizbModel juz,
+  }) async {
+    await _openSurah(
+      context,
+      surahNumber: juz.surahNumber,
+      ayahId: juz.ayahNumber,
+    );
+    if (!context.mounted) return;
+    await context.read<JuzHizbProvider>().selectJuz(juz.number);
   }
 
   void _selectWebSection(int index) {
@@ -285,7 +306,10 @@ class _HomeScreenState extends State<HomeScreen>
     ).title;
   }
 
-  BoxDecoration _webPanelDecoration(BuildContext context, {double radius = 20}) {
+  BoxDecoration _webPanelDecoration(
+    BuildContext context, {
+    double radius = 20,
+  }) {
     return BoxDecoration(
       borderRadius: BorderRadius.circular(radius),
       gradient: _isDarkWebSurface(context)
@@ -303,116 +327,30 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildWebHero(bool isMalayalam) {
-    final hintFontSize = isMalayalam ? 14.0 : 15.0;
-
+  Widget _buildWebHero(
+    BuildContext context, {
+    required bool isMalayalam,
+    required List<SurahModel> surahList,
+    required bool isLoading,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(top: 20, bottom: 30),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 920),
-          child: Column(
-            children: [
-              Text(
-                isMalayalam
-                    ? 'സൂറത്തുകൾ എളുപ്പത്തിൽ തിരയുക, വായിക്കുക, വീണ്ടും തുടർക്കുക.'
-                    : 'Search, read, and continue your Qur\'an journey from one place.',
-                textAlign: TextAlign.center,
-                style: AppTextTheme.localizedBody(
-                  isMalayalam: isMalayalam,
-                  fontSize: 16,
-                  color: _webSecondaryText(context),
-                ),
-              ),
-              const SizedBox(height: 26),
-              SearchBar(
-                hintText: isMalayalam
-                    ? 'സൂറത്ത് തിരയുക'
-                    : 'Search surahs, verses, or references...',
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const SearchScreen()),
-                ),
-                readOnly: true,
-                elevation: const WidgetStatePropertyAll(0),
-                side: WidgetStatePropertyAll(
-                  BorderSide(color: _webSurfaceBorder(context)),
-                ),
-                padding: const WidgetStatePropertyAll(
-                  EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-                ),
-                shape: const WidgetStatePropertyAll(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(28)),
-                  ),
-                ),
-                textStyle: WidgetStatePropertyAll(
-                  AppTextTheme.localizedBody(
-                    isMalayalam: isMalayalam,
-                    fontSize: 15,
-                    color: _webPrimaryText(context),
-                  ),
-                ),
-                hintStyle: WidgetStatePropertyAll(
-                  AppTextTheme.localizedBody(
-                    isMalayalam: isMalayalam,
-                    fontSize: hintFontSize,
-                    color: _webSecondaryText(context),
-                  ),
-                ),
-                backgroundColor: WidgetStatePropertyAll(
-                  _isDarkWebSurface(context)
-                      ? Theme.of(context).cardColor
-                      : Colors.white,
-                ),
-                trailing: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 2),
-                    child: Icon(
-                      Icons.arrow_forward_rounded,
-                      color: _webPrimaryText(context),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              _buildWebReadModeToggle(context, isMalayalam),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildWebReadModeToggle(BuildContext context, bool isMalayalam) {
-    final selectedIndex = context.watch<HomeProvider>().currentIndex;
-    const headerAccent = AppTheme.appThemePrimary;
-
-    return Align(
-      alignment: Alignment.center,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: headerAccent.withValues(alpha: 0.06),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: headerAccent.withValues(alpha: 0.18)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(4),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _WebModeButton(
-                label: isMalayalam ? 'ഖുർആൻ വായനം' : 'Read Al-Qur\'an',
-                selected: selectedIndex == 0,
-                onTap: () => context.read<HomeProvider>().changeIndex(0),
-              ),
-              const SizedBox(width: 4),
-              _WebModeButton(
-                label: isMalayalam ? 'മുഷ്ഹഫ്' : 'Read Mushaf',
-                selected: selectedIndex == 2,
-                onTap: () => context.read<HomeProvider>().changeIndex(2),
-              ),
-            ],
+          child: SurahQuickSearch(
+            isMalayalam: isMalayalam,
+            surahList: surahList,
+            isLoading: isLoading,
+            onSearchActiveChanged: (isActive) {
+              if (_isWebSearchActive == isActive) return;
+              setState(() {
+                _isWebSearchActive = isActive;
+              });
+            },
+            onSurahSelected: (surahNumber) {
+              _openSurah(context, surahNumber: surahNumber);
+            },
           ),
         ),
       ),
@@ -431,17 +369,15 @@ class _HomeScreenState extends State<HomeScreen>
           .firstOrNull;
       if (surah == null) continue;
 
-      featured.add(
-        (
+      featured.add((
+        surah: surah,
+        ayahId: chip.ayahId,
+        title: _webFeaturedTitle(
+          isMalayalam: isMalayalam,
           surah: surah,
           ayahId: chip.ayahId,
-          title: _webFeaturedTitle(
-            isMalayalam: isMalayalam,
-            surah: surah,
-            ayahId: chip.ayahId,
-          ),
         ),
-      );
+      ));
     }
 
     if (featured.isEmpty) {
@@ -449,46 +385,47 @@ class _HomeScreenState extends State<HomeScreen>
     }
 
     final isCompactWebHome = _useCompactWebHome(context);
-    final cardHeight = isCompactWebHome ? 56.0 : 60.0;
+    final sidePadding = isCompactWebHome
+        ? _webPopularCompactSidePadding
+        : _webPopularRegularSidePadding;
 
-    return SizedBox(
-      height: cardHeight,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minWidth: constraints.maxWidth),
-              child: Align(
-                alignment: Alignment.center,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: isCompactWebHome ? 8 : 12,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      for (var index = 0; index < featured.length; index++) ...[
-                        if (index > 0)
-                          SizedBox(width: isCompactWebHome ? 10 : 12),
-                        _WebPopularSurahCard(
-                          isMalayalam: isMalayalam,
-                          title: featured[index].title,
-                          onTap: () => _openSurah(
-                            context,
-                            surahNumber: featured[index].surah.surahNumber,
-                            ayahId: featured[index].ayahId,
-                          ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minWidth: constraints.maxWidth),
+            child: Align(
+              alignment: Alignment.center,
+              child: Padding(
+                padding: EdgeInsets.all(sidePadding),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    for (var index = 0; index < featured.length; index++) ...[
+                      if (index > 0)
+                        SizedBox(
+                          width: isCompactWebHome
+                              ? _webPopularCompactGap
+                              : _webPopularRegularGap,
                         ),
-                      ],
+                      _WebPopularSurahCard(
+                        isMalayalam: isMalayalam,
+                        title: featured[index].title,
+                        onTap: () => _openSurah(
+                          context,
+                          surahNumber: featured[index].surah.surahNumber,
+                          ayahId: featured[index].ayahId,
+                        ),
+                      ),
                     ],
-                  ),
+                  ],
                 ),
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -496,6 +433,7 @@ class _HomeScreenState extends State<HomeScreen>
     BuildContext context, {
     required bool isMalayalam,
     required List<SurahModel> surahList,
+    required List<JuzHizbModel> juzList,
   }) {
     final primaryTextColor = _webPrimaryText(context);
     final secondaryTextColor = _webSecondaryText(context);
@@ -527,9 +465,7 @@ class _HomeScreenState extends State<HomeScreen>
                   Text(
                     sectionLabels[index],
                     style: TextStyle(
-                      color: isSelected
-                          ? primaryTextColor
-                          : secondaryTextColor,
+                      color: isSelected ? primaryTextColor : secondaryTextColor,
                       fontSize: 16,
                       fontWeight: isSelected
                           ? FontWeight.w700
@@ -555,10 +491,17 @@ class _HomeScreenState extends State<HomeScreen>
       );
     }
 
-    Widget buildSurahDropdown(double width) {
+    Widget buildSectionDropdown({
+      required double width,
+      required Key fieldKey,
+      required String hintText,
+      required List<DropdownMenuItem<int>> items,
+      required ValueChanged<int?> onChanged,
+    }) {
       return SizedBox(
         width: width,
         child: DropdownButtonFormField<int>(
+          key: fieldKey,
           initialValue: null,
           isExpanded: true,
           dropdownColor: _isDarkWebSurface(context)
@@ -583,31 +526,68 @@ class _HomeScreenState extends State<HomeScreen>
           ),
           style: TextStyle(color: primaryTextColor, fontSize: 14),
           hint: Text(
-            isMalayalam ? 'സൂറത്ത് തിരഞ്ഞെടുക്കുക' : 'Select surah',
+            hintText,
             style: TextStyle(color: primaryTextColor),
           ),
-          items: surahList.map((surah) {
-            final displayText = formatSurahListDisplayText(
-              isMalayalam: isMalayalam,
-              surahName: surah.name,
-              surahTranslation: surah.description,
-              malayalamName: surah.malayalamName,
-              surahNumber: surah.surahNumber,
-            );
-            return DropdownMenuItem<int>(
-              value: surah.surahNumber,
-              child: Text(
-                '${surah.surahNumber}. ${displayText.title}',
-                overflow: TextOverflow.ellipsis,
-              ),
-            );
-          }).toList(growable: false),
-          onChanged: (surahNumber) {
-            if (surahNumber == null) return;
-            _openSurah(context, surahNumber: surahNumber);
-          },
+          items: items,
+          onChanged: onChanged,
         ),
       );
+    }
+
+    final isJuzSection = _selectedWebSectionIndex == 1;
+    final dropdownFieldKey = isJuzSection
+        ? const ValueKey('webJuzSelector')
+        : const ValueKey('webSurahSelector');
+    final dropdownHintText = isJuzSection
+        ? (isMalayalam ? 'ജുസ് തിരഞ്ഞെടുക്കുക' : 'Select juz')
+        : (isMalayalam ? 'സൂറത്ത് തിരഞ്ഞെടുക്കുക' : 'Select surah');
+    final dropdownItems = isJuzSection
+        ? juzList
+              .map(
+                (juz) => DropdownMenuItem<int>(
+                  value: juz.number,
+                  child: Text(
+                    formatJuzSelectorItemLabel(
+                      juz: juz,
+                      surahList: surahList,
+                      isMalayalam: isMalayalam,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              )
+              .toList(growable: false)
+        : surahList
+              .map((surah) {
+                final displayText = formatSurahListDisplayText(
+                  isMalayalam: isMalayalam,
+                  surahName: surah.name,
+                  surahTranslation: surah.description,
+                  malayalamName: surah.malayalamName,
+                  surahNumber: surah.surahNumber,
+                );
+                return DropdownMenuItem<int>(
+                  value: surah.surahNumber,
+                  child: Text(
+                    '${surah.surahNumber}. ${displayText.title}',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              })
+              .toList(growable: false);
+
+    void handleDropdownChanged(int? selectedValue) {
+      if (selectedValue == null) return;
+      if (!isJuzSection) {
+        _openSurah(context, surahNumber: selectedValue);
+        return;
+      }
+
+      final juzIndex = juzList.indexWhere((juz) => juz.number == selectedValue);
+      if (juzIndex < 0) return;
+
+      _openJuz(context, juz: juzList[juzIndex]);
     }
 
     return LayoutBuilder(
@@ -625,7 +605,13 @@ class _HomeScreenState extends State<HomeScreen>
             children: [
               Expanded(child: buildTabStrip()),
               const SizedBox(width: 16),
-              buildSurahDropdown(dropdownWidth),
+              buildSectionDropdown(
+                width: dropdownWidth,
+                fieldKey: dropdownFieldKey,
+                hintText: dropdownHintText,
+                items: dropdownItems,
+                onChanged: handleDropdownChanged,
+              ),
             ],
           );
         }
@@ -637,7 +623,13 @@ class _HomeScreenState extends State<HomeScreen>
             const SizedBox(height: 10),
             Align(
               alignment: Alignment.centerRight,
-              child: buildSurahDropdown(stackedDropdownWidth),
+              child: buildSectionDropdown(
+                width: stackedDropdownWidth,
+                fieldKey: dropdownFieldKey,
+                hintText: dropdownHintText,
+                items: dropdownItems,
+                onChanged: handleDropdownChanged,
+              ),
             ),
           ],
         );
@@ -696,15 +688,7 @@ class _HomeScreenState extends State<HomeScreen>
                 juz.ayahNumber,
                 isMalayalam: isMalayalam,
               ),
-              onTap: () async {
-                await _openSurah(
-                  context,
-                  surahNumber: juz.surahNumber,
-                  ayahId: juz.ayahNumber,
-                );
-                if (!context.mounted) return;
-                context.read<JuzHizbProvider>().selectJuz(juz.number);
-              },
+              onTap: () => _openJuz(context, juz: juz),
             );
           },
         );
@@ -776,6 +760,7 @@ class _HomeScreenState extends State<HomeScreen>
     final surahProvider = context.watch<SurahProvider>();
     final juzHizbProvider = context.watch<JuzHizbProvider>();
     final horizontalPadding = _webHorizontalPadding(context);
+    final hasActiveWebSearch = _isWebSearchActive;
 
     return ColoredBox(
       color: Theme.of(context).scaffoldBackgroundColor,
@@ -791,57 +776,67 @@ class _HomeScreenState extends State<HomeScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _buildWebHero(isMalayalam),
-                    _buildWebPopularSection(
+                    _buildWebHero(
                       context,
                       isMalayalam: isMalayalam,
                       surahList: surahProvider.surahList,
+                      isLoading: surahProvider.isSurahLoading,
                     ),
-                    const SizedBox(height: 30),
-                    DecoratedBox(
-                      decoration: _webPanelDecoration(context),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              isMalayalam ? 'ഖുർആൻ ബ്രൗസ് ചെയ്യുക' : 'Browse the Qur\'an',
-                              style: AppTextTheme.localizedTitle(
-                                isMalayalam: isMalayalam,
-                                fontSize: 22,
-                                fontWeight: FontWeight.w700,
-                                color: _webPrimaryText(context),
+                    if (!hasActiveWebSearch) ...[
+                      _buildWebPopularSection(
+                        context,
+                        isMalayalam: isMalayalam,
+                        surahList: surahProvider.surahList,
+                      ),
+                      const SizedBox(height: _webPopularToBrowseGap),
+                      DecoratedBox(
+                        decoration: _webPanelDecoration(context),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                isMalayalam
+                                    ? 'ഖുർആൻ ബ്രൗസ് ചെയ്യുക'
+                                    : 'Browse the Qur\'an',
+                                style: AppTextTheme.localizedTitle(
+                                  isMalayalam: isMalayalam,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w700,
+                                  color: _webPrimaryText(context),
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              isMalayalam
-                                  ? 'സൂറത്തുകളും ജുസുകളും വെബ്ബിൽ നിന്ന് വേഗത്തിൽ തുറക്കാം.'
-                                  : 'Open surahs and juz quickly in a web-first responsive layout.',
-                              style: AppTextTheme.localizedBody(
-                                isMalayalam: isMalayalam,
-                                fontSize: 14,
-                                color: _webSecondaryText(context),
+                              const SizedBox(height: 8),
+                              Text(
+                                isMalayalam
+                                    ? 'സൂറത്തുകളും ജുസുകളും വെബ്ബിൽ നിന്ന് വേഗത്തിൽ തുറക്കാം.'
+                                    : 'Open surahs and juz quickly in a web-first responsive layout.',
+                                style: AppTextTheme.localizedBody(
+                                  isMalayalam: isMalayalam,
+                                  fontSize: 14,
+                                  color: _webSecondaryText(context),
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 14),
-                            _buildWebSectionHeader(
-                              context,
-                              isMalayalam: isMalayalam,
-                              surahList: surahProvider.surahList,
-                            ),
-                            const SizedBox(height: 8),
-                            _buildWebSectionBody(
-                              context,
-                              isMalayalam: isMalayalam,
-                              surahProvider: surahProvider,
-                              juzHizbProvider: juzHizbProvider,
-                            ),
-                          ],
+                              const SizedBox(height: 14),
+                              _buildWebSectionHeader(
+                                context,
+                                isMalayalam: isMalayalam,
+                                surahList: surahProvider.surahList,
+                                juzList: juzHizbProvider.juzList,
+                              ),
+                              const SizedBox(height: 8),
+                              _buildWebSectionBody(
+                                context,
+                                isMalayalam: isMalayalam,
+                                surahProvider: surahProvider,
+                                juzHizbProvider: juzHizbProvider,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),
@@ -907,52 +902,6 @@ class _HomeScreenState extends State<HomeScreen>
   }
 }
 
-class _WebModeButton extends StatelessWidget {
-  const _WebModeButton({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final unselectedColor = isDarkMode
-        ? Colors.white70
-        : AppTheme.appThemePrimary.withValues(alpha: 0.92);
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        curve: Curves.easeOut,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: selected ? AppTheme.appThemeSecondary : Colors.transparent,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Text(
-          label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: selected
-                ? AppTheme.appThemePrimary
-                : unselectedColor,
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _WebPopularSurahCard extends StatelessWidget {
   const _WebPopularSurahCard({
     required this.isMalayalam,
@@ -987,7 +936,7 @@ class _WebPopularSurahCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(999),
             border: Border.all(color: borderColor),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+          padding: _HomeScreenState._webPopularChipPadding,
           child: Text(
             title,
             maxLines: 1,
@@ -1035,7 +984,9 @@ class _WebCompactSurahCard extends StatelessWidget {
     final borderColor = isDarkMode
         ? Colors.white.withValues(alpha: 0.10)
         : (theme.dividerTheme.color ?? theme.colorScheme.outlineVariant);
-    final primaryTextColor = isDarkMode ? Colors.white : AppTheme.appThemePrimary;
+    final primaryTextColor = isDarkMode
+        ? Colors.white
+        : AppTheme.appThemePrimary;
     final secondaryTextColor = isDarkMode ? Colors.white70 : Colors.grey[600]!;
 
     return Material(
@@ -1134,7 +1085,9 @@ class _WebCompactJuzCard extends StatelessWidget {
     final borderColor = isDarkMode
         ? Colors.white.withValues(alpha: 0.10)
         : (theme.dividerTheme.color ?? theme.colorScheme.outlineVariant);
-    final primaryTextColor = isDarkMode ? Colors.white : AppTheme.appThemePrimary;
+    final primaryTextColor = isDarkMode
+        ? Colors.white
+        : AppTheme.appThemePrimary;
     final secondaryTextColor = isDarkMode ? Colors.white70 : Colors.grey[600]!;
 
     return Material(
