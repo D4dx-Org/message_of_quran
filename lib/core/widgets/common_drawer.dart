@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
+import 'package:the_message_of_the_quran/core/constants/app_constants.dart';
 import 'package:the_message_of_the_quran/core/constants/useful_links.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
@@ -443,7 +444,7 @@ class _DrawerFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     return const D4dxBrandingFooter(
       key: ValueKey('drawer-footer'),
-      versionLabel: 'Version 1.0.0',
+      versionLabel: 'v${AppConstants.appVersion}',
       showTopBorder: true,
     );
   }
