@@ -35,6 +35,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final Set<int> _hoveredWebNavItems = <int>{};
   static const double _navIconSize = 24;
   static const double _webShellMaxWidth = 1180;
   static const List<({String label, int pageIndex})> _webNavItems = [
@@ -105,6 +106,18 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  void _setWebNavHovered(int pageIndex, bool hovered) {
+    final isTracked = _hoveredWebNavItems.contains(pageIndex);
+    if (isTracked == hovered) return;
+    setState(() {
+      if (hovered) {
+        _hoveredWebNavItems.add(pageIndex);
+      } else {
+        _hoveredWebNavItems.remove(pageIndex);
+      }
+    });
+  }
+
   double _navItemSize(int index) {
     return switch (index) {
       0 || 3 => _navIconSize - 4,
@@ -147,7 +160,16 @@ class _MainScreenState extends State<MainScreen> {
     required Color accentColor,
   }) {
     final isSelected = pageIndex == selectedIndex;
-    final iconColor = accentColor.withValues(alpha: isSelected ? 1.0 : 0.78);
+    final isHovered = kIsWeb && _hoveredWebNavItems.contains(pageIndex);
+    final showHoverBox = isHovered && !isSelected;
+    final iconColor = accentColor.withValues(
+      alpha: isSelected || isHovered ? 1.0 : 0.78,
+    );
+    final textColor = accentColor.withValues(
+      alpha: isSelected || isHovered ? 1.0 : 0.90,
+    );
+    final hoverBackgroundColor = accentColor.withValues(alpha: 0.14);
+    final hoverBorderColor = accentColor.withValues(alpha: 0.24);
 
     return Semantics(
       button: true,
@@ -155,9 +177,23 @@ class _MainScreenState extends State<MainScreen> {
       label: '$label navigation item',
       child: InkWell(
         onTap: () => _onItemTapped(pageIndex),
+        onHover: (hovered) => _setWebNavHovered(pageIndex, hovered),
+        mouseCursor: SystemMouseCursors.click,
         borderRadius: BorderRadius.circular(18),
-        child: Padding(
+        hoverColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        splashColor: accentColor.withValues(alpha: 0.10),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: showHoverBox ? hoverBackgroundColor : Colors.transparent,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: showHoverBox ? hoverBorderColor : Colors.transparent,
+            ),
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -170,9 +206,11 @@ class _MainScreenState extends State<MainScreen> {
               Text(
                 label,
                 style: TextStyle(
-                  color: accentColor,
+                  color: textColor,
                   fontSize: 13.5,
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                  fontWeight: isSelected || isHovered
+                      ? FontWeight.w700
+                      : FontWeight.w500,
                 ),
               ),
               const SizedBox(height: 8),

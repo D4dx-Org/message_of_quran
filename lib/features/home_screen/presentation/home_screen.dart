@@ -444,7 +444,7 @@ class _HomeScreenState extends State<HomeScreen>
     final isCompactWebHome = _useCompactWebHome(context);
     final sectionLabels = isMalayalam
         ? const ['സൂറത്ത്', 'ജുസ്']
-        : const ['Surah', 'Juz'];
+        : const ['Surah', "Juz'e"];
 
     Widget buildTabStrip() {
       return Wrap(
@@ -527,6 +527,9 @@ class _HomeScreenState extends State<HomeScreen>
           style: TextStyle(color: primaryTextColor, fontSize: 14),
           hint: Text(
             hintText,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            softWrap: false,
             style: TextStyle(color: primaryTextColor),
           ),
           items: items,
@@ -540,8 +543,8 @@ class _HomeScreenState extends State<HomeScreen>
         ? const ValueKey('webJuzSelector')
         : const ValueKey('webSurahSelector');
     final dropdownHintText = isJuzSection
-        ? (isMalayalam ? 'ജുസ് തിരഞ്ഞെടുക്കുക' : 'Select juz')
-        : (isMalayalam ? 'സൂറത്ത് തിരഞ്ഞെടുക്കുക' : 'Select surah');
+        ? (isMalayalam ? 'ജുസ് തിരയുക' : 'Select juz')
+        : (isMalayalam ? 'സൂറത്ത് തിരയുക' : 'Select surah');
     final dropdownItems = isJuzSection
         ? juzList
               .map(
@@ -921,36 +924,115 @@ class _WebPopularSurahCard extends StatelessWidget {
     final borderColor = isDarkMode
         ? Colors.white.withValues(alpha: 0.10)
         : (theme.dividerTheme.color ?? theme.colorScheme.outlineVariant);
+    final hoverSurfaceColor = isDarkMode
+        ? AppTheme.appThemePrimary.withValues(alpha: 0.16)
+        : AppTheme.appThemePrimary.withValues(alpha: 0.05);
+    final hoverBorderColor = AppTheme.appThemePrimary.withValues(
+      alpha: isDarkMode ? 0.42 : 0.24,
+    );
     final titleColor = isDarkMode ? Colors.white : AppTheme.appThemePrimary;
 
-    return Material(
-      color: surfaceColor,
+    return _WebHoverSurface(
+      onTap: onTap,
+      surfaceColor: surfaceColor,
+      borderColor: borderColor,
+      hoverSurfaceColor: hoverSurfaceColor,
+      hoverBorderColor: hoverBorderColor,
       borderRadius: BorderRadius.circular(999),
+      padding: _HomeScreenState._webPopularChipPadding,
+      child: Center(
+        child: Text(
+          title,
+          maxLines: 1,
+          softWrap: false,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
+          style: AppTextTheme.localizedLabel(
+            isMalayalam: isMalayalam,
+            fontSize: isMalayalam ? 13 : 14,
+            fontWeight: FontWeight.w700,
+            color: titleColor,
+            height: 1.1,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _WebHoverSurface extends StatefulWidget {
+  const _WebHoverSurface({
+    required this.onTap,
+    required this.surfaceColor,
+    required this.borderColor,
+    required this.hoverSurfaceColor,
+    required this.hoverBorderColor,
+    required this.borderRadius,
+    required this.padding,
+    required this.child,
+  });
+
+  final VoidCallback onTap;
+  final Color surfaceColor;
+  final Color borderColor;
+  final Color hoverSurfaceColor;
+  final Color hoverBorderColor;
+  final BorderRadius borderRadius;
+  final EdgeInsetsGeometry padding;
+  final Widget child;
+
+  @override
+  State<_WebHoverSurface> createState() => _WebHoverSurfaceState();
+}
+
+class _WebHoverSurfaceState extends State<_WebHoverSurface> {
+  bool _isHovered = false;
+
+  void _handleHover(bool hovered) {
+    if (_isHovered == hovered) return;
+    setState(() => _isHovered = hovered);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final showHover = kIsWeb && _isHovered;
+    final hoverShadowColor = AppTheme.appThemePrimary.withValues(
+      alpha: Theme.of(context).brightness == Brightness.dark ? 0.18 : 0.10,
+    );
+
+    return Material(
+      color: Colors.transparent,
+      borderRadius: widget.borderRadius,
       child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(999),
-        child: Container(
-          alignment: Alignment.center,
+        onTap: widget.onTap,
+        onHover: _handleHover,
+        mouseCursor: SystemMouseCursors.click,
+        borderRadius: widget.borderRadius,
+        hoverColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        splashColor: AppTheme.appThemePrimary.withValues(alpha: 0.08),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+          transform: Matrix4.translationValues(0, showHover ? -2 : 0, 0),
           decoration: BoxDecoration(
-            color: surfaceColor,
-            borderRadius: BorderRadius.circular(999),
-            border: Border.all(color: borderColor),
-          ),
-          padding: _HomeScreenState._webPopularChipPadding,
-          child: Text(
-            title,
-            maxLines: 1,
-            softWrap: false,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: AppTextTheme.localizedLabel(
-              isMalayalam: isMalayalam,
-              fontSize: isMalayalam ? 13 : 14,
-              fontWeight: FontWeight.w700,
-              color: titleColor,
-              height: 1.1,
+            color: showHover ? widget.hoverSurfaceColor : widget.surfaceColor,
+            borderRadius: widget.borderRadius,
+            border: Border.all(
+              color: showHover ? widget.hoverBorderColor : widget.borderColor,
             ),
+            boxShadow: showHover
+                ? [
+                    BoxShadow(
+                      color: hoverShadowColor,
+                      blurRadius: 18,
+                      offset: const Offset(0, 8),
+                    ),
+                  ]
+                : null,
           ),
+          padding: widget.padding,
+          child: widget.child,
         ),
       ),
     );
@@ -984,75 +1066,74 @@ class _WebCompactSurahCard extends StatelessWidget {
     final borderColor = isDarkMode
         ? Colors.white.withValues(alpha: 0.10)
         : (theme.dividerTheme.color ?? theme.colorScheme.outlineVariant);
+    final hoverSurfaceColor = isDarkMode
+        ? AppTheme.appThemePrimary.withValues(alpha: 0.16)
+        : AppTheme.appThemePrimary.withValues(alpha: 0.05);
+    final hoverBorderColor = AppTheme.appThemePrimary.withValues(
+      alpha: isDarkMode ? 0.42 : 0.24,
+    );
     final primaryTextColor = isDarkMode
         ? Colors.white
         : AppTheme.appThemePrimary;
     final secondaryTextColor = isDarkMode ? Colors.white70 : Colors.grey[600]!;
 
-    return Material(
-      color: surfaceColor,
+    return _WebHoverSurface(
+      onTap: onTap,
+      surfaceColor: surfaceColor,
+      borderColor: borderColor,
+      hoverSurfaceColor: hoverSurfaceColor,
+      hoverBorderColor: hoverBorderColor,
       borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          decoration: BoxDecoration(
-            color: surfaceColor,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: borderColor),
-          ),
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            children: [
-              StarNumber(number: number, size: 40),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextTheme.localizedLabel(
-                        isMalayalam: isMalayalam,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: primaryTextColor,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      placeLabel,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextTheme.localizedBody(
-                        isMalayalam: isMalayalam,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: secondaryTextColor,
-                      ),
-                    ),
-                  ],
+      padding: const EdgeInsets.all(10),
+      child: Row(
+        children: [
+          StarNumber(number: number, size: 40),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextTheme.localizedLabel(
+                    isMalayalam: isMalayalam,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: primaryTextColor,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 10),
-              Text(
-                ayahCountLabel,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.right,
-                style: AppTextTheme.localizedBody(
-                  isMalayalam: isMalayalam,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: secondaryTextColor,
+                const SizedBox(height: 4),
+                Text(
+                  placeLabel,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextTheme.localizedBody(
+                    isMalayalam: isMalayalam,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: secondaryTextColor,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+          const SizedBox(width: 10),
+          Text(
+            ayahCountLabel,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.right,
+            style: AppTextTheme.localizedBody(
+              isMalayalam: isMalayalam,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: secondaryTextColor,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1085,75 +1166,74 @@ class _WebCompactJuzCard extends StatelessWidget {
     final borderColor = isDarkMode
         ? Colors.white.withValues(alpha: 0.10)
         : (theme.dividerTheme.color ?? theme.colorScheme.outlineVariant);
+    final hoverSurfaceColor = isDarkMode
+        ? AppTheme.appThemePrimary.withValues(alpha: 0.16)
+        : AppTheme.appThemePrimary.withValues(alpha: 0.05);
+    final hoverBorderColor = AppTheme.appThemePrimary.withValues(
+      alpha: isDarkMode ? 0.42 : 0.24,
+    );
     final primaryTextColor = isDarkMode
         ? Colors.white
         : AppTheme.appThemePrimary;
     final secondaryTextColor = isDarkMode ? Colors.white70 : Colors.grey[600]!;
 
-    return Material(
-      color: surfaceColor,
+    return _WebHoverSurface(
+      onTap: onTap,
+      surfaceColor: surfaceColor,
+      borderColor: borderColor,
+      hoverSurfaceColor: hoverSurfaceColor,
+      hoverBorderColor: hoverBorderColor,
       borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          decoration: BoxDecoration(
-            color: surfaceColor,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: borderColor),
-          ),
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            children: [
-              StarNumber(number: number, size: 40),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextTheme.localizedLabel(
-                        isMalayalam: isMalayalam,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: primaryTextColor,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextTheme.localizedBody(
-                        isMalayalam: isMalayalam,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: secondaryTextColor,
-                      ),
-                    ),
-                  ],
+      padding: const EdgeInsets.all(10),
+      child: Row(
+        children: [
+          StarNumber(number: number, size: 40),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextTheme.localizedLabel(
+                    isMalayalam: isMalayalam,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: primaryTextColor,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 10),
-              Text(
-                ayahReferenceLabel,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.right,
-                style: AppTextTheme.localizedBody(
-                  isMalayalam: isMalayalam,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: secondaryTextColor,
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextTheme.localizedBody(
+                    isMalayalam: isMalayalam,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: secondaryTextColor,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+          const SizedBox(width: 10),
+          Text(
+            ayahReferenceLabel,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.right,
+            style: AppTextTheme.localizedBody(
+              isMalayalam: isMalayalam,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: secondaryTextColor,
+            ),
+          ),
+        ],
       ),
     );
   }
