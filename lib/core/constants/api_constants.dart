@@ -11,5 +11,5 @@ class ApiConstants {
       '$commonEmailBaseUrl/api/quran-asad-email/send-feedback';
   static const String featureRequestUrl = '$commonEmailBaseUrl/feature-request';
   static const String updateCheckUrl =
-      "https://directus.d4dx.co/items/quran_app_force_update";
+      "";
 }

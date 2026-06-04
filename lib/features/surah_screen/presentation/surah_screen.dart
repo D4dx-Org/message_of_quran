@@ -133,6 +133,18 @@ class _SurahScreenState extends State<SurahScreen> {
   int? _temporarilyHighlightedAyahId;
   Timer? _temporaryAyahHighlightTimer;
 
+  Rect? _sharePositionOriginFor(BuildContext context) {
+    final renderObject = context.findRenderObject();
+    if (renderObject is! RenderBox ||
+        !renderObject.attached ||
+        !renderObject.hasSize ||
+        renderObject.size.isEmpty) {
+      return null;
+    }
+
+    return renderObject.localToGlobal(Offset.zero) & renderObject.size;
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -2038,7 +2050,11 @@ class _SurahScreenState extends State<SurahScreen> {
                             : () async {
                                 final text = combinedText();
                                 if (text.trim().isNotEmpty) {
-                                  await Share.share(text);
+                                  await Share.share(
+                                    text,
+                                    sharePositionOrigin:
+                                        _sharePositionOriginFor(ctx),
+                                  );
                                 }
                               },
                         icon: Icon(
@@ -2457,6 +2473,10 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                             if (shareText.trim().isNotEmpty) {
                                                                               await Share.share(
                                                                                 shareText,
+                                                                                sharePositionOrigin:
+                                                                                    _sharePositionOriginFor(
+                                                                                      context,
+                                                                                    ),
                                                                               );
                                                                             }
                                                                           },

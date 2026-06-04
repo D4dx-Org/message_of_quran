@@ -149,6 +149,32 @@ List<NotificationChannel> _notificationChannels() {
   ];
 }
 
+void _startInitialNotificationActionLookup() {
+  unawaited(_resolveInitialNotificationAction());
+}
+
+Future<void> _resolveInitialNotificationAction() async {
+  final stopwatch = Stopwatch()..start();
+  debugPrint('Bootstrap: checking initial notification action started');
+  try {
+    final initialAction = await AwesomeNotifications()
+        .getInitialNotificationAction(removeFromActionEvents: false);
+    if (initialAction != null) {
+      await _onNotificationTap(initialAction);
+    }
+    debugPrint(
+      'Bootstrap: checking initial notification action finished in '
+      '${stopwatch.elapsedMilliseconds}ms',
+    );
+  } catch (error, stackTrace) {
+    debugPrint(
+      'Bootstrap: checking initial notification action failed after '
+      '${stopwatch.elapsedMilliseconds}ms: $error',
+    );
+    debugPrintStack(stackTrace: stackTrace);
+  }
+}
+
 Future<void> _initializeDeferredMobileServices() async {
   await _runBestEffortStartupStep(
     'initializing OneSignal',
@@ -193,22 +219,7 @@ Future<void> _initializeDeferredMobileServices() async {
     );
   });
 
-  await _runBestEffortStartupStep(
-    'checking initial notification action',
-    () async {
-      final initialAction = await AwesomeNotifications()
-          .getInitialNotificationAction(removeFromActionEvents: false)
-          .timeout(
-            const Duration(seconds: 5),
-            onTimeout: () => throw TimeoutException(
-              'Initial notification lookup timed out.',
-            ),
-          );
-      if (initialAction != null) {
-        await _onNotificationTap(initialAction);
-      }
-    },
-  );
+  _startInitialNotificationActionLookup();
 }
 
 Future<void> _initializeAppServices() async {

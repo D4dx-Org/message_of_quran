@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:the_message_of_the_quran/core/constants/app_constants.dart';
-import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
 
 class PlatformHelper {
   PlatformHelper._();
@@ -17,7 +16,7 @@ class PlatformHelper {
     if (isAndroid) {
       return Uri.parse(AppConstants.androidStoreUrl);
     }
-    return Uri.parse(ApiConstants.d4dxWebsiteUrl);
+    return Uri.parse(AppConstants.iosStoreUrl);
   }
 
   static String get publicAppUrl => publicAppUri.toString();
