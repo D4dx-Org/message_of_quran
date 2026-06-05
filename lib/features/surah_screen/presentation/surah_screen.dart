@@ -1769,7 +1769,7 @@ class _SurahScreenState extends State<SurahScreen> {
             style: linkStyle,
             recognizer: TapGestureRecognizer()
               ..onTap = () =>
-                  CrossReferenceSheet.showParsedReference(context, ref),
+                  CrossReferenceSheet.handleReferenceTap(context, ref),
           ),
         );
       } else {
@@ -1816,7 +1816,7 @@ class _SurahScreenState extends State<SurahScreen> {
           style: linkStyle,
           recognizer: TapGestureRecognizer()
             ..onTap = () =>
-                CrossReferenceSheet.showParsedReference(context, ref),
+                CrossReferenceSheet.handleReferenceTap(context, ref),
         );
       }
       return TextSpan(text: seg.text, style: style);

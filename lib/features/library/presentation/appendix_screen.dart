@@ -9,7 +9,11 @@ import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 
 class AppendixScreen extends StatefulWidget {
-  const AppendixScreen({super.key});
+  const AppendixScreen({super.key, this.initialAppendixNumber});
+
+  /// When provided, the matching appendix is auto-expanded and scrolled into
+  /// view once the list has loaded.
+  final int? initialAppendixNumber;
 
   @override
   State<AppendixScreen> createState() => _AppendixScreenState();
@@ -51,6 +55,16 @@ class _AppendixScreenState extends State<AppendixScreen> {
       _filteredAppendices = data;
       _isLoading = false;
     });
+    _openInitialAppendix();
+  }
+
+  void _openInitialAppendix() {
+    final target = widget.initialAppendixNumber;
+    if (target == null) return;
+    final index =
+        _filteredAppendices.indexWhere((a) => a.number == target);
+    if (index < 0) return;
+    _onCardTapped(index);
   }
 
   void _onSearchChanged(String query) {

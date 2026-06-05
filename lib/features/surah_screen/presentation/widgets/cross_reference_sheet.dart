@@ -17,6 +17,7 @@ import 'package:the_message_of_the_quran/core/utils/cross_reference_parser.dart'
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/core/utils/translation_alignment.dart';
+import 'package:the_message_of_the_quran/features/library/presentation/appendix_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/interpretation_note_marker.dart';
@@ -370,6 +371,22 @@ class CrossReferenceSheet extends StatefulWidget {
         noteNumber: ref.noteNumber!,
       );
     }
+  }
+
+  /// Handles a tap on a parsed cross-reference. Appendix references navigate
+  /// to the Appendix screen; all other references open the relevant sheet.
+  static void handleReferenceTap(BuildContext context, CrossReference ref) {
+    if (ref.appendixNumber != null) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => AppendixScreen(
+            initialAppendixNumber: ref.appendixNumber,
+          ),
+        ),
+      );
+      return;
+    }
+    showParsedReference(context, ref);
   }
 
   @override
@@ -789,7 +806,7 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
             ),
             recognizer: TapGestureRecognizer()
               ..onTap = () =>
-                  CrossReferenceSheet.showParsedReference(context, ref),
+                  CrossReferenceSheet.handleReferenceTap(context, ref),
           ),
         );
       } else {
@@ -991,7 +1008,7 @@ class _NestedInterpretationSheetState
             ),
             recognizer: TapGestureRecognizer()
               ..onTap = () =>
-                  CrossReferenceSheet.showParsedReference(context, ref),
+                  CrossReferenceSheet.handleReferenceTap(context, ref),
           ),
         );
       } else {
