@@ -30,7 +30,11 @@ class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
 
   static Database? quranAsadDb;
-  static Database? quranAsadMalayalamDb;
+
+  /// The English (Asad) and Malayalam content now live in a single combined
+  /// database (`quran_asad_combined_nw.sqlite`). This alias keeps the existing
+  /// Malayalam helpers working against the same handle.
+  static Database? get quranAsadMalayalamDb => quranAsadDb;
   static Database? userDatabase;
 
   static Completer<void>? _initCompleter;
@@ -59,7 +63,7 @@ class DatabaseHelper {
     await _closeAll();
     final prefs = await SharedPreferences.getInstance();
 
-    // ── quran_asad.sqlite ──
+    // ── quran_asad_combined_nw.sqlite (English + Malayalam) ──
     final storedAsadVersion =
         prefs.getInt(DbConstants.quranAsadDbVersionKey) ?? 0;
     if (storedAsadVersion < DbConstants.quranAsadDbVersion) {
@@ -76,26 +80,6 @@ class DatabaseHelper {
     await prefs.setInt(
       DbConstants.quranAsadDbVersionKey,
       DbConstants.quranAsadDbVersion,
-    );
-
-    // ── quran_asad_malayalam.db ──
-    final storedMalayalamVersion =
-        prefs.getInt(DbConstants.quranAsadMalayalamDbVersionKey) ?? 0;
-    if (storedMalayalamVersion < DbConstants.quranAsadMalayalamDbVersion) {
-      final mlPath = await _databasePathFor(
-        DbConstants.quranAsadMalayalamDbName,
-      );
-      await db_io.deleteFileIfExists(mlPath);
-      await db_io.deleteWalShmFiles(mlPath);
-    }
-
-    quranAsadMalayalamDb = await initDatabase(
-      name: DbConstants.quranAsadMalayalamDbName,
-      dbName: DbConstants.quranAsadMalayalamDbName,
-    );
-    await prefs.setInt(
-      DbConstants.quranAsadMalayalamDbVersionKey,
-      DbConstants.quranAsadMalayalamDbVersion,
     );
 
     final userDbPath = await _databasePathFor(DbConstants.userDbName);
@@ -157,7 +141,7 @@ class DatabaseHelper {
   }
 
   static Future<void> _closeAll() async {
-    for (final db in [quranAsadDb, quranAsadMalayalamDb, userDatabase]) {
+    for (final db in [quranAsadDb, userDatabase]) {
       if (db != null && db.isOpen) {
         try {
           await db.close();
@@ -167,7 +151,6 @@ class DatabaseHelper {
       }
     }
     quranAsadDb = null;
-    quranAsadMalayalamDb = null;
     userDatabase = null;
   }
 

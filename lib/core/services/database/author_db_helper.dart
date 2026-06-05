@@ -17,7 +17,7 @@ class AuthorDbHelper {
 
     try {
       final rows = await db.query(
-        DbConstants.asadAuthorsTable,
+        malayalam ? DbConstants.mlAuthorsTable : DbConstants.asadAuthorsTable,
         orderBy:
             '${DbConstants.asadAuthorIsVerified} DESC, ${DbConstants.asadAuthorId} ASC',
       );
