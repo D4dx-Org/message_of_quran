@@ -61,7 +61,7 @@ class _AboutScreenState extends State<AboutScreen> {
             );
           }
           return Padding(
-            padding: const EdgeInsets.fromLTRB(16.0, 20.0, 16.0, 0),
+            padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

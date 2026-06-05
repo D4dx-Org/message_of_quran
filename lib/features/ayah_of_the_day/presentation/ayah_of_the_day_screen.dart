@@ -90,7 +90,7 @@ class _AyahOfTheDayScreenState extends State<AyahOfTheDayScreen> {
           }
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
             child: Column(
               children: [
                 // ── Poster card with outlined frame ──

@@ -2170,7 +2170,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                 final content = Padding(
                                   padding: EdgeInsets.fromLTRB(
                                     hPad,
-                                    10,
+                                    0,
                                     hPad,
                                     0,
                                   ),

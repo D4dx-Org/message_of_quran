@@ -120,7 +120,7 @@ class _AppendixScreenState extends State<AppendixScreen> {
               children: [
                 // Search bar
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                   child: TextField(
                     controller: _searchController,
                     onChanged: _onSearchChanged,

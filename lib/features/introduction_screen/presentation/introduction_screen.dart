@@ -48,7 +48,7 @@ class IntroductionScreen extends StatelessWidget {
             );
           }
           return Padding(
-            padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
+            padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
             child: SingleChildScrollView(
               child: Text(
                 preface.prefaceText,

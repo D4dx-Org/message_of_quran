@@ -44,7 +44,7 @@ class SettingsScreen extends StatelessWidget {
 
     if (!useTwoColumns) {
       return ListView(
-        padding: EdgeInsets.fromLTRB(hPad, 24, hPad, 24),
+        padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 24),
         children: const [
           _SectionLabel('Theme & Language'),
           SizedBox(height: 8),
@@ -76,7 +76,7 @@ class SettingsScreen extends StatelessWidget {
     }
 
     return ListView(
-      padding: EdgeInsets.fromLTRB(hPad, 24, hPad, 24),
+      padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 24),
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,7 +147,7 @@ class SettingsScreen extends StatelessWidget {
       child: useDesktopWebLayout
           ? _buildDesktopBody(context)
           : ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               children: const [
                 _SectionLabel('Theme & Language'),
                 SizedBox(height: 8),

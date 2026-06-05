@@ -4,10 +4,13 @@ import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  const contentInsetPaddingKey = Key('baseScreenLayoutContentInsetPadding');
+  const childKey = Key('baseScreenLayoutChild');
 
   Future<void> pumpBaseScreenLayout(
     WidgetTester tester, {
     required double bottomInset,
+    double contentTopInset = BaseScreenLayout.defaultContentTopInset,
   }) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1.0;
@@ -22,8 +25,11 @@ void main() {
           padding: EdgeInsets.only(bottom: bottomInset),
           viewPadding: EdgeInsets.only(bottom: bottomInset),
         ),
-        child: const MaterialApp(
-          home: BaseScreenLayout(child: SizedBox.expand()),
+        child: MaterialApp(
+          home: BaseScreenLayout(
+            contentTopInset: contentTopInset,
+            child: const SizedBox.expand(key: childKey),
+          ),
         ),
       ),
     );
@@ -58,5 +64,33 @@ void main() {
       find.byKey(const Key('baseScreenLayoutBottomSafeAreaFill')),
       findsNothing,
     );
+  });
+
+  testWidgets('applies the default content top inset inside the card', (
+    WidgetTester tester,
+  ) async {
+    await pumpBaseScreenLayout(tester, bottomInset: 0);
+
+    final insetPadding = tester.widget<Padding>(
+      find.byKey(contentInsetPaddingKey),
+    );
+
+    expect(
+      insetPadding.padding,
+      const EdgeInsets.only(top: BaseScreenLayout.defaultContentTopInset),
+    );
+  });
+
+  testWidgets('allows screens to opt out of the shared content top inset', (
+    WidgetTester tester,
+  ) async {
+    await pumpBaseScreenLayout(
+      tester,
+      bottomInset: 0,
+      contentTopInset: 0,
+    );
+
+    expect(find.byKey(contentInsetPaddingKey), findsNothing);
+    expect(find.byKey(childKey), findsOneWidget);
   });
 }

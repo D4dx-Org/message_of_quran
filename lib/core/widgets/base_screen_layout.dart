@@ -6,6 +6,9 @@ import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper
 const _baseScreenLayoutBottomSafeAreaFillKey = Key(
   'baseScreenLayoutBottomSafeAreaFill',
 );
+const _baseScreenLayoutContentInsetPaddingKey = Key(
+  'baseScreenLayoutContentInsetPadding',
+);
 
 /// A reusable screen layout that provides the app's signature UI pattern:
 /// brown background with a rounded white/cream content card.
@@ -13,6 +16,8 @@ const _baseScreenLayoutBottomSafeAreaFillKey = Key(
 /// Used across all screens (except Splash and Force Update) to maintain
 /// visual consistency during navigation.
 class BaseScreenLayout extends StatelessWidget {
+  static const double defaultContentTopInset = 10;
+
   const BaseScreenLayout({
     super.key,
     required this.child,
@@ -25,6 +30,7 @@ class BaseScreenLayout extends StatelessWidget {
     this.topBorderRadius = 40,
     this.endDrawer,
     this.resizeToAvoidBottomInset,
+    this.contentTopInset = defaultContentTopInset,
   });
 
   /// The main content displayed inside the rounded card area.
@@ -58,6 +64,9 @@ class BaseScreenLayout extends StatelessWidget {
 
   /// Whether the body should resize when the keyboard appears.
   final bool? resizeToAvoidBottomInset;
+
+  /// The top inset applied inside the rounded content card before [child].
+  final double contentTopInset;
 
   static const _lightContentSurfaceBottomColor = Color.fromRGBO(
     255,
@@ -104,6 +113,16 @@ class BaseScreenLayout extends StatelessWidget {
     return isDarkMode
         ? _darkContentSurfaceColor
         : _lightContentSurfaceBottomColor;
+  }
+
+  Widget _buildContentCardChild() {
+    if (contentTopInset == 0) return child;
+
+    return Padding(
+      key: _baseScreenLayoutContentInsetPaddingKey,
+      padding: EdgeInsets.only(top: contentTopInset),
+      child: child,
+    );
   }
 
   @override
@@ -161,7 +180,7 @@ class BaseScreenLayout extends StatelessWidget {
                     borderColor: webCardBorderColor,
                   ),
                   clipBehavior: Clip.antiAlias,
-                  child: child,
+                  child: _buildContentCardChild(),
                 ),
               ),
             ],
@@ -180,7 +199,7 @@ class BaseScreenLayout extends StatelessWidget {
               child: Container(
                 decoration: _buildContentCardDecoration(isDarkMode: isDarkMode),
                 clipBehavior: Clip.antiAlias,
-                child: child,
+                child: _buildContentCardChild(),
               ),
             ),
           ],

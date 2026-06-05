@@ -186,7 +186,7 @@ class SearchScreen extends StatelessWidget {
         : Colors.grey[600]!;
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(hPad, 24, hPad, 24),
+      padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 24),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 980),
@@ -298,7 +298,7 @@ class SearchScreen extends StatelessWidget {
       child: useDesktopWebLayout
           ? _buildDesktopBody(context, controller)
           : Padding(
-              padding: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 10.0),
+              padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 10.0),
               child: Column(
                 children: [
                   Row(

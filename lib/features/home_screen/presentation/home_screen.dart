@@ -307,7 +307,7 @@ class _HomeScreenState extends State<HomeScreen>
     final hintFontSize = isMalayalam ? 14.0 : 15.0;
 
     return Padding(
-      padding: const EdgeInsets.only(top: 20, bottom: 30),
+      padding: const EdgeInsets.only(top: 10, bottom: 30),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 920),
@@ -870,7 +870,7 @@ class _HomeScreenState extends State<HomeScreen>
     final homeContentMaxWidth = _webHomeContentMaxWidth(context);
     final homeContent = Column(
       children: [
-        const SizedBox(height: 20),
+        const SizedBox.shrink(),
         _buildTabBar(context),
         const SizedBox(height: 12),
         Expanded(child: _buildTabBody()),

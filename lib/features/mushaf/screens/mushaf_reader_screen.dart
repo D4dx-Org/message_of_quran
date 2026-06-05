@@ -401,6 +401,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
         builder: (context, p, _) {
           if (!p.initialised || p.pageController == null) {
             return const BaseScreenLayout(
+              contentTopInset: 0,
               topBorderRadius: 0,
               child: Center(child: CircularProgressIndicator()),
             );
@@ -726,6 +727,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
 
     if (_useDesktopWebReaderLayout(context)) {
       return BaseScreenLayout(
+        contentTopInset: 0,
         topBorderRadius: 0,
         floatingActionButton: floatingActionButton,
         child: _buildDesktopReaderScaffold(context, fontSize),
@@ -733,6 +735,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
     }
 
     return BaseScreenLayout(
+      contentTopInset: 0,
       topBorderRadius: 0,
       floatingActionButton: floatingActionButton,
       child: Stack(
