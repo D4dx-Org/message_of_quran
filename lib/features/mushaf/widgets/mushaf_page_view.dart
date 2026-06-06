@@ -6,6 +6,7 @@ import '../models/page_meta.dart';
 import '../services/mushaf_download_manager.dart';
 import '../services/qcf_font_service.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/pinch_zoom_view.dart';
 import '../utils/mushaf_text_utils.dart';
 
 const _kSecondaryDarkColor = AppTheme.appIconTheme;
@@ -279,18 +280,20 @@ class _MushafPageViewState extends State<MushafPageView> {
                 const SizedBox(height: kToolbarHeight),
               if (!isLandscape && isFirstTwoPages) ...topWidgets,
               Expanded(
-                child: Center(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (isLandscape && isFirstTwoPages)
-                            const SizedBox(height: kToolbarHeight),
-                          if (isLandscape && isFirstTwoPages) ...topWidgets,
-                          ...lineWidgets,
-                        ],
+                child: PinchZoomView(
+                  child: Center(
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (isLandscape && isFirstTwoPages)
+                              const SizedBox(height: kToolbarHeight),
+                            if (isLandscape && isFirstTwoPages) ...topWidgets,
+                            ...lineWidgets,
+                          ],
+                        ),
                       ),
                     ),
                   ),
