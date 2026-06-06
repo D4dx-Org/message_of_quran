@@ -81,39 +81,6 @@ class FontSizeChangerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Smallest / largest font size shared by all reading text controls.
-  static const int minFontSize = 11;
-  static const int maxFontSize = 30;
-
-  /// Sets the reading font sizes in one shot (used by pinch-to-zoom on the
-  /// Surah screen). Each value is clamped to the allowed range and a single
-  /// [notifyListeners] is fired only when something actually changed.
-  void setFontSizes({int? quran, int? translation, int? interpretation}) {
-    var changed = false;
-    if (quran != null) {
-      final clamped = quran.clamp(minFontSize, maxFontSize);
-      if (clamped != quranFontSize) {
-        quranFontSize = clamped;
-        changed = true;
-      }
-    }
-    if (translation != null) {
-      final clamped = translation.clamp(minFontSize, maxFontSize);
-      if (clamped != quranTransaltionFontSize) {
-        quranTransaltionFontSize = clamped;
-        changed = true;
-      }
-    }
-    if (interpretation != null) {
-      final clamped = interpretation.clamp(minFontSize, maxFontSize);
-      if (clamped != interpretationFontSize) {
-        interpretationFontSize = clamped;
-        changed = true;
-      }
-    }
-    if (changed) notifyListeners();
-  }
-
   Future<void> setFont(String font) async {
     if (!availableFonts.contains(font) || fontType == font) return;
     fontType = font;

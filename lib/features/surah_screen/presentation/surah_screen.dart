@@ -28,6 +28,7 @@ import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
 import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/core/widgets/scroll_to_top_button.dart';
+import 'package:the_message_of_the_quran/core/widgets/pinch_zoom_view.dart';
 import 'package:the_message_of_the_quran/features/bookmark_screen/presentation/bookmark_conflict_dialog.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/surah_action_dock.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/surah_screen_app_bar.dart';
@@ -2224,25 +2225,27 @@ class _SurahScreenState extends State<SurahScreen> {
                                       onHorizontalDragEnd:
                                           _handleContinuousModeSwipe,
                                       child: ResponsiveContentWrapper(
-                                        child: NotificationListener<ScrollNotification>(
-                                          onNotification: _onScrollNotification,
-                                          child: CustomScrollView(
-                                            controller: _scrollController,
-                                            cacheExtent: _deepLinkCacheExtent,
-                                            slivers: [
-                                              if (!useDesktopWebReaderLayout)
-                                                const SurahScreenAppBar()
-                                              else
-                                                const SliverToBoxAdapter(
-                                                  child: SizedBox(height: 12),
-                                                ),
-                                              if (showDecorativeBismillah)
-                                                SliverToBoxAdapter(
-                                                  child: _SurahBismillahHeader(
-                                                    glyphText: controller
-                                                        .currentBismillahGlyph,
+                                        child: PinchZoomView(
+                                          child: NotificationListener<ScrollNotification>(
+                                            onNotification:
+                                                _onScrollNotification,
+                                            child: CustomScrollView(
+                                              controller: _scrollController,
+                                              cacheExtent: _deepLinkCacheExtent,
+                                              slivers: [
+                                                if (!useDesktopWebReaderLayout)
+                                                  const SurahScreenAppBar()
+                                                else
+                                                  const SliverToBoxAdapter(
+                                                    child: SizedBox(height: 12),
                                                   ),
-                                                ),
+                                                if (showDecorativeBismillah)
+                                                  SliverToBoxAdapter(
+                                                    child: _SurahBismillahHeader(
+                                                      glyphText: controller
+                                                          .currentBismillahGlyph,
+                                                    ),
+                                                  ),
                                               SliverList(
                                                 delegate: SliverChildBuilderDelegate(
                                                   (context, index) {
@@ -2547,6 +2550,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                               ),
                                             ],
                                           ),
+                                        ),
                                         ),
                                       ),
                                     ),

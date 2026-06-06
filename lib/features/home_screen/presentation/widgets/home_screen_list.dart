@@ -45,9 +45,16 @@ class HomeScreenList extends StatelessWidget {
                   ),
                 );
                 if (!context.mounted) return;
-                context.read<LastReadProvider>().saveLastSurahTabSelection(
-                      surahProvider.surahList[index].surahNumber,
-                    );
+                // Use the surah the provider is currently on, so a jump to a
+                // different surah inside the SurahScreen is reflected here
+                // instead of the originally tapped surah.
+                final currentIndex = surahProvider.index;
+                if (currentIndex >= 0 &&
+                    currentIndex < surahProvider.surahList.length) {
+                  context.read<LastReadProvider>().saveLastSurahTabSelection(
+                        surahProvider.surahList[currentIndex].surahNumber,
+                      );
+                }
               },
             );
           },
