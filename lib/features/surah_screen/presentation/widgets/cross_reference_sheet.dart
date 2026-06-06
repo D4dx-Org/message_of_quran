@@ -120,6 +120,15 @@ String _formatInterpretationAyahNumbers(List<int> ayahNumbers) {
   return normalized.join(', ');
 }
 
+/// Scrim color used behind the first interpretation bottom sheet only.
+///
+/// Nested / referenced sheets are shown with a transparent barrier so the
+/// scrim does not compound (otherwise every newly stacked sheet would add
+/// another dark layer and the screen would keep getting darker). This way the
+/// very first sheet draws a single, consistent shade and all subsequent
+/// stacked sheets reuse that same darkening underneath them.
+const kInterpretationSheetBarrierColor = Colors.black54;
+
 const _kInterpretationSheetDragHandlePadding = EdgeInsets.only(
   top: 8,
   bottom: 2,
@@ -337,7 +346,7 @@ class CrossReferenceSheet extends StatefulWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      barrierColor: Colors.transparent,
+      barrierColor: kInterpretationSheetBarrierColor,
       constraints: bsMaxWidth != null
           ? BoxConstraints(maxWidth: bsMaxWidth)
           : null,

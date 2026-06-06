@@ -1838,6 +1838,7 @@ class _SurahScreenState extends State<SurahScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      barrierColor: kInterpretationSheetBarrierColor,
       constraints: bsMaxWidth != null
           ? BoxConstraints(maxWidth: bsMaxWidth)
           : null,
