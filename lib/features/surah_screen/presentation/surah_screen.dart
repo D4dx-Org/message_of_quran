@@ -1015,6 +1015,22 @@ class _SurahScreenState extends State<SurahScreen> {
     final idx = _findAyahBlockIndex(blocks, ayaStart);
     if (idx < 0 || idx >= _itemKeys.length) return;
 
+    await _animateToBlockIndex(idx, ayaStartForHighlight: ayaStart);
+  }
+
+  /// Precisely scrolls to the block at [idx] and briefly highlights
+  /// [ayaStartForHighlight]. Pre-warms the lazy [SliverList] via an enlarged
+  /// cache window so distant ayahs (e.g. 40, 50, 100) are built before we read
+  /// their EXACT scroll offset from the target's RenderBox — then performs a
+  /// SINGLE smooth animation so the page lands cleanly on the target ayah.
+  Future<void> _animateToBlockIndex(
+    int idx, {
+    required int ayaStartForHighlight,
+  }) async {
+    if (!mounted || !_scrollController.hasClients) return;
+    if (idx < 0 || idx >= _itemKeys.length) return;
+
+    final blocks = _surahProv.arabicBlockList;
     var shouldHighlightTargetAyah = false;
 
     try {
@@ -1060,7 +1076,7 @@ class _SurahScreenState extends State<SurahScreen> {
       );
     } finally {
       if (mounted && shouldHighlightTargetAyah) {
-        _showTemporaryJumpHighlight(ayaStart);
+        _showTemporaryJumpHighlight(ayaStartForHighlight);
       }
       if (mounted && _deepLinkCacheExtent != null) {
         setState(() => _deepLinkCacheExtent = null);
@@ -1156,9 +1172,21 @@ class _SurahScreenState extends State<SurahScreen> {
                     ),
                     onTap: () {
                       Navigator.pop(context);
+                      final ayaStart = block.verseFrom ?? i + 1;
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         if (!mounted) return;
-                        _ensureAyahVisible(i);
+                        // Ayah 1 → scroll to top so the banner expands fully;
+                        // all other ayahs → precise cache-warmed jump with a
+                        // 3s highlight on the target verse.
+                        if (i == 0) {
+                          _ensureAyahVisible(0);
+                          _showTemporaryJumpHighlight(ayaStart);
+                        } else {
+                          _animateToBlockIndex(
+                            i,
+                            ayaStartForHighlight: ayaStart,
+                          );
+                        }
                       });
                     },
                   );
