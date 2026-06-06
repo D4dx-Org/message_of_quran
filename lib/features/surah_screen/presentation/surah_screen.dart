@@ -2884,14 +2884,17 @@ class _TajweedWordRowState extends State<_TajweedWordRow> {
 
   @override
   Widget build(BuildContext context) {
-    final quranJustify = Provider.of<FontSizeChangerProvider>(
-      context,
-    ).quranJustify;
+    final fontProvider = Provider.of<FontSizeChangerProvider>(context);
+    final quranJustify = fontProvider.quranJustify;
+    // Scale the tajweed word images to the user's Qur'an font size so they
+    // track the "Qur'an Font Size" setting like the plain Arabic text does.
+    // 40px was the original fixed height tuned for the default size of 22.
+    final imageHeight = fontProvider.quranFontSize * (40 / 22);
     final words = _words;
     if (words == null) {
-      return const SizedBox(
-        height: 40,
-        child: Center(
+      return SizedBox(
+        height: imageHeight,
+        child: const Center(
           child: SizedBox(
             width: 20,
             height: 20,
@@ -2931,7 +2934,7 @@ class _TajweedWordRowState extends State<_TajweedWordRow> {
           child: localPath != null
               ? Image.file(
                   File(localPath),
-                  height: 40,
+                  height: imageHeight,
                   fit: BoxFit.fitHeight,
                   frameBuilder: isLast
                       ? (ctx, child, frame, wasSynchronouslyLoaded) {
