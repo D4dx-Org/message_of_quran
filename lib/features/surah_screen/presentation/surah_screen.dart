@@ -87,6 +87,191 @@ class _SurahBismillahHeader extends StatelessWidget {
   }
 }
 
+/// Bottom-sheet content for the "Jump to Ayah" picker with an ayah-number
+/// search field. Owns its own [TextEditingController] so it is disposed safely
+/// after the sheet's close animation completes.
+class _JumpToAyahSheet extends StatefulWidget {
+  const _JumpToAyahSheet({
+    required this.arabicBlockList,
+    required this.isMalayalam,
+    required this.scrollController,
+    required this.onSelect,
+  });
+
+  final List<ArabicBlockModel> arabicBlockList;
+  final bool isMalayalam;
+  final ScrollController scrollController;
+
+  /// Called with the original block index and the ayah-start number when a row
+  /// is tapped.
+  final void Function(int blockIndex, int ayaStart) onSelect;
+
+  @override
+  State<_JumpToAyahSheet> createState() => _JumpToAyahSheetState();
+}
+
+class _JumpToAyahSheetState extends State<_JumpToAyahSheet> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isMl = widget.isMalayalam;
+    final query = _searchController.text.trim();
+    final typed = int.tryParse(query);
+    // Filter blocks by typed ayah number while preserving each block's original
+    // index so the jump/highlight logic stays correct.
+    final entries = <MapEntry<int, ArabicBlockModel>>[];
+    for (var i = 0; i < widget.arabicBlockList.length; i++) {
+      final block = widget.arabicBlockList[i];
+      if (query.isEmpty) {
+        entries.add(MapEntry(i, block));
+        continue;
+      }
+      final start = block.verseFrom ?? i + 1;
+      final end = block.verseTo ?? i + 1;
+      final matchesRange = typed != null && typed >= start && typed <= end;
+      final matchesText =
+          start.toString().contains(query) || end.toString().contains(query);
+      if (matchesRange || matchesText) {
+        entries.add(MapEntry(i, block));
+      }
+    }
+
+    return Column(
+      children: [
+        // Drag handle
+        Padding(
+          padding: const EdgeInsets.only(top: 10, bottom: 4),
+          child: Container(
+            height: 4,
+            width: 40,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade400,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Text(
+            isMl ? 'ആയത്തിലേക്ക് പോകുക' : 'Jump to Ayah',
+            style: AppTextTheme.localizedLabel(
+              isMalayalam: isMl,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        // Ayah number search field
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+          child: TextField(
+            controller: _searchController,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            onChanged: (_) => setState(() {}),
+            style: AppTextTheme.localizedLabel(
+              isMalayalam: isMl,
+              fontSize: 14,
+            ),
+            decoration: InputDecoration(
+              isDense: true,
+              hintText: isMl ? 'ആയത്ത് തിരയുക' : 'Search ayah',
+              hintStyle: AppTextTheme.localizedLabel(
+                isMalayalam: isMl,
+                fontSize: 14,
+              ),
+              prefixIcon: const Icon(Icons.search, size: 20),
+              suffixIcon: query.isEmpty
+                  ? null
+                  : IconButton(
+                      icon: const Icon(Icons.clear, size: 18),
+                      onPressed: () {
+                        _searchController.clear();
+                        setState(() {});
+                      },
+                    ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 10,
+              ),
+            ),
+          ),
+        ),
+        const Divider(height: 1),
+        Expanded(
+          child: entries.isEmpty
+              ? Center(
+                  child: Text(
+                    isMl ? 'ആയത്ത് കണ്ടെത്തിയില്ല' : 'No ayah found',
+                    style: AppTextTheme.localizedLabel(
+                      isMalayalam: isMl,
+                      fontSize: 14,
+                    ),
+                  ),
+                )
+              : ListView.separated(
+                  controller: widget.scrollController,
+                  itemCount: entries.length,
+                  separatorBuilder: (_, _) =>
+                      const Divider(height: 1, indent: 64),
+                  itemBuilder: (_, listIndex) {
+                    final i = entries[listIndex].key;
+                    final block = entries[listIndex].value;
+                    final start = block.verseFrom ?? i + 1;
+                    final end = block.verseTo ?? i + 1;
+                    final startText = start.toString();
+                    final label = start == end
+                        ? formatAyahReferenceLabel(start, isMalayalam: isMl)
+                        : formatAyahRangeLabel(start, end, isMalayalam: isMl);
+                    return ListTile(
+                      leading: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: AppTheme.appThemePrimary,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          startText,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      title: Text(
+                        label,
+                        style: AppTextTheme.localizedLabel(
+                          isMalayalam: isMl,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      onTap: () {
+                        final ayaStart = block.verseFrom ?? i + 1;
+                        widget.onSelect(i, ayaStart);
+                      },
+                    );
+                  },
+                ),
+        ),
+      ],
+    );
+  }
+}
+
 class SurahScreen extends StatefulWidget {
   /// When set, the screen scrolls to the ayah block with this ayaStart after
   /// the content loads (used from BookmarkScreen).
@@ -1105,96 +1290,25 @@ class _SurahScreenState extends State<SurahScreen> {
         minChildSize: 0.35,
         maxChildSize: 0.88,
         expand: false,
-        builder: (_, scrollCtrl) => Column(
-          children: [
-            // Drag handle
-            Padding(
-              padding: const EdgeInsets.only(top: 10, bottom: 4),
-              child: Container(
-                height: 4,
-                width: 40,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade400,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(
-                isMl ? 'ആയത്തിലേക്ക് പോകുക' : 'Jump to Ayah',
-                style: AppTextTheme.localizedLabel(
-                  isMalayalam: isMl,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const Divider(height: 1),
-            Expanded(
-              child: ListView.separated(
-                controller: scrollCtrl,
-                itemCount: arabicBlockList.length,
-                separatorBuilder: (_, _) =>
-                    const Divider(height: 1, indent: 64),
-                itemBuilder: (_, i) {
-                  final block = arabicBlockList[i];
-                  final start = block.verseFrom ?? i + 1;
-                  final end = block.verseTo ?? i + 1;
-                  final startText = start.toString();
-                  final label = start == end
-                      ? formatAyahReferenceLabel(start, isMalayalam: isMl)
-                      : formatAyahRangeLabel(start, end, isMalayalam: isMl);
-                  return ListTile(
-                    leading: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: AppTheme.appThemePrimary,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        startText,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    title: Text(
-                      label,
-                      style: AppTextTheme.localizedLabel(
-                        isMalayalam: isMl,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      final ayaStart = block.verseFrom ?? i + 1;
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (!mounted) return;
-                        // Ayah 1 → scroll to top so the banner expands fully;
-                        // all other ayahs → precise cache-warmed jump with a
-                        // 3s highlight on the target verse.
-                        if (i == 0) {
-                          _ensureAyahVisible(0);
-                          _showTemporaryJumpHighlight(ayaStart);
-                        } else {
-                          _animateToBlockIndex(
-                            i,
-                            ayaStartForHighlight: ayaStart,
-                          );
-                        }
-                      });
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
+        builder: (_, scrollCtrl) => _JumpToAyahSheet(
+          arabicBlockList: arabicBlockList,
+          isMalayalam: isMl,
+          scrollController: scrollCtrl,
+          onSelect: (i, ayaStart) {
+            Navigator.pop(context);
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted) return;
+              // Ayah 1 → scroll to top so the banner expands fully; all other
+              // ayahs → precise cache-warmed jump with a 3s highlight on the
+              // target verse.
+              if (i == 0) {
+                _ensureAyahVisible(0);
+                _showTemporaryJumpHighlight(ayaStart);
+              } else {
+                _animateToBlockIndex(i, ayaStartForHighlight: ayaStart);
+              }
+            });
+          },
         ),
       ),
     );
