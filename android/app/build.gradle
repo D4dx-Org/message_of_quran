@@ -34,7 +34,10 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace 'com.d4dx.quranasadmalayalam'
     compileSdk flutter.compileSdkVersion
-    ndkVersion flutter.ndkVersion
+    // Pin to an installed NDK that is compatible with the bundled CMake 3.22.1.
+    // Flutter's default NDK 28.2 is not compatible with CMake 3.22.1 and fails
+    // the native compiler ABI detection (ninja: 'build.ninja' not found).
+    ndkVersion '27.0.12077973'
 
     compileOptions {
         coreLibraryDesugaringEnabled true
