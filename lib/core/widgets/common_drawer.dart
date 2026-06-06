@@ -25,6 +25,18 @@ import 'package:url_launcher/url_launcher.dart';
 class CommonDrawer extends StatelessWidget {
   const CommonDrawer({super.key});
 
+  Rect? _sharePositionOriginFor(BuildContext context) {
+    final renderObject = context.findRenderObject();
+    if (renderObject is! RenderBox ||
+        !renderObject.attached ||
+        !renderObject.hasSize ||
+        renderObject.size.isEmpty) {
+      return null;
+    }
+
+    return renderObject.localToGlobal(Offset.zero) & renderObject.size;
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<HomeProvider>(context, listen: false);
@@ -259,7 +271,9 @@ class CommonDrawer extends StatelessWidget {
                       _DrawerTile(
                         title: 'Share App',
                         icon: Icons.share_outlined,
-                        onTap: () async {
+                        onTapWithContext: (tileContext) async {
+                          final sharePositionOrigin =
+                              _sharePositionOriginFor(tileContext);
                           Navigator.pop(context);
                           await Future.delayed(
                             const Duration(milliseconds: 300),
@@ -274,7 +288,10 @@ class CommonDrawer extends StatelessWidget {
                           if (AppConstants.iosStoreUrl.isNotEmpty) {
                             buffer.writeln('iOS : ${AppConstants.iosStoreUrl}');
                           }
-                          await Share.share(buffer.toString().trimRight());
+                          await Share.share(
+                            buffer.toString().trimRight(),
+                            sharePositionOrigin: sharePositionOrigin,
+                          );
                         },
                       ),
                       _DrawerTile(
@@ -462,12 +479,14 @@ class _DrawerTile extends StatelessWidget {
     required this.title,
     required this.icon,
     this.onTap,
+    this.onTapWithContext,
     this.assetPath,
     this.isMalayalam = false,
   });
   final String title;
   final IconData icon;
   final VoidCallback? onTap;
+  final Future<void> Function(BuildContext context)? onTapWithContext;
   final String? assetPath;
   final bool isMalayalam;
 
@@ -486,28 +505,36 @@ class _DrawerTile extends StatelessWidget {
           )
         : Icon(icon, color: accentColor, size: 22 * scale);
 
-    return ListTile(
-      onTap: onTap,
-      leading: leadingWidget,
-      title: Text(
-        title,
-        style: AppTextTheme.localizedLabel(
-          isMalayalam: isMalayalam,
-          color: theme.textTheme.bodyMedium?.color,
-          fontSize: theme.textTheme.bodyMedium?.fontSize ?? 14,
-          fontWeight: FontWeight.w500,
+    return Builder(
+      builder: (tileContext) => ListTile(
+        onTap: () async {
+          if (onTapWithContext != null) {
+            await onTapWithContext!(tileContext);
+            return;
+          }
+          onTap?.call();
+        },
+        leading: leadingWidget,
+        title: Text(
+          title,
+          style: AppTextTheme.localizedLabel(
+            isMalayalam: isMalayalam,
+            color: theme.textTheme.bodyMedium?.color,
+            fontSize: theme.textTheme.bodyMedium?.fontSize ?? 14,
+            fontWeight: FontWeight.w500,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: 20 * scale,
+          vertical: 2 * scale,
+        ),
+        minLeadingWidth: 24 * scale,
+        horizontalTitleGap: 14 * scale,
+        dense: true,
+        visualDensity: VisualDensity.compact,
       ),
-      contentPadding: EdgeInsets.symmetric(
-        horizontal: 20 * scale,
-        vertical: 2 * scale,
-      ),
-      minLeadingWidth: 24 * scale,
-      horizontalTitleGap: 14 * scale,
-      dense: true,
-      visualDensity: VisualDensity.compact,
     );
   }
 }

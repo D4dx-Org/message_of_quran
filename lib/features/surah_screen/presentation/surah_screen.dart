@@ -2188,25 +2188,29 @@ class _SurahScreenState extends State<SurahScreen> {
                         ),
                       ),
                       // Share
-                      IconButton(
-                        tooltip: 'Share',
-                        onPressed: isLoading
-                            ? null
-                            : () async {
-                                final text = combinedText();
-                                if (text.trim().isNotEmpty) {
-                                  await Share.share(
-                                    text,
-                                    sharePositionOrigin:
-                                        _sharePositionOriginFor(ctx),
-                                  );
-                                }
-                              },
-                        icon: Icon(
-                          Icons.share_outlined,
-                          color: isLoading
-                              ? Colors.grey[400]
-                              : activeColor,
+                      Builder(
+                        builder: (shareButtonContext) => IconButton(
+                          tooltip: 'Share',
+                          onPressed: isLoading
+                              ? null
+                              : () async {
+                                  final text = combinedText();
+                                  if (text.trim().isNotEmpty) {
+                                    await Share.share(
+                                      text,
+                                      sharePositionOrigin:
+                                          _sharePositionOriginFor(
+                                            shareButtonContext,
+                                          ),
+                                    );
+                                  }
+                                },
+                          icon: Icon(
+                            Icons.share_outlined,
+                            color: isLoading
+                                ? Colors.grey[400]
+                                : activeColor,
+                          ),
                         ),
                       ),
                     ],
@@ -2608,29 +2612,35 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                                 : actionIconColor,
                                                                           ),
                                                                         ),
-                                                                        IconButton(
-                                                                          tooltip:
-                                                                              'Share',
-                                                                          onPressed: () async {
-                                                                            final shareText =
-                                                                                controller.getAyahText(
-                                                                                  ayaStart,
-                                                                                );
-                                                                            if (shareText.trim().isNotEmpty) {
-                                                                              await Share.share(
-                                                                                shareText,
-                                                                                sharePositionOrigin:
-                                                                                    _sharePositionOriginFor(
-                                                                                      context,
+                                                                        Builder(
+                                                                          builder:
+                                                                              (
+                                                                                shareButtonContext,
+                                                                              ) =>
+                                                                                  IconButton(
+                                                                                    tooltip:
+                                                                                        'Share',
+                                                                                    onPressed: () async {
+                                                                                      final shareText =
+                                                                                          controller.getAyahText(
+                                                                                            ayaStart,
+                                                                                          );
+                                                                                      if (shareText.trim().isNotEmpty) {
+                                                                                        await Share.share(
+                                                                                          shareText,
+                                                                                          sharePositionOrigin:
+                                                                                              _sharePositionOriginFor(
+                                                                                                shareButtonContext,
+                                                                                              ),
+                                                                                        );
+                                                                                      }
+                                                                                    },
+                                                                                    icon: Icon(
+                                                                                      Icons.share_outlined,
+                                                                                      color:
+                                                                                          actionIconColor,
                                                                                     ),
-                                                                              );
-                                                                            }
-                                                                          },
-                                                                          icon: Icon(
-                                                                            Icons.share_outlined,
-                                                                            color:
-                                                                                actionIconColor,
-                                                                          ),
+                                                                                  ),
                                                                         ),
                                                                       ],
                                                                     );
