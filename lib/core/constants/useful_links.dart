@@ -39,6 +39,10 @@ const List<UsefulLinkSection> usefulLinksSections = [
         title: 'Muhammad Marmaduke Pickthall',
         url: 'https://www.alim.org/translation/picktal/1/',
       ),
+      UsefulLinkItem(
+        title: 'MAS Abdul Haleem',
+        url: '',
+      ),
     ],
   ),
   UsefulLinkSection(
