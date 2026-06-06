@@ -1,0 +1,41 @@
+{
+  "surah_number": 114,
+  "verses": [
+    {
+      "verse_key": "114:1",
+      "text_plain": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ قُلۡ أَعُوذُ بِرَبِّ ٱلنَّاسِ",
+      "text_tajweed_html": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ قُلۡ أَعُوذُ بِرَبِّ<tajweed class=ham_wasl> </tajweed><tajweed class=laam_shamsiyah>ٱ</tajweed><tajweed class=ghunnah>لنّ</tajweed><tajweed class=madda_permissible>َ</tajweed>اسِ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "114:2",
+      "text_plain": "مَلِكِ ٱلنَّاسِ",
+      "text_tajweed_html": "مَلِكِ <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed><tajweed class=ghunnah>نَّ</tajweed><tajweed class=madda_permissible>ا</tajweed>سِ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "114:3",
+      "text_plain": "إِلَـٰهِ ٱلنَّاسِ",
+      "text_tajweed_html": "إِلَ<tajweed class=madda_normal>ـ</tajweed>ٰهِ<tajweed class=ham_wasl> </tajweed><tajweed class=laam_shamsiyah>ٱ</tajweed><tajweed class=ghunnah>لنّ</tajweed><tajweed class=madda_permissible>َ</tajweed>اسِ",
+      "rules_count": 5
+    },
+    {
+      "verse_key": "114:4",
+      "text_plain": "مِن شَرِّ ٱلۡوَسۡوَاسِ ٱلۡخَنَّاسِ",
+      "text_tajweed_html": "مِ<tajweed class=ikhpiaa>ن شَ</tajweed>رِّ <tajweed class=ham_wasl>ٱ</tajweed>لۡوَسۡوَاسِ <tajweed class=ham_wasl>ٱ</tajweed>لۡخَ<tajweed class=ghunnah>نَّ</tajweed><tajweed class=madda_permissible>ا</tajweed>سِ",
+      "rules_count": 5
+    },
+    {
+      "verse_key": "114:5",
+      "text_plain": "ٱلَّذِی یُوَسۡوِسُ فِی صُدُورِ ٱلنَّاسِ",
+      "text_tajweed_html": "ٱلَّذِی یُوَسۡوِسُ فِی صُدُورِ <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed><tajweed class=ghunnah>نَّ</tajweed><tajweed class=madda_permissible>ا</tajweed>سِ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "114:6",
+      "text_plain": "مِنَ ٱلۡجِنَّةِ وَٱلنَّاسِ",
+      "text_tajweed_html": "مِنَ <tajweed class=ham_wasl>ٱ</tajweed>لۡجِ<tajweed class=ghunnah>نَّ</tajweed>ةِ وَ<tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed><tajweed class=ghunnah>نَّ</tajweed><tajweed class=madda_permissible>ا</tajweed>سِ",
+      "rules_count": 6
+    }
+  ]
+}

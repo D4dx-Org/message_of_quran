@@ -1,0 +1,23 @@
+{
+  "surah_number": 108,
+  "verses": [
+    {
+      "verse_key": "108:1",
+      "text_plain": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ إِنَّاۤ أَعۡطَیۡنَـٰكَ ٱلۡكَوۡثَرَ",
+      "text_tajweed_html": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ إ<tajweed class=ghunnah>ِنّ</tajweed><tajweed class=madda_permissible>َا</tajweed>ۤ أَعۡطَیۡن<tajweed class=madda_normal>َ</tajweed>ـٰك<tajweed class=ham_wasl>َ</tajweed> ٱلۡكَوۡثَرَ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "108:2",
+      "text_plain": "فَصَلِّ لِرَبِّكَ وَٱنۡحَرۡ",
+      "text_tajweed_html": "فَصَلِّ لِرَبِّكَ وَ<tajweed class=ham_wasl>ٱ</tajweed>نۡحَرۡ",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "108:3",
+      "text_plain": "إِنَّ شَانِئَكَ هُوَ ٱلۡأَبۡتَرُ",
+      "text_tajweed_html": "إِ<tajweed class=ghunnah>نَّ</tajweed> شَانِئَكَ هُوَ <tajweed class=ham_wasl>ٱ</tajweed>لۡأَ<tajweed class=qalaqala>بۡ</tajweed>تَرُ",
+      "rules_count": 3
+    }
+  ]
+}

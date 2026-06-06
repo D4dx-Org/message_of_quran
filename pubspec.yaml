@@ -96,6 +96,7 @@ flutter:
     - assets/icons/revamp/
     - assets/db/quran_asad_combined_nw.sqlite
     - assets/db/DB.db
+    - assets/db/quran_tajweed_data/output/quran_tajweed_complete.json
     - assets/data/
     - shorebird.yaml
     - assets/fonts/QCF_BSML.TTF

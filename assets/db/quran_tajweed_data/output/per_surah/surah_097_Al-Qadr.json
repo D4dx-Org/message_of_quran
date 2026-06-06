@@ -1,0 +1,25 @@
+{
+  "surah_number": 97,
+  "name": "Al-Qadr",
+  "total_verses": 3,
+  "verses": [
+    {
+      "verse_key": "97:1",
+      "text_plain": "فِیهَا عَیۡنࣱ جَارِیَةࣱ",
+      "text_tajweed_html": "فِیهَا عَیۡن<tajweed class=ikhpiaa>ࣱ جَ</tajweed>ارِیَةࣱ",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "97:2",
+      "text_plain": "فِیهَا سُرُرࣱ مَّرۡفُوعَةࣱ",
+      "text_tajweed_html": "فِیهَا سُرُر<tajweed class=idghaam_ghunnah>ࣱ مَّ</tajweed>رۡفُوعَةࣱ",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "97:3",
+      "text_plain": "وَأَكۡوَابࣱ مَّوۡضُوعَةࣱ",
+      "text_tajweed_html": "وَأَكۡوَاب<tajweed class=idghaam_ghunnah>ࣱ مَّ</tajweed>وۡضُوعَةࣱ",
+      "rules_count": 1
+    }
+  ]
+}

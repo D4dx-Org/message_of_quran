@@ -10,5 +10,6 @@ class AppConstants {
   /// Store URLs appended to ayah share text.
   static const String androidStoreUrl =
       'https://play.google.com/store/apps/details?id=com.d4dx.quranasadmalayalam';
-  static const String iosStoreUrl = '';
+  static const String iosStoreUrl =
+      'https://apps.apple.com/in/app/quran-asad-malayalam/id6773297937';
 }

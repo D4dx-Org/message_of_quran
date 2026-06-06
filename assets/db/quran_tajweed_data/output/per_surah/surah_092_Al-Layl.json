@@ -1,0 +1,55 @@
+{
+  "surah_number": 92,
+  "name": "Al-Layl",
+  "total_verses": 8,
+  "verses": [
+    {
+      "verse_key": "92:1",
+      "text_plain": "وَمَاۤ أَدۡرَىٰكَ مَا ٱلطَّارِقُ",
+      "text_tajweed_html": "وَمَ<tajweed class=madda_permissible>اۤ</tajweed> أَ<tajweed class=qalaqala>دۡ</tajweed>رَى<tajweed class=madda_normal>ٰ</tajweed>كَ مَا <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>طَّارِ<tajweed class=qalaqala>ق</tajweed>ُ",
+      "rules_count": 6
+    },
+    {
+      "verse_key": "92:2",
+      "text_plain": "ٱلنَّجۡمُ ٱلثَّاقِبُ",
+      "text_tajweed_html": "ٱ<tajweed class=laam_shamsiyah>ل</tajweed><tajweed class=ghunnah>نَّ</tajweed><tajweed class=qalaqala>جۡ</tajweed>مُ <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>ثَّاقِ<tajweed class=qalaqala>ب</tajweed>ُ",
+      "rules_count": 6
+    },
+    {
+      "verse_key": "92:3",
+      "text_plain": "إِن كُلُّ نَفۡسࣲ لَّمَّا عَلَیۡهَا حَافِظࣱ",
+      "text_tajweed_html": "إِ<tajweed class=ikhpiaa>ن كُ</tajweed>لُّ نَفۡس<tajweed class=idghaam_wo_ghunnah>ࣲ لَّ</tajweed><tajweed class=ghunnah>مَّ</tajweed>ا عَلَیۡهَا حَافِظࣱ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "92:4",
+      "text_plain": "فَلۡیَنظُرِ ٱلۡإِنسَـٰنُ مِمَّ خُلِقَ",
+      "text_tajweed_html": "فَلۡیَ<tajweed class=ikhpiaa>نظُ</tajweed>رِ <tajweed class=ham_wasl>ٱ</tajweed>لۡإِ<tajweed class=ikhpiaa>نسَ</tajweed><tajweed class=madda_normal>ـ</tajweed>ٰنُ م<tajweed class=ghunnah>ِمّ</tajweed>َ خُل<tajweed class=qalaqala>ِ</tajweed>قَ",
+      "rules_count": 6
+    },
+    {
+      "verse_key": "92:5",
+      "text_plain": "خُلِقَ مِن مَّاۤءࣲ دَافِقࣲ",
+      "text_tajweed_html": "خُلِقَ مِ<tajweed class=idghaam_ghunnah>ن مَّ</tajweed><tajweed class=madda_obligatory>اۤ</tajweed>ء<tajweed class=ikhpiaa>ࣲ دَ</tajweed>افِ<tajweed class=qalaqala>ق</tajweed>ࣲ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "92:6",
+      "text_plain": "یَخۡرُجُ مِنۢ بَیۡنِ ٱلصُّلۡبِ وَٱلتَّرَاۤىِٕبِ",
+      "text_tajweed_html": "یَخۡرُجُ مِن<tajweed class=iqlab>ۢ ب</tajweed>َیۡنِ <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>صُّلۡبِ وَ<tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>تَّرَ<tajweed class=madda_obligatory>اۤ</tajweed>ىٕ<tajweed class=qalaqala>ِ</tajweed>بِ",
+      "rules_count": 7
+    },
+    {
+      "verse_key": "92:7",
+      "text_plain": "إِنَّهُۥ عَلَىٰ رَجۡعِهِۦ لَقَادِرࣱ",
+      "text_tajweed_html": "إِ<tajweed class=ghunnah>نَّ</tajweed>هُ<tajweed class=madda_normal>ۥ</tajweed> عَلَىٰ رَ<tajweed class=qalaqala>جۡ</tajweed>عِهِ<tajweed class=madda_normal>ۦ</tajweed> لَقَادِرࣱ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "92:8",
+      "text_plain": "یَوۡمَ تُبۡلَى ٱلسَّرَاۤىِٕرُ",
+      "text_tajweed_html": "یَوۡمَ تُ<tajweed class=qalaqala>بۡ</tajweed>لَى <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>سَّرَ<tajweed class=madda_obligatory>اۤ</tajweed>ىِٕرُ",
+      "rules_count": 4
+    }
+  ]
+}

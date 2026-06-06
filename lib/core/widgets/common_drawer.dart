@@ -6,7 +6,6 @@ import 'package:the_message_of_the_quran/core/constants/app_constants.dart';
 import 'package:the_message_of_the_quran/core/constants/useful_links.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
-import 'package:the_message_of_the_quran/core/utils/platform_helper.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/d4dx_branding_footer.dart';
 import 'package:the_message_of_the_quran/features/author_screen/author_screen.dart';
@@ -265,9 +264,17 @@ class CommonDrawer extends StatelessWidget {
                           await Future.delayed(
                             const Duration(milliseconds: 300),
                           );
-                          await Share.share(
-                            'Check out Quran Asad Malayalam – a beautiful Quran reader with Malayalam translation.\n${PlatformHelper.publicAppUrl}',
-                          );
+                          final buffer = StringBuffer()
+                            ..writeln(
+                              'Check out Quran Asad Malayalam – a beautiful Quran reader with Malayalam translation.',
+                            )
+                            ..writeln(
+                              'Android : ${AppConstants.androidStoreUrl}',
+                            );
+                          if (AppConstants.iosStoreUrl.isNotEmpty) {
+                            buffer.writeln('iOS : ${AppConstants.iosStoreUrl}');
+                          }
+                          await Share.share(buffer.toString().trimRight());
                         },
                       ),
                       _DrawerTile(

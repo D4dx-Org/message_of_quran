@@ -1,0 +1,53 @@
+{
+  "surah_number": 102,
+  "verses": [
+    {
+      "verse_key": "102:1",
+      "text_plain": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ أَلۡهَىٰكُمُ ٱلتَّكَاثُرُ",
+      "text_tajweed_html": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ أَلۡهَ<tajweed class=madda_normal>ى</tajweed>ٰكُمُ<tajweed class=ham_wasl> </tajweed><tajweed class=laam_shamsiyah>ٱ</tajweed>لتَّكَاثُرُ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "102:2",
+      "text_plain": "حَتَّىٰ زُرۡتُمُ ٱلۡمَقَابِرَ",
+      "text_tajweed_html": "حَتَّىٰ زُرۡتُمُ <tajweed class=ham_wasl>ٱ</tajweed>لۡمَقَابِرَ",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "102:3",
+      "text_plain": "كَلَّا سَوۡفَ تَعۡلَمُونَ",
+      "text_tajweed_html": "كَلَّا سَوۡفَ تَعۡلَمُ<tajweed class=madda_permissible>و</tajweed>نَ",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "102:4",
+      "text_plain": "ثُمَّ كَلَّا سَوۡفَ تَعۡلَمُونَ",
+      "text_tajweed_html": "ثُ<tajweed class=ghunnah>مَّ</tajweed> كَلَّا سَوۡفَ تَعۡلَمُ<tajweed class=madda_permissible>و</tajweed>نَ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "102:5",
+      "text_plain": "كَلَّا لَوۡ تَعۡلَمُونَ عِلۡمَ ٱلۡیَقِینِ",
+      "text_tajweed_html": "كَلَّا لَوۡ تَعۡلَمُونَ عِلۡمَ <tajweed class=ham_wasl>ٱ</tajweed>لۡیَقِ<tajweed class=madda_permissible>ی</tajweed>نِ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "102:6",
+      "text_plain": "لَتَرَوُنَّ ٱلۡجَحِیمَ",
+      "text_tajweed_html": "لَتَرَوُ<tajweed class=ghunnah>نَّ</tajweed> <tajweed class=ham_wasl>ٱ</tajweed>لۡجَحِ<tajweed class=madda_permissible>ی</tajweed>مَ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "102:7",
+      "text_plain": "ثُمَّ لَتَرَوُنَّهَا عَیۡنَ ٱلۡیَقِینِ",
+      "text_tajweed_html": "ثُ<tajweed class=ghunnah>مَّ</tajweed> لَتَرَوُ<tajweed class=ghunnah>نَّ</tajweed>هَا عَیۡنَ <tajweed class=ham_wasl>ٱ</tajweed>لۡیَقِ<tajweed class=madda_permissible>ی</tajweed>نِ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "102:8",
+      "text_plain": "ثُمَّ لَتُسۡـَٔلُنَّ یَوۡمَىِٕذٍ عَنِ ٱلنَّعِیمِ",
+      "text_tajweed_html": "ثُ<tajweed class=ghunnah>مَّ</tajweed> لَتُسۡـَٔلُ<tajweed class=ghunnah>نَّ</tajweed> یَوۡمَىِٕذٍ عَنِ<tajweed class=ham_wasl> </tajweed><tajweed class=laam_shamsiyah>ٱ</tajweed><tajweed class=ghunnah>لنّ</tajweed>َع<tajweed class=madda_permissible>ِ</tajweed>یمِ",
+      "rules_count": 6
+    }
+  ]
+}

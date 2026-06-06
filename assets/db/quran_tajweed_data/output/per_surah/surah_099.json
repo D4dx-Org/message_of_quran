@@ -1,0 +1,53 @@
+{
+  "surah_number": 99,
+  "verses": [
+    {
+      "verse_key": "99:1",
+      "text_plain": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ إِذَا زُلۡزِلَتِ ٱلۡأَرۡضُ زِلۡزَالَهَا",
+      "text_tajweed_html": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ إِذَا زُلۡزِلَتِ<tajweed class=ham_wasl> </tajweed>ٱلۡأَرۡضُ زِلۡزَالَهَا",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "99:2",
+      "text_plain": "وَأَخۡرَجَتِ ٱلۡأَرۡضُ أَثۡقَالَهَا",
+      "text_tajweed_html": "وَأَخۡرَجَتِ <tajweed class=ham_wasl>ٱ</tajweed>لۡأَرۡضُ أَثۡقَالَهَا",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "99:3",
+      "text_plain": "وَقَالَ ٱلۡإِنسَـٰنُ مَا لَهَا",
+      "text_tajweed_html": "وَقَالَ <tajweed class=ham_wasl>ٱ</tajweed>لۡإِ<tajweed class=ikhpiaa>نسَ</tajweed><tajweed class=madda_normal>ـ</tajweed>ٰنُ مَا لَهَا",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "99:4",
+      "text_plain": "یَوۡمَىِٕذࣲ تُحَدِّثُ أَخۡبَارَهَا",
+      "text_tajweed_html": "یَوۡمَىِٕ<tajweed class=ikhpiaa>ذࣲ ت</tajweed>ُحَدِّثُ أَخۡبَارَهَا",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "99:5",
+      "text_plain": "بِأَنَّ رَبَّكَ أَوۡحَىٰ لَهَا",
+      "text_tajweed_html": "بِأَ<tajweed class=ghunnah>نَّ</tajweed> رَبَّكَ أَوۡحَىٰ لَهَا",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "99:6",
+      "text_plain": "یَوۡمَىِٕذࣲ یَصۡدُرُ ٱلنَّاسُ أَشۡتَاتࣰا لِّیُرَوۡا۟ أَعۡمَـٰلَهُمۡ",
+      "text_tajweed_html": "یَوۡمَىِٕ<tajweed class=idghaam_ghunnah>ذࣲ ی</tajweed>َصۡدُرُ<tajweed class=ham_wasl> </tajweed><tajweed class=laam_shamsiyah>ٱ</tajweed><tajweed class=ghunnah>لنّ</tajweed>َاسُ أَشۡتَا<tajweed class=idghaam_wo_ghunnah>تࣰا لّ</tajweed>ِیُرَو<tajweed class=silent>ۡا</tajweed>۟ أَعۡم<tajweed class=madda_normal>َ</tajweed>ـٰلَهُمۡ",
+      "rules_count": 7
+    },
+    {
+      "verse_key": "99:7",
+      "text_plain": "فَمَن یَعۡمَلۡ مِثۡقَالَ ذَرَّةٍ خَیۡرࣰا یَرَهُۥ",
+      "text_tajweed_html": "فَمَ<tajweed class=idghaam_ghunnah>ن یَ</tajweed>عۡمَلۡ مِثۡقَالَ ذَرَّةٍ خَیۡر<tajweed class=idghaam_ghunnah>ࣰا یَ</tajweed>رَهُۥ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "99:8",
+      "text_plain": "وَمَن یَعۡمَلۡ مِثۡقَالَ ذَرَّةࣲ شَرࣰّا یَرَهُۥ",
+      "text_tajweed_html": "وَمَ<tajweed class=idghaam_ghunnah>ن یَ</tajweed>عۡمَلۡ مِثۡقَالَ ذَرَّة<tajweed class=ikhpiaa>ࣲ شَ</tajweed>رّ<tajweed class=idghaam_ghunnah>ࣰا یَ</tajweed>رَهُۥ",
+      "rules_count": 3
+    }
+  ]
+}

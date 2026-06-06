@@ -1,0 +1,25 @@
+{
+  "surah_number": 102,
+  "name": "At-Takathur",
+  "total_verses": 3,
+  "verses": [
+    {
+      "verse_key": "102:1",
+      "text_plain": "إِنَّ رَبَّكَ لَبِٱلۡمِرۡصَادِ",
+      "text_tajweed_html": "إِ<tajweed class=ghunnah>نَّ</tajweed> رَبَّكَ لَبِ<tajweed class=ham_wasl>ٱ</tajweed>لۡمِرۡصَ<tajweed class=madda_permissible>ا</tajweed><tajweed class=qalaqala>د</tajweed>ِ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "102:2",
+      "text_plain": "فَأَمَّا ٱلۡإِنسَـٰنُ إِذَا مَا ٱبۡتَلَىٰهُ رَبُّهُۥ فَأَكۡرَمَهُۥ وَنَعَّمَهُۥ فَیَقُولُ رَبِّیۤ أَكۡرَمَنِ",
+      "text_tajweed_html": "فَأَ<tajweed class=ghunnah>مَّ</tajweed>ا <tajweed class=ham_wasl>ٱ</tajweed>لۡإِ<tajweed class=ikhpiaa>نسَ</tajweed><tajweed class=madda_normal>ـ</tajweed>ٰنُ إِذَا مَا<tajweed class=ham_wasl> </tajweed><tajweed class=qalaqala>ٱب</tajweed>ۡتَلَ<tajweed class=madda_normal>ى</tajweed>ٰهُ رَبُّه<tajweed class=madda_normal>ُ</tajweed>ۥ فَأَكۡرَمَه<tajweed class=madda_normal>ُ</tajweed>ۥ وَنَعَّمَه<tajweed class=madda_normal>ُ</tajweed>ۥ فَیَقُولُ رَبّ<tajweed class=madda_permissible>ِی</tajweed>ۤ أَكۡرَمَنِ",
+      "rules_count": 11
+    },
+    {
+      "verse_key": "102:3",
+      "text_plain": "وَأَمَّاۤ إِذَا مَا ٱبۡتَلَىٰهُ فَقَدَرَ عَلَیۡهِ رِزۡقَهُۥ فَیَقُولُ رَبِّیۤ أَهَـٰنَنِ",
+      "text_tajweed_html": "وَأَ<tajweed class=ghunnah>مَّ</tajweed><tajweed class=madda_permissible>اۤ</tajweed> إِذَا مَا <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=qalaqala>بۡ</tajweed>تَلَى<tajweed class=madda_normal>ٰ</tajweed>هُ فَقَدَرَ عَلَیۡهِ رِزۡقَهُ<tajweed class=madda_normal>ۥ</tajweed> فَیَقُولُ رَبِّ<tajweed class=madda_permissible>یۤ</tajweed> أَهَ<tajweed class=madda_normal>ـ</tajweed>ٰنَنِ",
+      "rules_count": 8
+    }
+  ]
+}

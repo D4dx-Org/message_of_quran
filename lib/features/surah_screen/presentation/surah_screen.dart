@@ -15,6 +15,7 @@ import 'package:the_message_of_the_quran/core/models/translation_block_model.dar
 import 'package:the_message_of_the_quran/core/services/database/database_helper.dart';
 import 'package:the_message_of_the_quran/core/services/database/preface_db_helper.dart';
 import 'package:the_message_of_the_quran/core/services/database/tajweed_db_helper.dart';
+import 'package:the_message_of_the_quran/core/services/tajweed_html_service.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
@@ -2448,9 +2449,8 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                                           ctx,
                                                                                         )
                                                                                         .quranJustify;
-                                                                                if (tajweed.enabled &&
-                                                                                    tajweed.downloadComplete) {
-                                                                                  return _TajweedWordRow(
+                                                                                if (tajweed.enabled) {
+                                                                                  return _TajweedHtmlText(
                                                                                     surahNo: surahNumber,
                                                                                     verseFrom: ayaStart,
                                                                                     verseTo: ayaEnd,
@@ -2965,13 +2965,100 @@ class _SurahScreenState extends State<SurahScreen> {
   }
 }
 
+// ── Tajweed coloured-HTML text (bundled quran.com data) ──────────────────────
+
+class _TajweedHtmlText extends StatefulWidget {
+  const _TajweedHtmlText({
+    required this.surahNo,
+    required this.verseFrom,
+    required this.verseTo,
+    this.playingAyahId,
+  });
+
+  final int surahNo;
+  final int verseFrom;
+  final int verseTo;
+  final int? playingAyahId;
+
+  @override
+  State<_TajweedHtmlText> createState() => _TajweedHtmlTextState();
+}
+
+class _TajweedHtmlTextState extends State<_TajweedHtmlText> {
+  bool _loaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    TajweedHtmlService.ensureLoaded().then((_) {
+      if (mounted) setState(() => _loaded = true);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final fontProvider = Provider.of<FontSizeChangerProvider>(context);
+    final quranJustify = fontProvider.quranJustify;
+    final baseStyle = AppTextTheme.surahArabiStyle(context);
+
+    if (!_loaded) {
+      return SizedBox(
+        height: baseStyle.fontSize ?? 22,
+        child: const Center(
+          child: SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+      );
+    }
+
+    final spans = <InlineSpan>[];
+    for (var ayah = widget.verseFrom; ayah <= widget.verseTo; ayah++) {
+      final html = TajweedHtmlService.htmlFor(widget.surahNo, ayah);
+      if (html == null) continue;
+      final isPlaying = widget.playingAyahId == ayah;
+      final ayahStyle = isPlaying
+          ? baseStyle.copyWith(backgroundColor: AppTheme.appIconTheme.withValues(alpha: 0.15))
+          : baseStyle;
+      spans.addAll(parseTajweedHtml(html, ayahStyle));
+      // Ayah-end marker, matching the Arabic ornamental parentheses used in the
+      // normal Arabic view (U+FD3E ﴾ ... U+FD3F ﴿).
+      spans.add(
+        TextSpan(
+          text: ' \uFD3E${_toArabicNumerals(ayah)}\uFD3F ',
+          style: baseStyle.copyWith(
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
+      );
+    }
+
+    if (spans.isEmpty) return const SizedBox.shrink();
+
+    return Text.rich(
+      TextSpan(children: spans),
+      textDirection: TextDirection.rtl,
+      textAlign: quranJustify ? TextAlign.justify : TextAlign.start,
+      textHeightBehavior: const TextHeightBehavior(
+        applyHeightToFirstAscent: false,
+        applyHeightToLastDescent: false,
+      ),
+    );
+  }
+}
+
 // ── Tajweed word-image row ────────────────────────────────────────────────────
+// NOTE: Currently unused. The Tajweed feature now renders via _TajweedHtmlText
+// (bundled colour-coded data). Kept temporarily; may be removed later.
 
 class _TajweedWordRow extends StatefulWidget {
   const _TajweedWordRow({
     required this.surahNo,
     required this.verseFrom,
     required this.verseTo,
+    // ignore: unused_element_parameter
     this.playingAyahId,
   });
 

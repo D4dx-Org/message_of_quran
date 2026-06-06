@@ -1,0 +1,37 @@
+{
+  "surah_number": 107,
+  "name": "Al-Maun",
+  "total_verses": 5,
+  "verses": [
+    {
+      "verse_key": "107:1",
+      "text_plain": "أَیَحۡسَبُ أَن لَّن یَقۡدِرَ عَلَیۡهِ أَحَدࣱ",
+      "text_tajweed_html": "أَیَحۡسَبُ أَ<tajweed class=idghaam_wo_ghunnah>ن لَّ</tajweed><tajweed class=idghaam_ghunnah>ن یَ</tajweed><tajweed class=qalaqala>قۡ</tajweed>دِرَ عَلَیۡهِ أَحَ<tajweed class=qalaqala>د</tajweed>ࣱ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "107:2",
+      "text_plain": "یَقُولُ أَهۡلَكۡتُ مَالࣰا لُّبَدًا",
+      "text_tajweed_html": "یَقُولُ أَهۡلَكۡتُ مَال<tajweed class=idghaam_wo_ghunnah>ࣰا لُّ</tajweed>بَدًا",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "107:3",
+      "text_plain": "أَیَحۡسَبُ أَن لَّمۡ یَرَهُۥۤ أَحَدٌ",
+      "text_tajweed_html": "أَیَحۡسَبُ أَ<tajweed class=idghaam_wo_ghunnah>ن لَّ</tajweed>مۡ یَرَهُ<tajweed class=madda_permissible>ۥۤ</tajweed> أَحَ<tajweed class=qalaqala>د</tajweed>ٌ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "107:4",
+      "text_plain": "أَلَمۡ نَجۡعَل لَّهُۥ عَیۡنَیۡنِ",
+      "text_tajweed_html": "أَلَمۡ نَ<tajweed class=qalaqala>جۡ</tajweed>عَل لَّهُ<tajweed class=madda_normal>ۥ</tajweed> عَیۡنَ<tajweed class=madda_permissible>ی</tajweed>ۡنِ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "107:5",
+      "text_plain": "وَلِسَانࣰا وَشَفَتَیۡنِ",
+      "text_tajweed_html": "وَلِسَان<tajweed class=idghaam_ghunnah>ࣰا وَ</tajweed>شَفَتَ<tajweed class=madda_permissible>ی</tajweed>ۡنِ",
+      "rules_count": 2
+    }
+  ]
+}

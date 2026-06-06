@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../data/mushaf_repository.dart';
 import '../models/mushaf_line.dart';
@@ -6,7 +9,10 @@ import '../models/page_meta.dart';
 import '../services/mushaf_download_manager.dart';
 import '../services/qcf_font_service.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/theme/app_text_theme.dart';
+import '../../../core/services/tajweed_html_service.dart';
 import '../../../core/widgets/pinch_zoom_view.dart';
+import '../../settings_screen/providers/tajweed_provider.dart';
 import '../utils/mushaf_text_utils.dart';
 
 const _kSecondaryDarkColor = AppTheme.appIconTheme;
@@ -54,6 +60,10 @@ class _MushafPageViewState extends State<MushafPageView> {
   String? _suraGlyph;
   bool _loading = true;
   String? _error;
+
+  /// Ayas belonging to this page (continuous id + sura/aya number), used by the
+  /// Tajweed reading mode to render colour-coded plain Arabic.
+  List<({int ayaId, int suraNo, int ayaNo})> _pageAyas = const [];
 
   Color _textColor = Colors.black;
   Color _highlightColor = _kSecondaryDarkColor;
@@ -117,11 +127,32 @@ class _MushafPageViewState extends State<MushafPageView> {
       _rebuild.value++;
 
       _fontService.preloadAdjacent(widget.pageNo);
+
+      // Load the page's ayas + Tajweed data lazily so the colour-coded reading
+      // mode is ready if the user has Tajweed enabled. Failures are non-fatal.
+      if (meta != null) {
+        unawaited(_loadTajweedData(meta));
+      }
     } catch (e) {
       if (!mounted) return;
       _loading = false;
       _error = e.toString();
       _rebuild.value++;
+    }
+  }
+
+  Future<void> _loadTajweedData(PageMeta meta) async {
+    try {
+      final results = await Future.wait([
+        widget.repository.getPageAyas(meta.startAya, meta.endAya),
+        TajweedHtmlService.ensureLoaded(),
+      ]);
+      if (!mounted) return;
+      _pageAyas =
+          results[0] as List<({int ayaId, int suraNo, int ayaNo})>;
+      _rebuild.value++;
+    } catch (_) {
+      // Tajweed data is optional; ignore failures and fall back to QCF.
     }
   }
 
@@ -194,10 +225,19 @@ class _MushafPageViewState extends State<MushafPageView> {
       return Center(child: Text('No data for page ${widget.pageNo}'));
     }
 
-    return _buildPage(context, lines);
+    // When Tajweed is enabled, render the page's verses as colour-coded plain
+    // Arabic (same verses/pages, reflowed) instead of the QCF page glyphs.
+    final tajweedEnabled =
+        context.watch<TajweedProvider>().enabled && _pageAyas.isNotEmpty;
+
+    return _buildPage(context, lines, tajweedEnabled: tajweedEnabled);
   }
 
-  Widget _buildPage(BuildContext context, List<MushafLine> lines) {
+  Widget _buildPage(
+    BuildContext context,
+    List<MushafLine> lines, {
+    bool tajweedEnabled = false,
+  }) {
     final screenSize = MediaQuery.of(context).size;
     final isFirstTwoPages = widget.pageNo == 1 || widget.pageNo == 2;
     final lineCount = lines.length;
@@ -215,6 +255,7 @@ class _MushafPageViewState extends State<MushafPageView> {
     final List<Widget> topWidgets = [];
     var insertedBeforeFirstAya = false;
     bool tooltipPlaced = false;
+    int? tajweedSectionSura;
 
     if (isSpecialPage) lineWidgets.add(const SizedBox(height: 8));
 
@@ -227,6 +268,7 @@ class _MushafPageViewState extends State<MushafPageView> {
           lineWidgets.add(_buildSuraHeading(line, textSizes));
         }
         sectionFirstLineId = null;
+        tajweedSectionSura = null;
       } else if (line.lineId == 0) {
         lineWidgets.add(_buildBismillahLine(line, textSizes));
       } else {
@@ -234,6 +276,21 @@ class _MushafPageViewState extends State<MushafPageView> {
           lineWidgets.add(widget.beforeFirstAya!);
           insertedBeforeFirstAya = true;
         }
+
+        // Tajweed reading mode: emit each sura-section's verses once as a single
+        // colour-coded paragraph, skipping the per-line QCF rendering.
+        if (tajweedEnabled) {
+          if (tajweedSectionSura != line.suraId) {
+            tajweedSectionSura = line.suraId;
+            final sectionAyas =
+                _pageAyas.where((a) => a.suraNo == line.suraId).toList();
+            if (sectionAyas.isNotEmpty) {
+              lineWidgets.add(_buildTajweedSection(sectionAyas, textSizes));
+            }
+          }
+          continue;
+        }
+
         if (sectionFirstLineId == null) {
           sectionFirstLineId = line.lineId;
           sectionStartAya = nextAyaId;
@@ -282,20 +339,43 @@ class _MushafPageViewState extends State<MushafPageView> {
               Expanded(
                 child: PinchZoomView(
                   child: Center(
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            if (isLandscape && isFirstTwoPages)
-                              const SizedBox(height: kToolbarHeight),
-                            if (isLandscape && isFirstTwoPages) ...topWidgets,
-                            ...lineWidgets,
-                          ],
-                        ),
-                      ),
-                    ),
+                    child: tajweedEnabled
+                        ? Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: LayoutBuilder(
+                              builder: (context, constraints) => FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: SizedBox(
+                                  width: constraints.maxWidth,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      if (isLandscape && isFirstTwoPages)
+                                        const SizedBox(height: kToolbarHeight),
+                                      if (isLandscape && isFirstTwoPages)
+                                        ...topWidgets,
+                                      ...lineWidgets,
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        : SingleChildScrollView(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  if (isLandscape && isFirstTwoPages)
+                                    const SizedBox(height: kToolbarHeight),
+                                  if (isLandscape && isFirstTwoPages) ...topWidgets,
+                                  ...lineWidgets,
+                                ],
+                              ),
+                            ),
+                          ),
                   ),
                 ),
               ),
@@ -423,6 +503,63 @@ class _MushafPageViewState extends State<MushafPageView> {
         ),
       ),
     );
+  }
+
+  /// Builds one colour-coded Tajweed paragraph for all of a sura's [ayas] on the
+  /// current page. Used only when Tajweed is enabled (reflowed plain Arabic).
+  Widget _buildTajweedSection(
+    List<({int ayaId, int suraNo, int ayaNo})> ayas,
+    _TextSizes sizes,
+  ) {
+    final baseStyle = AppTextTheme.surahArabiStyle(context).copyWith(
+      fontSize: sizes.ayaTextSize,
+      height: sizes.lineHeightFactor,
+      color: _textColor,
+    );
+
+    final spans = <InlineSpan>[];
+    for (final aya in ayas) {
+      final html = TajweedHtmlService.htmlFor(aya.suraNo, aya.ayaNo);
+      if (html == null) continue;
+      final isActive =
+          widget.playingAyaId == aya.ayaId || widget.selectedAyaId == aya.ayaId;
+      final ayaStyle = isActive
+          ? baseStyle.copyWith(
+              backgroundColor: _highlightColor.withValues(alpha: 0.15),
+            )
+          : baseStyle;
+      spans.addAll(parseTajweedHtml(html, ayaStyle));
+      spans.add(
+        TextSpan(
+          text: ' \uFD3E${_toArabicNumerals(aya.ayaNo)}\uFD3F ',
+          style: baseStyle.copyWith(color: _highlightColor),
+        ),
+      );
+    }
+
+    if (spans.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+      child: Text.rich(
+        TextSpan(children: spans),
+        textDirection: TextDirection.rtl,
+        textAlign: TextAlign.justify,
+        textHeightBehavior: const TextHeightBehavior(
+          applyHeightToFirstAscent: false,
+          applyHeightToLastDescent: false,
+        ),
+      ),
+    );
+  }
+
+  String _toArabicNumerals(int number) {
+    const arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+    return number
+        .toString()
+        .split('')
+        .map((d) => arabic[int.parse(d)])
+        .join();
   }
 
   _AyaLineResult _buildAyaLine(

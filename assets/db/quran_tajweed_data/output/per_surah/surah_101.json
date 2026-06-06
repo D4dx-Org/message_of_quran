@@ -1,0 +1,71 @@
+{
+  "surah_number": 101,
+  "verses": [
+    {
+      "verse_key": "101:1",
+      "text_plain": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ ٱلۡقَارِعَةُ",
+      "text_tajweed_html": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ ٱلۡقَارِعَةُ",
+      "rules_count": 0
+    },
+    {
+      "verse_key": "101:2",
+      "text_plain": "مَا ٱلۡقَارِعَةُ",
+      "text_tajweed_html": "مَا <tajweed class=ham_wasl>ٱ</tajweed>لۡقَارِعَةُ",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "101:3",
+      "text_plain": "وَمَاۤ أَدۡرَىٰكَ مَا ٱلۡقَارِعَةُ",
+      "text_tajweed_html": "وَمَ<tajweed class=madda_permissible>اۤ</tajweed> أَ<tajweed class=qalaqala>دۡ</tajweed>رَى<tajweed class=madda_normal>ٰ</tajweed>كَ مَا <tajweed class=ham_wasl>ٱ</tajweed>لۡقَارِعَةُ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "101:4",
+      "text_plain": "یَوۡمَ یَكُونُ ٱلنَّاسُ كَٱلۡفَرَاشِ ٱلۡمَبۡثُوثِ",
+      "text_tajweed_html": "یَوۡمَ یَكُونُ <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed><tajweed class=ghunnah>نَّ</tajweed>اسُ كَ<tajweed class=ham_wasl>ٱ</tajweed>لۡفَرَاشِ <tajweed class=ham_wasl>ٱ</tajweed>لۡمَ<tajweed class=qalaqala>بۡ</tajweed>ثُ<tajweed class=madda_permissible>و</tajweed>ثِ",
+      "rules_count": 7
+    },
+    {
+      "verse_key": "101:5",
+      "text_plain": "وَتَكُونُ ٱلۡجِبَالُ كَٱلۡعِهۡنِ ٱلۡمَنفُوشِ",
+      "text_tajweed_html": "وَتَكُونُ <tajweed class=ham_wasl>ٱ</tajweed>لۡجِبَالُ كَ<tajweed class=ham_wasl>ٱ</tajweed>لۡعِهۡنِ <tajweed class=ham_wasl>ٱ</tajweed>لۡمَ<tajweed class=ikhpiaa>نفُ</tajweed><tajweed class=madda_permissible>و</tajweed>شِ",
+      "rules_count": 5
+    },
+    {
+      "verse_key": "101:6",
+      "text_plain": "فَأَمَّا مَن ثَقُلَتۡ مَوَ ٰ⁠زِینُهُۥ",
+      "text_tajweed_html": "فَأَ<tajweed class=ghunnah>مَّ</tajweed>ا مَ<tajweed class=ikhpiaa>ن ثَ</tajweed>قُلَتۡ مَوَ<tajweed class=madda_normal> </tajweed>ٰ⁠زِینُهُۥ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "101:7",
+      "text_plain": "فَهُوَ فِی عِیشَةࣲ رَّاضِیَةࣲ",
+      "text_tajweed_html": "فَهُوَ فِی عِیشَة<tajweed class=idghaam_wo_ghunnah>ࣲ رَّ</tajweed>اضِیَةࣲ",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "101:8",
+      "text_plain": "وَأَمَّا مَنۡ خَفَّتۡ مَوَ ٰ⁠زِینُهُۥ",
+      "text_tajweed_html": "وَأَ<tajweed class=ghunnah>مَّ</tajweed>ا مَنۡ خَفَّتۡ مَوَ<tajweed class=madda_normal> </tajweed>ٰ⁠زِینُهُۥ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "101:9",
+      "text_plain": "فَأُمُّهُۥ هَاوِیَةࣱ",
+      "text_tajweed_html": "فَأُ<tajweed class=ghunnah>مُّ</tajweed>هُ<tajweed class=madda_normal>ۥ</tajweed> هَاوِیَةࣱ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "101:10",
+      "text_plain": "وَمَاۤ أَدۡرَىٰكَ مَا هِیَهۡ",
+      "text_tajweed_html": "وَمَ<tajweed class=madda_permissible>اۤ</tajweed> أَ<tajweed class=qalaqala>دۡ</tajweed>رَى<tajweed class=madda_normal>ٰ</tajweed>كَ مَا هِیَهۡ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "101:11",
+      "text_plain": "نَارٌ حَامِیَةُۢ",
+      "text_tajweed_html": "نَارٌ حَامِیَةُۢ",
+      "rules_count": 0
+    }
+  ]
+}

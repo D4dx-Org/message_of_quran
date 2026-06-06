@@ -1,0 +1,781 @@
+{
+  "surah_number": 9,
+  "name": "At-Tawbah",
+  "total_verses": 129,
+  "verses": [
+    {
+      "verse_key": "9:1",
+      "text_plain": "بَرَاۤءَةࣱ مِّنَ ٱللَّهِ وَرَسُولِهِۦۤ إِلَى ٱلَّذِینَ عَـٰهَدتُّم مِّنَ ٱلۡمُشۡرِكِینَ",
+      "text_tajweed_html": "بَرَ<tajweed class=madda_obligatory>اۤ</tajweed>ءَة<tajweed class=idghaam_ghunnah>ࣱ مِّ</tajweed>نَ <tajweed class=ham_wasl>ٱ</tajweed>للَّهِ وَرَسُولِهِ<tajweed class=madda_permissible>ۦۤ</tajweed> إِلَى <tajweed class=ham_wasl>ٱ</tajweed>لَّذِینَ عَ<tajweed class=madda_normal>ـ</tajweed>ٰه<tajweed class=idghaam_mutajanisayn>َ</tajweed>دتّ<tajweed class=idghaam_shafawi>ُم مّ</tajweed>ِنَ<tajweed class=ham_wasl> </tajweed>ٱلۡمُشۡرِك<tajweed class=madda_permissible>ِ</tajweed>ینَ",
+      "rules_count": 10
+    },
+    {
+      "verse_key": "9:2",
+      "text_plain": "فَسِیحُوا۟ فِی ٱلۡأَرۡضِ أَرۡبَعَةَ أَشۡهُرࣲ وَٱعۡلَمُوۤا۟ أَنَّكُمۡ غَیۡرُ مُعۡجِزِی ٱللَّهِ وَأَنَّ ٱللَّهَ مُخۡزِی ٱلۡكَـٰفِرِینَ",
+      "text_tajweed_html": "فَسِیحُو<tajweed class=silent>ا۟</tajweed> فِی <tajweed class=ham_wasl>ٱ</tajweed>لۡأَرۡضِ أَرۡبَعَةَ أَشۡهُر<tajweed class=idghaam_ghunnah>ࣲ وَ</tajweed><tajweed class=ham_wasl>ٱ</tajweed>عۡلَمُ<tajweed class=madda_permissible>وۤ</tajweed><tajweed class=silent>ا۟</tajweed> أَ<tajweed class=ghunnah>نَّ</tajweed>كُمۡ غَیۡرُ مُعۡجِزِی <tajweed class=ham_wasl>ٱ</tajweed>للَّهِ وَأَ<tajweed class=ghunnah>نَّ</tajweed> <tajweed class=ham_wasl>ٱ</tajweed>للَّهَ مُخۡزِی <tajweed class=ham_wasl>ٱ</tajweed>لۡكَ<tajweed class=madda_normal>ـ</tajweed>ٰفِر<tajweed class=madda_permissible>ِ</tajweed>ینَ",
+      "rules_count": 13
+    },
+    {
+      "verse_key": "9:3",
+      "text_plain": "وَأَذَ ٰ⁠نࣱ مِّنَ ٱللَّهِ وَرَسُولِهِۦۤ إِلَى ٱلنَّاسِ یَوۡمَ ٱلۡحَجِّ ٱلۡأَكۡبَرِ أَنَّ ٱللَّهَ بَرِیۤءࣱ مِّنَ ٱلۡمُشۡرِكِینَ وَرَسُولُهُۥۚ فَإِن تُبۡتُمۡ فَهُوَ خَیۡرࣱ لَّكُمۡۖ وَإِن تَوَلَّیۡتُمۡ فَٱعۡلَمُوۤا۟ أَنَّكُمۡ غَیۡرُ مُعۡجِزِی ٱللَّهِۗ وَبَشِّرِ ٱلَّذِینَ كَفَرُوا۟ بِعَذَابٍ أَلِیمٍ",
+      "text_tajweed_html": "وَأَذَ<tajweed class=madda_normal> </tajweed>ٰ<tajweed class=idghaam_ghunnah>⁠نࣱ م</tajweed>ِّن<tajweed class=ham_wasl>َ</tajweed> ٱللَّهِ وَرَسُولِ<tajweed class=madda_permissible>هِ</tajweed>ۦۤ إِلَ<tajweed class=ham_wasl>ى</tajweed><tajweed class=laam_shamsiyah> </tajweed><tajweed class=ghunnah>ٱلن</tajweed>َّاسِ یَوۡم<tajweed class=ham_wasl>َ</tajweed> ٱلۡحَجّ<tajweed class=ham_wasl>ِ</tajweed> ٱلۡأَكۡبَرِ <tajweed class=ghunnah>أَن</tajweed>ّ<tajweed class=ham_wasl>َ</tajweed> ٱللَّهَ بَ<tajweed class=madda_obligatory>رِ</tajweed>ی<tajweed class=idghaam_ghunnah>ۤءࣱ م</tajweed>ِّن<tajweed class=ham_wasl>َ</tajweed> ٱلۡمُشۡرِكِینَ وَرَسُولُ<tajweed class=madda_normal>ه</tajweed>ُۥۚ ف<tajweed class=ikhpiaa>َإِن</tajweed><tajweed class=qalaqala> ت</tajweed>ُبۡتُمۡ فَهُوَ خَ<tajweed class=idghaam_wo_ghunnah>یۡرࣱ </tajweed>لَّكُمۡۖ <tajweed class=ikhpiaa>وَإِ</tajweed>ن تَوَلَّیۡتُم<tajweed class=ham_wasl>ۡ</tajweed> فَٱعۡ<tajweed class=madda_permissible>لَ</tajweed><tajweed class=silent>مُ</tajweed>وۤا<tajweed class=ghunnah>۟ أ</tajweed>َنَّكُمۡ غَیۡرُ مُعۡجِ<tajweed class=ham_wasl>ز</tajweed>ِی ٱللَّهِۗ وَبَش<tajweed class=ham_wasl>ّ</tajweed>ِرِ ٱلَّذِینَ كَ<tajweed class=silent>فَ</tajweed>رُوا۟ بِعَذَابٍ<tajweed class=madda_permissible> </tajweed>أَلِیمٍ",
+      "rules_count": 27
+    },
+    {
+      "verse_key": "9:4",
+      "text_plain": "إِلَّا ٱلَّذِینَ عَـٰهَدتُّم مِّنَ ٱلۡمُشۡرِكِینَ ثُمَّ لَمۡ یَنقُصُوكُمۡ شَیۡـࣰٔا وَلَمۡ یُظَـٰهِرُوا۟ عَلَیۡكُمۡ أَحَدࣰا فَأَتِمُّوۤا۟ إِلَیۡهِمۡ عَهۡدَهُمۡ إِلَىٰ مُدَّتِهِمۡۚ إِنَّ ٱللَّهَ یُحِبُّ ٱلۡمُتَّقِینَ",
+      "text_tajweed_html": "إِلَّا <tajweed class=ham_wasl>ٱ</tajweed>لَّذِینَ عَ<tajweed class=madda_normal>ـ</tajweed>ٰه<tajweed class=idghaam_mutajanisayn>َ</tajweed>دتّ<tajweed class=idghaam_shafawi>ُم مّ</tajweed>ِنَ<tajweed class=ham_wasl> </tajweed>ٱلۡمُشۡرِكِینَ ث<tajweed class=ghunnah>ُمّ</tajweed>َ لَمۡ ی<tajweed class=ikhpiaa>َنق</tajweed>ُصُوكُمۡ شَیۡـ<tajweed class=idghaam_ghunnah>ࣰٔا و</tajweed>َلَمۡ یُظ<tajweed class=madda_normal>َ</tajweed>ـٰهِر<tajweed class=silent>ُو</tajweed>ا۟ عَلَیۡكُمۡ أَح<tajweed class=ikhpiaa>َدࣰا </tajweed>فَأَ<tajweed class=ghunnah>تِم</tajweed><tajweed class=madda_permissible>ُّ</tajweed><tajweed class=silent>وۤ</tajweed>ا۟ إِلَیۡهِمۡ عَهۡدَهُمۡ إِلَىٰ مُدَّتِهِمۡۚ<tajweed class=ghunnah> إِ</tajweed>ن<tajweed class=ham_wasl>ّ</tajweed>َ ٱللَّهَ یُحِب<tajweed class=ham_wasl>ّ</tajweed>ُ ٱلۡمُتّ<tajweed class=madda_permissible>َ</tajweed>قِینَ",
+      "rules_count": 18
+    },
+    {
+      "verse_key": "9:5",
+      "text_plain": "فَإِذَا ٱنسَلَخَ ٱلۡأَشۡهُرُ ٱلۡحُرُمُ فَٱقۡتُلُوا۟ ٱلۡمُشۡرِكِینَ حَیۡثُ وَجَدتُّمُوهُمۡ وَخُذُوهُمۡ وَٱحۡصُرُوهُمۡ وَٱقۡعُدُوا۟ لَهُمۡ كُلَّ مَرۡصَدࣲۚ فَإِن تَابُوا۟ وَأَقَامُوا۟ ٱلصَّلَوٰةَ وَءَاتَوُا۟ ٱلزَّكَوٰةَ فَخَلُّوا۟ سَبِیلَهُمۡۚ إِنَّ ٱللَّهَ غَفُورࣱ رَّحِیمࣱ",
+      "text_tajweed_html": "فَإِذَا <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=ikhpiaa>نسَ</tajweed>لَخَ <tajweed class=ham_wasl>ٱ</tajweed>لۡأَشۡهُرُ <tajweed class=ham_wasl>ٱ</tajweed>لۡحُرُمُ فَ<tajweed class=ham_wasl>ٱ</tajweed><tajweed class=qalaqala>قۡ</tajweed>تُلُو<tajweed class=silent>ا۟</tajweed> <tajweed class=ham_wasl>ٱ</tajweed>لۡمُشۡرِكِینَ حَیۡثُ وَجَ<tajweed class=idghaam_mutajanisayn>د</tajweed>تُّمُوهُمۡ وَخُذُوهُمۡ وَ<tajweed class=ham_wasl>ٱ</tajweed>حۡصُرُوهُمۡ وَ<tajweed class=ham_wasl>ٱ</tajweed><tajweed class=qalaqala>قۡ</tajweed>عُدُو<tajweed class=silent>ا۟</tajweed> لَهُمۡ كُلَّ مَرۡصَد<tajweed class=ikhpiaa>ࣲۚ ف</tajweed>َإ<tajweed class=ikhpiaa>ِن ت</tajweed>َابُ<tajweed class=silent>وا</tajweed>۟ وَأَقَامُ<tajweed class=silent>وا</tajweed>۟<tajweed class=ham_wasl> </tajweed><tajweed class=laam_shamsiyah>ٱ</tajweed>لصَّل<tajweed class=silent>َ</tajweed><tajweed class=madda_normal>و</tajweed>ٰةَ وَءَاتَو<tajweed class=silent>ُا</tajweed>۟<tajweed class=ham_wasl> </tajweed><tajweed class=laam_shamsiyah>ٱ</tajweed>لزَّك<tajweed class=silent>َ</tajweed><tajweed class=madda_normal>و</tajweed>ٰةَ فَخَلُّ<tajweed class=silent>وا</tajweed>۟ سَبِیلَهُمۡۚ <tajweed class=ghunnah>إِن</tajweed>ّ<tajweed class=ham_wasl>َ</tajweed> ٱللَّهَ غَفُ<tajweed class=idghaam_wo_ghunnah>ورࣱ ر</tajweed>َّ<tajweed class=madda_permissible>ح</tajweed>ِیمࣱ",
+      "rules_count": 31
+    },
+    {
+      "verse_key": "9:6",
+      "text_plain": "وَإِنۡ أَحَدࣱ مِّنَ ٱلۡمُشۡرِكِینَ ٱسۡتَجَارَكَ فَأَجِرۡهُ حَتَّىٰ یَسۡمَعَ كَلَـٰمَ ٱللَّهِ ثُمَّ أَبۡلِغۡهُ مَأۡمَنَهُۥۚ ذَ ٰ⁠لِكَ بِأَنَّهُمۡ قَوۡمࣱ لَّا یَعۡلَمُونَ",
+      "text_tajweed_html": "وَإِنۡ أَحَد<tajweed class=idghaam_ghunnah>ࣱ مِّ</tajweed>نَ <tajweed class=ham_wasl>ٱ</tajweed>لۡمُشۡرِكِینَ <tajweed class=ham_wasl>ٱ</tajweed>سۡتَجَارَكَ فَأَجِرۡهُ حَتَّىٰ یَسۡمَعَ كَلَ<tajweed class=madda_normal>ـ</tajweed>ٰمَ<tajweed class=ham_wasl> </tajweed>ٱللَّهِ ث<tajweed class=ghunnah>ُمّ</tajweed>َ أ<tajweed class=qalaqala>َب</tajweed>ۡلِغۡهُ مَأۡمَنَه<tajweed class=madda_normal>ُ</tajweed>ۥۚ <tajweed class=madda_normal>ذ</tajweed>َ ٰ⁠لِكَ <tajweed class=ghunnah>بِأ</tajweed>َنَّهُمۡ ق<tajweed class=idghaam_wo_ghunnah>َوۡمࣱ</tajweed> لَّا یَعۡ<tajweed class=madda_permissible>ل</tajweed>َمُونَ",
+      "rules_count": 12
+    },
+    {
+      "verse_key": "9:7",
+      "text_plain": "كَیۡفَ یَكُونُ لِلۡمُشۡرِكِینَ عَهۡدٌ عِندَ ٱللَّهِ وَعِندَ رَسُولِهِۦۤ إِلَّا ٱلَّذِینَ عَـٰهَدتُّمۡ عِندَ ٱلۡمَسۡجِدِ ٱلۡحَرَامِۖ فَمَا ٱسۡتَقَـٰمُوا۟ لَكُمۡ فَٱسۡتَقِیمُوا۟ لَهُمۡۚ إِنَّ ٱللَّهَ یُحِبُّ ٱلۡمُتَّقِینَ",
+      "text_tajweed_html": "كَیۡفَ یَكُونُ لِلۡمُشۡرِكِینَ عَهۡدٌ عِ<tajweed class=ikhpiaa>ندَ</tajweed> <tajweed class=ham_wasl>ٱ</tajweed>للَّهِ وَعِ<tajweed class=ikhpiaa>ندَ</tajweed> رَسُولِهِ<tajweed class=madda_permissible>ۦۤ</tajweed> إِلَّا <tajweed class=ham_wasl>ٱ</tajweed>لَّذِینَ عَ<tajweed class=madda_normal>ـ</tajweed>ٰه<tajweed class=idghaam_mutajanisayn>َ</tajweed>دتُّمۡ ع<tajweed class=ikhpiaa>ِند</tajweed>َ<tajweed class=ham_wasl> </tajweed>ٱلۡمَسۡجِدِ<tajweed class=ham_wasl> </tajweed>ٱلۡحَرَامِۖ فَمَ<tajweed class=ham_wasl>ا</tajweed> ٱسۡتَ<tajweed class=madda_normal>ق</tajweed>َـٰ<tajweed class=silent>مُ</tajweed>وا۟ لَكُمۡ<tajweed class=ham_wasl> </tajweed>فَٱسۡتَقِی<tajweed class=silent>مُ</tajweed>وا۟ لَهُمۡ<tajweed class=ghunnah>ۚ إ</tajweed>ِ<tajweed class=ham_wasl>ن</tajweed>َّ ٱللَّهَ یُحِ<tajweed class=ham_wasl>ب</tajweed>ُّ ٱلۡمُت<tajweed class=madda_permissible>ّ</tajweed>َقِینَ",
+      "rules_count": 19
+    },
+    {
+      "verse_key": "9:8",
+      "text_plain": "كَیۡفَ وَإِن یَظۡهَرُوا۟ عَلَیۡكُمۡ لَا یَرۡقُبُوا۟ فِیكُمۡ إِلࣰّا وَلَا ذِمَّةࣰۚ یُرۡضُونَكُم بِأَفۡوَ ٰ⁠هِهِمۡ وَتَأۡبَىٰ قُلُوبُهُمۡ وَأَكۡثَرُهُمۡ فَـٰسِقُونَ",
+      "text_tajweed_html": "كَیۡفَ وَإِ<tajweed class=idghaam_ghunnah>ن یَ</tajweed>ظۡهَرُو<tajweed class=silent>ا۟</tajweed> عَلَیۡكُمۡ لَا یَرۡقُبُو<tajweed class=silent>ا۟</tajweed> فِیكُمۡ إِلّ<tajweed class=idghaam_ghunnah>ࣰا وَ</tajweed>لَا ذِ<tajweed class=ghunnah>مَّ</tajweed>ة<tajweed class=idghaam_ghunnah>ࣰۚ ی</tajweed>ُرۡضُونَك<tajweed class=ikhpiaa_shafawi>ُم ب</tajweed>ِأَفۡو<tajweed class=madda_normal>َ</tajweed> ٰ⁠هِهِمۡ وَتَأۡبَىٰ قُلُوبُهُمۡ وَأَكۡثَرُهُمۡ<tajweed class=madda_normal> </tajweed>فَـٰ<tajweed class=madda_permissible>س</tajweed>ِقُونَ",
+      "rules_count": 10
+    },
+    {
+      "verse_key": "9:9",
+      "text_plain": "ٱشۡتَرَوۡا۟ بِـَٔایَـٰتِ ٱللَّهِ ثَمَنࣰا قَلِیلࣰا فَصَدُّوا۟ عَن سَبِیلِهِۦۤۚ إِنَّهُمۡ سَاۤءَ مَا كَانُوا۟ یَعۡمَلُونَ",
+      "text_tajweed_html": "ٱشۡتَرَوۡ<tajweed class=silent>ا۟</tajweed> بِـَٔایَ<tajweed class=madda_normal>ـ</tajweed>ٰتِ<tajweed class=ham_wasl> </tajweed>ٱللَّهِ ثَمَ<tajweed class=ikhpiaa>نࣰا ق</tajweed>َلِی<tajweed class=ikhpiaa>لࣰا ف</tajweed>َصَدُّ<tajweed class=silent>وا</tajweed>۟ ع<tajweed class=ikhpiaa>َن س</tajweed>َبِیلِه<tajweed class=madda_permissible>ِۦ</tajweed>ۤۚ <tajweed class=ghunnah>إِن</tajweed>َّهُمۡ <tajweed class=madda_obligatory>سَ</tajweed>اۤءَ مَا كَان<tajweed class=silent>ُو</tajweed>ا۟ یَعۡمَ<tajweed class=madda_permissible>ل</tajweed>ُونَ",
+      "rules_count": 12
+    },
+    {
+      "verse_key": "9:10",
+      "text_plain": "لَا یَرۡقُبُونَ فِی مُؤۡمِنٍ إِلࣰّا وَلَا ذِمَّةࣰۚ وَأُو۟لَـٰۤىِٕكَ هُمُ ٱلۡمُعۡتَدُونَ",
+      "text_tajweed_html": "لَا یَرۡقُبُونَ فِی مُؤۡمِنٍ إِلّ<tajweed class=idghaam_ghunnah>ࣰا وَ</tajweed>لَا ذِ<tajweed class=ghunnah>مَّ</tajweed>ة<tajweed class=idghaam_ghunnah>ࣰۚ و</tajweed>َأ<tajweed class=silent>ُو</tajweed>۟ل<tajweed class=madda_obligatory>َـ</tajweed>ٰۤىِٕكَ هُ<tajweed class=ham_wasl>م</tajweed>ُ ٱلۡمُعۡت<tajweed class=madda_permissible>َ</tajweed>دُونَ",
+      "rules_count": 7
+    },
+    {
+      "verse_key": "9:11",
+      "text_plain": "فَإِن تَابُوا۟ وَأَقَامُوا۟ ٱلصَّلَوٰةَ وَءَاتَوُا۟ ٱلزَّكَوٰةَ فَإِخۡوَ ٰ⁠نُكُمۡ فِی ٱلدِّینِۗ وَنُفَصِّلُ ٱلۡـَٔایَـٰتِ لِقَوۡمࣲ یَعۡلَمُونَ",
+      "text_tajweed_html": "فَإِ<tajweed class=ikhpiaa>ن تَ</tajweed>ابُو<tajweed class=silent>ا۟</tajweed> وَأَقَامُو<tajweed class=silent>ا۟</tajweed> <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>صَّلَ<tajweed class=silent>و</tajweed><tajweed class=madda_normal>ٰ</tajweed>ةَ وَءَاتَوُ<tajweed class=silent>ا۟</tajweed> <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>زَّكَ<tajweed class=silent>و</tajweed><tajweed class=madda_normal>ٰ</tajweed>ةَ فَإِخۡوَ<tajweed class=madda_normal> </tajweed>ٰ⁠نُكُمۡ فِ<tajweed class=ham_wasl>ی</tajweed><tajweed class=laam_shamsiyah> </tajweed>ٱلدِّینِۗ وَنُفَصِّ<tajweed class=ham_wasl>ل</tajweed>ُ ٱلۡـٔ<tajweed class=madda_normal>َ</tajweed>ایَـٰتِ لِ<tajweed class=idghaam_ghunnah>قَوۡ</tajweed>مࣲ یَع<tajweed class=madda_permissible>ۡ</tajweed>لَمُونَ",
+      "rules_count": 19
+    },
+    {
+      "verse_key": "9:12",
+      "text_plain": "وَإِن نَّكَثُوۤا۟ أَیۡمَـٰنَهُم مِّنۢ بَعۡدِ عَهۡدِهِمۡ وَطَعَنُوا۟ فِی دِینِكُمۡ فَقَـٰتِلُوۤا۟ أَىِٕمَّةَ ٱلۡكُفۡرِ إِنَّهُمۡ لَاۤ أَیۡمَـٰنَ لَهُمۡ لَعَلَّهُمۡ یَنتَهُونَ",
+      "text_tajweed_html": "وَإِ<tajweed class=idghaam_ghunnah>ن نَّ</tajweed>كَثُ<tajweed class=madda_permissible>وۤ</tajweed><tajweed class=silent>ا۟</tajweed> أَیۡمَ<tajweed class=madda_normal>ـ</tajweed>ٰنَه<tajweed class=idghaam_shafawi>ُم مّ</tajweed>ِ<tajweed class=iqlab>نۢ </tajweed>بَعۡدِ عَهۡدِهِمۡ وَطَعَنُ<tajweed class=silent>وا</tajweed>۟ فِی دِینِكُمۡ فَق<tajweed class=madda_normal>َ</tajweed>ـٰتِ<tajweed class=madda_permissible>لُ</tajweed><tajweed class=silent>وۤ</tajweed>ا۟ أَ<tajweed class=ghunnah>ىِٕ</tajweed>مَّ<tajweed class=ham_wasl>ة</tajweed>َ ٱلۡكُفۡرِ<tajweed class=ghunnah> إِ</tajweed>نَّهُمۡ<tajweed class=madda_permissible> ل</tajweed>َاۤ أَی<tajweed class=madda_normal>ۡ</tajweed>مَـٰنَ لَهُمۡ لَعَلَّهُم<tajweed class=ikhpiaa>ۡ ی</tajweed>َن<tajweed class=madda_permissible>ت</tajweed>َهُونَ",
+      "rules_count": 17
+    },
+    {
+      "verse_key": "9:13",
+      "text_plain": "أَلَا تُقَـٰتِلُونَ قَوۡمࣰا نَّكَثُوۤا۟ أَیۡمَـٰنَهُمۡ وَهَمُّوا۟ بِإِخۡرَاجِ ٱلرَّسُولِ وَهُم بَدَءُوكُمۡ أَوَّلَ مَرَّةٍۚ أَتَخۡشَوۡنَهُمۡۚ فَٱللَّهُ أَحَقُّ أَن تَخۡشَوۡهُ إِن كُنتُم مُّؤۡمِنِینَ",
+      "text_tajweed_html": "أَلَا تُقَ<tajweed class=madda_normal>ـ</tajweed>ٰتِلُونَ قَوۡ<tajweed class=idghaam_ghunnah>مࣰا نّ</tajweed>َكَث<tajweed class=madda_permissible>ُو</tajweed><tajweed class=silent>ۤا</tajweed>۟ أَیۡم<tajweed class=madda_normal>َ</tajweed>ـٰنَهُمۡ وَ<tajweed class=ghunnah>هَم</tajweed>ّ<tajweed class=silent>ُو</tajweed>ا۟ بِإِخۡرَاج<tajweed class=ham_wasl>ِ</tajweed><tajweed class=laam_shamsiyah> </tajweed>ٱلرَّسُولِ وَ<tajweed class=ikhpiaa_shafawi>هُم </tajweed>بَدَءُوكُمۡ أَوَّلَ مَرَّةٍۚ أَتَخۡشَوۡنَهُمۡ<tajweed class=ham_wasl>ۚ</tajweed> فَٱللَّهُ أَحَقّ<tajweed class=ikhpiaa>ُ أَ</tajweed>ن تَخۡشَوۡه<tajweed class=ikhpiaa>ُ إِ</tajweed><tajweed class=ikhpiaa>ن ك</tajweed><tajweed class=idghaam_shafawi>ُنتُم</tajweed> مُّؤۡ<tajweed class=madda_permissible>م</tajweed>ِنِینَ",
+      "rules_count": 16
+    },
+    {
+      "verse_key": "9:14",
+      "text_plain": "قَـٰتِلُوهُمۡ یُعَذِّبۡهُمُ ٱللَّهُ بِأَیۡدِیكُمۡ وَیُخۡزِهِمۡ وَیَنصُرۡكُمۡ عَلَیۡهِمۡ وَیَشۡفِ صُدُورَ قَوۡمࣲ مُّؤۡمِنِینَ",
+      "text_tajweed_html": "قَ<tajweed class=madda_normal>ـ</tajweed>ٰتِلُوهُمۡ یُعَذّ<tajweed class=qalaqala>ِب</tajweed>ۡهُمُ<tajweed class=ham_wasl> </tajweed>ٱللَّهُ بِأَیۡدِیكُمۡ وَیُخۡزِهِمۡ وَی<tajweed class=ikhpiaa>َنص</tajweed>ُرۡكُمۡ عَلَیۡهِمۡ وَیَشۡفِ صُدُورَ قَوۡ<tajweed class=idghaam_ghunnah>مࣲ مّ</tajweed>ُؤۡمِن<tajweed class=madda_permissible>ِ</tajweed>ینَ",
+      "rules_count": 6
+    },
+    {
+      "verse_key": "9:15",
+      "text_plain": "وَیُذۡهِبۡ غَیۡظَ قُلُوبِهِمۡۗ وَیَتُوبُ ٱللَّهُ عَلَىٰ مَن یَشَاۤءُۗ وَٱللَّهُ عَلِیمٌ حَكِیمٌ",
+      "text_tajweed_html": "وَیُذۡهِ<tajweed class=qalaqala>بۡ</tajweed> غَیۡظَ قُلُوبِهِمۡۗ وَیَتُوبُ<tajweed class=ham_wasl> </tajweed>ٱللَّهُ عَلَىٰ م<tajweed class=idghaam_ghunnah>َن ی</tajweed>َش<tajweed class=madda_obligatory>َا</tajweed>ۤءُۗ <tajweed class=ham_wasl>و</tajweed>َٱللَّهُ عَلِیمٌ حَ<tajweed class=madda_permissible>ك</tajweed>ِیمٌ",
+      "rules_count": 6
+    },
+    {
+      "verse_key": "9:16",
+      "text_plain": "أَمۡ حَسِبۡتُمۡ أَن تُتۡرَكُوا۟ وَلَمَّا یَعۡلَمِ ٱللَّهُ ٱلَّذِینَ جَـٰهَدُوا۟ مِنكُمۡ وَلَمۡ یَتَّخِذُوا۟ مِن دُونِ ٱللَّهِ وَلَا رَسُولِهِۦ وَلَا ٱلۡمُؤۡمِنِینَ وَلِیجَةࣰۚ وَٱللَّهُ خَبِیرُۢ بِمَا تَعۡمَلُونَ",
+      "text_tajweed_html": "أَمۡ حَسِ<tajweed class=qalaqala>بۡ</tajweed>تُمۡ أَ<tajweed class=ikhpiaa>ن تُ</tajweed>تۡرَكُو<tajweed class=silent>ا۟</tajweed> وَلَ<tajweed class=ghunnah>مَّ</tajweed>ا یَعۡلَمِ <tajweed class=ham_wasl>ٱ</tajweed>للَّهُ <tajweed class=ham_wasl>ٱ</tajweed>لَّذِینَ جَ<tajweed class=madda_normal>ـ</tajweed>ٰهَدُ<tajweed class=silent>وا</tajweed>۟ م<tajweed class=ikhpiaa>ِنك</tajweed>ُمۡ وَلَمۡ یَتَّخِذُ<tajweed class=silent>وا</tajweed>۟ م<tajweed class=ikhpiaa>ِن د</tajweed>ُونِ<tajweed class=ham_wasl> </tajweed>ٱللَّهِ وَلَا رَسُولِه<tajweed class=madda_normal>ِ</tajweed>ۦ وَلَا<tajweed class=ham_wasl> </tajweed>ٱلۡمُؤۡمِنِینَ وَلِیجَ<tajweed class=idghaam_ghunnah>ةࣰۚ </tajweed><tajweed class=ham_wasl>و</tajweed>َٱللَّهُ خَبِ<tajweed class=iqlab>یرُۢ</tajweed> بِمَا تَعۡمَ<tajweed class=madda_permissible>ل</tajweed>ُونَ",
+      "rules_count": 18
+    },
+    {
+      "verse_key": "9:17",
+      "text_plain": "مَا كَانَ لِلۡمُشۡرِكِینَ أَن یَعۡمُرُوا۟ مَسَـٰجِدَ ٱللَّهِ شَـٰهِدِینَ عَلَىٰۤ أَنفُسِهِم بِٱلۡكُفۡرِۚ أُو۟لَـٰۤىِٕكَ حَبِطَتۡ أَعۡمَـٰلُهُمۡ وَفِی ٱلنَّارِ هُمۡ خَـٰلِدُونَ",
+      "text_tajweed_html": "مَا كَانَ لِلۡمُشۡرِكِینَ أَ<tajweed class=idghaam_ghunnah>ن یَ</tajweed>عۡمُرُو<tajweed class=silent>ا۟</tajweed> مَسَ<tajweed class=madda_normal>ـ</tajweed>ٰجِدَ<tajweed class=ham_wasl> </tajweed>ٱللَّهِ ش<tajweed class=madda_normal>َ</tajweed>ـٰهِدِینَ عَ<tajweed class=madda_permissible>لَى</tajweed>ٰۤ <tajweed class=ikhpiaa>أَن</tajweed>فُسِ<tajweed class=ikhpiaa_shafawi>هِم </tajweed><tajweed class=ham_wasl>ب</tajweed>ِٱلۡكُفۡرِۚ<tajweed class=silent> أ</tajweed>ُو<tajweed class=madda_obligatory>۟ل</tajweed>َـٰۤىِٕكَ حَبِطَتۡ أ<tajweed class=madda_normal>َ</tajweed>عۡمَـٰلُهُمۡ <tajweed class=ham_wasl>و</tajweed><tajweed class=laam_shamsiyah>َ</tajweed><tajweed class=ghunnah>فِی</tajweed> ٱلنَّارِ ه<tajweed class=madda_normal>ُ</tajweed>مۡ خ<tajweed class=madda_permissible>َ</tajweed>ـٰلِدُونَ",
+      "rules_count": 17
+    },
+    {
+      "verse_key": "9:18",
+      "text_plain": "إِنَّمَا یَعۡمُرُ مَسَـٰجِدَ ٱللَّهِ مَنۡ ءَامَنَ بِٱللَّهِ وَٱلۡیَوۡمِ ٱلۡـَٔاخِرِ وَأَقَامَ ٱلصَّلَوٰةَ وَءَاتَى ٱلزَّكَوٰةَ وَلَمۡ یَخۡشَ إِلَّا ٱللَّهَۖ فَعَسَىٰۤ أُو۟لَـٰۤىِٕكَ أَن یَكُونُوا۟ مِنَ ٱلۡمُهۡتَدِینَ",
+      "text_tajweed_html": "إِ<tajweed class=ghunnah>نَّ</tajweed>مَا یَعۡمُرُ مَسَ<tajweed class=madda_normal>ـ</tajweed>ٰجِدَ<tajweed class=ham_wasl> </tajweed>ٱللَّهِ مَنۡ ءَامَنَ ب<tajweed class=ham_wasl>ِ</tajweed>ٱللَّهِ و<tajweed class=ham_wasl>َ</tajweed>ٱلۡیَوۡمِ<tajweed class=ham_wasl> </tajweed>ٱلۡـَٔاخِرِ وَأَقَام<tajweed class=ham_wasl>َ</tajweed><tajweed class=laam_shamsiyah> </tajweed>ٱلصَّ<tajweed class=silent>ل</tajweed><tajweed class=madda_normal>َ</tajweed>وٰةَ وَءَاتَ<tajweed class=ham_wasl>ى</tajweed><tajweed class=laam_shamsiyah> </tajweed>ٱلزَّ<tajweed class=silent>ك</tajweed><tajweed class=madda_normal>َ</tajweed>وٰةَ وَلَمۡ یَخۡشَ إِلَّ<tajweed class=ham_wasl>ا</tajweed> ٱللَّهَۖ فَع<tajweed class=madda_permissible>َسَ</tajweed>ىٰۤ<tajweed class=silent> أ</tajweed>ُو<tajweed class=madda_obligatory>۟ل</tajweed>َـٰۤىِٕ<tajweed class=idghaam_ghunnah>كَ أ</tajweed>َن یَك<tajweed class=silent>ُو</tajweed>نُوا۟ <tajweed class=ham_wasl>م</tajweed>ِنَ ٱلۡمُه<tajweed class=madda_permissible>ۡ</tajweed>تَدِینَ",
+      "rules_count": 22
+    },
+    {
+      "verse_key": "9:19",
+      "text_plain": "۞ أَجَعَلۡتُمۡ سِقَایَةَ ٱلۡحَاۤجِّ وَعِمَارَةَ ٱلۡمَسۡجِدِ ٱلۡحَرَامِ كَمَنۡ ءَامَنَ بِٱللَّهِ وَٱلۡیَوۡمِ ٱلۡـَٔاخِرِ وَجَـٰهَدَ فِی سَبِیلِ ٱللَّهِۚ لَا یَسۡتَوُۥنَ عِندَ ٱللَّهِۗ وَٱللَّهُ لَا یَهۡدِی ٱلۡقَوۡمَ ٱلظَّـٰلِمِینَ",
+      "text_tajweed_html": "۞ أَجَعَلۡتُمۡ سِقَایَة<tajweed class=ham_wasl>َ</tajweed> ٱلۡ<tajweed class=madda_necessary>حَ</tajweed>اۤجِّ وَعِمَارَة<tajweed class=ham_wasl>َ</tajweed> ٱلۡمَسۡجِد<tajweed class=ham_wasl>ِ</tajweed> ٱلۡحَرَامِ كَمَنۡ ءَامَنَ <tajweed class=ham_wasl>ب</tajweed>ِٱللَّهِ <tajweed class=ham_wasl>و</tajweed>َٱلۡیَوۡم<tajweed class=ham_wasl>ِ</tajweed> ٱلۡـَٔاخِرِ و<tajweed class=madda_normal>َ</tajweed>جَـٰهَدَ فِی سَبِ<tajweed class=ham_wasl>ی</tajweed>لِ ٱللَّهِۚ لَا یَس<tajweed class=madda_normal>ۡ</tajweed>تَوُۥ<tajweed class=ikhpiaa>نَ </tajweed>ع<tajweed class=ham_wasl>ِ</tajweed>ندَ ٱللَّ<tajweed class=ham_wasl>ه</tajweed>ِۗ وَٱللَّهُ لَا یَ<tajweed class=ham_wasl>ه</tajweed>ۡدِی ٱلۡق<tajweed class=ham_wasl>َ</tajweed><tajweed class=laam_shamsiyah>و</tajweed>ۡمَ<tajweed class=madda_normal> </tajweed>ٱلظّ<tajweed class=madda_permissible>َ</tajweed>ـٰلِمِینَ",
+      "rules_count": 18
+    },
+    {
+      "verse_key": "9:20",
+      "text_plain": "ٱلَّذِینَ ءَامَنُوا۟ وَهَاجَرُوا۟ وَجَـٰهَدُوا۟ فِی سَبِیلِ ٱللَّهِ بِأَمۡوَ ٰ⁠لِهِمۡ وَأَنفُسِهِمۡ أَعۡظَمُ دَرَجَةً عِندَ ٱللَّهِۚ وَأُو۟لَـٰۤىِٕكَ هُمُ ٱلۡفَاۤىِٕزُونَ",
+      "text_tajweed_html": "ٱلَّذِینَ ءَامَنُو<tajweed class=silent>ا۟</tajweed> وَهَاجَرُو<tajweed class=silent>ا۟</tajweed> وَجَ<tajweed class=madda_normal>ـ</tajweed>ٰهَدُ<tajweed class=silent>وا</tajweed>۟ فِی سَبِیلِ<tajweed class=ham_wasl> </tajweed>ٱللَّهِ بِأَمۡو<tajweed class=madda_normal>َ</tajweed> ٰ⁠لِهِمۡ و<tajweed class=ikhpiaa>َأَ</tajweed>نفُسِهِمۡ أَعۡظَمُ دَرَجَةً<tajweed class=ikhpiaa> عِ</tajweed>ن<tajweed class=ham_wasl>د</tajweed>َ ٱللَّهِۚ <tajweed class=silent>وَ</tajweed>أُ<tajweed class=madda_obligatory>و۟</tajweed>لَـٰۤىِٕكَ<tajweed class=ham_wasl> </tajweed>هُمُ<tajweed class=madda_obligatory> ٱ</tajweed>لۡفَ<tajweed class=madda_permissible>ا</tajweed>ۤىِٕزُونَ",
+      "rules_count": 14
+    },
+    {
+      "verse_key": "9:21",
+      "text_plain": "یُبَشِّرُهُمۡ رَبُّهُم بِرَحۡمَةࣲ مِّنۡهُ وَرِضۡوَ ٰ⁠نࣲ وَجَنَّـٰتࣲ لَّهُمۡ فِیهَا نَعِیمࣱ مُّقِیمٌ",
+      "text_tajweed_html": "یُبَشِّرُهُمۡ رَبُّهُ<tajweed class=ikhpiaa_shafawi>م بِ</tajweed>رَحۡمَة<tajweed class=idghaam_ghunnah>ࣲ مِّ</tajweed>نۡهُ وَرِضۡوَ<tajweed class=madda_normal> </tajweed>ٰ<tajweed class=idghaam_ghunnah>⁠نࣲ </tajweed>وَ<tajweed class=ghunnah>جَن</tajweed><tajweed class=madda_normal>ّ</tajweed>َ<tajweed class=idghaam_wo_ghunnah>ـٰتࣲ </tajweed>لَّهُمۡ فِیهَا نَع<tajweed class=idghaam_ghunnah>ِیمࣱ </tajweed>مّ<tajweed class=madda_permissible>ُ</tajweed>قِیمٌ",
+      "rules_count": 9
+    },
+    {
+      "verse_key": "9:22",
+      "text_plain": "خَـٰلِدِینَ فِیهَاۤ أَبَدًاۚ إِنَّ ٱللَّهَ عِندَهُۥۤ أَجۡرٌ عَظِیمࣱ",
+      "text_tajweed_html": "خَ<tajweed class=madda_normal>ـ</tajweed>ٰلِدِینَ فِیه<tajweed class=madda_permissible>َا</tajweed>ۤ أَبَدًاۚ <tajweed class=ghunnah>إِن</tajweed>ّ<tajweed class=ham_wasl>َ</tajweed> ٱللَّهَ <tajweed class=ikhpiaa>عِن</tajweed>دَ<tajweed class=madda_permissible>هُ</tajweed>ۥۤ <tajweed class=qalaqala>أَ</tajweed>جۡرٌ عَ<tajweed class=madda_permissible>ظ</tajweed>ِیمࣱ",
+      "rules_count": 8
+    },
+    {
+      "verse_key": "9:23",
+      "text_plain": "یَـٰۤأَیُّهَا ٱلَّذِینَ ءَامَنُوا۟ لَا تَتَّخِذُوۤا۟ ءَابَاۤءَكُمۡ وَإِخۡوَ ٰ⁠نَكُمۡ أَوۡلِیَاۤءَ إِنِ ٱسۡتَحَبُّوا۟ ٱلۡكُفۡرَ عَلَى ٱلۡإِیمَـٰنِۚ وَمَن یَتَوَلَّهُم مِّنكُمۡ فَأُو۟لَـٰۤىِٕكَ هُمُ ٱلظَّـٰلِمُونَ",
+      "text_tajweed_html": "یَ<tajweed class=madda_permissible>ـٰ</tajweed>ۤأَیُّهَا<tajweed class=ham_wasl> </tajweed>ٱلَّذِینَ ءَامَنُ<tajweed class=silent>وا</tajweed>۟ لَا تَتَّخِذ<tajweed class=madda_permissible>ُو</tajweed><tajweed class=silent>ۤا</tajweed>۟ ءَاب<tajweed class=madda_obligatory>َا</tajweed>ۤءَكُمۡ وَإِخۡو<tajweed class=madda_normal>َ</tajweed> ٰ⁠نَكُمۡ أَوۡل<tajweed class=madda_obligatory>ِی</tajweed>َاۤءَ إِ<tajweed class=ham_wasl>ن</tajweed>ِ ٱسۡتَحَب<tajweed class=silent>ُّ</tajweed>و<tajweed class=ham_wasl>ا</tajweed>۟ ٱلۡكُفۡرَ عَل<tajweed class=ham_wasl>َ</tajweed>ى ٱلۡإِ<tajweed class=madda_normal>ی</tajweed>مَـٰنِۚ<tajweed class=idghaam_ghunnah> وَم</tajweed>َن یَتَوَ<tajweed class=idghaam_shafawi>لَّهُ</tajweed><tajweed class=ikhpiaa>م م</tajweed>ِّنكُمۡ<tajweed class=silent> ف</tajweed>َأ<tajweed class=madda_obligatory>ُو</tajweed>۟لَـٰۤىِٕك<tajweed class=ham_wasl>َ</tajweed><tajweed class=laam_shamsiyah> </tajweed>هُم<tajweed class=madda_normal>ُ</tajweed> ٱلظ<tajweed class=madda_permissible>ّ</tajweed>َـٰلِمُونَ",
+      "rules_count": 22
+    },
+    {
+      "verse_key": "9:24",
+      "text_plain": "قُلۡ إِن كَانَ ءَابَاۤؤُكُمۡ وَأَبۡنَاۤؤُكُمۡ وَإِخۡوَ ٰ⁠نُكُمۡ وَأَزۡوَ ٰ⁠جُكُمۡ وَعَشِیرَتُكُمۡ وَأَمۡوَ ٰ⁠لٌ ٱقۡتَرَفۡتُمُوهَا وَتِجَـٰرَةࣱ تَخۡشَوۡنَ كَسَادَهَا وَمَسَـٰكِنُ تَرۡضَوۡنَهَاۤ أَحَبَّ إِلَیۡكُم مِّنَ ٱللَّهِ وَرَسُولِهِۦ وَجِهَادࣲ فِی سَبِیلِهِۦ فَتَرَبَّصُوا۟ حَتَّىٰ یَأۡتِیَ ٱللَّهُ بِأَمۡرِهِۦۗ وَٱللَّهُ لَا یَهۡدِی ٱلۡقَوۡمَ ٱلۡفَـٰسِقِینَ",
+      "text_tajweed_html": "قُلۡ إِ<tajweed class=ikhpiaa>ن كَ</tajweed>انَ ءَابَ<tajweed class=madda_obligatory>اۤ</tajweed>ؤُكُمۡ وَأَ<tajweed class=qalaqala>بۡ</tajweed>نَ<tajweed class=madda_obligatory>اۤ</tajweed>ؤُكُمۡ وَإِخۡوَ<tajweed class=madda_normal> </tajweed>ٰ⁠نُكُمۡ وَأَزۡ<tajweed class=madda_normal>و</tajweed>َ ٰ⁠جُكُمۡ وَعَشِیرَتُكُمۡ وَأَ<tajweed class=madda_normal>م</tajweed>ۡوَ<tajweed class=ham_wasl> </tajweed><tajweed class=qalaqala>ٰ⁠</tajweed>لٌ ٱقۡتَرَفۡتُمُوهَا <tajweed class=madda_normal>و</tajweed>َتِ<tajweed class=ikhpiaa>جَـٰ</tajweed>رَةࣱ تَخۡشَوۡنَ كَسَادَهَا<tajweed class=madda_normal> </tajweed>وَمَسَـٰكِنُ تَرۡ<tajweed class=madda_permissible>ضَ</tajweed>وۡنَهَاۤ أَحَبَّ <tajweed class=idghaam_shafawi>إِلَی</tajweed>ۡكُ<tajweed class=ham_wasl>م</tajweed> مِّنَ ٱللَّهِ وَر<tajweed class=madda_normal>َ</tajweed>سُولِهِۦ <tajweed class=ikhpiaa>وَجِ</tajweed>هَادࣲ فِی س<tajweed class=madda_normal>َ</tajweed>بِیلِهِۦ فَتَ<tajweed class=silent>رَ</tajweed>بَّصُوا۟ حَتَّىٰ ی<tajweed class=ham_wasl>َ</tajweed>أۡتِیَ ٱللَّهُ بِ<tajweed class=madda_normal>أ</tajweed>َمۡ<tajweed class=ham_wasl>ر</tajweed>ِهِۦۗ وَٱللَّهُ لَا<tajweed class=ham_wasl> </tajweed>یَهۡدِی ٱ<tajweed class=ham_wasl>ل</tajweed>ۡقَو<tajweed class=madda_normal>ۡ</tajweed>مَ ٱ<tajweed class=madda_permissible>ل</tajweed>ۡفَـٰسِقِینَ",
+      "rules_count": 26
+    },
+    {
+      "verse_key": "9:25",
+      "text_plain": "لَقَدۡ نَصَرَكُمُ ٱللَّهُ فِی مَوَاطِنَ كَثِیرَةࣲ وَیَوۡمَ حُنَیۡنٍ إِذۡ أَعۡجَبَتۡكُمۡ كَثۡرَتُكُمۡ فَلَمۡ تُغۡنِ عَنكُمۡ شَیۡـࣰٔا وَضَاقَتۡ عَلَیۡكُمُ ٱلۡأَرۡضُ بِمَا رَحُبَتۡ ثُمَّ وَلَّیۡتُم مُّدۡبِرِینَ",
+      "text_tajweed_html": "لَقَ<tajweed class=qalaqala>دۡ</tajweed> نَصَرَكُمُ <tajweed class=ham_wasl>ٱ</tajweed>للَّهُ فِی مَوَاطِنَ كَثِیرَة<tajweed class=idghaam_ghunnah>ࣲ وَ</tajweed>یَوۡمَ حُنَیۡنٍ إِذۡ أَعۡجَبَتۡكُمۡ كَثۡرَتُكُمۡ فَلَمۡ تُغۡنِ عَ<tajweed class=ikhpiaa>نكُ</tajweed>مۡ شَیۡـٔ<tajweed class=idghaam_ghunnah>ࣰا وَ</tajweed>ضَاقَتۡ عَلَیۡكُمُ <tajweed class=ham_wasl>ٱ</tajweed>لۡأَرۡضُ بِمَا رَحُبَتۡ ثُ<tajweed class=ghunnah>مَّ</tajweed> وَلَّیۡتُ<tajweed class=idghaam_shafawi>م مُّ</tajweed><tajweed class=qalaqala>دۡ</tajweed>بِرِ<tajweed class=madda_permissible>ی</tajweed>نَ",
+      "rules_count": 10
+    },
+    {
+      "verse_key": "9:26",
+      "text_plain": "ثُمَّ أَنزَلَ ٱللَّهُ سَكِینَتَهُۥ عَلَىٰ رَسُولِهِۦ وَعَلَى ٱلۡمُؤۡمِنِینَ وَأَنزَلَ جُنُودࣰا لَّمۡ تَرَوۡهَا وَعَذَّبَ ٱلَّذِینَ كَفَرُوا۟ۚ وَذَ ٰ⁠لِكَ جَزَاۤءُ ٱلۡكَـٰفِرِینَ",
+      "text_tajweed_html": "ثُ<tajweed class=ghunnah>مَّ</tajweed> أَ<tajweed class=ikhpiaa>نزَ</tajweed>لَ <tajweed class=ham_wasl>ٱ</tajweed>للَّهُ سَكِینَتَهُ<tajweed class=madda_normal>ۥ</tajweed> عَلَىٰ رَسُولِهِ<tajweed class=madda_normal>ۦ</tajweed> وَعَلَى <tajweed class=ham_wasl>ٱ</tajweed>لۡمُؤۡمِنِینَ وَأَ<tajweed class=ikhpiaa>نزَ</tajweed>لَ جُنُود<tajweed class=idghaam_wo_ghunnah>ࣰا لَّ</tajweed>مۡ تَرَوۡهَا وَعَذَّبَ <tajweed class=ham_wasl>ٱ</tajweed>لَّذِینَ كَفَرُو<tajweed class=silent>ا۟</tajweed>ۚ وَذ<tajweed class=madda_normal>َ</tajweed> ٰ⁠لِكَ ج<tajweed class=madda_obligatory>َز</tajweed>َاۤ<tajweed class=ham_wasl>ء</tajweed>ُ ٱل<tajweed class=madda_normal>ۡ</tajweed>كَـٰ<tajweed class=madda_permissible>ف</tajweed>ِرِینَ",
+      "rules_count": 15
+    },
+    {
+      "verse_key": "9:27",
+      "text_plain": "ثُمَّ یَتُوبُ ٱللَّهُ مِنۢ بَعۡدِ ذَ ٰ⁠لِكَ عَلَىٰ مَن یَشَاۤءُۗ وَٱللَّهُ غَفُورࣱ رَّحِیمࣱ",
+      "text_tajweed_html": "ثُ<tajweed class=ghunnah>مَّ</tajweed> یَتُوبُ <tajweed class=ham_wasl>ٱ</tajweed>للَّهُ مِن<tajweed class=iqlab>ۢ ب</tajweed>َعۡدِ ذَ<tajweed class=madda_normal> </tajweed>ٰ⁠لِكَ عَلَىٰ <tajweed class=idghaam_ghunnah>مَن </tajweed>یَ<tajweed class=madda_obligatory>شَ</tajweed>اۤءُۗ<tajweed class=ham_wasl> </tajweed>وَٱللَّهُ غَف<tajweed class=idghaam_wo_ghunnah>ُورࣱ </tajweed>رّ<tajweed class=madda_permissible>َ</tajweed>حِیمࣱ",
+      "rules_count": 9
+    },
+    {
+      "verse_key": "9:28",
+      "text_plain": "یَـٰۤأَیُّهَا ٱلَّذِینَ ءَامَنُوۤا۟ إِنَّمَا ٱلۡمُشۡرِكُونَ نَجَسࣱ فَلَا یَقۡرَبُوا۟ ٱلۡمَسۡجِدَ ٱلۡحَرَامَ بَعۡدَ عَامِهِمۡ هَـٰذَاۚ وَإِنۡ خِفۡتُمۡ عَیۡلَةࣰ فَسَوۡفَ یُغۡنِیكُمُ ٱللَّهُ مِن فَضۡلِهِۦۤ إِن شَاۤءَۚ إِنَّ ٱللَّهَ عَلِیمٌ حَكِیمࣱ",
+      "text_tajweed_html": "یَ<tajweed class=madda_permissible>ـٰ</tajweed>ۤأَیُّهَا<tajweed class=ham_wasl> </tajweed>ٱلَّذِینَ ءَامَن<tajweed class=madda_permissible>ُو</tajweed><tajweed class=silent>ۤا</tajweed>۟ إ<tajweed class=ghunnah>ِنّ</tajweed>َمَا<tajweed class=ham_wasl> </tajweed>ٱلۡمُشۡرِكُونَ نَجَ<tajweed class=ikhpiaa>سࣱ ف</tajweed>َلَا ی<tajweed class=qalaqala>َق</tajweed>ۡرَبُ<tajweed class=silent>وا</tajweed>۟<tajweed class=ham_wasl> </tajweed>ٱلۡمَسۡجِدَ<tajweed class=ham_wasl> </tajweed>ٱلۡحَرَامَ بَعۡدَ عَامِهِمۡ ه<tajweed class=madda_normal>َ</tajweed>ـٰذَاۚ وَإِنۡ خِفۡتُمۡ عَیۡ<tajweed class=ikhpiaa>لَةࣰ</tajweed> فَسَوۡفَ یُغۡنِیكُ<tajweed class=ham_wasl>م</tajweed>ُ ٱللَّهُ<tajweed class=ikhpiaa> مِن</tajweed> فَضۡل<tajweed class=madda_permissible>ِه</tajweed>ِۦۤ<tajweed class=ikhpiaa> إِن</tajweed><tajweed class=madda_obligatory> ش</tajweed>َاۤءَ<tajweed class=ghunnah>ۚ إ</tajweed>ِ<tajweed class=ham_wasl>ن</tajweed>َّ ٱللَّهَ عَلِیمٌ <tajweed class=madda_permissible>ح</tajweed>َكِیمࣱ",
+      "rules_count": 21
+    },
+    {
+      "verse_key": "9:29",
+      "text_plain": "قَـٰتِلُوا۟ ٱلَّذِینَ لَا یُؤۡمِنُونَ بِٱللَّهِ وَلَا بِٱلۡیَوۡمِ ٱلۡـَٔاخِرِ وَلَا یُحَرِّمُونَ مَا حَرَّمَ ٱللَّهُ وَرَسُولُهُۥ وَلَا یَدِینُونَ دِینَ ٱلۡحَقِّ مِنَ ٱلَّذِینَ أُوتُوا۟ ٱلۡكِتَـٰبَ حَتَّىٰ یُعۡطُوا۟ ٱلۡجِزۡیَةَ عَن یَدࣲ وَهُمۡ صَـٰغِرُونَ",
+      "text_tajweed_html": "قَ<tajweed class=madda_normal>ـ</tajweed>ٰتِلُ<tajweed class=silent>وا</tajweed>۟<tajweed class=ham_wasl> </tajweed>ٱلَّذِینَ لَا یُؤۡمِنُونَ ب<tajweed class=ham_wasl>ِ</tajweed>ٱللَّهِ وَلَا ب<tajweed class=ham_wasl>ِ</tajweed>ٱلۡیَوۡمِ<tajweed class=ham_wasl> </tajweed>ٱلۡـَٔاخِرِ وَلَا یُحَرِّمُونَ مَا حَرَّم<tajweed class=ham_wasl>َ</tajweed> ٱللَّهُ وَرَسُولُ<tajweed class=madda_normal>ه</tajweed>ُۥ وَلَا یَدِینُونَ دِین<tajweed class=ham_wasl>َ</tajweed> ٱلۡحَقِّ مِن<tajweed class=ham_wasl>َ</tajweed> ٱلَّذِینَ أُوت<tajweed class=silent>ُو</tajweed>ا<tajweed class=ham_wasl>۟</tajweed> ٱلۡكِ<tajweed class=madda_normal>ت</tajweed>َـٰبَ حَتَّىٰ یُعۡ<tajweed class=silent>طُ</tajweed>و<tajweed class=ham_wasl>ا</tajweed>۟ ٱلۡجِزۡیَةَ<tajweed class=idghaam_ghunnah> عَن</tajweed> <tajweed class=idghaam_ghunnah>یَدࣲ</tajweed> وَهُمۡ<tajweed class=madda_normal> </tajweed>صَـٰ<tajweed class=madda_permissible>غ</tajweed>ِرُونَ",
+      "rules_count": 19
+    },
+    {
+      "verse_key": "9:30",
+      "text_plain": "وَقَالَتِ ٱلۡیَهُودُ عُزَیۡرٌ ٱبۡنُ ٱللَّهِ وَقَالَتِ ٱلنَّصَـٰرَى ٱلۡمَسِیحُ ٱبۡنُ ٱللَّهِۖ ذَ ٰ⁠لِكَ قَوۡلُهُم بِأَفۡوَ ٰ⁠هِهِمۡۖ یُضَـٰهِـُٔونَ قَوۡلَ ٱلَّذِینَ كَفَرُوا۟ مِن قَبۡلُۚ قَـٰتَلَهُمُ ٱللَّهُۖ أَنَّىٰ یُؤۡفَكُونَ",
+      "text_tajweed_html": "وَقَالَتِ <tajweed class=ham_wasl>ٱ</tajweed>لۡیَهُودُ عُزَیۡرٌ <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=qalaqala>بۡ</tajweed>نُ <tajweed class=ham_wasl>ٱ</tajweed>للَّهِ وَقَالَتِ <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed><tajweed class=ghunnah>نَّ</tajweed>صَ<tajweed class=madda_normal>ـ</tajweed>ٰرَى<tajweed class=ham_wasl> </tajweed>ٱلۡمَسِیحُ<tajweed class=ham_wasl> </tajweed><tajweed class=qalaqala>ٱب</tajweed>ۡنُ<tajweed class=ham_wasl> </tajweed>ٱللَّهِۖ <tajweed class=madda_normal>ذ</tajweed>َ ٰ⁠لِكَ قَوۡ<tajweed class=ikhpiaa_shafawi>لُهُ</tajweed>م بِأَ<tajweed class=madda_normal>ف</tajweed>ۡوَ ٰ⁠هِهِم<tajweed class=madda_normal>ۡ</tajweed>ۖ یُضَـٰهِـُٔونَ<tajweed class=ham_wasl> </tajweed>قَوۡلَ ٱلَّذِینَ<tajweed class=silent> ك</tajweed>َفَ<tajweed class=ikhpiaa>رُوا</tajweed><tajweed class=qalaqala>۟ </tajweed>مِن ق<tajweed class=madda_normal>َ</tajweed>بۡلُۚ قَـ<tajweed class=ham_wasl>ٰ</tajweed>تَلَهُمُ <tajweed class=ghunnah>ٱلل</tajweed>َّهُۖ أَنَّ<tajweed class=madda_permissible>ى</tajweed>ٰ یُؤۡفَكُونَ",
+      "rules_count": 24
+    },
+    {
+      "verse_key": "9:31",
+      "text_plain": "ٱتَّخَذُوۤا۟ أَحۡبَارَهُمۡ وَرُهۡبَـٰنَهُمۡ أَرۡبَابࣰا مِّن دُونِ ٱللَّهِ وَٱلۡمَسِیحَ ٱبۡنَ مَرۡیَمَ وَمَاۤ أُمِرُوۤا۟ إِلَّا لِیَعۡبُدُوۤا۟ إِلَـٰهࣰا وَ ٰ⁠حِدࣰاۖ لَّاۤ إِلَـٰهَ إِلَّا هُوَۚ سُبۡحَـٰنَهُۥ عَمَّا یُشۡرِكُونَ",
+      "text_tajweed_html": "ٱتَّخَذُ<tajweed class=madda_permissible>وۤ</tajweed><tajweed class=silent>ا۟</tajweed> أَحۡبَارَهُمۡ وَرُهۡبَ<tajweed class=madda_normal>ـ</tajweed>ٰنَهُمۡ أَرۡبَا<tajweed class=idghaam_ghunnah>بࣰا مّ</tajweed><tajweed class=ikhpiaa>ِن د</tajweed>ُونِ<tajweed class=ham_wasl> </tajweed>ٱللَّهِ و<tajweed class=ham_wasl>َ</tajweed>ٱلۡمَسِیحَ<tajweed class=ham_wasl> </tajweed><tajweed class=qalaqala>ٱب</tajweed>ۡنَ مَرۡیَمَ وَم<tajweed class=madda_permissible>َا</tajweed>ۤ أُمِر<tajweed class=madda_permissible>ُو</tajweed><tajweed class=silent>ۤا</tajweed>۟ إِلَّا لِیَعۡبُد<tajweed class=madda_permissible>ُو</tajweed><tajweed class=silent>ۤا</tajweed>۟ إِل<tajweed class=madda_normal>َ</tajweed>ـ<tajweed class=idghaam_ghunnah>ٰهࣰا </tajweed><tajweed class=madda_normal>و</tajweed>َ ٰ<tajweed class=idghaam_wo_ghunnah>⁠حِدࣰا</tajweed><tajweed class=madda_permissible>ۖ </tajweed>لَّاۤ<tajweed class=madda_normal> </tajweed>إِلَـٰهَ إِلَّا ه<tajweed class=qalaqala>ُو</tajweed>َۚ<tajweed class=madda_normal> </tajweed>سُبۡ<tajweed class=madda_normal>ح</tajweed>َـٰ<tajweed class=ghunnah>نَه</tajweed>ُۥ عَمَّا <tajweed class=madda_permissible>ی</tajweed>ُشۡرِكُونَ",
+      "rules_count": 25
+    },
+    {
+      "verse_key": "9:32",
+      "text_plain": "یُرِیدُونَ أَن یُطۡفِـُٔوا۟ نُورَ ٱللَّهِ بِأَفۡوَ ٰ⁠هِهِمۡ وَیَأۡبَى ٱللَّهُ إِلَّاۤ أَن یُتِمَّ نُورَهُۥ وَلَوۡ كَرِهَ ٱلۡكَـٰفِرُونَ",
+      "text_tajweed_html": "یُرِیدُونَ أَ<tajweed class=idghaam_ghunnah>ن یُ</tajweed><tajweed class=qalaqala>طۡ</tajweed>فِـُٔو<tajweed class=silent>ا۟</tajweed> نُورَ <tajweed class=ham_wasl>ٱ</tajweed>للَّهِ بِأَفۡوَ<tajweed class=madda_normal> </tajweed>ٰ⁠هِهِمۡ وَیَأۡبَ<tajweed class=ham_wasl>ى</tajweed> ٱللَّهُ إِل<tajweed class=madda_permissible>َّ</tajweed>اۤ <tajweed class=idghaam_ghunnah>أَن </tajweed>یُ<tajweed class=ghunnah>تِم</tajweed>َّ نُورَ<tajweed class=madda_normal>ه</tajweed>ُۥ وَلَوۡ كَرِه<tajweed class=ham_wasl>َ</tajweed> ٱلۡ<tajweed class=madda_normal>ك</tajweed>َـٰف<tajweed class=madda_permissible>ِ</tajweed>رُونَ",
+      "rules_count": 13
+    },
+    {
+      "verse_key": "9:33",
+      "text_plain": "هُوَ ٱلَّذِیۤ أَرۡسَلَ رَسُولَهُۥ بِٱلۡهُدَىٰ وَدِینِ ٱلۡحَقِّ لِیُظۡهِرَهُۥ عَلَى ٱلدِّینِ كُلِّهِۦ وَلَوۡ كَرِهَ ٱلۡمُشۡرِكُونَ",
+      "text_tajweed_html": "هُوَ <tajweed class=ham_wasl>ٱ</tajweed>لَّذِ<tajweed class=madda_permissible>یۤ</tajweed> أَرۡسَلَ رَسُولَهُ<tajweed class=madda_normal>ۥ</tajweed> بِ<tajweed class=ham_wasl>ٱ</tajweed>لۡهُدَىٰ وَدِینِ <tajweed class=ham_wasl>ٱ</tajweed>لۡحَقِّ لِیُظۡهِرَهُ<tajweed class=madda_normal>ۥ</tajweed> عَلَى <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>دِّینِ كُلِّهِ<tajweed class=madda_normal>ۦ</tajweed> وَلَوۡ كَرِهَ <tajweed class=ham_wasl>ٱ</tajweed>لۡمُشۡرِكُ<tajweed class=madda_permissible>و</tajweed>نَ",
+      "rules_count": 11
+    },
+    {
+      "verse_key": "9:34",
+      "text_plain": "۞ یَـٰۤأَیُّهَا ٱلَّذِینَ ءَامَنُوۤا۟ إِنَّ كَثِیرࣰا مِّنَ ٱلۡأَحۡبَارِ وَٱلرُّهۡبَانِ لَیَأۡكُلُونَ أَمۡوَ ٰ⁠لَ ٱلنَّاسِ بِٱلۡبَـٰطِلِ وَیَصُدُّونَ عَن سَبِیلِ ٱللَّهِۗ وَٱلَّذِینَ یَكۡنِزُونَ ٱلذَّهَبَ وَٱلۡفِضَّةَ وَلَا یُنفِقُونَهَا فِی سَبِیلِ ٱللَّهِ فَبَشِّرۡهُم بِعَذَابٍ أَلِیمࣲ",
+      "text_tajweed_html": "۞ <tajweed class=madda_permissible>یَ</tajweed>ـٰۤأَیُّه<tajweed class=ham_wasl>َ</tajweed>ا ٱلَّذِینَ ءَام<tajweed class=madda_permissible>َن</tajweed><tajweed class=silent>ُو</tajweed>ۤا۟<tajweed class=ghunnah> إِ</tajweed>نَّ كَث<tajweed class=idghaam_ghunnah>ِیرࣰا </tajweed>مِّ<tajweed class=ham_wasl>ن</tajweed>َ ٱلۡأَحۡبَارِ<tajweed class=ham_wasl> </tajweed><tajweed class=laam_shamsiyah>و</tajweed>َٱلرُّهۡبَانِ لَیَأۡكُلُونَ أَم<tajweed class=madda_normal>ۡ</tajweed>وَ <tajweed class=ham_wasl>ٰ</tajweed><tajweed class=laam_shamsiyah>⁠</tajweed><tajweed class=ghunnah>لَ </tajweed>ٱلنَّا<tajweed class=ham_wasl>س</tajweed>ِ بِ<tajweed class=madda_normal>ٱ</tajweed>لۡبَـٰطِلِ وَیَصُدُّ<tajweed class=ikhpiaa>ونَ </tajweed>عَن سَ<tajweed class=ham_wasl>ب</tajweed>ِیلِ ٱللّ<tajweed class=ham_wasl>َ</tajweed>هِۗ وَٱلَّذِینَ یَكۡن<tajweed class=ham_wasl>ِ</tajweed><tajweed class=laam_shamsiyah>ز</tajweed>ُونَ ٱلذَّ<tajweed class=ham_wasl>ه</tajweed>َبَ وَٱلۡفِضَّةَ و<tajweed class=ikhpiaa>َلَ</tajweed>ا یُنفِقُونَهَا فِی س<tajweed class=ham_wasl>َ</tajweed>بِیلِ ٱللَّهِ فَبَ<tajweed class=ikhpiaa_shafawi>شِّر</tajweed>ۡهُم بِعَذَا<tajweed class=madda_permissible>ب</tajweed>ٍ أَلِیمࣲ",
+      "rules_count": 25
+    },
+    {
+      "verse_key": "9:35",
+      "text_plain": "یَوۡمَ یُحۡمَىٰ عَلَیۡهَا فِی نَارِ جَهَنَّمَ فَتُكۡوَىٰ بِهَا جِبَاهُهُمۡ وَجُنُوبُهُمۡ وَظُهُورُهُمۡۖ هَـٰذَا مَا كَنَزۡتُمۡ لِأَنفُسِكُمۡ فَذُوقُوا۟ مَا كُنتُمۡ تَكۡنِزُونَ",
+      "text_tajweed_html": "یَوۡمَ یُحۡمَىٰ عَلَیۡهَا فِی نَارِ جَهَ<tajweed class=ghunnah>نَّ</tajweed>مَ فَتُكۡوَىٰ بِهَا جِبَاهُهُمۡ وَجُنُوبُهُمۡ وَظُهُورُهُمۡۖ ه<tajweed class=madda_normal>َ</tajweed>ـٰذَا مَا كَنَزۡتُمۡ لِ<tajweed class=ikhpiaa>أَن</tajweed>فُسِكُمۡ فَذُوق<tajweed class=silent>ُو</tajweed>ا۟ مَا <tajweed class=ikhpiaa>كُن</tajweed>تُمۡ تَكۡنِ<tajweed class=madda_permissible>ز</tajweed>ُونَ",
+      "rules_count": 6
+    },
+    {
+      "verse_key": "9:36",
+      "text_plain": "إِنَّ عِدَّةَ ٱلشُّهُورِ عِندَ ٱللَّهِ ٱثۡنَا عَشَرَ شَهۡرࣰا فِی كِتَـٰبِ ٱللَّهِ یَوۡمَ خَلَقَ ٱلسَّمَـٰوَ ٰ⁠تِ وَٱلۡأَرۡضَ مِنۡهَاۤ أَرۡبَعَةٌ حُرُمࣱۚ ذَ ٰ⁠لِكَ ٱلدِّینُ ٱلۡقَیِّمُۚ فَلَا تَظۡلِمُوا۟ فِیهِنَّ أَنفُسَكُمۡۚ وَقَـٰتِلُوا۟ ٱلۡمُشۡرِكِینَ كَاۤفَّةࣰ كَمَا یُقَـٰتِلُونَكُمۡ كَاۤفَّةࣰۚ وَٱعۡلَمُوۤا۟ أَنَّ ٱللَّهَ مَعَ ٱلۡمُتَّقِینَ",
+      "text_tajweed_html": "إِ<tajweed class=ghunnah>نَّ</tajweed> عِدَّةَ <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>شُّهُورِ عِ<tajweed class=ikhpiaa>ندَ</tajweed> <tajweed class=ham_wasl>ٱ</tajweed>للَّهِ <tajweed class=ham_wasl>ٱ</tajweed>ثۡنَا عَشَرَ شَهۡر<tajweed class=ikhpiaa>ࣰا فِ</tajweed>ی كِتَ<tajweed class=madda_normal>ـ</tajweed>ٰبِ<tajweed class=ham_wasl> </tajweed>ٱللَّهِ یَوۡمَ خَلَقَ<tajweed class=ham_wasl> </tajweed><tajweed class=laam_shamsiyah>ٱ</tajweed>لسَّم<tajweed class=madda_normal>َ</tajweed>ـٰ<tajweed class=madda_normal>و</tajweed>َ ٰ⁠ت<tajweed class=ham_wasl>ِ</tajweed> وَٱلۡأَرۡضَ مِ<tajweed class=madda_permissible>نۡ</tajweed>هَاۤ أَرۡبَعَةٌ ح<tajweed class=ikhpiaa>ُرُم</tajweed><tajweed class=madda_normal>ࣱ</tajweed>ۚ ذَ <tajweed class=ham_wasl>ٰ</tajweed><tajweed class=laam_shamsiyah>⁠</tajweed>لِكَ ٱل<tajweed class=ham_wasl>د</tajweed>ِّینُ ٱلۡقَیِّمُۚ فَلَا ت<tajweed class=silent>َظ</tajweed>ۡلِمُو<tajweed class=ghunnah>ا۟ </tajweed>فِی<tajweed class=ikhpiaa>هِن</tajweed>َّ أَنفُسَك<tajweed class=madda_normal>ُ</tajweed>مۡۚ و<tajweed class=silent>َق</tajweed>َ<tajweed class=ham_wasl>ـ</tajweed>ٰتِلُوا۟ ٱلۡمُشۡ<tajweed class=madda_necessary>رِ</tajweed>كِین<tajweed class=ikhpiaa>َ كَ</tajweed>اۤفَّةࣰ <tajweed class=madda_normal>ك</tajweed>َمَا یُقَـٰتِل<tajweed class=madda_necessary>ُو</tajweed>نَكُ<tajweed class=idghaam_ghunnah>مۡ ك</tajweed><tajweed class=ham_wasl>َ</tajweed>اۤفَّة<tajweed class=madda_permissible>ࣰۚ</tajweed><tajweed class=silent> و</tajweed>َٱع<tajweed class=ghunnah>ۡلَ</tajweed>م<tajweed class=ham_wasl>ُ</tajweed>وۤا۟ أَنَّ ٱ<tajweed class=ham_wasl>ل</tajweed>لَّهَ مَع<tajweed class=madda_permissible>َ</tajweed> ٱلۡمُتَّقِینَ",
+      "rules_count": 38
+    },
+    {
+      "verse_key": "9:37",
+      "text_plain": "إِنَّمَا ٱلنَّسِیۤءُ زِیَادَةࣱ فِی ٱلۡكُفۡرِۖ یُضَلُّ بِهِ ٱلَّذِینَ كَفَرُوا۟ یُحِلُّونَهُۥ عَامࣰا وَیُحَرِّمُونَهُۥ عَامࣰا لِّیُوَاطِـُٔوا۟ عِدَّةَ مَا حَرَّمَ ٱللَّهُ فَیُحِلُّوا۟ مَا حَرَّمَ ٱللَّهُۚ زُیِّنَ لَهُمۡ سُوۤءُ أَعۡمَـٰلِهِمۡۗ وَٱللَّهُ لَا یَهۡدِی ٱلۡقَوۡمَ ٱلۡكَـٰفِرِینَ",
+      "text_tajweed_html": "إِ<tajweed class=ghunnah>نَّ</tajweed>مَا <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed><tajweed class=ghunnah>نَّ</tajweed>سِ<tajweed class=madda_obligatory>یۤ</tajweed>ءُ زِیَادَة<tajweed class=ikhpiaa>ࣱ فِ</tajweed>ی <tajweed class=ham_wasl>ٱ</tajweed>لۡكُفۡرِۖ یُضَلُّ بِهِ<tajweed class=ham_wasl> </tajweed>ٱلَّذِینَ كَفَرُ<tajweed class=silent>وا</tajweed>۟ یُحِلُّونَه<tajweed class=madda_normal>ُ</tajweed>ۥ عَا<tajweed class=idghaam_ghunnah>مࣰا و</tajweed>َیُحَرِّمُونَه<tajweed class=madda_normal>ُ</tajweed>ۥ عَا<tajweed class=idghaam_wo_ghunnah>مࣰا لّ</tajweed>ِیُوَاطِـُٔ<tajweed class=silent>وا</tajweed>۟ عِدَّةَ مَا حَرَّمَ<tajweed class=ham_wasl> </tajweed>ٱللَّهُ فَیُحِلُّ<tajweed class=silent>وا</tajweed>۟ مَا حَرَّمَ<tajweed class=ham_wasl> </tajweed>ٱللَّهُۚ زُیِّنَ لَهُمۡ <tajweed class=madda_obligatory>سُ</tajweed>وۤءُ أَعۡ<tajweed class=madda_normal>م</tajweed>َـٰلِهِمۡ<tajweed class=ham_wasl>ۗ</tajweed> وَٱللَّهُ لَا یَهۡ<tajweed class=ham_wasl>د</tajweed>ِی ٱلۡقَو<tajweed class=ham_wasl>ۡ</tajweed>مَ ٱ<tajweed class=madda_normal>ل</tajweed>ۡكَـ<tajweed class=madda_permissible>ٰ</tajweed>فِرِینَ",
+      "rules_count": 24
+    },
+    {
+      "verse_key": "9:38",
+      "text_plain": "یَـٰۤأَیُّهَا ٱلَّذِینَ ءَامَنُوا۟ مَا لَكُمۡ إِذَا قِیلَ لَكُمُ ٱنفِرُوا۟ فِی سَبِیلِ ٱللَّهِ ٱثَّاقَلۡتُمۡ إِلَى ٱلۡأَرۡضِۚ أَرَضِیتُم بِٱلۡحَیَوٰةِ ٱلدُّنۡیَا مِنَ ٱلۡـَٔاخِرَةِۚ فَمَا مَتَـٰعُ ٱلۡحَیَوٰةِ ٱلدُّنۡیَا فِی ٱلۡـَٔاخِرَةِ إِلَّا قَلِیلٌ",
+      "text_tajweed_html": "یَ<tajweed class=madda_permissible>ـٰ</tajweed>ۤأَیُّهَا<tajweed class=ham_wasl> </tajweed>ٱلَّذِینَ ءَامَنُ<tajweed class=silent>وا</tajweed>۟ مَا لَكُمۡ إِذَا قِیلَ لَكُمُ<tajweed class=ham_wasl> </tajweed><tajweed class=ikhpiaa>ٱنف</tajweed>ِرُ<tajweed class=silent>وا</tajweed>۟ فِی سَبِیلِ<tajweed class=ham_wasl> </tajweed>ٱللَّهِ<tajweed class=ham_wasl> </tajweed>ٱثَّاقَلۡتُمۡ إِلَى<tajweed class=ham_wasl> </tajweed>ٱلۡأَرۡضِۚ أَرَضِی<tajweed class=ikhpiaa_shafawi>تُم </tajweed><tajweed class=ham_wasl>ب</tajweed>ِٱلۡحَ<tajweed class=silent>ی</tajweed><tajweed class=madda_normal>َ</tajweed>وٰة<tajweed class=ham_wasl>ِ</tajweed><tajweed class=laam_shamsiyah> </tajweed>ٱلدُّنۡیَا مِن<tajweed class=ham_wasl>َ</tajweed> ٱلۡـَٔاخِرَةِۚ فَمَا <tajweed class=madda_normal>م</tajweed>َتَ<tajweed class=ham_wasl>ـ</tajweed>ٰعُ ٱل<tajweed class=silent>ۡ</tajweed><tajweed class=madda_normal>ح</tajweed>َیَ<tajweed class=ham_wasl>و</tajweed><tajweed class=laam_shamsiyah>ٰ</tajweed>ةِ ٱلدُّنۡیَا<tajweed class=ham_wasl> </tajweed>فِی ٱلۡـَٔاخِرَةِ إِلَّ<tajweed class=madda_permissible>ا</tajweed> قَلِیلٌ",
+      "rules_count": 24
+    },
+    {
+      "verse_key": "9:39",
+      "text_plain": "إِلَّا تَنفِرُوا۟ یُعَذِّبۡكُمۡ عَذَابًا أَلِیمࣰا وَیَسۡتَبۡدِلۡ قَوۡمًا غَیۡرَكُمۡ وَلَا تَضُرُّوهُ شَیۡـࣰٔاۗ وَٱللَّهُ عَلَىٰ كُلِّ شَیۡءࣲ قَدِیرٌ",
+      "text_tajweed_html": "إِلَّا تَ<tajweed class=ikhpiaa>نفِ</tajweed>رُو<tajweed class=silent>ا۟</tajweed> یُعَذِّ<tajweed class=qalaqala>بۡ</tajweed>كُمۡ عَذَابًا أَلِیم<tajweed class=idghaam_ghunnah>ࣰا وَ</tajweed>یَسۡتَ<tajweed class=qalaqala>بۡ</tajweed>دِلۡ قَوۡمًا غَیۡرَكُمۡ وَلَا تَضُرُّوهُ شَیۡـٔ<tajweed class=idghaam_ghunnah>ࣰاۗ و</tajweed><tajweed class=ham_wasl>َ</tajweed>ٱللَّهُ عَلَىٰ كُلِّ شَیۡ<tajweed class=ikhpiaa>ءࣲ ق</tajweed>َد<tajweed class=madda_permissible>ِ</tajweed>یرٌ",
+      "rules_count": 9
+    },
+    {
+      "verse_key": "9:40",
+      "text_plain": "إِلَّا تَنصُرُوهُ فَقَدۡ نَصَرَهُ ٱللَّهُ إِذۡ أَخۡرَجَهُ ٱلَّذِینَ كَفَرُوا۟ ثَانِیَ ٱثۡنَیۡنِ إِذۡ هُمَا فِی ٱلۡغَارِ إِذۡ یَقُولُ لِصَـٰحِبِهِۦ لَا تَحۡزَنۡ إِنَّ ٱللَّهَ مَعَنَاۖ فَأَنزَلَ ٱللَّهُ سَكِینَتَهُۥ عَلَیۡهِ وَأَیَّدَهُۥ بِجُنُودࣲ لَّمۡ تَرَوۡهَا وَجَعَلَ كَلِمَةَ ٱلَّذِینَ كَفَرُوا۟ ٱلسُّفۡلَىٰۗ وَكَلِمَةُ ٱللَّهِ هِیَ ٱلۡعُلۡیَاۗ وَٱللَّهُ عَزِیزٌ حَكِیمٌ",
+      "text_tajweed_html": "إِلَّا تَ<tajweed class=ikhpiaa>نصُ</tajweed>رُوهُ فَقَ<tajweed class=qalaqala>دۡ</tajweed> نَصَرَهُ <tajweed class=ham_wasl>ٱ</tajweed>للَّهُ إِذۡ أَخۡرَجَهُ <tajweed class=ham_wasl>ٱ</tajweed>لَّذِینَ كَفَرُو<tajweed class=silent>ا۟</tajweed> ثَانِیَ <tajweed class=ham_wasl>ٱ</tajweed>ثۡنَیۡنِ إِذۡ هُمَا فِی <tajweed class=ham_wasl>ٱ</tajweed>لۡغَارِ إِذۡ یَقُولُ لِصَ<tajweed class=madda_normal>ـ</tajweed>ٰحِبِه<tajweed class=madda_normal>ِ</tajweed>ۦ لَا تَحۡزَنۡ إ<tajweed class=ghunnah>ِنّ</tajweed>َ<tajweed class=ham_wasl> </tajweed>ٱللَّهَ مَعَنَاۖ فَ<tajweed class=ikhpiaa>أَن</tajweed>زَل<tajweed class=ham_wasl>َ</tajweed> ٱللَّهُ سَكِینَتَ<tajweed class=madda_normal>ه</tajweed>ُۥ عَلَیۡهِ وَأَیَّدَ<tajweed class=madda_normal>ه</tajweed>ُۥ بِجُنُ<tajweed class=idghaam_wo_ghunnah>ودࣲ ل</tajweed>َّمۡ تَرَوۡهَا وَجَعَلَ كَلِمَة<tajweed class=ham_wasl>َ</tajweed> ٱلَّذِینَ كَفَر<tajweed class=silent>ُو</tajweed>ا<tajweed class=ham_wasl>۟</tajweed><tajweed class=laam_shamsiyah> </tajweed>ٱلسُّفۡلَىٰۗ وَكَلِمَ<tajweed class=ham_wasl>ة</tajweed>ُ ٱللَّهِ هِ<tajweed class=ham_wasl>ی</tajweed>َ ٱلۡعُلۡیَا<tajweed class=ham_wasl>ۗ</tajweed> وَٱللَّهُ عَزِیزٌ <tajweed class=madda_permissible>ح</tajweed>َكِیمٌ",
+      "rules_count": 24
+    },
+    {
+      "verse_key": "9:41",
+      "text_plain": "ٱنفِرُوا۟ خِفَافࣰا وَثِقَالࣰا وَجَـٰهِدُوا۟ بِأَمۡوَ ٰ⁠لِكُمۡ وَأَنفُسِكُمۡ فِی سَبِیلِ ٱللَّهِۚ ذَ ٰ⁠لِكُمۡ خَیۡرࣱ لَّكُمۡ إِن كُنتُمۡ تَعۡلَمُونَ",
+      "text_tajweed_html": "ٱ<tajweed class=ikhpiaa>نفِ</tajweed>رُو<tajweed class=silent>ا۟</tajweed> خِفَاف<tajweed class=idghaam_ghunnah>ࣰا وَ</tajweed>ثِقَال<tajweed class=idghaam_ghunnah>ࣰا وَ</tajweed>جَ<tajweed class=madda_normal>ـ</tajweed>ٰهِدُ<tajweed class=silent>وا</tajweed>۟ بِأَمۡو<tajweed class=madda_normal>َ</tajweed> ٰ⁠لِكُمۡ و<tajweed class=ikhpiaa>َأَ</tajweed>نفُسِكُمۡ فِی سَبِی<tajweed class=ham_wasl>ل</tajweed>ِ ٱللَّهِ<tajweed class=madda_normal>ۚ</tajweed> ذَ ٰ⁠لِكُمۡ<tajweed class=idghaam_wo_ghunnah> خَیۡ</tajweed>رࣱ لَّك<tajweed class=ikhpiaa>ُمۡ </tajweed><tajweed class=ikhpiaa>إِن</tajweed> كُنتُمۡ تَ<tajweed class=madda_permissible>ع</tajweed>ۡلَمُونَ",
+      "rules_count": 14
+    },
+    {
+      "verse_key": "9:42",
+      "text_plain": "لَوۡ كَانَ عَرَضࣰا قَرِیبࣰا وَسَفَرࣰا قَاصِدࣰا لَّٱتَّبَعُوكَ وَلَـٰكِنۢ بَعُدَتۡ عَلَیۡهِمُ ٱلشُّقَّةُۚ وَسَیَحۡلِفُونَ بِٱللَّهِ لَوِ ٱسۡتَطَعۡنَا لَخَرَجۡنَا مَعَكُمۡ یُهۡلِكُونَ أَنفُسَهُمۡ وَٱللَّهُ یَعۡلَمُ إِنَّهُمۡ لَكَـٰذِبُونَ",
+      "text_tajweed_html": "لَوۡ كَانَ عَرَض<tajweed class=ikhpiaa>ࣰا قَ</tajweed>رِیب<tajweed class=idghaam_ghunnah>ࣰا وَ</tajweed>سَفَر<tajweed class=ikhpiaa>ࣰا قَ</tajweed>اصِد<tajweed class=idghaam_wo_ghunnah>ࣰا لَّ</tajweed><tajweed class=ham_wasl>ٱ</tajweed>تَّبَعُوكَ وَلَ<tajweed class=madda_normal>ـ</tajweed>ٰكِ<tajweed class=iqlab>نۢ </tajweed>بَعُدَتۡ عَلَیۡهِمُ<tajweed class=ham_wasl> </tajweed><tajweed class=laam_shamsiyah>ٱ</tajweed>لشُّقَّةُۚ وَسَیَحۡلِفُونَ <tajweed class=ham_wasl>ب</tajweed>ِٱللَّهِ لَو<tajweed class=ham_wasl>ِ</tajweed> ٱسۡتَطَعۡنَا لَخَ<tajweed class=qalaqala>رَ</tajweed>جۡنَا مَعَكُمۡ یُهۡلِكُونَ <tajweed class=ikhpiaa>أَن</tajweed>فُسَهُمۡ <tajweed class=ham_wasl>و</tajweed>َٱللَّهُ یَعۡلَمُ <tajweed class=ghunnah>إِن</tajweed>َّهُمۡ لَ<tajweed class=madda_normal>ك</tajweed>َـٰذ<tajweed class=madda_permissible>ِ</tajweed>بُونَ",
+      "rules_count": 17
+    },
+    {
+      "verse_key": "9:43",
+      "text_plain": "عَفَا ٱللَّهُ عَنكَ لِمَ أَذِنتَ لَهُمۡ حَتَّىٰ یَتَبَیَّنَ لَكَ ٱلَّذِینَ صَدَقُوا۟ وَتَعۡلَمَ ٱلۡكَـٰذِبِینَ",
+      "text_tajweed_html": "عَفَا <tajweed class=ham_wasl>ٱ</tajweed>للَّهُ عَ<tajweed class=ikhpiaa>نكَ</tajweed> لِمَ أَذِ<tajweed class=ikhpiaa>نتَ</tajweed> لَهُمۡ حَتَّىٰ یَتَبَیَّنَ لَكَ <tajweed class=ham_wasl>ٱ</tajweed>لَّذِینَ صَدَقُو<tajweed class=silent>ا۟</tajweed> وَتَعۡلَمَ <tajweed class=ham_wasl>ٱ</tajweed>لۡكَ<tajweed class=madda_normal>ـ</tajweed>ٰذِب<tajweed class=madda_permissible>ِ</tajweed>ینَ",
+      "rules_count": 8
+    },
+    {
+      "verse_key": "9:44",
+      "text_plain": "لَا یَسۡتَـٔۡذِنُكَ ٱلَّذِینَ یُؤۡمِنُونَ بِٱللَّهِ وَٱلۡیَوۡمِ ٱلۡـَٔاخِرِ أَن یُجَـٰهِدُوا۟ بِأَمۡوَ ٰ⁠لِهِمۡ وَأَنفُسِهِمۡۗ وَٱللَّهُ عَلِیمُۢ بِٱلۡمُتَّقِینَ",
+      "text_tajweed_html": "لَا یَسۡتَـٔۡذِنُكَ <tajweed class=ham_wasl>ٱ</tajweed>لَّذِینَ یُؤۡمِنُونَ بِ<tajweed class=ham_wasl>ٱ</tajweed>للَّهِ وَ<tajweed class=ham_wasl>ٱ</tajweed>لۡیَوۡمِ <tajweed class=ham_wasl>ٱ</tajweed>لۡـَٔاخِرِ أ<tajweed class=idghaam_ghunnah>َن ی</tajweed>ُج<tajweed class=madda_normal>َ</tajweed>ـٰهِد<tajweed class=silent>ُو</tajweed>ا۟ بِأَمۡ<tajweed class=madda_normal>و</tajweed>َ ٰ⁠لِهِمۡ <tajweed class=ikhpiaa>وَأ</tajweed>َنفُسِهِم<tajweed class=ham_wasl>ۡ</tajweed>ۗ وَٱللَّهُ ع<tajweed class=iqlab>َلِی</tajweed>م<tajweed class=ham_wasl>ُ</tajweed>ۢ بِٱلۡمُ<tajweed class=madda_permissible>ت</tajweed>َّقِینَ",
+      "rules_count": 13
+    },
+    {
+      "verse_key": "9:45",
+      "text_plain": "إِنَّمَا یَسۡتَـٔۡذِنُكَ ٱلَّذِینَ لَا یُؤۡمِنُونَ بِٱللَّهِ وَٱلۡیَوۡمِ ٱلۡـَٔاخِرِ وَٱرۡتَابَتۡ قُلُوبُهُمۡ فَهُمۡ فِی رَیۡبِهِمۡ یَتَرَدَّدُونَ",
+      "text_tajweed_html": "إِ<tajweed class=ghunnah>نَّ</tajweed>مَا یَسۡتَـٔۡذِنُكَ <tajweed class=ham_wasl>ٱ</tajweed>لَّذِینَ لَا یُؤۡمِنُونَ بِ<tajweed class=ham_wasl>ٱ</tajweed>للَّهِ وَ<tajweed class=ham_wasl>ٱ</tajweed>لۡیَوۡمِ <tajweed class=ham_wasl>ٱ</tajweed>لۡـَٔاخِرِ و<tajweed class=ham_wasl>َ</tajweed>ٱرۡتَابَتۡ قُلُوبُهُمۡ فَهُمۡ فِی رَیۡبِهِمۡ یَتَرَدَّد<tajweed class=madda_permissible>ُ</tajweed>ونَ",
+      "rules_count": 7
+    },
+    {
+      "verse_key": "9:46",
+      "text_plain": "۞ وَلَوۡ أَرَادُوا۟ ٱلۡخُرُوجَ لَأَعَدُّوا۟ لَهُۥ عُدَّةࣰ وَلَـٰكِن كَرِهَ ٱللَّهُ ٱنۢبِعَاثَهُمۡ فَثَبَّطَهُمۡ وَقِیلَ ٱقۡعُدُوا۟ مَعَ ٱلۡقَـٰعِدِینَ",
+      "text_tajweed_html": "۞ وَلَوۡ أَرَاد<tajweed class=silent>ُو</tajweed>ا<tajweed class=ham_wasl>۟</tajweed> ٱلۡخُرُوجَ لَأَعَدّ<tajweed class=silent>ُو</tajweed>ا۟ لَ<tajweed class=madda_normal>ه</tajweed>ُۥ عُدّ<tajweed class=idghaam_ghunnah>َةࣰ </tajweed>وَ<tajweed class=madda_normal>ل</tajweed>َـ<tajweed class=ikhpiaa>ٰكِن</tajweed> كَرِ<tajweed class=ham_wasl>ه</tajweed>َ ٱللَّ<tajweed class=ham_wasl>ه</tajweed>ُ<tajweed class=iqlab> ٱ</tajweed>نۢبِعَاثَهُمۡ فَثَبَّطَهُمۡ وَقِی<tajweed class=ham_wasl>ل</tajweed><tajweed class=qalaqala>َ </tajweed>ٱقۡعُ<tajweed class=silent>دُ</tajweed>وا۟ مَ<tajweed class=ham_wasl>ع</tajweed>َ ٱل<tajweed class=madda_normal>ۡ</tajweed>قَـٰ<tajweed class=madda_permissible>ع</tajweed>ِدِینَ",
+      "rules_count": 16
+    },
+    {
+      "verse_key": "9:47",
+      "text_plain": "لَوۡ خَرَجُوا۟ فِیكُم مَّا زَادُوكُمۡ إِلَّا خَبَالࣰا وَلَأَوۡضَعُوا۟ خِلَـٰلَكُمۡ یَبۡغُونَكُمُ ٱلۡفِتۡنَةَ وَفِیكُمۡ سَمَّـٰعُونَ لَهُمۡۗ وَٱللَّهُ عَلِیمُۢ بِٱلظَّـٰلِمِینَ",
+      "text_tajweed_html": "لَوۡ خَرَجُو<tajweed class=silent>ا۟</tajweed> فِیكُ<tajweed class=idghaam_shafawi>م مَّ</tajweed>ا زَادُوكُمۡ إِلَّا خَبَال<tajweed class=idghaam_ghunnah>ࣰا وَ</tajweed>لَأَوۡضَعُو<tajweed class=silent>ا۟</tajweed> خِلَ<tajweed class=madda_normal>ـ</tajweed>ٰلَكُمۡ ی<tajweed class=qalaqala>َب</tajweed>ۡغُونَكُمُ<tajweed class=ham_wasl> </tajweed>ٱلۡفِتۡنَةَ وَفِیكُمۡ س<tajweed class=ghunnah>َمّ</tajweed><tajweed class=madda_normal>َ</tajweed>ـٰعُونَ لَهُمۡۗ<tajweed class=ham_wasl> </tajweed>وَٱللَّهُ عَل<tajweed class=iqlab>ِیمُ</tajweed>ۢ<tajweed class=ham_wasl> </tajweed><tajweed class=laam_shamsiyah>ب</tajweed>ِٱل<tajweed class=madda_normal>ظ</tajweed>َّـٰ<tajweed class=madda_permissible>ل</tajweed>ِمِینَ",
+      "rules_count": 15
+    },
+    {
+      "verse_key": "9:48",
+      "text_plain": "لَقَدِ ٱبۡتَغَوُا۟ ٱلۡفِتۡنَةَ مِن قَبۡلُ وَقَلَّبُوا۟ لَكَ ٱلۡأُمُورَ حَتَّىٰ جَاۤءَ ٱلۡحَقُّ وَظَهَرَ أَمۡرُ ٱللَّهِ وَهُمۡ كَـٰرِهُونَ",
+      "text_tajweed_html": "لَقَدِ <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=qalaqala>بۡ</tajweed>تَغَوُ<tajweed class=silent>ا۟</tajweed> <tajweed class=ham_wasl>ٱ</tajweed>لۡفِتۡنَةَ مِ<tajweed class=ikhpiaa>ن قَ</tajweed><tajweed class=qalaqala>بۡ</tajweed>لُ وَقَلَّبُو<tajweed class=silent>ا۟</tajweed> لَكَ <tajweed class=ham_wasl>ٱ</tajweed>لۡأُمُورَ حَتَّىٰ جَ<tajweed class=madda_obligatory>اۤ</tajweed>ءَ <tajweed class=ham_wasl>ٱ</tajweed>لۡحَقُّ وَظَهَرَ أَمۡرُ <tajweed class=ham_wasl>ٱ</tajweed>للَّهِ وَهُمۡ كَ<tajweed class=madda_normal>ـ</tajweed>ٰرِه<tajweed class=madda_permissible>ُ</tajweed>ونَ",
+      "rules_count": 13
+    },
+    {
+      "verse_key": "9:49",
+      "text_plain": "وَمِنۡهُم مَّن یَقُولُ ٱئۡذَن لِّی وَلَا تَفۡتِنِّیۤۚ أَلَا فِی ٱلۡفِتۡنَةِ سَقَطُوا۟ۗ وَإِنَّ جَهَنَّمَ لَمُحِیطَةُۢ بِٱلۡكَـٰفِرِینَ",
+      "text_tajweed_html": "وَمِنۡهُ<tajweed class=idghaam_shafawi>م مَّ</tajweed><tajweed class=idghaam_ghunnah>ن یَ</tajweed>قُولُ <tajweed class=ham_wasl>ٱ</tajweed>ئۡذَ<tajweed class=idghaam_wo_ghunnah>ن لِّ</tajweed>ی وَلَا تَفۡتِ<tajweed class=ghunnah>نِّ</tajweed><tajweed class=madda_permissible>یۤ</tajweed>ۚ أَلَا فِی<tajweed class=ham_wasl> </tajweed>ٱلۡفِتۡنَةِ سَقَطُ<tajweed class=silent>وا</tajweed>۟ۗ وَ<tajweed class=ghunnah>إِن</tajweed>َّ جَ<tajweed class=ghunnah>هَن</tajweed>َّمَ لَمُحِیط<tajweed class=iqlab>َةُۢ</tajweed> <tajweed class=ham_wasl>ب</tajweed>ِٱلۡ<tajweed class=madda_normal>ك</tajweed>َـٰف<tajweed class=madda_permissible>ِ</tajweed>رِینَ",
+      "rules_count": 14
+    },
+    {
+      "verse_key": "9:50",
+      "text_plain": "إِن تُصِبۡكَ حَسَنَةࣱ تَسُؤۡهُمۡۖ وَإِن تُصِبۡكَ مُصِیبَةࣱ یَقُولُوا۟ قَدۡ أَخَذۡنَاۤ أَمۡرَنَا مِن قَبۡلُ وَیَتَوَلَّوا۟ وَّهُمۡ فَرِحُونَ",
+      "text_tajweed_html": "إِ<tajweed class=ikhpiaa>ن تُ</tajweed>صِ<tajweed class=qalaqala>بۡ</tajweed>كَ حَسَنَة<tajweed class=ikhpiaa>ࣱ تَ</tajweed>سُؤۡهُمۡۖ وَإ<tajweed class=ikhpiaa>ِن ت</tajweed>ُص<tajweed class=qalaqala>ِب</tajweed>ۡكَ مُصِیبَ<tajweed class=idghaam_ghunnah>ةࣱ ی</tajweed>َقُولُ<tajweed class=silent>وا</tajweed>۟ ق<tajweed class=qalaqala>َد</tajweed>ۡ أَخَذۡن<tajweed class=madda_permissible>َا</tajweed>ۤ أَمۡرَنَا م<tajweed class=ikhpiaa>ِن ق</tajweed><tajweed class=qalaqala>َب</tajweed>ۡلُ وَیَتَوَلَّ<tajweed class=silent>وا</tajweed>۟ وَّهُمۡ فَرِح<tajweed class=madda_permissible>ُ</tajweed>ونَ",
+      "rules_count": 13
+    },
+    {
+      "verse_key": "9:51",
+      "text_plain": "قُل لَّن یُصِیبَنَاۤ إِلَّا مَا كَتَبَ ٱللَّهُ لَنَا هُوَ مَوۡلَىٰنَاۚ وَعَلَى ٱللَّهِ فَلۡیَتَوَكَّلِ ٱلۡمُؤۡمِنُونَ",
+      "text_tajweed_html": "قُل لَّ<tajweed class=idghaam_ghunnah>ن یُ</tajweed>صِیبَنَ<tajweed class=madda_permissible>اۤ</tajweed> إِلَّا مَا كَتَبَ <tajweed class=ham_wasl>ٱ</tajweed>للَّهُ لَنَا هُوَ مَوۡلَى<tajweed class=madda_normal>ٰ</tajweed>نَاۚ وَعَلَى<tajweed class=ham_wasl> </tajweed>ٱللَّهِ فَلۡیَتَوَكَّلِ<tajweed class=ham_wasl> </tajweed>ٱلۡمُؤۡمِن<tajweed class=madda_permissible>ُ</tajweed>ونَ",
+      "rules_count": 7
+    },
+    {
+      "verse_key": "9:52",
+      "text_plain": "قُلۡ هَلۡ تَرَبَّصُونَ بِنَاۤ إِلَّاۤ إِحۡدَى ٱلۡحُسۡنَیَیۡنِۖ وَنَحۡنُ نَتَرَبَّصُ بِكُمۡ أَن یُصِیبَكُمُ ٱللَّهُ بِعَذَابࣲ مِّنۡ عِندِهِۦۤ أَوۡ بِأَیۡدِینَاۖ فَتَرَبَّصُوۤا۟ إِنَّا مَعَكُم مُّتَرَبِّصُونَ",
+      "text_tajweed_html": "قُلۡ هَلۡ تَرَبَّصُونَ بِنَ<tajweed class=madda_permissible>اۤ</tajweed> إِلَّ<tajweed class=madda_permissible>اۤ</tajweed> إِحۡدَى <tajweed class=ham_wasl>ٱ</tajweed>لۡحُسۡنَیَیۡنِۖ وَنَحۡنُ نَتَرَبَّصُ بِكُمۡ أ<tajweed class=idghaam_ghunnah>َن ی</tajweed>ُصِیبَكُمُ<tajweed class=ham_wasl> </tajweed>ٱللَّهُ بِعَذَا<tajweed class=idghaam_ghunnah>بࣲ مّ</tajweed>ِنۡ ع<tajweed class=ikhpiaa>ِند</tajweed>ِه<tajweed class=madda_permissible>ِۦ</tajweed>ۤ أَوۡ بِأَیۡدِینَاۖ فَتَرَبَّ<tajweed class=madda_permissible>صُ</tajweed><tajweed class=silent>وۤ</tajweed>ا۟ <tajweed class=ghunnah>إِن</tajweed>َّا مَعَ<tajweed class=idghaam_shafawi>كُم م</tajweed>ُّتَرَبِّ<tajweed class=madda_permissible>ص</tajweed>ُونَ",
+      "rules_count": 13
+    },
+    {
+      "verse_key": "9:53",
+      "text_plain": "قُلۡ أَنفِقُوا۟ طَوۡعًا أَوۡ كَرۡهࣰا لَّن یُتَقَبَّلَ مِنكُمۡ إِنَّكُمۡ كُنتُمۡ قَوۡمࣰا فَـٰسِقِینَ",
+      "text_tajweed_html": "قُلۡ أَ<tajweed class=ikhpiaa>نفِ</tajweed>قُو<tajweed class=silent>ا۟</tajweed> طَوۡعًا أَوۡ كَرۡه<tajweed class=idghaam_wo_ghunnah>ࣰا لَّ</tajweed><tajweed class=idghaam_ghunnah>ن یُ</tajweed>تَقَبَّلَ مِ<tajweed class=ikhpiaa>نكُ</tajweed>مۡ إِ<tajweed class=ghunnah>نَّ</tajweed>كُمۡ كُ<tajweed class=ikhpiaa>نتُ</tajweed>مۡ قَوۡم<tajweed class=ikhpiaa>ࣰا فَ</tajweed><tajweed class=madda_normal>ـ</tajweed>ٰسِق<tajweed class=madda_permissible>ِ</tajweed>ینَ",
+      "rules_count": 10
+    },
+    {
+      "verse_key": "9:54",
+      "text_plain": "وَمَا مَنَعَهُمۡ أَن تُقۡبَلَ مِنۡهُمۡ نَفَقَـٰتُهُمۡ إِلَّاۤ أَنَّهُمۡ كَفَرُوا۟ بِٱللَّهِ وَبِرَسُولِهِۦ وَلَا یَأۡتُونَ ٱلصَّلَوٰةَ إِلَّا وَهُمۡ كُسَالَىٰ وَلَا یُنفِقُونَ إِلَّا وَهُمۡ كَـٰرِهُونَ",
+      "text_tajweed_html": "وَمَا مَنَعَهُمۡ أَ<tajweed class=ikhpiaa>ن تُ</tajweed><tajweed class=qalaqala>قۡ</tajweed>بَلَ مِنۡهُمۡ نَفَقَ<tajweed class=madda_normal>ـ</tajweed>ٰتُهُمۡ إِلّ<tajweed class=madda_permissible>َا</tajweed>ۤ أ<tajweed class=ghunnah>َنّ</tajweed>َهُمۡ كَفَرُ<tajweed class=silent>وا</tajweed>۟ ب<tajweed class=ham_wasl>ِ</tajweed>ٱللَّهِ وَبِرَسُولِه<tajweed class=madda_normal>ِ</tajweed>ۦ وَلَا یَأۡتُونَ<tajweed class=ham_wasl> </tajweed><tajweed class=laam_shamsiyah>ٱ</tajweed>لصَّل<tajweed class=silent>َ</tajweed><tajweed class=madda_normal>و</tajweed>ٰةَ إِلَّا وَهُمۡ كُسَالَىٰ وَلَا ی<tajweed class=ikhpiaa>ُنف</tajweed>ِقُونَ إِلَّا وَهُمۡ ك<tajweed class=madda_normal>َ</tajweed>ـٰرِ<tajweed class=madda_permissible>ه</tajweed>ُونَ",
+      "rules_count": 15
+    },
+    {
+      "verse_key": "9:55",
+      "text_plain": "فَلَا تُعۡجِبۡكَ أَمۡوَ ٰ⁠لُهُمۡ وَلَاۤ أَوۡلَـٰدُهُمۡۚ إِنَّمَا یُرِیدُ ٱللَّهُ لِیُعَذِّبَهُم بِهَا فِی ٱلۡحَیَوٰةِ ٱلدُّنۡیَا وَتَزۡهَقَ أَنفُسُهُمۡ وَهُمۡ كَـٰفِرُونَ",
+      "text_tajweed_html": "فَلَا تُعۡجِ<tajweed class=qalaqala>بۡ</tajweed>كَ أَمۡوَ<tajweed class=madda_normal> </tajweed>ٰ⁠لُهُمۡ وَ<tajweed class=madda_permissible>لَ</tajweed>اۤ أَوۡ<tajweed class=madda_normal>ل</tajweed>َـٰدُهُمۡ<tajweed class=ghunnah>ۚ إ</tajweed>ِنَّمَا یُرِ<tajweed class=ham_wasl>ی</tajweed>دُ ٱللَّهُ لِیُعَذِّ<tajweed class=ikhpiaa_shafawi>بَهُ</tajweed>م بِهَا <tajweed class=ham_wasl>ف</tajweed>ِی ٱلۡ<tajweed class=silent>ح</tajweed><tajweed class=madda_normal>َ</tajweed>یَو<tajweed class=ham_wasl>ٰ</tajweed><tajweed class=laam_shamsiyah>ة</tajweed>ِ ٱلدُّنۡیَا وَتَزۡهَق<tajweed class=ikhpiaa>َ أ</tajweed>َنفُسُهُمۡ وَهُم<tajweed class=madda_normal>ۡ</tajweed> كَـ<tajweed class=madda_permissible>ٰ</tajweed>فِرُونَ",
+      "rules_count": 15
+    },
+    {
+      "verse_key": "9:56",
+      "text_plain": "وَیَحۡلِفُونَ بِٱللَّهِ إِنَّهُمۡ لَمِنكُمۡ وَمَا هُم مِّنكُمۡ وَلَـٰكِنَّهُمۡ قَوۡمࣱ یَفۡرَقُونَ",
+      "text_tajweed_html": "وَیَحۡلِفُونَ بِ<tajweed class=ham_wasl>ٱ</tajweed>للَّهِ إِ<tajweed class=ghunnah>نَّ</tajweed>هُمۡ لَمِ<tajweed class=ikhpiaa>نكُ</tajweed>مۡ وَمَا هُ<tajweed class=idghaam_shafawi>م مِّ</tajweed><tajweed class=ikhpiaa>نكُ</tajweed>مۡ وَلَ<tajweed class=madda_normal>ـ</tajweed>ٰك<tajweed class=ghunnah>ِنّ</tajweed>َهُمۡ قَوۡ<tajweed class=idghaam_ghunnah>مࣱ ی</tajweed>َفۡرَق<tajweed class=madda_permissible>ُ</tajweed>ونَ",
+      "rules_count": 9
+    },
+    {
+      "verse_key": "9:57",
+      "text_plain": "لَوۡ یَجِدُونَ مَلۡجَـًٔا أَوۡ مَغَـٰرَ ٰ⁠تٍ أَوۡ مُدَّخَلࣰا لَّوَلَّوۡا۟ إِلَیۡهِ وَهُمۡ یَجۡمَحُونَ",
+      "text_tajweed_html": "لَوۡ یَجِدُونَ مَلۡجَـًٔا أَوۡ مَغَ<tajweed class=madda_normal>ـ</tajweed>ٰر<tajweed class=madda_normal>َ</tajweed> ٰ⁠تٍ أَوۡ مُدَّ<tajweed class=idghaam_wo_ghunnah>خَلࣰا </tajweed>لَّوَلّ<tajweed class=silent>َو</tajweed>ۡا۟ إِلَیۡهِ وَهُمۡ<tajweed class=qalaqala> ی</tajweed>َجۡم<tajweed class=madda_permissible>َ</tajweed>حُونَ",
+      "rules_count": 6
+    },
+    {
+      "verse_key": "9:58",
+      "text_plain": "وَمِنۡهُم مَّن یَلۡمِزُكَ فِی ٱلصَّدَقَـٰتِ فَإِنۡ أُعۡطُوا۟ مِنۡهَا رَضُوا۟ وَإِن لَّمۡ یُعۡطَوۡا۟ مِنۡهَاۤ إِذَا هُمۡ یَسۡخَطُونَ",
+      "text_tajweed_html": "وَمِنۡهُ<tajweed class=idghaam_shafawi>م مَّ</tajweed><tajweed class=idghaam_ghunnah>ن یَ</tajweed>لۡمِزُكَ فِی <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>صَّدَقَ<tajweed class=madda_normal>ـ</tajweed>ٰتِ فَإِنۡ أُعۡطُ<tajweed class=silent>وا</tajweed>۟ مِنۡهَا رَضُ<tajweed class=silent>وا</tajweed>۟ وَإ<tajweed class=idghaam_wo_ghunnah>ِن لّ</tajweed>َمۡ یُعۡطَو<tajweed class=silent>ۡا</tajweed>۟ مِنۡه<tajweed class=madda_permissible>َا</tajweed>ۤ إِذَا هُمۡ یَسۡخَط<tajweed class=madda_permissible>ُ</tajweed>ونَ",
+      "rules_count": 11
+    },
+    {
+      "verse_key": "9:59",
+      "text_plain": "وَلَوۡ أَنَّهُمۡ رَضُوا۟ مَاۤ ءَاتَىٰهُمُ ٱللَّهُ وَرَسُولُهُۥ وَقَالُوا۟ حَسۡبُنَا ٱللَّهُ سَیُؤۡتِینَا ٱللَّهُ مِن فَضۡلِهِۦ وَرَسُولُهُۥۤ إِنَّاۤ إِلَى ٱللَّهِ رَ ٰ⁠غِبُونَ",
+      "text_tajweed_html": "وَلَوۡ أَ<tajweed class=ghunnah>نَّ</tajweed>هُمۡ رَضُو<tajweed class=silent>ا۟</tajweed> مَ<tajweed class=madda_permissible>اۤ</tajweed> ءَاتَى<tajweed class=madda_normal>ٰ</tajweed>هُمُ <tajweed class=ham_wasl>ٱ</tajweed>للَّهُ وَرَسُولُهُ<tajweed class=madda_normal>ۥ</tajweed> وَقَالُو<tajweed class=silent>ا۟</tajweed> حَسۡبُنَا <tajweed class=ham_wasl>ٱ</tajweed>للَّهُ سَیُؤۡتِینَا <tajweed class=ham_wasl>ٱ</tajweed>للَّهُ مِ<tajweed class=ikhpiaa>ن فَ</tajweed>ضۡلِهِ<tajweed class=madda_normal>ۦ</tajweed> وَرَسُولُهُ<tajweed class=madda_permissible>ۥۤ</tajweed> إِ<tajweed class=ghunnah>نَّ</tajweed><tajweed class=madda_permissible>اۤ</tajweed> إِلَى <tajweed class=ham_wasl>ٱ</tajweed>للَّهِ رَ<tajweed class=madda_normal> </tajweed>ٰ⁠غِ<tajweed class=madda_permissible>ب</tajweed>ُونَ",
+      "rules_count": 17
+    },
+    {
+      "verse_key": "9:60",
+      "text_plain": "۞ إِنَّمَا ٱلصَّدَقَـٰتُ لِلۡفُقَرَاۤءِ وَٱلۡمَسَـٰكِینِ وَٱلۡعَـٰمِلِینَ عَلَیۡهَا وَٱلۡمُؤَلَّفَةِ قُلُوبُهُمۡ وَفِی ٱلرِّقَابِ وَٱلۡغَـٰرِمِینَ وَفِی سَبِیلِ ٱللَّهِ وَٱبۡنِ ٱلسَّبِیلِۖ فَرِیضَةࣰ مِّنَ ٱللَّهِۗ وَٱللَّهُ عَلِیمٌ حَكِیمࣱ",
+      "text_tajweed_html": "۞ <tajweed class=ghunnah>إِن</tajweed>َّمَ<tajweed class=ham_wasl>ا</tajweed><tajweed class=laam_shamsiyah> </tajweed>ٱلصَّدَ<tajweed class=madda_normal>ق</tajweed>َـٰتُ لِلۡفُق<tajweed class=madda_obligatory>َر</tajweed>َاۤءِ<tajweed class=ham_wasl> </tajweed>وَٱلۡم<tajweed class=madda_normal>َ</tajweed>سَـٰكِین<tajweed class=ham_wasl>ِ</tajweed> وَٱ<tajweed class=madda_normal>ل</tajweed>ۡعَـٰمِلِینَ عَلَیۡه<tajweed class=ham_wasl>َ</tajweed>ا وَٱلۡمُؤَلَّفَةِ قُلُوبُهُمۡ و<tajweed class=ham_wasl>َ</tajweed><tajweed class=laam_shamsiyah>ف</tajweed>ِی ٱلرِّقَا<tajweed class=ham_wasl>ب</tajweed>ِ وَ<tajweed class=madda_normal>ٱ</tajweed>لۡغَـٰرِمِینَ وَفِی سَ<tajweed class=ham_wasl>ب</tajweed>ِیلِ ٱللّ<tajweed class=ham_wasl>َ</tajweed><tajweed class=qalaqala>هِ</tajweed> وَ<tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ب</tajweed>ۡنِ ٱلسَّبِیلِۖ ف<tajweed class=idghaam_ghunnah>َرِیض</tajweed>َةࣰ<tajweed class=ham_wasl> </tajweed>مِّنَ ٱلل<tajweed class=ham_wasl>ّ</tajweed>َهِۗ وَٱللَّهُ عَلِ<tajweed class=madda_permissible>ی</tajweed>مٌ حَكِیمࣱ",
+      "rules_count": 23
+    },
+    {
+      "verse_key": "9:61",
+      "text_plain": "وَمِنۡهُمُ ٱلَّذِینَ یُؤۡذُونَ ٱلنَّبِیَّ وَیَقُولُونَ هُوَ أُذُنࣱۚ قُلۡ أُذُنُ خَیۡرࣲ لَّكُمۡ یُؤۡمِنُ بِٱللَّهِ وَیُؤۡمِنُ لِلۡمُؤۡمِنِینَ وَرَحۡمَةࣱ لِّلَّذِینَ ءَامَنُوا۟ مِنكُمۡۚ وَٱلَّذِینَ یُؤۡذُونَ رَسُولَ ٱللَّهِ لَهُمۡ عَذَابٌ أَلِیمࣱ",
+      "text_tajweed_html": "وَمِنۡهُمُ <tajweed class=ham_wasl>ٱ</tajweed>لَّذِینَ یُؤۡذُونَ <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed><tajweed class=ghunnah>نَّ</tajweed>بِیَّ وَیَقُولُونَ هُوَ أُذُن<tajweed class=ikhpiaa>ࣱۚ ق</tajweed>ُلۡ أُذُنُ خَیۡ<tajweed class=idghaam_wo_ghunnah>رࣲ لّ</tajweed>َكُمۡ یُؤۡمِنُ ب<tajweed class=ham_wasl>ِ</tajweed>ٱللَّهِ وَیُؤۡمِنُ لِلۡمُؤۡمِنِینَ وَرَحۡمَ<tajweed class=idghaam_wo_ghunnah>ةࣱ لّ</tajweed>ِلَّذِینَ ءَامَنُ<tajweed class=silent>وا</tajweed>۟ م<tajweed class=ikhpiaa>ِنك</tajweed>ُمۡۚ <tajweed class=ham_wasl>و</tajweed>َٱلَّذِینَ یُؤۡذُونَ رَسُول<tajweed class=ham_wasl>َ</tajweed> ٱللَّهِ لَهُمۡ عَذَابٌ أَ<tajweed class=madda_permissible>ل</tajweed>ِیمࣱ",
+      "rules_count": 13
+    },
+    {
+      "verse_key": "9:62",
+      "text_plain": "یَحۡلِفُونَ بِٱللَّهِ لَكُمۡ لِیُرۡضُوكُمۡ وَٱللَّهُ وَرَسُولُهُۥۤ أَحَقُّ أَن یُرۡضُوهُ إِن كَانُوا۟ مُؤۡمِنِینَ",
+      "text_tajweed_html": "یَحۡلِفُونَ بِ<tajweed class=ham_wasl>ٱ</tajweed>للَّهِ لَكُمۡ لِیُرۡضُوكُمۡ وَ<tajweed class=ham_wasl>ٱ</tajweed>للَّهُ وَرَسُولُهُ<tajweed class=madda_permissible>ۥۤ</tajweed> أَحَقُّ أَ<tajweed class=idghaam_ghunnah>ن یُ</tajweed>رۡضُوهُ إِ<tajweed class=ikhpiaa>ن كَ</tajweed>انُو<tajweed class=silent>ا۟</tajweed> مُؤۡمِنِ<tajweed class=madda_permissible>ی</tajweed>نَ",
+      "rules_count": 7
+    },
+    {
+      "verse_key": "9:63",
+      "text_plain": "أَلَمۡ یَعۡلَمُوۤا۟ أَنَّهُۥ مَن یُحَادِدِ ٱللَّهَ وَرَسُولَهُۥ فَأَنَّ لَهُۥ نَارَ جَهَنَّمَ خَـٰلِدࣰا فِیهَاۚ ذَ ٰ⁠لِكَ ٱلۡخِزۡیُ ٱلۡعَظِیمُ",
+      "text_tajweed_html": "أَلَمۡ یَعۡلَمُ<tajweed class=madda_permissible>وۤ</tajweed><tajweed class=silent>ا۟</tajweed> أَ<tajweed class=ghunnah>نَّ</tajweed>هُ<tajweed class=madda_normal>ۥ</tajweed> مَ<tajweed class=idghaam_ghunnah>ن یُ</tajweed>حَادِدِ <tajweed class=ham_wasl>ٱ</tajweed>للَّهَ وَرَسُولَهُ<tajweed class=madda_normal>ۥ</tajweed> فَأَ<tajweed class=ghunnah>نَّ</tajweed> لَهُ<tajweed class=madda_normal>ۥ</tajweed> نَارَ جَهَ<tajweed class=ghunnah>نَّ</tajweed>مَ خَ<tajweed class=madda_normal>ـ</tajweed>ٰلِ<tajweed class=ikhpiaa>دࣰا ف</tajweed>ِیهَاۚ <tajweed class=madda_normal>ذ</tajweed>َ ٰ⁠ل<tajweed class=ham_wasl>ِ</tajweed>كَ ٱلۡخِز<tajweed class=ham_wasl>ۡ</tajweed>یُ ٱلۡ<tajweed class=madda_permissible>ع</tajweed>َظِیمُ",
+      "rules_count": 16
+    },
+    {
+      "verse_key": "9:64",
+      "text_plain": "یَحۡذَرُ ٱلۡمُنَـٰفِقُونَ أَن تُنَزَّلَ عَلَیۡهِمۡ سُورَةࣱ تُنَبِّئُهُم بِمَا فِی قُلُوبِهِمۡۚ قُلِ ٱسۡتَهۡزِءُوۤا۟ إِنَّ ٱللَّهَ مُخۡرِجࣱ مَّا تَحۡذَرُونَ",
+      "text_tajweed_html": "یَحۡذَرُ <tajweed class=ham_wasl>ٱ</tajweed>لۡمُنَ<tajweed class=madda_normal>ـ</tajweed>ٰفِقُونَ أ<tajweed class=ikhpiaa>َن ت</tajweed>ُنَزَّلَ عَلَیۡهِمۡ سُورَ<tajweed class=ikhpiaa>ةࣱ ت</tajweed>ُنَبِّئُه<tajweed class=ikhpiaa_shafawi>ُم ب</tajweed>ِمَا فِی قُلُوبِهِمۡۚ قُل<tajweed class=ham_wasl>ِ</tajweed> ٱسۡتَهۡزِ<tajweed class=madda_permissible>ءُ</tajweed><tajweed class=silent>وۤ</tajweed>ا۟ <tajweed class=ghunnah>إِن</tajweed>ّ<tajweed class=ham_wasl>َ</tajweed> ٱللَّهَ مُخۡر<tajweed class=idghaam_ghunnah>ِجࣱ م</tajweed>َّا تَحۡذَ<tajweed class=madda_permissible>ر</tajweed>ُونَ",
+      "rules_count": 12
+    },
+    {
+      "verse_key": "9:65",
+      "text_plain": "وَلَىِٕن سَأَلۡتَهُمۡ لَیَقُولُنَّ إِنَّمَا كُنَّا نَخُوضُ وَنَلۡعَبُۚ قُلۡ أَبِٱللَّهِ وَءَایَـٰتِهِۦ وَرَسُولِهِۦ كُنتُمۡ تَسۡتَهۡزِءُونَ",
+      "text_tajweed_html": "وَلَىٕ<tajweed class=ikhpiaa>ِن س</tajweed>َأَلۡتَهُمۡ لَیَقُول<tajweed class=ghunnah>ُنّ</tajweed>َ إ<tajweed class=ghunnah>ِنّ</tajweed>َمَا ك<tajweed class=ghunnah>ُنّ</tajweed>َا نَخُوضُ وَنَلۡعَبُۚ قُلۡ أَ<tajweed class=ham_wasl>ب</tajweed>ِٱللَّهِ وَءَا<tajweed class=madda_normal>ی</tajweed>َـٰت<tajweed class=madda_normal>ِ</tajweed>هِۦ وَرَسُول<tajweed class=madda_normal>ِ</tajweed>هِۦ<tajweed class=ikhpiaa> كُ</tajweed>نتُمۡ تَسۡتَهۡز<tajweed class=madda_permissible>ِ</tajweed>ءُونَ",
+      "rules_count": 10
+    },
+    {
+      "verse_key": "9:66",
+      "text_plain": "لَا تَعۡتَذِرُوا۟ قَدۡ كَفَرۡتُم بَعۡدَ إِیمَـٰنِكُمۡۚ إِن نَّعۡفُ عَن طَاۤىِٕفَةࣲ مِّنكُمۡ نُعَذِّبۡ طَاۤىِٕفَةَۢ بِأَنَّهُمۡ كَانُوا۟ مُجۡرِمِینَ",
+      "text_tajweed_html": "لَا تَعۡتَذِرُو<tajweed class=silent>ا۟</tajweed> قَ<tajweed class=qalaqala>دۡ</tajweed> كَفَرۡتُ<tajweed class=ikhpiaa_shafawi>م بَ</tajweed>عۡدَ إِیمَ<tajweed class=madda_normal>ـ</tajweed>ٰنِكُمۡۚ <tajweed class=idghaam_ghunnah>إِن ن</tajweed>َّعۡفُ <tajweed class=ikhpiaa>عَن </tajweed><tajweed class=madda_obligatory>طَ</tajweed>اۤىِٕ<tajweed class=idghaam_ghunnah>فَةࣲ </tajweed><tajweed class=ikhpiaa>مِّ</tajweed>نكُمۡ نُعَ<tajweed class=qalaqala>ذّ</tajweed>ِبۡ<tajweed class=madda_obligatory> ط</tajweed>َاۤىٕ<tajweed class=iqlab>ِفَة</tajweed>َۢ <tajweed class=ghunnah>بِأ</tajweed>َنَّهُمۡ كَ<tajweed class=silent>ان</tajweed>ُوا<tajweed class=qalaqala>۟ </tajweed>مُجۡ<tajweed class=madda_permissible>ر</tajweed>ِمِینَ",
+      "rules_count": 16
+    },
+    {
+      "verse_key": "9:67",
+      "text_plain": "ٱلۡمُنَـٰفِقُونَ وَٱلۡمُنَـٰفِقَـٰتُ بَعۡضُهُم مِّنۢ بَعۡضࣲۚ یَأۡمُرُونَ بِٱلۡمُنكَرِ وَیَنۡهَوۡنَ عَنِ ٱلۡمَعۡرُوفِ وَیَقۡبِضُونَ أَیۡدِیَهُمۡۚ نَسُوا۟ ٱللَّهَ فَنَسِیَهُمۡۚ إِنَّ ٱلۡمُنَـٰفِقِینَ هُمُ ٱلۡفَـٰسِقُونَ",
+      "text_tajweed_html": "ٱلۡمُنَ<tajweed class=madda_normal>ـ</tajweed>ٰفِقُونَ و<tajweed class=ham_wasl>َ</tajweed>ٱلۡمُن<tajweed class=madda_normal>َ</tajweed>ـٰفِ<tajweed class=madda_normal>ق</tajweed>َـٰتُ بَعۡض<tajweed class=idghaam_shafawi>ُهُم </tajweed>م<tajweed class=iqlab>ِّن</tajweed>ۢ بَ<tajweed class=idghaam_ghunnah>عۡضࣲ</tajweed>ۚ یَأۡمُرُون<tajweed class=ham_wasl>َ</tajweed> بِٱ<tajweed class=ikhpiaa>لۡم</tajweed>ُنكَرِ وَیَنۡهَوۡنَ ع<tajweed class=ham_wasl>َ</tajweed>نِ ٱلۡمَعۡرُوفِ <tajweed class=qalaqala>وَ</tajweed>یَقۡبِضُونَ أَیۡدِیَهُمۡۚ <tajweed class=silent>نَ</tajweed>س<tajweed class=ham_wasl>ُ</tajweed>وا۟ ٱللَّهَ فَنَسِیَهُ<tajweed class=ghunnah>مۡۚ</tajweed> <tajweed class=ham_wasl>إ</tajweed>ِنَّ ٱ<tajweed class=madda_normal>ل</tajweed>ۡمُنَـٰفِقِین<tajweed class=ham_wasl>َ</tajweed> هُم<tajweed class=madda_normal>ُ</tajweed> ٱلۡ<tajweed class=madda_permissible>ف</tajweed>َـٰسِقُونَ",
+      "rules_count": 19
+    },
+    {
+      "verse_key": "9:68",
+      "text_plain": "وَعَدَ ٱللَّهُ ٱلۡمُنَـٰفِقِینَ وَٱلۡمُنَـٰفِقَـٰتِ وَٱلۡكُفَّارَ نَارَ جَهَنَّمَ خَـٰلِدِینَ فِیهَاۚ هِیَ حَسۡبُهُمۡۚ وَلَعَنَهُمُ ٱللَّهُۖ وَلَهُمۡ عَذَابࣱ مُّقِیمࣱ",
+      "text_tajweed_html": "وَعَدَ <tajweed class=ham_wasl>ٱ</tajweed>للَّهُ <tajweed class=ham_wasl>ٱ</tajweed>لۡمُنَ<tajweed class=madda_normal>ـ</tajweed>ٰفِقِینَ و<tajweed class=ham_wasl>َ</tajweed>ٱلۡمُن<tajweed class=madda_normal>َ</tajweed>ـٰفِ<tajweed class=madda_normal>ق</tajweed>َـٰتِ<tajweed class=ham_wasl> </tajweed>وَٱلۡكُفَّارَ نَارَ ج<tajweed class=ghunnah>َهَ</tajweed>نَّمَ<tajweed class=madda_normal> </tajweed>خَـٰلِدِینَ فِیهَاۚ هِیَ حَسۡبُهُمۡۚ وَلَعَن<tajweed class=ham_wasl>َ</tajweed>هُمُ ٱللَّهُۖ وَلَهُمۡ<tajweed class=idghaam_ghunnah> عَذَ</tajweed>اب<tajweed class=madda_permissible>ࣱ</tajweed> مُّقِیمࣱ",
+      "rules_count": 12
+    },
+    {
+      "verse_key": "9:69",
+      "text_plain": "كَٱلَّذِینَ مِن قَبۡلِكُمۡ كَانُوۤا۟ أَشَدَّ مِنكُمۡ قُوَّةࣰ وَأَكۡثَرَ أَمۡوَ ٰ⁠لࣰا وَأَوۡلَـٰدࣰا فَٱسۡتَمۡتَعُوا۟ بِخَلَـٰقِهِمۡ فَٱسۡتَمۡتَعۡتُم بِخَلَـٰقِكُمۡ كَمَا ٱسۡتَمۡتَعَ ٱلَّذِینَ مِن قَبۡلِكُم بِخَلَـٰقِهِمۡ وَخُضۡتُمۡ كَٱلَّذِی خَاضُوۤا۟ۚ أُو۟لَـٰۤىِٕكَ حَبِطَتۡ أَعۡمَـٰلُهُمۡ فِی ٱلدُّنۡیَا وَٱلۡـَٔاخِرَةِۖ وَأُو۟لَـٰۤىِٕكَ هُمُ ٱلۡخَـٰسِرُونَ",
+      "text_tajweed_html": "كَ<tajweed class=ham_wasl>ٱ</tajweed>لَّذِینَ مِ<tajweed class=ikhpiaa>ن قَ</tajweed><tajweed class=qalaqala>بۡ</tajweed>لِكُمۡ كَانُ<tajweed class=madda_permissible>وۤ</tajweed><tajweed class=silent>ا۟</tajweed> أَشَدَّ مِ<tajweed class=ikhpiaa>نكُ</tajweed>مۡ قُوَّة<tajweed class=idghaam_ghunnah>ࣰ وَ</tajweed>أَكۡثَرَ أَمۡوَ<tajweed class=madda_normal> </tajweed>ٰ<tajweed class=idghaam_ghunnah>⁠لࣰا </tajweed>وَأَوۡ<tajweed class=madda_normal>ل</tajweed>َ<tajweed class=ikhpiaa>ـٰدࣰا</tajweed><tajweed class=ham_wasl> </tajweed>فَٱسۡتَمۡتَ<tajweed class=silent>عُ</tajweed>وا۟ بِخ<tajweed class=madda_normal>َ</tajweed>لَـٰقِهِم<tajweed class=ham_wasl>ۡ</tajweed> فَٱسۡتَمۡتَ<tajweed class=ikhpiaa_shafawi>عۡتُ</tajweed>م بِ<tajweed class=madda_normal>خ</tajweed>َلَـٰقِكُمۡ ك<tajweed class=ham_wasl>َ</tajweed>مَا ٱسۡتَمۡ<tajweed class=ham_wasl>ت</tajweed>َعَ ٱلَّذِی<tajweed class=ikhpiaa>نَ م</tajweed><tajweed class=qalaqala>ِن</tajweed> قَب<tajweed class=ikhpiaa_shafawi>ۡلِك</tajweed>ُم ب<tajweed class=madda_normal>ِ</tajweed>خَلَـٰقِهِمۡ وَخُضۡت<tajweed class=ham_wasl>ُ</tajweed>مۡ كَٱلَّذِی<tajweed class=madda_permissible> خ</tajweed><tajweed class=silent>َا</tajweed>ضُو<tajweed class=silent>ۤا</tajweed>۟ۚ<tajweed class=madda_obligatory> أ</tajweed>ُو۟لَـٰۤىِٕكَ حَبِطَ<tajweed class=madda_normal>ت</tajweed>ۡ أَعۡمَـٰل<tajweed class=ham_wasl>ُ</tajweed><tajweed class=laam_shamsiyah>ه</tajweed>ُمۡ فِی ٱلد<tajweed class=ham_wasl>ّ</tajweed>ُنۡیَا وَٱلۡـَٔا<tajweed class=silent>خِ</tajweed>رَ<tajweed class=madda_obligatory>ةِ</tajweed>ۖ وَأُو۟لَ<tajweed class=ham_wasl>ـ</tajweed>ٰۤىٕ<tajweed class=madda_normal>ِ</tajweed>كَ ه<tajweed class=madda_permissible>ُ</tajweed>مُ ٱلۡخَـٰسِرُونَ",
+      "rules_count": 37
+    },
+    {
+      "verse_key": "9:70",
+      "text_plain": "أَلَمۡ یَأۡتِهِمۡ نَبَأُ ٱلَّذِینَ مِن قَبۡلِهِمۡ قَوۡمِ نُوحࣲ وَعَادࣲ وَثَمُودَ وَقَوۡمِ إِبۡرَ ٰ⁠هِیمَ وَأَصۡحَـٰبِ مَدۡیَنَ وَٱلۡمُؤۡتَفِكَـٰتِۚ أَتَتۡهُمۡ رُسُلُهُم بِٱلۡبَیِّنَـٰتِۖ فَمَا كَانَ ٱللَّهُ لِیَظۡلِمَهُمۡ وَلَـٰكِن كَانُوۤا۟ أَنفُسَهُمۡ یَظۡلِمُونَ",
+      "text_tajweed_html": "أَلَمۡ یَأۡتِهِمۡ نَبَأُ <tajweed class=ham_wasl>ٱ</tajweed>لَّذِینَ مِ<tajweed class=ikhpiaa>ن قَ</tajweed><tajweed class=qalaqala>بۡ</tajweed>لِهِمۡ قَوۡمِ نُوح<tajweed class=idghaam_ghunnah>ࣲ وَ</tajweed>عَاد<tajweed class=idghaam_ghunnah>ࣲ وَ</tajweed>ثَمُودَ وَقَوۡمِ إِ<tajweed class=qalaqala>بۡ</tajweed>رَ<tajweed class=madda_normal> </tajweed>ٰ⁠هِیمَ وَأَصۡ<tajweed class=madda_normal>ح</tajweed>َـٰبِ<tajweed class=qalaqala> م</tajweed>َدۡیَنَ<tajweed class=ham_wasl> </tajweed>وَٱلۡمُؤۡتَف<tajweed class=madda_normal>ِ</tajweed>كَـٰتِۚ أَتَتۡهُمۡ رُس<tajweed class=ikhpiaa_shafawi>ُلُه</tajweed><tajweed class=ham_wasl>ُ</tajweed>م بِٱلۡبَ<tajweed class=madda_normal>ی</tajweed>ِّنَـٰتِۖ فَمَا<tajweed class=ham_wasl> </tajweed>كَانَ ٱللَّهُ لِیَظۡلِمَهُ<tajweed class=madda_normal>م</tajweed>ۡ <tajweed class=ikhpiaa>وَلَ</tajweed>ـٰك<tajweed class=madda_permissible>ِن</tajweed><tajweed class=silent> ك</tajweed>َان<tajweed class=ikhpiaa>ُوۤ</tajweed>ا۟ أَنفُسَهُمۡ <tajweed class=madda_permissible>ی</tajweed>َظۡلِمُونَ",
+      "rules_count": 21
+    },
+    {
+      "verse_key": "9:71",
+      "text_plain": "وَٱلۡمُؤۡمِنُونَ وَٱلۡمُؤۡمِنَـٰتُ بَعۡضُهُمۡ أَوۡلِیَاۤءُ بَعۡضࣲۚ یَأۡمُرُونَ بِٱلۡمَعۡرُوفِ وَیَنۡهَوۡنَ عَنِ ٱلۡمُنكَرِ وَیُقِیمُونَ ٱلصَّلَوٰةَ وَیُؤۡتُونَ ٱلزَّكَوٰةَ وَیُطِیعُونَ ٱللَّهَ وَرَسُولَهُۥۤۚ أُو۟لَـٰۤىِٕكَ سَیَرۡحَمُهُمُ ٱللَّهُۗ إِنَّ ٱللَّهَ عَزِیزٌ حَكِیمࣱ",
+      "text_tajweed_html": "وَ<tajweed class=ham_wasl>ٱ</tajweed>لۡمُؤۡمِنُونَ وَ<tajweed class=ham_wasl>ٱ</tajweed>لۡمُؤۡمِنَ<tajweed class=madda_normal>ـ</tajweed>ٰتُ بَعۡضُهُمۡ أَوۡلِی<tajweed class=madda_obligatory>َا</tajweed>ۤءُ بَعۡ<tajweed class=idghaam_ghunnah>ضࣲۚ </tajweed>یَأۡمُرُونَ <tajweed class=ham_wasl>ب</tajweed>ِٱلۡمَعۡرُوفِ وَیَنۡهَوۡنَ عَن<tajweed class=ham_wasl>ِ</tajweed> ٱلۡ<tajweed class=ikhpiaa>مُن</tajweed>كَرِ وَیُقِیمُون<tajweed class=ham_wasl>َ</tajweed><tajweed class=laam_shamsiyah> </tajweed>ٱلصَّ<tajweed class=silent>ل</tajweed><tajweed class=madda_normal>َ</tajweed>وٰةَ وَیُؤۡتُون<tajweed class=ham_wasl>َ</tajweed><tajweed class=laam_shamsiyah> </tajweed>ٱلزَّ<tajweed class=silent>ك</tajweed><tajweed class=madda_normal>َ</tajweed>وٰةَ وَیُطِیعُون<tajweed class=ham_wasl>َ</tajweed> ٱللَّهَ وَرَسُولَ<tajweed class=madda_permissible>هُ</tajweed>ۥۤۚ<tajweed class=silent> أ</tajweed>ُو<tajweed class=madda_obligatory>۟ل</tajweed>َـٰۤىِٕكَ سَیَرۡحَمُ<tajweed class=ham_wasl>ه</tajweed>ُمُ ٱللَّ<tajweed class=ghunnah>هُۗ</tajweed> <tajweed class=ham_wasl>إ</tajweed>ِنَّ ٱللَّهَ عَزِیز<tajweed class=madda_permissible>ٌ</tajweed> حَكِیمࣱ",
+      "rules_count": 24
+    },
+    {
+      "verse_key": "9:72",
+      "text_plain": "وَعَدَ ٱللَّهُ ٱلۡمُؤۡمِنِینَ وَٱلۡمُؤۡمِنَـٰتِ جَنَّـٰتࣲ تَجۡرِی مِن تَحۡتِهَا ٱلۡأَنۡهَـٰرُ خَـٰلِدِینَ فِیهَا وَمَسَـٰكِنَ طَیِّبَةࣰ فِی جَنَّـٰتِ عَدۡنࣲۚ وَرِضۡوَ ٰ⁠نࣱ مِّنَ ٱللَّهِ أَكۡبَرُۚ ذَ ٰ⁠لِكَ هُوَ ٱلۡفَوۡزُ ٱلۡعَظِیمُ",
+      "text_tajweed_html": "وَعَدَ <tajweed class=ham_wasl>ٱ</tajweed>للَّهُ <tajweed class=ham_wasl>ٱ</tajweed>لۡمُؤۡمِنِینَ وَ<tajweed class=ham_wasl>ٱ</tajweed>لۡمُؤۡمِنَ<tajweed class=madda_normal>ـ</tajweed>ٰتِ ج<tajweed class=ghunnah>َنّ</tajweed><tajweed class=madda_normal>َ</tajweed>ـ<tajweed class=ikhpiaa>ٰتࣲ </tajweed><tajweed class=qalaqala>تَ</tajweed>جۡرِی <tajweed class=ikhpiaa>مِن </tajweed>تَحۡتِهَ<tajweed class=ham_wasl>ا</tajweed> ٱلۡأَنۡ<tajweed class=madda_normal>ه</tajweed>َـٰرُ<tajweed class=madda_normal> </tajweed>خَـٰلِدِینَ فِیهَا وَ<tajweed class=madda_normal>م</tajweed>َسَـٰكِنَ طَی<tajweed class=ikhpiaa>ِّبَ</tajweed>ةࣰ ف<tajweed class=ghunnah>ِی </tajweed><tajweed class=madda_normal>ج</tajweed>َنَّـ<tajweed class=qalaqala>ٰت</tajweed>ِ<tajweed class=idghaam_ghunnah> عَد</tajweed>ۡنࣲۚ و<tajweed class=madda_normal>َ</tajweed>ر<tajweed class=idghaam_ghunnah>ِضۡوَ</tajweed> ٰ⁠<tajweed class=ham_wasl>ن</tajweed>ࣱ مِّنَ ٱللَّهِ أَ<tajweed class=madda_normal>ك</tajweed>ۡبَرُۚ ذَ <tajweed class=ham_wasl>ٰ</tajweed>⁠لِكَ هُو<tajweed class=ham_wasl>َ</tajweed> ٱلۡفَ<tajweed class=madda_permissible>و</tajweed>ۡزُ ٱلۡعَظِیمُ",
+      "rules_count": 25
+    },
+    {
+      "verse_key": "9:73",
+      "text_plain": "یَـٰۤأَیُّهَا ٱلنَّبِیُّ جَـٰهِدِ ٱلۡكُفَّارَ وَٱلۡمُنَـٰفِقِینَ وَٱغۡلُظۡ عَلَیۡهِمۡۚ وَمَأۡوَىٰهُمۡ جَهَنَّمُۖ وَبِئۡسَ ٱلۡمَصِیرُ",
+      "text_tajweed_html": "یَ<tajweed class=madda_permissible>ـٰ</tajweed>ۤأَیُّهَا<tajweed class=ham_wasl> </tajweed><tajweed class=laam_shamsiyah>ٱ</tajweed><tajweed class=ghunnah>لنّ</tajweed>َبِیُّ ج<tajweed class=madda_normal>َ</tajweed>ـٰهِد<tajweed class=ham_wasl>ِ</tajweed> ٱلۡكُفَّارَ <tajweed class=ham_wasl>و</tajweed>َٱلۡمُ<tajweed class=madda_normal>ن</tajweed>َـٰفِقِینَ<tajweed class=ham_wasl> </tajweed>وَٱغۡلُظۡ عَلَیۡهِمۡۚ وَمَأ<tajweed class=madda_normal>ۡ</tajweed>وَىٰهُمۡ <tajweed class=ghunnah>جَه</tajweed>َنَّمُۖ وَبِ<tajweed class=ham_wasl>ئ</tajweed>ۡسَ ٱل<tajweed class=madda_permissible>ۡ</tajweed>مَصِیرُ",
+      "rules_count": 13
+    },
+    {
+      "verse_key": "9:74",
+      "text_plain": "یَحۡلِفُونَ بِٱللَّهِ مَا قَالُوا۟ وَلَقَدۡ قَالُوا۟ كَلِمَةَ ٱلۡكُفۡرِ وَكَفَرُوا۟ بَعۡدَ إِسۡلَـٰمِهِمۡ وَهَمُّوا۟ بِمَا لَمۡ یَنَالُوا۟ۚ وَمَا نَقَمُوۤا۟ إِلَّاۤ أَنۡ أَغۡنَىٰهُمُ ٱللَّهُ وَرَسُولُهُۥ مِن فَضۡلِهِۦۚ فَإِن یَتُوبُوا۟ یَكُ خَیۡرࣰا لَّهُمۡۖ وَإِن یَتَوَلَّوۡا۟ یُعَذِّبۡهُمُ ٱللَّهُ عَذَابًا أَلِیمࣰا فِی ٱلدُّنۡیَا وَٱلۡـَٔاخِرَةِۚ وَمَا لَهُمۡ فِی ٱلۡأَرۡضِ مِن وَلِیࣲّ وَلَا نَصِیرࣲ",
+      "text_tajweed_html": "یَحۡلِفُونَ بِ<tajweed class=ham_wasl>ٱ</tajweed>للَّهِ مَا قَالُو<tajweed class=silent>ا۟</tajweed> وَلَقَ<tajweed class=qalaqala>دۡ</tajweed> قَالُو<tajweed class=silent>ا۟</tajweed> كَلِمَةَ <tajweed class=ham_wasl>ٱ</tajweed>لۡكُفۡرِ وَكَفَرُو<tajweed class=silent>ا۟</tajweed> بَعۡدَ إِسۡلَ<tajweed class=madda_normal>ـ</tajweed>ٰمِهِمۡ وَه<tajweed class=ghunnah>َمّ</tajweed>ُ<tajweed class=silent>وا</tajweed>۟ بِمَا لَمۡ یَنَالُ<tajweed class=silent>وا</tajweed>۟ۚ وَمَا نَقَ<tajweed class=madda_permissible>مُ</tajweed><tajweed class=silent>وۤ</tajweed>ا۟ إِل<tajweed class=madda_permissible>َّ</tajweed>اۤ أَنۡ أَغۡن<tajweed class=madda_normal>َ</tajweed>ىٰهُم<tajweed class=ham_wasl>ُ</tajweed> ٱللَّهُ وَرَسُولُ<tajweed class=madda_normal>ه</tajweed>ُۥ <tajweed class=ikhpiaa>مِن </tajweed>فَضۡلِ<tajweed class=madda_normal>ه</tajweed>ِۦۚ ف<tajweed class=idghaam_ghunnah>َإِن</tajweed> یَتُو<tajweed class=silent>بُ</tajweed>وا۟ یَكُ خَ<tajweed class=idghaam_wo_ghunnah>یۡرࣰا </tajweed>لَّهُمۡۖ <tajweed class=idghaam_ghunnah>وَإِ</tajweed>ن یَتَوَل<tajweed class=silent>َّ</tajweed>وۡا۟ یُع<tajweed class=qalaqala>َذ</tajweed>ِّبۡه<tajweed class=ham_wasl>ُ</tajweed>مُ ٱللَّهُ عَذَابًا أَ<tajweed class=ikhpiaa>لِیمࣰ</tajweed>ا <tajweed class=ham_wasl>ف</tajweed><tajweed class=laam_shamsiyah>ِ</tajweed>ی ٱلدُّنۡیَ<tajweed class=ham_wasl>ا</tajweed> وَٱلۡـَٔاخِرَةِۚ وَمَا لَهُم<tajweed class=ham_wasl>ۡ</tajweed> فِی ٱلۡأَر<tajweed class=idghaam_ghunnah>ۡضِ </tajweed>مِن <tajweed class=idghaam_ghunnah>وَلِ</tajweed>یࣲّ وَلَ<tajweed class=madda_permissible>ا</tajweed> نَصِیرࣲ",
+      "rules_count": 33
+    },
+    {
+      "verse_key": "9:75",
+      "text_plain": "۞ وَمِنۡهُم مَّنۡ عَـٰهَدَ ٱللَّهَ لَىِٕنۡ ءَاتَىٰنَا مِن فَضۡلِهِۦ لَنَصَّدَّقَنَّ وَلَنَكُونَنَّ مِنَ ٱلصَّـٰلِحِینَ",
+      "text_tajweed_html": "۞ وَمِنۡ<tajweed class=idghaam_shafawi>هُم م</tajweed>َّنۡ <tajweed class=madda_normal>ع</tajweed>َـٰهَ<tajweed class=ham_wasl>د</tajweed>َ ٱللَّهَ لَىِٕنۡ ءَ<tajweed class=madda_normal>ا</tajweed>تَىٰنَ<tajweed class=ikhpiaa>ا مِ</tajweed>ن فَضۡ<tajweed class=madda_normal>ل</tajweed>ِهِۦ لَنَصَّد<tajweed class=ghunnah>َّق</tajweed>َنَّ وَلَنَك<tajweed class=ghunnah>ُون</tajweed>َنَّ م<tajweed class=ham_wasl>ِ</tajweed><tajweed class=laam_shamsiyah>ن</tajweed>َ ٱ<tajweed class=madda_normal>ل</tajweed>صَّـ<tajweed class=madda_permissible>ٰ</tajweed>لِحِینَ",
+      "rules_count": 12
+    },
+    {
+      "verse_key": "9:76",
+      "text_plain": "فَلَمَّاۤ ءَاتَىٰهُم مِّن فَضۡلِهِۦ بَخِلُوا۟ بِهِۦ وَتَوَلَّوا۟ وَّهُم مُّعۡرِضُونَ",
+      "text_tajweed_html": "فَلَ<tajweed class=ghunnah>مَّ</tajweed><tajweed class=madda_permissible>اۤ</tajweed> ءَاتَى<tajweed class=madda_normal>ٰ</tajweed>هُ<tajweed class=idghaam_shafawi>م مِّ</tajweed><tajweed class=ikhpiaa>ن فَ</tajweed>ضۡلِهِ<tajweed class=madda_normal>ۦ</tajweed> بَخِلُو<tajweed class=silent>ا۟</tajweed> بِهِ<tajweed class=madda_normal>ۦ</tajweed> وَتَوَلَّو<tajweed class=silent>ا۟</tajweed> وَّهُ<tajweed class=idghaam_shafawi>م مُّ</tajweed>عۡرِضُ<tajweed class=madda_permissible>و</tajweed>نَ",
+      "rules_count": 11
+    },
+    {
+      "verse_key": "9:77",
+      "text_plain": "فَأَعۡقَبَهُمۡ نِفَاقࣰا فِی قُلُوبِهِمۡ إِلَىٰ یَوۡمِ یَلۡقَوۡنَهُۥ بِمَاۤ أَخۡلَفُوا۟ ٱللَّهَ مَا وَعَدُوهُ وَبِمَا كَانُوا۟ یَكۡذِبُونَ",
+      "text_tajweed_html": "فَأَعۡقَبَهُمۡ نِفَاق<tajweed class=ikhpiaa>ࣰا فِ</tajweed>ی قُلُوبِهِمۡ إِلَىٰ یَوۡمِ یَلۡقَوۡنَهُ<tajweed class=madda_normal>ۥ</tajweed> بِمَ<tajweed class=madda_permissible>اۤ</tajweed> أَخۡلَفُو<tajweed class=silent>ا۟</tajweed> <tajweed class=ham_wasl>ٱ</tajweed>للَّهَ مَا وَعَدُوهُ وَبِمَا كَانُو<tajweed class=silent>ا۟</tajweed> یَكۡذِبُ<tajweed class=madda_permissible>و</tajweed>نَ",
+      "rules_count": 7
+    },
+    {
+      "verse_key": "9:78",
+      "text_plain": "أَلَمۡ یَعۡلَمُوۤا۟ أَنَّ ٱللَّهَ یَعۡلَمُ سِرَّهُمۡ وَنَجۡوَىٰهُمۡ وَأَنَّ ٱللَّهَ عَلَّـٰمُ ٱلۡغُیُوبِ",
+      "text_tajweed_html": "أَلَمۡ یَعۡلَمُ<tajweed class=madda_permissible>وۤ</tajweed><tajweed class=silent>ا۟</tajweed> أَ<tajweed class=ghunnah>نَّ</tajweed> <tajweed class=ham_wasl>ٱ</tajweed>للَّهَ یَعۡلَمُ سِرَّهُمۡ وَنَ<tajweed class=qalaqala>جۡ</tajweed>وَى<tajweed class=madda_normal>ٰ</tajweed>هُمۡ وَأَ<tajweed class=ghunnah>نَّ</tajweed> <tajweed class=ham_wasl>ٱ</tajweed>للَّهَ عَلَّ<tajweed class=madda_normal>ـ</tajweed>ٰمُ<tajweed class=ham_wasl> </tajweed>ٱلۡغُی<tajweed class=madda_permissible>ُ</tajweed><tajweed class=qalaqala>و</tajweed>بِ",
+      "rules_count": 12
+    },
+    {
+      "verse_key": "9:79",
+      "text_plain": "ٱلَّذِینَ یَلۡمِزُونَ ٱلۡمُطَّوِّعِینَ مِنَ ٱلۡمُؤۡمِنِینَ فِی ٱلصَّدَقَـٰتِ وَٱلَّذِینَ لَا یَجِدُونَ إِلَّا جُهۡدَهُمۡ فَیَسۡخَرُونَ مِنۡهُمۡ سَخِرَ ٱللَّهُ مِنۡهُمۡ وَلَهُمۡ عَذَابٌ أَلِیمٌ",
+      "text_tajweed_html": "ٱلَّذِینَ یَلۡمِزُونَ <tajweed class=ham_wasl>ٱ</tajweed>لۡمُطَّوِّعِینَ مِنَ <tajweed class=ham_wasl>ٱ</tajweed>لۡمُؤۡمِنِینَ فِی <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>صَّدَقَ<tajweed class=madda_normal>ـ</tajweed>ٰتِ و<tajweed class=ham_wasl>َ</tajweed>ٱلَّذِینَ لَا یَجِدُونَ إِلَّا جُهۡدَهُمۡ فَیَسۡخَرُونَ مِنۡهُمۡ سَخِرَ<tajweed class=ham_wasl> </tajweed>ٱللَّهُ مِنۡهُمۡ وَلَهُمۡ عَذَابٌ أَل<tajweed class=madda_permissible>ِ</tajweed>یمٌ",
+      "rules_count": 8
+    },
+    {
+      "verse_key": "9:80",
+      "text_plain": "ٱسۡتَغۡفِرۡ لَهُمۡ أَوۡ لَا تَسۡتَغۡفِرۡ لَهُمۡ إِن تَسۡتَغۡفِرۡ لَهُمۡ سَبۡعِینَ مَرَّةࣰ فَلَن یَغۡفِرَ ٱللَّهُ لَهُمۡۚ ذَ ٰ⁠لِكَ بِأَنَّهُمۡ كَفَرُوا۟ بِٱللَّهِ وَرَسُولِهِۦۗ وَٱللَّهُ لَا یَهۡدِی ٱلۡقَوۡمَ ٱلۡفَـٰسِقِینَ",
+      "text_tajweed_html": "ٱسۡتَغۡفِرۡ لَهُمۡ أَوۡ لَا تَسۡتَغۡفِرۡ لَهُمۡ إِ<tajweed class=ikhpiaa>ن تَ</tajweed>سۡتَغۡفِرۡ لَهُمۡ سَ<tajweed class=qalaqala>بۡ</tajweed>عِینَ مَرَّة<tajweed class=ikhpiaa>ࣰ فَ</tajweed>لَ<tajweed class=idghaam_ghunnah>ن یَ</tajweed>غۡفِرَ <tajweed class=ham_wasl>ٱ</tajweed>للَّهُ لَهُمۡۚ ذ<tajweed class=madda_normal>َ</tajweed> ٰ⁠لِكَ ب<tajweed class=ghunnah>ِأَ</tajweed>نَّهُمۡ كَفَ<tajweed class=silent>رُ</tajweed>وا۟<tajweed class=ham_wasl> </tajweed>بِٱللَّهِ وَرَسُول<tajweed class=madda_normal>ِ</tajweed>هِۦ<tajweed class=ham_wasl>ۗ</tajweed> وَٱللَّهُ لَا یَهۡ<tajweed class=ham_wasl>د</tajweed>ِی ٱلۡقَو<tajweed class=ham_wasl>ۡ</tajweed>مَ ٱ<tajweed class=madda_normal>ل</tajweed>ۡفَـ<tajweed class=madda_permissible>ٰ</tajweed>سِقِینَ",
+      "rules_count": 15
+    },
+    {
+      "verse_key": "9:81",
+      "text_plain": "فَرِحَ ٱلۡمُخَلَّفُونَ بِمَقۡعَدِهِمۡ خِلَـٰفَ رَسُولِ ٱللَّهِ وَكَرِهُوۤا۟ أَن یُجَـٰهِدُوا۟ بِأَمۡوَ ٰ⁠لِهِمۡ وَأَنفُسِهِمۡ فِی سَبِیلِ ٱللَّهِ وَقَالُوا۟ لَا تَنفِرُوا۟ فِی ٱلۡحَرِّۗ قُلۡ نَارُ جَهَنَّمَ أَشَدُّ حَرࣰّاۚ لَّوۡ كَانُوا۟ یَفۡقَهُونَ",
+      "text_tajweed_html": "فَرِحَ <tajweed class=ham_wasl>ٱ</tajweed>لۡمُخَلَّفُونَ بِمَ<tajweed class=qalaqala>قۡ</tajweed>عَدِهِمۡ خِلَ<tajweed class=madda_normal>ـ</tajweed>ٰفَ رَسُولِ<tajweed class=ham_wasl> </tajweed>ٱللَّهِ وَكَرِه<tajweed class=madda_permissible>ُو</tajweed><tajweed class=silent>ۤا</tajweed>۟ أ<tajweed class=idghaam_ghunnah>َن ی</tajweed>ُج<tajweed class=madda_normal>َ</tajweed>ـٰهِد<tajweed class=silent>ُو</tajweed>ا۟ بِأَمۡ<tajweed class=madda_normal>و</tajweed>َ ٰ⁠لِهِمۡ <tajweed class=ikhpiaa>وَأ</tajweed>َنفُسِهِمۡ فِی سَبِ<tajweed class=ham_wasl>ی</tajweed>لِ ٱللَّهِ وَقَ<tajweed class=silent>ال</tajweed>ُوا۟ لَ<tajweed class=ikhpiaa>ا ت</tajweed>َنف<tajweed class=silent>ِر</tajweed>ُوا۟ <tajweed class=ham_wasl>ف</tajweed>ِی ٱلۡحَرِّۗ قُلۡ نَارُ<tajweed class=ghunnah> جَ</tajweed>هَنَّمَ أَشَدُّ<tajweed class=idghaam_wo_ghunnah> حَرࣰّ</tajweed>اۚ لَّوۡ <tajweed class=silent>كَ</tajweed>انُوا۟ یَ<tajweed class=madda_permissible>ف</tajweed>ۡقَهُونَ",
+      "rules_count": 20
+    },
+    {
+      "verse_key": "9:82",
+      "text_plain": "فَلۡیَضۡحَكُوا۟ قَلِیلࣰا وَلۡیَبۡكُوا۟ كَثِیرࣰا جَزَاۤءَۢ بِمَا كَانُوا۟ یَكۡسِبُونَ",
+      "text_tajweed_html": "فَلۡیَضۡحَكُو<tajweed class=silent>ا۟</tajweed> قَلِیل<tajweed class=idghaam_ghunnah>ࣰا وَ</tajweed>لۡیَ<tajweed class=qalaqala>بۡ</tajweed>كُو<tajweed class=silent>ا۟</tajweed> كَثِیر<tajweed class=ikhpiaa>ࣰا جَ</tajweed>زَ<tajweed class=madda_obligatory>اۤ</tajweed>ء<tajweed class=iqlab>َۢ ب</tajweed>ِمَا كَانُو<tajweed class=silent>ا۟</tajweed> یَكۡسِبُ<tajweed class=madda_permissible>و</tajweed>نَ",
+      "rules_count": 9
+    },
+    {
+      "verse_key": "9:83",
+      "text_plain": "فَإِن رَّجَعَكَ ٱللَّهُ إِلَىٰ طَاۤىِٕفَةࣲ مِّنۡهُمۡ فَٱسۡتَـٔۡذَنُوكَ لِلۡخُرُوجِ فَقُل لَّن تَخۡرُجُوا۟ مَعِیَ أَبَدࣰا وَلَن تُقَـٰتِلُوا۟ مَعِیَ عَدُوًّاۖ إِنَّكُمۡ رَضِیتُم بِٱلۡقُعُودِ أَوَّلَ مَرَّةࣲ فَٱقۡعُدُوا۟ مَعَ ٱلۡخَـٰلِفِینَ",
+      "text_tajweed_html": "فَإِ<tajweed class=idghaam_wo_ghunnah>ن رَّ</tajweed>جَعَكَ <tajweed class=ham_wasl>ٱ</tajweed>للَّهُ إِلَىٰ طَ<tajweed class=madda_obligatory>اۤ</tajweed>ىِٕفَ<tajweed class=idghaam_ghunnah>ةࣲ مّ</tajweed>ِنۡهُمۡ ف<tajweed class=ham_wasl>َ</tajweed>ٱسۡتَـٔۡذَنُوكَ لِلۡخُرُوجِ فَقُل لّ<tajweed class=ikhpiaa>َن ت</tajweed>َخۡرُجُ<tajweed class=silent>وا</tajweed>۟ مَعِیَ أَبَ<tajweed class=idghaam_ghunnah>دࣰا و</tajweed>َل<tajweed class=ikhpiaa>َن ت</tajweed>ُق<tajweed class=madda_normal>َ</tajweed>ـٰتِل<tajweed class=silent>ُو</tajweed>ا۟ مَعِیَ عَدُوًّاۖ<tajweed class=ghunnah> إِ</tajweed>نَّكُمۡ رَضِ<tajweed class=ikhpiaa_shafawi>یتُم</tajweed><tajweed class=ham_wasl> </tajweed>بِٱلۡقُعُودِ أَوَّلَ مَر<tajweed class=ikhpiaa>َّةࣲ</tajweed><tajweed class=ham_wasl> </tajweed><tajweed class=qalaqala>فَ</tajweed>ٱقۡعُ<tajweed class=silent>دُ</tajweed>وا۟ مَ<tajweed class=ham_wasl>ع</tajweed>َ ٱل<tajweed class=madda_normal>ۡ</tajweed>خَـٰ<tajweed class=madda_permissible>ل</tajweed>ِفِینَ",
+      "rules_count": 21
+    },
+    {
+      "verse_key": "9:84",
+      "text_plain": "وَلَا تُصَلِّ عَلَىٰۤ أَحَدࣲ مِّنۡهُم مَّاتَ أَبَدࣰا وَلَا تَقُمۡ عَلَىٰ قَبۡرِهِۦۤۖ إِنَّهُمۡ كَفَرُوا۟ بِٱللَّهِ وَرَسُولِهِۦ وَمَاتُوا۟ وَهُمۡ فَـٰسِقُونَ",
+      "text_tajweed_html": "وَلَا تُصَلِّ عَلَ<tajweed class=madda_permissible>ىٰۤ</tajweed> أَحَد<tajweed class=idghaam_ghunnah>ࣲ مِّ</tajweed>نۡهُ<tajweed class=idghaam_shafawi>م مَّ</tajweed>اتَ أَبَد<tajweed class=idghaam_ghunnah>ࣰا وَ</tajweed>لَا تَقُمۡ عَلَىٰ قَ<tajweed class=qalaqala>بۡ</tajweed>رِهِ<tajweed class=madda_permissible>ۦۤ</tajweed>ۖ إ<tajweed class=ghunnah>ِنّ</tajweed>َهُمۡ كَفَرُ<tajweed class=silent>وا</tajweed>۟ ب<tajweed class=ham_wasl>ِ</tajweed>ٱللَّهِ وَرَسُولِه<tajweed class=madda_normal>ِ</tajweed>ۦ وَمَاتُ<tajweed class=silent>وا</tajweed>۟ وَهُمۡ ف<tajweed class=madda_normal>َ</tajweed>ـٰسِ<tajweed class=madda_permissible>ق</tajweed>ُونَ",
+      "rules_count": 13
+    },
+    {
+      "verse_key": "9:85",
+      "text_plain": "وَلَا تُعۡجِبۡكَ أَمۡوَ ٰ⁠لُهُمۡ وَأَوۡلَـٰدُهُمۡۚ إِنَّمَا یُرِیدُ ٱللَّهُ أَن یُعَذِّبَهُم بِهَا فِی ٱلدُّنۡیَا وَتَزۡهَقَ أَنفُسُهُمۡ وَهُمۡ كَـٰفِرُونَ",
+      "text_tajweed_html": "وَلَا تُعۡجِ<tajweed class=qalaqala>بۡ</tajweed>كَ أَمۡوَ<tajweed class=madda_normal> </tajweed>ٰ⁠لُهُمۡ وَأَوۡ<tajweed class=madda_normal>ل</tajweed>َـٰدُهُمۡ<tajweed class=ghunnah>ۚ إ</tajweed>ِنَّمَا یُرِ<tajweed class=ham_wasl>ی</tajweed>دُ ٱللَّه<tajweed class=idghaam_ghunnah>ُ أَ</tajweed>ن یُعَذِّ<tajweed class=ikhpiaa_shafawi>بَهُ</tajweed>م بِهَا <tajweed class=ham_wasl>ف</tajweed><tajweed class=laam_shamsiyah>ِ</tajweed>ی ٱلدُّنۡیَا وَتَزۡهَق<tajweed class=ikhpiaa>َ أ</tajweed>َنفُسُهُمۡ وَهُم<tajweed class=madda_normal>ۡ</tajweed> كَـ<tajweed class=madda_permissible>ٰ</tajweed>فِرُونَ",
+      "rules_count": 12
+    },
+    {
+      "verse_key": "9:86",
+      "text_plain": "وَإِذَاۤ أُنزِلَتۡ سُورَةٌ أَنۡ ءَامِنُوا۟ بِٱللَّهِ وَجَـٰهِدُوا۟ مَعَ رَسُولِهِ ٱسۡتَـٔۡذَنَكَ أُو۟لُوا۟ ٱلطَّوۡلِ مِنۡهُمۡ وَقَالُوا۟ ذَرۡنَا نَكُن مَّعَ ٱلۡقَـٰعِدِینَ",
+      "text_tajweed_html": "وَإِذَ<tajweed class=madda_permissible>اۤ</tajweed> أُ<tajweed class=ikhpiaa>نزِ</tajweed>لَتۡ سُورَةٌ أَنۡ ءَامِنُو<tajweed class=silent>ا۟</tajweed> بِ<tajweed class=ham_wasl>ٱ</tajweed>للَّهِ وَجَ<tajweed class=madda_normal>ـ</tajweed>ٰهِدُ<tajweed class=silent>وا</tajweed>۟ مَعَ رَسُولِهِ<tajweed class=ham_wasl> </tajweed>ٱسۡتَـٔۡذَنَكَ أ<tajweed class=silent>ُو</tajweed>۟لُ<tajweed class=silent>وا</tajweed>۟<tajweed class=ham_wasl> </tajweed><tajweed class=laam_shamsiyah>ٱ</tajweed>لطَّوۡلِ مِنۡهُمۡ وَقَالُ<tajweed class=silent>وا</tajweed>۟ ذَرۡنَا نَك<tajweed class=idghaam_ghunnah>ُن مّ</tajweed>َعَ<tajweed class=ham_wasl> </tajweed>ٱلۡق<tajweed class=madda_normal>َ</tajweed>ـٰعِ<tajweed class=madda_permissible>د</tajweed>ِینَ",
+      "rules_count": 16
+    },
+    {
+      "verse_key": "9:87",
+      "text_plain": "رَضُوا۟ بِأَن یَكُونُوا۟ مَعَ ٱلۡخَوَالِفِ وَطُبِعَ عَلَىٰ قُلُوبِهِمۡ فَهُمۡ لَا یَفۡقَهُونَ",
+      "text_tajweed_html": "رَضُو<tajweed class=silent>ا۟</tajweed> بِأَ<tajweed class=idghaam_ghunnah>ن یَ</tajweed>كُونُو<tajweed class=silent>ا۟</tajweed> مَعَ <tajweed class=ham_wasl>ٱ</tajweed>لۡخَوَالِفِ وَطُبِعَ عَلَىٰ قُلُوبِهِمۡ فَهُمۡ لَا یَفۡقَهُ<tajweed class=madda_permissible>و</tajweed>نَ",
+      "rules_count": 5
+    },
+    {
+      "verse_key": "9:88",
+      "text_plain": "لَـٰكِنِ ٱلرَّسُولُ وَٱلَّذِینَ ءَامَنُوا۟ مَعَهُۥ جَـٰهَدُوا۟ بِأَمۡوَ ٰ⁠لِهِمۡ وَأَنفُسِهِمۡۚ وَأُو۟لَـٰۤىِٕكَ لَهُمُ ٱلۡخَیۡرَ ٰ⁠تُۖ وَأُو۟لَـٰۤىِٕكَ هُمُ ٱلۡمُفۡلِحُونَ",
+      "text_tajweed_html": "لَ<tajweed class=madda_normal>ـ</tajweed>ٰكِنِ<tajweed class=ham_wasl> </tajweed><tajweed class=laam_shamsiyah>ٱ</tajweed>لرَّسُولُ و<tajweed class=ham_wasl>َ</tajweed>ٱلَّذِینَ ءَامَنُ<tajweed class=silent>وا</tajweed>۟ مَعَه<tajweed class=madda_normal>ُ</tajweed>ۥ ج<tajweed class=madda_normal>َ</tajweed>ـٰهَد<tajweed class=silent>ُو</tajweed>ا۟ بِأَمۡ<tajweed class=madda_normal>و</tajweed>َ ٰ⁠لِهِمۡ <tajweed class=ikhpiaa>وَأ</tajweed>َنفُسِهِمۡۚ<tajweed class=silent> و</tajweed>َأ<tajweed class=madda_obligatory>ُو</tajweed>۟لَـٰۤىِٕكَ <tajweed class=ham_wasl>ل</tajweed>َهُمُ ٱل<tajweed class=madda_normal>ۡ</tajweed>خَیۡرَ <tajweed class=silent>ٰ⁠</tajweed>تُ<tajweed class=madda_obligatory>ۖ </tajweed>وَأُو۟لَـٰ<tajweed class=ham_wasl>ۤ</tajweed>ىِٕكَ هُمُ<tajweed class=madda_permissible> </tajweed>ٱلۡمُفۡلِحُونَ",
+      "rules_count": 18
+    },
+    {
+      "verse_key": "9:89",
+      "text_plain": "أَعَدَّ ٱللَّهُ لَهُمۡ جَنَّـٰتࣲ تَجۡرِی مِن تَحۡتِهَا ٱلۡأَنۡهَـٰرُ خَـٰلِدِینَ فِیهَاۚ ذَ ٰ⁠لِكَ ٱلۡفَوۡزُ ٱلۡعَظِیمُ",
+      "text_tajweed_html": "أَعَدَّ <tajweed class=ham_wasl>ٱ</tajweed>للَّهُ لَهُمۡ جَ<tajweed class=ghunnah>نَّ</tajweed><tajweed class=madda_normal>ـ</tajweed>ٰ<tajweed class=ikhpiaa>تࣲ ت</tajweed><tajweed class=qalaqala>َج</tajweed>ۡرِی م<tajweed class=ikhpiaa>ِن ت</tajweed>َحۡتِهَا<tajweed class=ham_wasl> </tajweed>ٱلۡأَنۡه<tajweed class=madda_normal>َ</tajweed>ـٰرُ <tajweed class=madda_normal>خ</tajweed>َـٰلِدِینَ فِیهَا<tajweed class=madda_normal>ۚ</tajweed> ذَ ٰ<tajweed class=ham_wasl>⁠</tajweed>لِكَ ٱلۡف<tajweed class=ham_wasl>َ</tajweed>وۡزُ ٱ<tajweed class=madda_permissible>ل</tajweed>ۡعَظِیمُ",
+      "rules_count": 13
+    },
+    {
+      "verse_key": "9:90",
+      "text_plain": "وَجَاۤءَ ٱلۡمُعَذِّرُونَ مِنَ ٱلۡأَعۡرَابِ لِیُؤۡذَنَ لَهُمۡ وَقَعَدَ ٱلَّذِینَ كَذَبُوا۟ ٱللَّهَ وَرَسُولَهُۥۚ سَیُصِیبُ ٱلَّذِینَ كَفَرُوا۟ مِنۡهُمۡ عَذَابٌ أَلِیمࣱ",
+      "text_tajweed_html": "وَجَ<tajweed class=madda_obligatory>اۤ</tajweed>ءَ <tajweed class=ham_wasl>ٱ</tajweed>لۡمُعَذِّرُونَ مِنَ <tajweed class=ham_wasl>ٱ</tajweed>لۡأَعۡرَابِ لِیُؤۡذَنَ لَهُمۡ وَقَعَدَ <tajweed class=ham_wasl>ٱ</tajweed>لَّذِینَ كَذَبُو<tajweed class=silent>ا۟</tajweed> <tajweed class=ham_wasl>ٱ</tajweed>للَّهَ وَرَسُولَهُ<tajweed class=madda_normal>ۥ</tajweed>ۚ سَیُصِیبُ<tajweed class=ham_wasl> </tajweed>ٱلَّذِینَ كَفَرُ<tajweed class=silent>وا</tajweed>۟ مِنۡهُمۡ عَذَابٌ أَل<tajweed class=madda_permissible>ِ</tajweed>یمࣱ",
+      "rules_count": 10
+    },
+    {
+      "verse_key": "9:91",
+      "text_plain": "لَّیۡسَ عَلَى ٱلضُّعَفَاۤءِ وَلَا عَلَى ٱلۡمَرۡضَىٰ وَلَا عَلَى ٱلَّذِینَ لَا یَجِدُونَ مَا یُنفِقُونَ حَرَجٌ إِذَا نَصَحُوا۟ لِلَّهِ وَرَسُولِهِۦۚ مَا عَلَى ٱلۡمُحۡسِنِینَ مِن سَبِیلࣲۚ وَٱللَّهُ غَفُورࣱ رَّحِیمࣱ",
+      "text_tajweed_html": "لَّیۡسَ عَلَى <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>ضُّعَفَ<tajweed class=madda_obligatory>اۤ</tajweed>ءِ وَلَا عَلَى <tajweed class=ham_wasl>ٱ</tajweed>لۡمَرۡضَىٰ وَلَا عَلَى <tajweed class=ham_wasl>ٱ</tajweed>لَّذِینَ لَا یَجِدُونَ مَا یُ<tajweed class=ikhpiaa>نفِ</tajweed>قُونَ حَرَجٌ إِذَا نَصَحُو<tajweed class=silent>ا۟</tajweed> لِلَّهِ وَرَسُولِهِ<tajweed class=madda_normal>ۦ</tajweed>ۚ مَا عَلَى<tajweed class=ham_wasl> </tajweed>ٱلۡمُحۡسِنِینَ م<tajweed class=ikhpiaa>ِن س</tajweed>َبِی<tajweed class=idghaam_ghunnah>لࣲۚ </tajweed><tajweed class=ham_wasl>و</tajweed>َٱللَّهُ غَفُ<tajweed class=idghaam_wo_ghunnah>ورࣱ ر</tajweed>َّ<tajweed class=madda_permissible>ح</tajweed>ِیمࣱ",
+      "rules_count": 14
+    },
+    {
+      "verse_key": "9:92",
+      "text_plain": "وَلَا عَلَى ٱلَّذِینَ إِذَا مَاۤ أَتَوۡكَ لِتَحۡمِلَهُمۡ قُلۡتَ لَاۤ أَجِدُ مَاۤ أَحۡمِلُكُمۡ عَلَیۡهِ تَوَلَّوا۟ وَّأَعۡیُنُهُمۡ تَفِیضُ مِنَ ٱلدَّمۡعِ حَزَنًا أَلَّا یَجِدُوا۟ مَا یُنفِقُونَ",
+      "text_tajweed_html": "وَلَا عَلَى <tajweed class=ham_wasl>ٱ</tajweed>لَّذِینَ إِذَا مَ<tajweed class=madda_permissible>اۤ</tajweed> أَتَوۡكَ لِتَحۡمِلَهُمۡ قُلۡتَ لَ<tajweed class=madda_permissible>اۤ</tajweed> أَجِدُ مَ<tajweed class=madda_permissible>اۤ</tajweed> أَحۡمِلُكُمۡ عَلَیۡهِ تَوَلَّو<tajweed class=silent>ا۟</tajweed> وَّأَعۡیُنُهُمۡ تَفِیضُ مِنَ <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>دَّمۡعِ حَزَنًا أَلَّا یَجِدُو<tajweed class=silent>ا۟</tajweed> مَا یُ<tajweed class=ikhpiaa>نفِ</tajweed>قُ<tajweed class=madda_permissible>و</tajweed>نَ",
+      "rules_count": 10
+    },
+    {
+      "verse_key": "9:93",
+      "text_plain": "۞ إِنَّمَا ٱلسَّبِیلُ عَلَى ٱلَّذِینَ یَسۡتَـٔۡذِنُونَكَ وَهُمۡ أَغۡنِیَاۤءُۚ رَضُوا۟ بِأَن یَكُونُوا۟ مَعَ ٱلۡخَوَالِفِ وَطَبَعَ ٱللَّهُ عَلَىٰ قُلُوبِهِمۡ فَهُمۡ لَا یَعۡلَمُونَ",
+      "text_tajweed_html": "۞ <tajweed class=ghunnah>إِن</tajweed>َّمَ<tajweed class=ham_wasl>ا</tajweed><tajweed class=laam_shamsiyah> </tajweed>ٱلسَّبِیلُ عَلَ<tajweed class=ham_wasl>ى</tajweed> ٱلَّذِینَ یَسۡتَـٔۡذِنُونَكَ وَهُمۡ أَغۡنِ<tajweed class=madda_obligatory>یَ</tajweed>اۤءُۚ رَ<tajweed class=silent>ضُ</tajweed>وا۟ ب<tajweed class=idghaam_ghunnah>ِأَن</tajweed> یَكُو<tajweed class=silent>نُ</tajweed>وا۟ مَ<tajweed class=ham_wasl>ع</tajweed>َ ٱلۡخَوَالِفِ وَطَبَ<tajweed class=ham_wasl>ع</tajweed>َ ٱللَّهُ عَلَىٰ قُلُوبِهِمۡ فَهُمۡ لَا یَعۡل<tajweed class=madda_permissible>َ</tajweed>مُونَ",
+      "rules_count": 11
+    },
+    {
+      "verse_key": "9:94",
+      "text_plain": "یَعۡتَذِرُونَ إِلَیۡكُمۡ إِذَا رَجَعۡتُمۡ إِلَیۡهِمۡۚ قُل لَّا تَعۡتَذِرُوا۟ لَن نُّؤۡمِنَ لَكُمۡ قَدۡ نَبَّأَنَا ٱللَّهُ مِنۡ أَخۡبَارِكُمۡۚ وَسَیَرَى ٱللَّهُ عَمَلَكُمۡ وَرَسُولُهُۥ ثُمَّ تُرَدُّونَ إِلَىٰ عَـٰلِمِ ٱلۡغَیۡبِ وَٱلشَّهَـٰدَةِ فَیُنَبِّئُكُم بِمَا كُنتُمۡ تَعۡمَلُونَ",
+      "text_tajweed_html": "یَعۡتَذِرُونَ إِلَیۡكُمۡ إِذَا رَجَعۡتُمۡ إِلَیۡهِمۡۚ قُل لَّا تَعۡتَذِرُ<tajweed class=silent>وا</tajweed>۟ ل<tajweed class=idghaam_ghunnah>َن نّ</tajweed>ُؤۡمِنَ لَكُمۡ ق<tajweed class=qalaqala>َد</tajweed>ۡ نَبَّأَنَا<tajweed class=ham_wasl> </tajweed>ٱللَّهُ مِنۡ أَخۡبَارِكُمۡۚ وَسَیَرَ<tajweed class=ham_wasl>ى</tajweed> ٱللَّهُ عَمَلَكُمۡ وَرَسُولُ<tajweed class=madda_normal>ه</tajweed>ُۥ <tajweed class=ghunnah>ثُم</tajweed>َّ تُرَدُّونَ إِلَىٰ <tajweed class=madda_normal>ع</tajweed>َـٰلِ<tajweed class=ham_wasl>م</tajweed>ِ ٱلۡغَیۡبِ<tajweed class=ham_wasl> </tajweed><tajweed class=laam_shamsiyah>و</tajweed>َٱلشّ<tajweed class=madda_normal>َ</tajweed>هَـٰدَةِ فَیُنَبِّ<tajweed class=ikhpiaa_shafawi>ئُكُ</tajweed>م بِمَ<tajweed class=ikhpiaa>ا ك</tajweed>ُنتُمۡ تَعۡ<tajweed class=madda_permissible>م</tajweed>َلُونَ",
+      "rules_count": 15
+    },
+    {
+      "verse_key": "9:95",
+      "text_plain": "سَیَحۡلِفُونَ بِٱللَّهِ لَكُمۡ إِذَا ٱنقَلَبۡتُمۡ إِلَیۡهِمۡ لِتُعۡرِضُوا۟ عَنۡهُمۡۖ فَأَعۡرِضُوا۟ عَنۡهُمۡۖ إِنَّهُمۡ رِجۡسࣱۖ وَمَأۡوَىٰهُمۡ جَهَنَّمُ جَزَاۤءَۢ بِمَا كَانُوا۟ یَكۡسِبُونَ",
+      "text_tajweed_html": "سَیَحۡلِفُونَ بِ<tajweed class=ham_wasl>ٱ</tajweed>للَّهِ لَكُمۡ إِذَا <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=ikhpiaa>نقَ</tajweed>لَ<tajweed class=qalaqala>بۡ</tajweed>تُمۡ إِلَیۡهِمۡ لِتُعۡرِضُو<tajweed class=silent>ا۟</tajweed> عَنۡهُمۡۖ فَأَعۡرِضُ<tajweed class=silent>وا</tajweed>۟ عَنۡهُمۡۖ <tajweed class=ghunnah>إِن</tajweed>َّهُمۡ <tajweed class=qalaqala>رِ</tajweed>ج<tajweed class=idghaam_ghunnah>ۡسࣱۖ</tajweed> وَمَأۡ<tajweed class=madda_normal>و</tajweed>َىٰهُمۡ ج<tajweed class=ghunnah>َهَ</tajweed>نَّمُ ج<tajweed class=madda_obligatory>َز</tajweed>َ<tajweed class=iqlab>اۤءَ</tajweed>ۢ بِمَا كَا<tajweed class=silent>نُ</tajweed>وا۟ یَكۡس<tajweed class=madda_permissible>ِ</tajweed>بُونَ",
+      "rules_count": 15
+    },
+    {
+      "verse_key": "9:96",
+      "text_plain": "یَحۡلِفُونَ لَكُمۡ لِتَرۡضَوۡا۟ عَنۡهُمۡۖ فَإِن تَرۡضَوۡا۟ عَنۡهُمۡ فَإِنَّ ٱللَّهَ لَا یَرۡضَىٰ عَنِ ٱلۡقَوۡمِ ٱلۡفَـٰسِقِینَ",
+      "text_tajweed_html": "یَحۡلِفُونَ لَكُمۡ لِتَرۡضَوۡ<tajweed class=silent>ا۟</tajweed> عَنۡهُمۡۖ فَإ<tajweed class=ikhpiaa>ِن ت</tajweed>َرۡضَو<tajweed class=silent>ۡا</tajweed>۟ عَنۡهُمۡ فَإ<tajweed class=ghunnah>ِنّ</tajweed>َ<tajweed class=ham_wasl> </tajweed>ٱللَّهَ لَا یَرۡضَىٰ عَنِ<tajweed class=ham_wasl> </tajweed>ٱلۡقَوۡمِ<tajweed class=ham_wasl> </tajweed>ٱلۡف<tajweed class=madda_normal>َ</tajweed>ـٰسِ<tajweed class=madda_permissible>ق</tajweed>ِینَ",
+      "rules_count": 9
+    },
+    {
+      "verse_key": "9:97",
+      "text_plain": "ٱلۡأَعۡرَابُ أَشَدُّ كُفۡرࣰا وَنِفَاقࣰا وَأَجۡدَرُ أَلَّا یَعۡلَمُوا۟ حُدُودَ مَاۤ أَنزَلَ ٱللَّهُ عَلَىٰ رَسُولِهِۦۗ وَٱللَّهُ عَلِیمٌ حَكِیمࣱ",
+      "text_tajweed_html": "ٱلۡأَعۡرَابُ أَشَدُّ كُفۡر<tajweed class=idghaam_ghunnah>ࣰا وَ</tajweed>نِفَاق<tajweed class=idghaam_ghunnah>ࣰا وَ</tajweed>أَ<tajweed class=qalaqala>جۡ</tajweed>دَرُ أَلَّا یَعۡلَمُو<tajweed class=silent>ا۟</tajweed> حُدُودَ مَ<tajweed class=madda_permissible>اۤ</tajweed> أَ<tajweed class=ikhpiaa>نزَ</tajweed>لَ <tajweed class=ham_wasl>ٱ</tajweed>للَّهُ عَلَىٰ رَسُولِهِ<tajweed class=madda_normal>ۦ</tajweed>ۗ و<tajweed class=ham_wasl>َ</tajweed>ٱللَّهُ عَلِیمٌ حَك<tajweed class=madda_permissible>ِ</tajweed>یمࣱ",
+      "rules_count": 10
+    },
+    {
+      "verse_key": "9:98",
+      "text_plain": "وَمِنَ ٱلۡأَعۡرَابِ مَن یَتَّخِذُ مَا یُنفِقُ مَغۡرَمࣰا وَیَتَرَبَّصُ بِكُمُ ٱلدَّوَاۤىِٕرَۚ عَلَیۡهِمۡ دَاۤىِٕرَةُ ٱلسَّوۡءِۗ وَٱللَّهُ سَمِیعٌ عَلِیمࣱ",
+      "text_tajweed_html": "وَمِنَ <tajweed class=ham_wasl>ٱ</tajweed>لۡأَعۡرَابِ مَ<tajweed class=idghaam_ghunnah>ن یَ</tajweed>تَّخِذُ مَا یُ<tajweed class=ikhpiaa>نفِ</tajweed>قُ مَغۡرَم<tajweed class=idghaam_ghunnah>ࣰا وَ</tajweed>یَتَرَبَّصُ بِكُمُ <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>دَّوَ<tajweed class=madda_obligatory>اۤ</tajweed>ىِٕرَۚ عَلَیۡهِمۡ <tajweed class=madda_obligatory>دَ</tajweed>اۤىِٕرَ<tajweed class=ham_wasl>ة</tajweed><tajweed class=laam_shamsiyah>ُ</tajweed> ٱلسَّوۡءِ<tajweed class=ham_wasl>ۗ</tajweed> وَٱللَّهُ سَمِیعٌ <tajweed class=madda_permissible>ع</tajweed>َلِیمࣱ",
+      "rules_count": 12
+    },
+    {
+      "verse_key": "9:99",
+      "text_plain": "وَمِنَ ٱلۡأَعۡرَابِ مَن یُؤۡمِنُ بِٱللَّهِ وَٱلۡیَوۡمِ ٱلۡـَٔاخِرِ وَیَتَّخِذُ مَا یُنفِقُ قُرُبَـٰتٍ عِندَ ٱللَّهِ وَصَلَوَ ٰ⁠تِ ٱلرَّسُولِۚ أَلَاۤ إِنَّهَا قُرۡبَةࣱ لَّهُمۡۚ سَیُدۡخِلُهُمُ ٱللَّهُ فِی رَحۡمَتِهِۦۤۚ إِنَّ ٱللَّهَ غَفُورࣱ رَّحِیمࣱ",
+      "text_tajweed_html": "وَمِنَ <tajweed class=ham_wasl>ٱ</tajweed>لۡأَعۡرَابِ مَ<tajweed class=idghaam_ghunnah>ن یُ</tajweed>ؤۡمِنُ بِ<tajweed class=ham_wasl>ٱ</tajweed>للَّهِ وَ<tajweed class=ham_wasl>ٱ</tajweed>لۡیَوۡمِ <tajweed class=ham_wasl>ٱ</tajweed>لۡـَٔاخِرِ وَیَتَّخِذُ مَا ی<tajweed class=ikhpiaa>ُنف</tajweed>ِقُ قُرُب<tajweed class=madda_normal>َ</tajweed>ـٰتٍ <tajweed class=ikhpiaa>عِن</tajweed>د<tajweed class=ham_wasl>َ</tajweed> ٱللَّهِ وَصَلَ<tajweed class=madda_normal>و</tajweed>َ ٰ<tajweed class=ham_wasl>⁠</tajweed><tajweed class=laam_shamsiyah>ت</tajweed>ِ ٱلرَّسُولِۚ<tajweed class=madda_permissible> أ</tajweed>َلَ<tajweed class=ghunnah>اۤ </tajweed>إِنَّهَا قُ<tajweed class=idghaam_wo_ghunnah>رۡبَة</tajweed>ࣱ لَّهُمۡ<tajweed class=qalaqala>ۚ </tajweed>سَیُدۡخِل<tajweed class=ham_wasl>ُ</tajweed>هُمُ ٱللَّهُ فِی رَحۡ<tajweed class=madda_permissible>مَ</tajweed>تِه<tajweed class=ghunnah>ِۦۤ</tajweed>ۚ<tajweed class=ham_wasl> </tajweed>إِنَّ ٱللَّهَ<tajweed class=idghaam_wo_ghunnah> غَفُ</tajweed>ور<tajweed class=madda_permissible>ࣱ</tajweed> رَّحِیمࣱ",
+      "rules_count": 22
+    },
+    {
+      "verse_key": "9:100",
+      "text_plain": "وَٱلسَّـٰبِقُونَ ٱلۡأَوَّلُونَ مِنَ ٱلۡمُهَـٰجِرِینَ وَٱلۡأَنصَارِ وَٱلَّذِینَ ٱتَّبَعُوهُم بِإِحۡسَـٰنࣲ رَّضِیَ ٱللَّهُ عَنۡهُمۡ وَرَضُوا۟ عَنۡهُ وَأَعَدَّ لَهُمۡ جَنَّـٰتࣲ تَجۡرِی تَحۡتَهَا ٱلۡأَنۡهَـٰرُ خَـٰلِدِینَ فِیهَاۤ أَبَدࣰاۚ ذَ ٰ⁠لِكَ ٱلۡفَوۡزُ ٱلۡعَظِیمُ",
+      "text_tajweed_html": "وَ<tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>سَّ<tajweed class=madda_normal>ـ</tajweed>ٰبِقُونَ<tajweed class=ham_wasl> </tajweed>ٱلۡأَوَّلُونَ مِنَ<tajweed class=ham_wasl> </tajweed>ٱلۡمُه<tajweed class=madda_normal>َ</tajweed>ـٰجِرِینَ <tajweed class=ham_wasl>و</tajweed>َٱلۡ<tajweed class=ikhpiaa>أَن</tajweed>صَارِ <tajweed class=ham_wasl>و</tajweed>َٱلَّذِین<tajweed class=ham_wasl>َ</tajweed> ٱتَّبَعُو<tajweed class=ikhpiaa_shafawi>هُم </tajweed>بِإِحۡ<tajweed class=madda_normal>س</tajweed>َ<tajweed class=idghaam_wo_ghunnah>ـٰنࣲ </tajweed>رَّضِ<tajweed class=ham_wasl>ی</tajweed>َ ٱللَّهُ عَنۡهُمۡ وَرَ<tajweed class=silent>ضُ</tajweed>وا۟ عَنۡهُ وَأَعَدَّ لَهُمۡ<tajweed class=ghunnah> جَ</tajweed><tajweed class=madda_normal>ن</tajweed>ّ<tajweed class=ikhpiaa>َـٰت</tajweed><tajweed class=qalaqala>ࣲ </tajweed>تَجۡرِی تَحۡتَ<tajweed class=ham_wasl>ه</tajweed>َا ٱلۡأَ<tajweed class=madda_normal>ن</tajweed>ۡهَـٰ<tajweed class=madda_normal>ر</tajweed>ُ خَـٰلِدِینَ<tajweed class=madda_permissible> ف</tajweed>ِیهَاۤ<tajweed class=ikhpiaa> أَبَ</tajweed><tajweed class=madda_normal>د</tajweed>ࣰاۚ ذ<tajweed class=ham_wasl>َ</tajweed> ٰ⁠لِكَ ٱ<tajweed class=ham_wasl>ل</tajweed>ۡفَوۡز<tajweed class=madda_permissible>ُ</tajweed> ٱلۡعَظِیمُ",
+      "rules_count": 28
+    },
+    {
+      "verse_key": "9:101",
+      "text_plain": "وَمِمَّنۡ حَوۡلَكُم مِّنَ ٱلۡأَعۡرَابِ مُنَـٰفِقُونَۖ وَمِنۡ أَهۡلِ ٱلۡمَدِینَةِ مَرَدُوا۟ عَلَى ٱلنِّفَاقِ لَا تَعۡلَمُهُمۡۖ نَحۡنُ نَعۡلَمُهُمۡۚ سَنُعَذِّبُهُم مَّرَّتَیۡنِ ثُمَّ یُرَدُّونَ إِلَىٰ عَذَابٍ عَظِیمࣲ",
+      "text_tajweed_html": "وَمِ<tajweed class=ghunnah>مَّ</tajweed>نۡ حَوۡلَكُ<tajweed class=idghaam_shafawi>م مِّ</tajweed>نَ <tajweed class=ham_wasl>ٱ</tajweed>لۡأَعۡرَابِ مُنَ<tajweed class=madda_normal>ـ</tajweed>ٰفِقُونَۖ وَمِنۡ أَهۡل<tajweed class=ham_wasl>ِ</tajweed> ٱلۡمَدِینَةِ مَرَد<tajweed class=silent>ُو</tajweed>ا۟ عَلَ<tajweed class=ham_wasl>ى</tajweed><tajweed class=laam_shamsiyah> </tajweed><tajweed class=ghunnah>ٱلن</tajweed>ِّفَاقِ لَا تَعۡلَمُهُمۡۖ نَحۡنُ نَعۡلَمُهُمۡۚ سَنُعَذِّ<tajweed class=idghaam_shafawi>بُهُم</tajweed> مَّرَّتَیۡن<tajweed class=ghunnah>ِ ث</tajweed>ُمَّ یُرَدُّونَ إِلَىٰ عَذَابٍ <tajweed class=madda_permissible>ع</tajweed>َظِیمࣲ",
+      "rules_count": 12
+    },
+    {
+      "verse_key": "9:102",
+      "text_plain": "وَءَاخَرُونَ ٱعۡتَرَفُوا۟ بِذُنُوبِهِمۡ خَلَطُوا۟ عَمَلࣰا صَـٰلِحࣰا وَءَاخَرَ سَیِّئًا عَسَى ٱللَّهُ أَن یَتُوبَ عَلَیۡهِمۡۚ إِنَّ ٱللَّهَ غَفُورࣱ رَّحِیمٌ",
+      "text_tajweed_html": "وَءَاخَرُونَ <tajweed class=ham_wasl>ٱ</tajweed>عۡتَرَفُو<tajweed class=silent>ا۟</tajweed> بِذُنُوبِهِمۡ خَلَطُو<tajweed class=silent>ا۟</tajweed> عَمَل<tajweed class=ikhpiaa>ࣰا صَ</tajweed><tajweed class=madda_normal>ـ</tajweed>ٰلِ<tajweed class=idghaam_ghunnah>حࣰا و</tajweed>َءَاخَرَ سَیِّئًا عَسَى<tajweed class=ham_wasl> </tajweed>ٱللَّهُ أ<tajweed class=idghaam_ghunnah>َن ی</tajweed>َتُوبَ عَلَیۡهِمۡۚ <tajweed class=ghunnah>إِن</tajweed>ّ<tajweed class=ham_wasl>َ</tajweed> ٱللَّهَ غَفُ<tajweed class=idghaam_wo_ghunnah>ورࣱ ر</tajweed>َّ<tajweed class=madda_permissible>ح</tajweed>ِیمٌ",
+      "rules_count": 12
+    },
+    {
+      "verse_key": "9:103",
+      "text_plain": "خُذۡ مِنۡ أَمۡوَ ٰ⁠لِهِمۡ صَدَقَةࣰ تُطَهِّرُهُمۡ وَتُزَكِّیهِم بِهَا وَصَلِّ عَلَیۡهِمۡۖ إِنَّ صَلَوٰتَكَ سَكَنࣱ لَّهُمۡۗ وَٱللَّهُ سَمِیعٌ عَلِیمٌ",
+      "text_tajweed_html": "خُذۡ مِنۡ أَمۡوَ<tajweed class=madda_normal> </tajweed>ٰ⁠لِهِمۡ صَدَق<tajweed class=ikhpiaa>َةࣰ </tajweed>تُطَهِّرُهُمۡ وَتُزَكِّی<tajweed class=ikhpiaa_shafawi>هِم </tajweed>بِهَا وَصَلِّ عَلَیۡهِمۡۖ<tajweed class=ghunnah> إِ</tajweed>نَّ ص<tajweed class=silent>َ</tajweed><tajweed class=madda_normal>ل</tajweed>َوٰتَكَ سَ<tajweed class=idghaam_wo_ghunnah>كَنࣱ </tajweed>لَّهُمۡ<tajweed class=ham_wasl>ۗ</tajweed> وَٱللَّهُ سَمِیعٌ <tajweed class=madda_permissible>ع</tajweed>َلِیمٌ",
+      "rules_count": 9
+    },
+    {
+      "verse_key": "9:104",
+      "text_plain": "أَلَمۡ یَعۡلَمُوۤا۟ أَنَّ ٱللَّهَ هُوَ یَقۡبَلُ ٱلتَّوۡبَةَ عَنۡ عِبَادِهِۦ وَیَأۡخُذُ ٱلصَّدَقَـٰتِ وَأَنَّ ٱللَّهَ هُوَ ٱلتَّوَّابُ ٱلرَّحِیمُ",
+      "text_tajweed_html": "أَلَمۡ یَعۡلَمُ<tajweed class=madda_permissible>وۤ</tajweed><tajweed class=silent>ا۟</tajweed> أَ<tajweed class=ghunnah>نَّ</tajweed> <tajweed class=ham_wasl>ٱ</tajweed>للَّهَ هُوَ یَ<tajweed class=qalaqala>قۡ</tajweed>بَلُ <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>تَّوۡبَةَ عَنۡ عِبَادِهِ<tajweed class=madda_normal>ۦ</tajweed> وَیَأۡخُذُ <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>صَّدَقَ<tajweed class=madda_normal>ـ</tajweed>ٰتِ وَأ<tajweed class=ghunnah>َنّ</tajweed>َ<tajweed class=ham_wasl> </tajweed>ٱللَّهَ هُوَ<tajweed class=ham_wasl> </tajweed><tajweed class=laam_shamsiyah>ٱ</tajweed>لتَّوَّابُ<tajweed class=ham_wasl> </tajweed><tajweed class=laam_shamsiyah>ٱ</tajweed>لرَّح<tajweed class=madda_permissible>ِ</tajweed>یمُ",
+      "rules_count": 18
+    },
+    {
+      "verse_key": "9:105",
+      "text_plain": "وَقُلِ ٱعۡمَلُوا۟ فَسَیَرَى ٱللَّهُ عَمَلَكُمۡ وَرَسُولُهُۥ وَٱلۡمُؤۡمِنُونَۖ وَسَتُرَدُّونَ إِلَىٰ عَـٰلِمِ ٱلۡغَیۡبِ وَٱلشَّهَـٰدَةِ فَیُنَبِّئُكُم بِمَا كُنتُمۡ تَعۡمَلُونَ",
+      "text_tajweed_html": "وَقُلِ <tajweed class=ham_wasl>ٱ</tajweed>عۡمَلُو<tajweed class=silent>ا۟</tajweed> فَسَیَرَى <tajweed class=ham_wasl>ٱ</tajweed>للَّهُ عَمَلَكُمۡ وَرَسُولُهُ<tajweed class=madda_normal>ۥ</tajweed> وَ<tajweed class=ham_wasl>ٱ</tajweed>لۡمُؤۡمِنُونَۖ وَسَتُرَدُّونَ إِلَىٰ ع<tajweed class=madda_normal>َ</tajweed>ـٰلِم<tajweed class=ham_wasl>ِ</tajweed> ٱلۡغَیۡبِ <tajweed class=ham_wasl>و</tajweed><tajweed class=laam_shamsiyah>َ</tajweed>ٱلشَّ<tajweed class=madda_normal>ه</tajweed>َـٰدَةِ فَیُنَبِّئ<tajweed class=ikhpiaa_shafawi>ُكُم</tajweed> بِمَا<tajweed class=ikhpiaa> كُ</tajweed>نتُمۡ تَعۡم<tajweed class=madda_permissible>َ</tajweed>لُونَ",
+      "rules_count": 13
+    },
+    {
+      "verse_key": "9:106",
+      "text_plain": "وَءَاخَرُونَ مُرۡجَوۡنَ لِأَمۡرِ ٱللَّهِ إِمَّا یُعَذِّبُهُمۡ وَإِمَّا یَتُوبُ عَلَیۡهِمۡۗ وَٱللَّهُ عَلِیمٌ حَكِیمࣱ",
+      "text_tajweed_html": "وَءَاخَرُونَ مُرۡجَوۡنَ لِأَمۡرِ <tajweed class=ham_wasl>ٱ</tajweed>للَّهِ إِ<tajweed class=ghunnah>مَّ</tajweed>ا یُعَذِّبُهُمۡ وَإِ<tajweed class=ghunnah>مَّ</tajweed>ا یَتُوبُ عَلَیۡهِمۡۗ و<tajweed class=ham_wasl>َ</tajweed>ٱللَّهُ عَلِیمٌ حَك<tajweed class=madda_permissible>ِ</tajweed>یمࣱ",
+      "rules_count": 5
+    },
+    {
+      "verse_key": "9:107",
+      "text_plain": "وَٱلَّذِینَ ٱتَّخَذُوا۟ مَسۡجِدࣰا ضِرَارࣰا وَكُفۡرࣰا وَتَفۡرِیقَۢا بَیۡنَ ٱلۡمُؤۡمِنِینَ وَإِرۡصَادࣰا لِّمَنۡ حَارَبَ ٱللَّهَ وَرَسُولَهُۥ مِن قَبۡلُۚ وَلَیَحۡلِفُنَّ إِنۡ أَرَدۡنَاۤ إِلَّا ٱلۡحُسۡنَىٰۖ وَٱللَّهُ یَشۡهَدُ إِنَّهُمۡ لَكَـٰذِبُونَ",
+      "text_tajweed_html": "وَ<tajweed class=ham_wasl>ٱ</tajweed>لَّذِینَ <tajweed class=ham_wasl>ٱ</tajweed>تَّخَذُو<tajweed class=silent>ا۟</tajweed> مَسۡجِد<tajweed class=ikhpiaa>ࣰا ضِ</tajweed>رَار<tajweed class=idghaam_ghunnah>ࣰا وَ</tajweed>كُفۡر<tajweed class=idghaam_ghunnah>ࣰا وَ</tajweed>تَفۡرِیق<tajweed class=iqlab>َۢا ب</tajweed>َیۡنَ <tajweed class=ham_wasl>ٱ</tajweed>لۡمُؤۡمِنِینَ وَإِرۡصَاد<tajweed class=idghaam_wo_ghunnah>ࣰا لِّ</tajweed>مَنۡ حَارَبَ <tajweed class=ham_wasl>ٱ</tajweed>للَّهَ وَرَسُولَهُ<tajweed class=madda_normal>ۥ</tajweed> مِ<tajweed class=ikhpiaa>ن قَ</tajweed><tajweed class=qalaqala>بۡ</tajweed>لُۚ وَلَیَحۡلِف<tajweed class=ghunnah>ُنّ</tajweed>َ إِنۡ أَر<tajweed class=qalaqala>َد</tajweed>ۡن<tajweed class=madda_permissible>َا</tajweed>ۤ إِلَّا<tajweed class=ham_wasl> </tajweed>ٱلۡحُسۡنَىٰۖ <tajweed class=ham_wasl>و</tajweed>َٱللَّهُ یَشۡهَدُ <tajweed class=ghunnah>إِن</tajweed>َّهُمۡ لَ<tajweed class=madda_normal>ك</tajweed>َـٰذ<tajweed class=madda_permissible>ِ</tajweed>بُونَ",
+      "rules_count": 21
+    },
+    {
+      "verse_key": "9:108",
+      "text_plain": "لَا تَقُمۡ فِیهِ أَبَدࣰاۚ لَّمَسۡجِدٌ أُسِّسَ عَلَى ٱلتَّقۡوَىٰ مِنۡ أَوَّلِ یَوۡمٍ أَحَقُّ أَن تَقُومَ فِیهِۚ فِیهِ رِجَالࣱ یُحِبُّونَ أَن یَتَطَهَّرُوا۟ۚ وَٱللَّهُ یُحِبُّ ٱلۡمُطَّهِّرِینَ",
+      "text_tajweed_html": "لَا تَقُمۡ فِیهِ أَبَد<tajweed class=idghaam_wo_ghunnah>ࣰاۚ لّ</tajweed>َمَسۡجِدٌ أُسِّسَ عَلَى<tajweed class=ham_wasl> </tajweed><tajweed class=laam_shamsiyah>ٱ</tajweed>لتّ<tajweed class=qalaqala>َق</tajweed>ۡوَىٰ مِنۡ أَوَّلِ یَوۡمٍ أَحَقُّ أ<tajweed class=ikhpiaa>َن ت</tajweed>َقُومَ فِیهِۚ فِیهِ رِجَ<tajweed class=idghaam_ghunnah>الࣱ </tajweed>یُحِبُّونَ <tajweed class=idghaam_ghunnah>أَن </tajweed>یَتَطَهَّر<tajweed class=silent>ُو</tajweed>ا۟ۚ<tajweed class=ham_wasl> </tajweed>وَٱللَّهُ یُحِب<tajweed class=ham_wasl>ّ</tajweed>ُ ٱلۡمُطَّهّ<tajweed class=madda_permissible>ِ</tajweed>رِینَ",
+      "rules_count": 11
+    },
+    {
+      "verse_key": "9:109",
+      "text_plain": "أَفَمَنۡ أَسَّسَ بُنۡیَـٰنَهُۥ عَلَىٰ تَقۡوَىٰ مِنَ ٱللَّهِ وَرِضۡوَ ٰ⁠نٍ خَیۡرٌ أَم مَّنۡ أَسَّسَ بُنۡیَـٰنَهُۥ عَلَىٰ شَفَا جُرُفٍ هَارࣲ فَٱنۡهَارَ بِهِۦ فِی نَارِ جَهَنَّمَۗ وَٱللَّهُ لَا یَهۡدِی ٱلۡقَوۡمَ ٱلظَّـٰلِمِینَ",
+      "text_tajweed_html": "أَفَمَنۡ أَسَّسَ بُنۡیَ<tajweed class=madda_normal>ـ</tajweed>ٰنَه<tajweed class=madda_normal>ُ</tajweed>ۥ عَلَىٰ ت<tajweed class=qalaqala>َق</tajweed>ۡوَىٰ مِنَ<tajweed class=ham_wasl> </tajweed>ٱللَّهِ وَرِضۡو<tajweed class=madda_normal>َ</tajweed> ٰ⁠نٍ خَیۡرٌ<tajweed class=idghaam_shafawi> أَم </tajweed>مَّنۡ أَسَّسَ بُن<tajweed class=madda_normal>ۡ</tajweed>یَـٰ<tajweed class=madda_normal>ن</tajweed>َهُۥ عَلَىٰ شَفَا جُرُفٍ <tajweed class=ikhpiaa>هَار</tajweed><tajweed class=ham_wasl>ࣲ</tajweed> فَٱنۡهَارَ <tajweed class=madda_normal>ب</tajweed>ِهِۦ فِی نَارِ <tajweed class=ghunnah>جَه</tajweed>َنَّم<tajweed class=ham_wasl>َ</tajweed>ۗ وَٱللَّهُ لَا یَه<tajweed class=ham_wasl>ۡ</tajweed>دِی ٱلۡقَ<tajweed class=ham_wasl>و</tajweed><tajweed class=laam_shamsiyah>ۡ</tajweed>مَ <tajweed class=madda_normal>ٱ</tajweed>لظَّ<tajweed class=madda_permissible>ـ</tajweed>ٰلِمِینَ",
+      "rules_count": 18
+    },
+    {
+      "verse_key": "9:110",
+      "text_plain": "لَا یَزَالُ بُنۡیَـٰنُهُمُ ٱلَّذِی بَنَوۡا۟ رِیبَةࣰ فِی قُلُوبِهِمۡ إِلَّاۤ أَن تَقَطَّعَ قُلُوبُهُمۡۗ وَٱللَّهُ عَلِیمٌ حَكِیمٌ",
+      "text_tajweed_html": "لَا یَزَالُ بُنۡیَ<tajweed class=madda_normal>ـ</tajweed>ٰنُهُمُ<tajweed class=ham_wasl> </tajweed>ٱلَّذِی بَنَو<tajweed class=silent>ۡا</tajweed>۟ رِیبَ<tajweed class=ikhpiaa>ةࣰ ف</tajweed>ِی قُلُوبِهِمۡ إِلّ<tajweed class=madda_permissible>َا</tajweed>ۤ أ<tajweed class=ikhpiaa>َن ت</tajweed>َقَطَّعَ قُلُوبُهُمۡۗ <tajweed class=ham_wasl>و</tajweed>َٱللَّهُ عَلِیمٌ حَ<tajweed class=madda_permissible>ك</tajweed>ِیمٌ",
+      "rules_count": 8
+    },
+    {
+      "verse_key": "9:111",
+      "text_plain": "۞ إِنَّ ٱللَّهَ ٱشۡتَرَىٰ مِنَ ٱلۡمُؤۡمِنِینَ أَنفُسَهُمۡ وَأَمۡوَ ٰ⁠لَهُم بِأَنَّ لَهُمُ ٱلۡجَنَّةَۚ یُقَـٰتِلُونَ فِی سَبِیلِ ٱللَّهِ فَیَقۡتُلُونَ وَیُقۡتَلُونَۖ وَعۡدًا عَلَیۡهِ حَقࣰّا فِی ٱلتَّوۡرَىٰةِ وَٱلۡإِنجِیلِ وَٱلۡقُرۡءَانِۚ وَمَنۡ أَوۡفَىٰ بِعَهۡدِهِۦ مِنَ ٱللَّهِۚ فَٱسۡتَبۡشِرُوا۟ بِبَیۡعِكُمُ ٱلَّذِی بَایَعۡتُم بِهِۦۚ وَذَ ٰ⁠لِكَ هُوَ ٱلۡفَوۡزُ ٱلۡعَظِیمُ",
+      "text_tajweed_html": "۞ <tajweed class=ghunnah>إِن</tajweed>ّ<tajweed class=ham_wasl>َ</tajweed> ٱللَّه<tajweed class=ham_wasl>َ</tajweed> ٱشۡتَرَىٰ مِن<tajweed class=ham_wasl>َ</tajweed> ٱلۡمُؤۡمِنِینَ <tajweed class=ikhpiaa>أَن</tajweed>فُسَهُمۡ وَأَمۡ<tajweed class=madda_normal>و</tajweed>َ ٰ⁠<tajweed class=ikhpiaa_shafawi>لَهُ</tajweed>م <tajweed class=ghunnah>بِأ</tajweed>َنَّ لَه<tajweed class=ham_wasl>ُ</tajweed>مُ ٱ<tajweed class=ghunnah>لۡج</tajweed>َنَّةَۚ<tajweed class=madda_normal> </tajweed>یُقَـٰتِلُونَ فِی سَ<tajweed class=ham_wasl>ب</tajweed>ِیلِ ٱللَّه<tajweed class=qalaqala>ِ </tajweed>فَیَقۡتُلُون<tajweed class=qalaqala>َ </tajweed>وَیُقۡتَلُونَۖ وَعۡدًا عَلَیۡ<tajweed class=ikhpiaa>هِ حَ</tajweed>قّ<tajweed class=ham_wasl>ࣰ</tajweed><tajweed class=laam_shamsiyah>ا</tajweed> فِی ٱلت<tajweed class=madda_normal>ّ</tajweed>َوۡرَ<tajweed class=ham_wasl>ى</tajweed>ٰةِ <tajweed class=ikhpiaa>وَٱ</tajweed>لۡإِنج<tajweed class=ham_wasl>ِ</tajweed>یلِ وَٱلۡقُرۡءَانِۚ وَمَنۡ أَوۡفَىٰ بِ<tajweed class=madda_normal>ع</tajweed>َهۡدِه<tajweed class=ham_wasl>ِ</tajweed>ۦ مِنَ ٱل<tajweed class=ham_wasl>ل</tajweed>َّهِ<tajweed class=qalaqala>ۚ </tajweed>فَٱسۡ<tajweed class=silent>تَ</tajweed>بۡشِرُوا۟ بِبَ<tajweed class=ham_wasl>ی</tajweed>ۡعِكُمُ ٱلَّذِی <tajweed class=ikhpiaa_shafawi>بَای</tajweed>َع<tajweed class=madda_normal>ۡ</tajweed>تُم ب<tajweed class=madda_normal>ِ</tajweed>هِۦۚ وَذَ <tajweed class=ham_wasl>ٰ</tajweed>⁠لِكَ هُو<tajweed class=ham_wasl>َ</tajweed> ٱلۡفَ<tajweed class=madda_permissible>و</tajweed>ۡزُ ٱلۡعَظِیمُ",
+      "rules_count": 33
+    },
+    {
+      "verse_key": "9:112",
+      "text_plain": "ٱلتَّـٰۤىِٕبُونَ ٱلۡعَـٰبِدُونَ ٱلۡحَـٰمِدُونَ ٱلسَّـٰۤىِٕحُونَ ٱلرَّ ٰ⁠كِعُونَ ٱلسَّـٰجِدُونَ ٱلۡـَٔامِرُونَ بِٱلۡمَعۡرُوفِ وَٱلنَّاهُونَ عَنِ ٱلۡمُنكَرِ وَٱلۡحَـٰفِظُونَ لِحُدُودِ ٱللَّهِۗ وَبَشِّرِ ٱلۡمُؤۡمِنِینَ",
+      "text_tajweed_html": "ٱ<tajweed class=laam_shamsiyah>ل</tajweed>تَّ<tajweed class=madda_obligatory>ـٰ</tajweed>ۤىِٕبُون<tajweed class=ham_wasl>َ</tajweed> ٱلۡ<tajweed class=madda_normal>ع</tajweed>َـٰبِدُو<tajweed class=ham_wasl>ن</tajweed>َ ٱل<tajweed class=madda_normal>ۡ</tajweed>حَـٰمِدُ<tajweed class=ham_wasl>و</tajweed><tajweed class=laam_shamsiyah>ن</tajweed>َ ٱ<tajweed class=madda_obligatory>لس</tajweed>َّـٰۤىِٕ<tajweed class=ham_wasl>ح</tajweed><tajweed class=laam_shamsiyah>ُ</tajweed>ونَ<tajweed class=madda_normal> </tajweed>ٱلرَّ ٰ⁠<tajweed class=ham_wasl>ك</tajweed><tajweed class=laam_shamsiyah>ِ</tajweed>عُو<tajweed class=madda_normal>ن</tajweed>َ ٱلسَّـ<tajweed class=ham_wasl>ٰ</tajweed>جِدُونَ ٱلۡـَٔا<tajweed class=ham_wasl>م</tajweed>ِرُونَ بِٱلۡمَ<tajweed class=ham_wasl>ع</tajweed><tajweed class=laam_shamsiyah>ۡ</tajweed><tajweed class=ghunnah>رُو</tajweed>فِ وَٱلنَّاه<tajweed class=ham_wasl>ُ</tajweed>ونَ <tajweed class=ikhpiaa>عَن</tajweed>ِ ٱلۡ<tajweed class=ham_wasl>م</tajweed>ُنكَ<tajweed class=madda_normal>ر</tajweed>ِ وَٱلۡحَـٰفِظُونَ<tajweed class=ham_wasl> </tajweed>لِحُدُودِ ٱللَّهِ<tajweed class=ham_wasl>ۗ</tajweed> وَبَشِّرِ<tajweed class=madda_permissible> </tajweed>ٱلۡمُؤۡمِنِینَ",
+      "rules_count": 27
+    },
+    {
+      "verse_key": "9:113",
+      "text_plain": "مَا كَانَ لِلنَّبِیِّ وَٱلَّذِینَ ءَامَنُوۤا۟ أَن یَسۡتَغۡفِرُوا۟ لِلۡمُشۡرِكِینَ وَلَوۡ كَانُوۤا۟ أُو۟لِی قُرۡبَىٰ مِنۢ بَعۡدِ مَا تَبَیَّنَ لَهُمۡ أَنَّهُمۡ أَصۡحَـٰبُ ٱلۡجَحِیمِ",
+      "text_tajweed_html": "مَا كَانَ لِ<tajweed class=laam_shamsiyah>ل</tajweed><tajweed class=ghunnah>نَّ</tajweed>بِیِّ وَ<tajweed class=ham_wasl>ٱ</tajweed>لَّذِینَ ءَامَنُ<tajweed class=madda_permissible>وۤ</tajweed><tajweed class=silent>ا۟</tajweed> أَ<tajweed class=idghaam_ghunnah>ن یَ</tajweed>سۡتَغۡفِرُو<tajweed class=silent>ا۟</tajweed> لِلۡمُشۡرِكِینَ وَلَوۡ كَانُ<tajweed class=madda_permissible>وۤ</tajweed><tajweed class=silent>ا۟</tajweed> أُ<tajweed class=silent>و۟</tajweed>لِی قُرۡبَىٰ مِن<tajweed class=iqlab>ۢ ب</tajweed>َعۡدِ مَا تَبَیَّنَ لَهُمۡ أَ<tajweed class=ghunnah>نَّ</tajweed>هُمۡ أَصۡحَ<tajweed class=madda_normal>ـ</tajweed>ٰبُ<tajweed class=ham_wasl> </tajweed>ٱلۡجَح<tajweed class=madda_permissible>ِ</tajweed>یمِ",
+      "rules_count": 15
+    },
+    {
+      "verse_key": "9:114",
+      "text_plain": "وَمَا كَانَ ٱسۡتِغۡفَارُ إِبۡرَ ٰ⁠هِیمَ لِأَبِیهِ إِلَّا عَن مَّوۡعِدَةࣲ وَعَدَهَاۤ إِیَّاهُ فَلَمَّا تَبَیَّنَ لَهُۥۤ أَنَّهُۥ عَدُوࣱّ لِّلَّهِ تَبَرَّأَ مِنۡهُۚ إِنَّ إِبۡرَ ٰ⁠هِیمَ لَأَوَّ ٰ⁠هٌ حَلِیمࣱ",
+      "text_tajweed_html": "وَمَا كَانَ <tajweed class=ham_wasl>ٱ</tajweed>سۡتِغۡفَارُ إِ<tajweed class=qalaqala>بۡ</tajweed>رَ<tajweed class=madda_normal> </tajweed>ٰ⁠هِیمَ لِأَبِیهِ إِلَّا <tajweed class=idghaam_ghunnah>عَن م</tajweed>َّوۡعِد<tajweed class=idghaam_ghunnah>َةࣲ </tajweed>وَعَدَ<tajweed class=madda_permissible>هَ</tajweed>اۤ إِیَّاهُ فَ<tajweed class=ghunnah>لَم</tajweed>َّا تَبَیَّنَ لَ<tajweed class=madda_permissible>هُ</tajweed>ۥۤ <tajweed class=ghunnah>أَن</tajweed>َّ<tajweed class=madda_normal>ه</tajweed>ُۥ عَدُ<tajweed class=idghaam_wo_ghunnah>وࣱّ ل</tajweed>ِّلَّهِ تَبَرَّأَ مِنۡهُۚ<tajweed class=ghunnah> إِ</tajweed>نَّ<tajweed class=qalaqala> إ</tajweed>ِب<tajweed class=madda_normal>ۡ</tajweed>رَ ٰ⁠هِیمَ لَ<tajweed class=madda_normal>أ</tajweed>َوَّ ٰ⁠<tajweed class=madda_permissible>ه</tajweed>ٌ حَلِیمࣱ",
+      "rules_count": 16
+    },
+    {
+      "verse_key": "9:115",
+      "text_plain": "وَمَا كَانَ ٱللَّهُ لِیُضِلَّ قَوۡمَۢا بَعۡدَ إِذۡ هَدَىٰهُمۡ حَتَّىٰ یُبَیِّنَ لَهُم مَّا یَتَّقُونَۚ إِنَّ ٱللَّهَ بِكُلِّ شَیۡءٍ عَلِیمٌ",
+      "text_tajweed_html": "وَمَا كَانَ <tajweed class=ham_wasl>ٱ</tajweed>للَّهُ لِیُضِلَّ قَوۡم<tajweed class=iqlab>َۢا ب</tajweed>َعۡدَ إِذۡ هَدَى<tajweed class=madda_normal>ٰ</tajweed>هُمۡ حَتَّىٰ یُبَیِّنَ لَهُ<tajweed class=idghaam_shafawi>م مَّ</tajweed>ا یَتَّقُونَۚ إ<tajweed class=ghunnah>ِنّ</tajweed>َ<tajweed class=ham_wasl> </tajweed>ٱللَّهَ بِكُلِّ شَیۡءٍ عَل<tajweed class=madda_permissible>ِ</tajweed>یمٌ",
+      "rules_count": 7
+    },
+    {
+      "verse_key": "9:116",
+      "text_plain": "إِنَّ ٱللَّهَ لَهُۥ مُلۡكُ ٱلسَّمَـٰوَ ٰ⁠تِ وَٱلۡأَرۡضِۖ یُحۡیِۦ وَیُمِیتُۚ وَمَا لَكُم مِّن دُونِ ٱللَّهِ مِن وَلِیࣲّ وَلَا نَصِیرࣲ",
+      "text_tajweed_html": "إِ<tajweed class=ghunnah>نَّ</tajweed> <tajweed class=ham_wasl>ٱ</tajweed>للَّهَ لَهُ<tajweed class=madda_normal>ۥ</tajweed> مُلۡكُ <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>سَّمَ<tajweed class=madda_normal>ـ</tajweed>ٰو<tajweed class=madda_normal>َ</tajweed> ٰ⁠تِ<tajweed class=ham_wasl> </tajweed>وَٱلۡأَرۡضِۖ یُ<tajweed class=madda_normal>ح</tajweed>ۡیِۦ وَیُمِیتُۚ وَمَا<tajweed class=idghaam_shafawi> لَكُ</tajweed><tajweed class=ikhpiaa>م مّ</tajweed>ِن د<tajweed class=ham_wasl>ُ</tajweed>ونِ ٱللَّ<tajweed class=idghaam_ghunnah>هِ م</tajweed>ِن و<tajweed class=idghaam_ghunnah>َلِی</tajweed>ࣲّ وَلَا<tajweed class=madda_permissible> </tajweed>نَصِیرࣲ",
+      "rules_count": 15
+    },
+    {
+      "verse_key": "9:117",
+      "text_plain": "لَّقَد تَّابَ ٱللَّهُ عَلَى ٱلنَّبِیِّ وَٱلۡمُهَـٰجِرِینَ وَٱلۡأَنصَارِ ٱلَّذِینَ ٱتَّبَعُوهُ فِی سَاعَةِ ٱلۡعُسۡرَةِ مِنۢ بَعۡدِ مَا كَادَ یَزِیغُ قُلُوبُ فَرِیقࣲ مِّنۡهُمۡ ثُمَّ تَابَ عَلَیۡهِمۡۚ إِنَّهُۥ بِهِمۡ رَءُوفࣱ رَّحِیمࣱ",
+      "text_tajweed_html": "لَّقَ<tajweed class=idghaam_mutajanisayn>د</tajweed> تَّابَ <tajweed class=ham_wasl>ٱ</tajweed>للَّهُ عَلَى <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed><tajweed class=ghunnah>نَّ</tajweed>بِیِّ وَ<tajweed class=ham_wasl>ٱ</tajweed>لۡمُهَ<tajweed class=madda_normal>ـ</tajweed>ٰجِرِینَ و<tajweed class=ham_wasl>َ</tajweed>ٱلۡأ<tajweed class=ikhpiaa>َنص</tajweed>َارِ<tajweed class=ham_wasl> </tajweed>ٱلَّذِینَ<tajweed class=ham_wasl> </tajweed>ٱتَّبَعُوهُ فِی سَاعَةِ<tajweed class=ham_wasl> </tajweed>ٱلۡعُسۡرَةِ مِ<tajweed class=iqlab>نۢ </tajweed>بَعۡدِ مَا كَادَ یَزِیغُ قُلُوبُ فَرِی<tajweed class=idghaam_ghunnah>قࣲ مّ</tajweed>ِنۡهُمۡ ث<tajweed class=ghunnah>ُمّ</tajweed>َ تَابَ عَلَیۡهِمۡۚ <tajweed class=ghunnah>إِن</tajweed>َّ<tajweed class=madda_normal>ه</tajweed>ُۥ بِهِمۡ رَءُ<tajweed class=idghaam_wo_ghunnah>وفࣱ ر</tajweed>َّ<tajweed class=madda_permissible>ح</tajweed>ِیمࣱ",
+      "rules_count": 19
+    },
+    {
+      "verse_key": "9:118",
+      "text_plain": "وَعَلَى ٱلثَّلَـٰثَةِ ٱلَّذِینَ خُلِّفُوا۟ حَتَّىٰۤ إِذَا ضَاقَتۡ عَلَیۡهِمُ ٱلۡأَرۡضُ بِمَا رَحُبَتۡ وَضَاقَتۡ عَلَیۡهِمۡ أَنفُسُهُمۡ وَظَنُّوۤا۟ أَن لَّا مَلۡجَأَ مِنَ ٱللَّهِ إِلَّاۤ إِلَیۡهِ ثُمَّ تَابَ عَلَیۡهِمۡ لِیَتُوبُوۤا۟ۚ إِنَّ ٱللَّهَ هُوَ ٱلتَّوَّابُ ٱلرَّحِیمُ",
+      "text_tajweed_html": "وَعَلَى <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>ثَّلَ<tajweed class=madda_normal>ـ</tajweed>ٰثَةِ<tajweed class=ham_wasl> </tajweed>ٱلَّذِینَ خُلِّفُ<tajweed class=silent>وا</tajweed>۟ حَتّ<tajweed class=madda_permissible>َىٰ</tajweed>ۤ إِذَا ضَاقَتۡ عَلَیۡهِمُ<tajweed class=ham_wasl> </tajweed>ٱلۡأَرۡضُ بِمَا رَحُبَتۡ وَضَاقَتۡ عَلَیۡهِمۡ أ<tajweed class=ikhpiaa>َنف</tajweed>ُسُهُمۡ وَظ<tajweed class=ghunnah>َنّ</tajweed><tajweed class=madda_permissible>ُو</tajweed><tajweed class=silent>ۤا</tajweed>۟ أ<tajweed class=idghaam_wo_ghunnah>َن لّ</tajweed>َا مَلۡجَأَ مِنَ<tajweed class=ham_wasl> </tajweed>ٱللَّهِ إِلّ<tajweed class=madda_permissible>َا</tajweed>ۤ إِلَیۡهِ ث<tajweed class=ghunnah>ُمّ</tajweed>َ تَابَ عَلَیۡهِمۡ لِیَتُوب<tajweed class=madda_permissible>ُو</tajweed><tajweed class=silent>ۤا</tajweed>۟ۚ <tajweed class=ghunnah>إِن</tajweed>ّ<tajweed class=ham_wasl>َ</tajweed> ٱللَّهَ هُو<tajweed class=ham_wasl>َ</tajweed><tajweed class=laam_shamsiyah> </tajweed>ٱلتَّوَّاب<tajweed class=ham_wasl>ُ</tajweed><tajweed class=laam_shamsiyah> </tajweed>ٱلرَّ<tajweed class=madda_permissible>ح</tajweed>ِیمُ",
+      "rules_count": 24
+    },
+    {
+      "verse_key": "9:119",
+      "text_plain": "یَـٰۤأَیُّهَا ٱلَّذِینَ ءَامَنُوا۟ ٱتَّقُوا۟ ٱللَّهَ وَكُونُوا۟ مَعَ ٱلصَّـٰدِقِینَ",
+      "text_tajweed_html": "یَ<tajweed class=madda_permissible>ـٰ</tajweed>ۤأَیُّهَا<tajweed class=ham_wasl> </tajweed>ٱلَّذِینَ ءَامَنُ<tajweed class=silent>وا</tajweed>۟<tajweed class=ham_wasl> </tajweed>ٱتَّقُ<tajweed class=silent>وا</tajweed>۟<tajweed class=ham_wasl> </tajweed>ٱللَّهَ وَكُونُ<tajweed class=silent>وا</tajweed>۟ مَعَ<tajweed class=ham_wasl> </tajweed><tajweed class=laam_shamsiyah>ٱ</tajweed>لصّ<tajweed class=madda_normal>َ</tajweed>ـٰدِ<tajweed class=madda_permissible>ق</tajweed>ِینَ",
+      "rules_count": 11
+    },
+    {
+      "verse_key": "9:120",
+      "text_plain": "مَا كَانَ لِأَهۡلِ ٱلۡمَدِینَةِ وَمَنۡ حَوۡلَهُم مِّنَ ٱلۡأَعۡرَابِ أَن یَتَخَلَّفُوا۟ عَن رَّسُولِ ٱللَّهِ وَلَا یَرۡغَبُوا۟ بِأَنفُسِهِمۡ عَن نَّفۡسِهِۦۚ ذَ ٰ⁠لِكَ بِأَنَّهُمۡ لَا یُصِیبُهُمۡ ظَمَأࣱ وَلَا نَصَبࣱ وَلَا مَخۡمَصَةࣱ فِی سَبِیلِ ٱللَّهِ وَلَا یَطَـُٔونَ مَوۡطِئࣰا یَغِیظُ ٱلۡكُفَّارَ وَلَا یَنَالُونَ مِنۡ عَدُوࣲّ نَّیۡلًا إِلَّا كُتِبَ لَهُم بِهِۦ عَمَلࣱ صَـٰلِحٌۚ إِنَّ ٱللَّهَ لَا یُضِیعُ أَجۡرَ ٱلۡمُحۡسِنِینَ",
+      "text_tajweed_html": "مَا كَانَ لِأَهۡلِ <tajweed class=ham_wasl>ٱ</tajweed>لۡمَدِینَةِ وَمَنۡ حَوۡلَهُ<tajweed class=idghaam_shafawi>م مِّ</tajweed>نَ <tajweed class=ham_wasl>ٱ</tajweed>لۡأَعۡرَابِ أَ<tajweed class=idghaam_ghunnah>ن یَ</tajweed>تَخَلَّفُو<tajweed class=silent>ا۟</tajweed> عَ<tajweed class=idghaam_wo_ghunnah>ن رَّ</tajweed>سُولِ <tajweed class=ham_wasl>ٱ</tajweed>للَّهِ وَلَا یَرۡغَبُو<tajweed class=silent>ا۟</tajweed> بِأَ<tajweed class=ikhpiaa>نفُ</tajweed>سِهِمۡ عَ<tajweed class=idghaam_ghunnah>ن نَّ</tajweed>فۡسِهِ<tajweed class=madda_normal>ۦ</tajweed>ۚ ذ<tajweed class=madda_normal>َ</tajweed> ٰ⁠لِكَ ب<tajweed class=ghunnah>ِأَ</tajweed>نَّهُمۡ لَا یُصِیبُهُمۡ ظَ<tajweed class=idghaam_ghunnah>مَأࣱ</tajweed> وَلَا نَ<tajweed class=idghaam_ghunnah>صَبࣱ</tajweed> وَلَا مَخۡمَ<tajweed class=ikhpiaa>صَةࣱ</tajweed> فِی سَبِی<tajweed class=ham_wasl>ل</tajweed>ِ ٱللَّهِ وَلَا یَطَـُٔونَ مَوۡ<tajweed class=idghaam_ghunnah>طِئࣰا</tajweed> یَغِی<tajweed class=ham_wasl>ظ</tajweed>ُ ٱلۡكُفَّارَ وَلَا یَنَالُونَ مِنۡ عَد<tajweed class=idghaam_ghunnah>ُوࣲّ </tajweed>نَّیۡلًا إِلَّا كُتِبَ ل<tajweed class=ikhpiaa_shafawi>َهُم</tajweed> ب<tajweed class=madda_normal>ِ</tajweed>هِۦ عَ<tajweed class=ikhpiaa>مَلࣱ</tajweed><tajweed class=madda_normal> </tajweed>صَـٰلِح<tajweed class=ghunnah>ٌۚ </tajweed>إ<tajweed class=ham_wasl>ِ</tajweed>نَّ ٱللَّهَ لَا یُضِی<tajweed class=qalaqala>عُ</tajweed> أَ<tajweed class=ham_wasl>ج</tajweed>ۡرَ ٱلۡمُح<tajweed class=madda_permissible>ۡ</tajweed>سِنِینَ",
+      "rules_count": 29
+    },
+    {
+      "verse_key": "9:121",
+      "text_plain": "وَلَا یُنفِقُونَ نَفَقَةࣰ صَغِیرَةࣰ وَلَا كَبِیرَةࣰ وَلَا یَقۡطَعُونَ وَادِیًا إِلَّا كُتِبَ لَهُمۡ لِیَجۡزِیَهُمُ ٱللَّهُ أَحۡسَنَ مَا كَانُوا۟ یَعۡمَلُونَ",
+      "text_tajweed_html": "وَلَا یُ<tajweed class=ikhpiaa>نفِ</tajweed>قُونَ نَفَقَة<tajweed class=ikhpiaa>ࣰ صَ</tajweed>غِیرَة<tajweed class=idghaam_ghunnah>ࣰ وَ</tajweed>لَا كَبِیرَة<tajweed class=idghaam_ghunnah>ࣰ وَ</tajweed>لَا یَ<tajweed class=qalaqala>قۡ</tajweed>طَعُونَ وَادِیًا إِلَّا كُتِبَ لَهُمۡ لِیَ<tajweed class=qalaqala>جۡ</tajweed>زِیَهُمُ <tajweed class=ham_wasl>ٱ</tajweed>للَّهُ أَحۡسَنَ مَا كَانُو<tajweed class=silent>ا۟</tajweed> یَعۡمَلُ<tajweed class=madda_permissible>و</tajweed>نَ",
+      "rules_count": 9
+    },
+    {
+      "verse_key": "9:122",
+      "text_plain": "۞ وَمَا كَانَ ٱلۡمُؤۡمِنُونَ لِیَنفِرُوا۟ كَاۤفَّةࣰۚ فَلَوۡلَا نَفَرَ مِن كُلِّ فِرۡقَةࣲ مِّنۡهُمۡ طَاۤىِٕفَةࣱ لِّیَتَفَقَّهُوا۟ فِی ٱلدِّینِ وَلِیُنذِرُوا۟ قَوۡمَهُمۡ إِذَا رَجَعُوۤا۟ إِلَیۡهِمۡ لَعَلَّهُمۡ یَحۡذَرُونَ",
+      "text_tajweed_html": "۞ وَمَا كَان<tajweed class=ham_wasl>َ</tajweed> ٱلۡمُؤۡمِنُونَ لِ<tajweed class=ikhpiaa>یَن</tajweed>فِر<tajweed class=silent>ُو</tajweed>ا۟ <tajweed class=madda_necessary>كَ</tajweed>اۤفّ<tajweed class=ikhpiaa>َةࣰۚ</tajweed> فَلَوۡلَا نَفَرَ<tajweed class=ikhpiaa> مِن</tajweed> كُلِّ فِرۡ<tajweed class=idghaam_ghunnah>قَةࣲ </tajweed>مِّنۡهُمۡ<tajweed class=madda_obligatory> ط</tajweed>َاۤىٕ<tajweed class=idghaam_wo_ghunnah>ِفَةࣱ</tajweed> لِّیَتَفَقّ<tajweed class=silent>َه</tajweed>ُوا۟ <tajweed class=ham_wasl>ف</tajweed><tajweed class=laam_shamsiyah>ِ</tajweed>ی ٱلدِّینِ وَ<tajweed class=ikhpiaa>لِی</tajweed>ُنذ<tajweed class=silent>ِر</tajweed>ُوا۟ قَوۡمَهُمۡ إِذَا رَ<tajweed class=madda_permissible>جَ</tajweed><tajweed class=silent>عُ</tajweed>وۤا۟ إِلَیۡهِمۡ لَعَلَّهُمۡ یَحۡ<tajweed class=madda_permissible>ذ</tajweed>َرُونَ",
+      "rules_count": 17
+    },
+    {
+      "verse_key": "9:123",
+      "text_plain": "یَـٰۤأَیُّهَا ٱلَّذِینَ ءَامَنُوا۟ قَـٰتِلُوا۟ ٱلَّذِینَ یَلُونَكُم مِّنَ ٱلۡكُفَّارِ وَلۡیَجِدُوا۟ فِیكُمۡ غِلۡظَةࣰۚ وَٱعۡلَمُوۤا۟ أَنَّ ٱللَّهَ مَعَ ٱلۡمُتَّقِینَ",
+      "text_tajweed_html": "یَ<tajweed class=madda_permissible>ـٰ</tajweed>ۤأَیُّهَا<tajweed class=ham_wasl> </tajweed>ٱلَّذِینَ ءَامَنُ<tajweed class=silent>وا</tajweed>۟ ق<tajweed class=madda_normal>َ</tajweed>ـٰتِل<tajweed class=silent>ُو</tajweed>ا<tajweed class=ham_wasl>۟</tajweed> ٱلَّذِینَ یَلُونَ<tajweed class=idghaam_shafawi>كُم م</tajweed>ِّن<tajweed class=ham_wasl>َ</tajweed> ٱلۡكُفَّارِ وَلۡیَجِد<tajweed class=silent>ُو</tajweed>ا۟ فِیكُمۡ غِلۡظ<tajweed class=idghaam_ghunnah>َةࣰۚ</tajweed><tajweed class=ham_wasl> </tajweed>وَٱعۡل<tajweed class=madda_permissible>َم</tajweed><tajweed class=silent>ُو</tajweed>ۤا۟<tajweed class=ghunnah> أَ</tajweed>ن<tajweed class=ham_wasl>ّ</tajweed>َ ٱللَّهَ مَ<tajweed class=ham_wasl>ع</tajweed>َ ٱلۡمُتّ<tajweed class=madda_permissible>َ</tajweed>قِینَ",
+      "rules_count": 17
+    },
+    {
+      "verse_key": "9:124",
+      "text_plain": "وَإِذَا مَاۤ أُنزِلَتۡ سُورَةࣱ فَمِنۡهُم مَّن یَقُولُ أَیُّكُمۡ زَادَتۡهُ هَـٰذِهِۦۤ إِیمَـٰنࣰاۚ فَأَمَّا ٱلَّذِینَ ءَامَنُوا۟ فَزَادَتۡهُمۡ إِیمَـٰنࣰا وَهُمۡ یَسۡتَبۡشِرُونَ",
+      "text_tajweed_html": "وَإِذَا مَ<tajweed class=madda_permissible>اۤ</tajweed> أُ<tajweed class=ikhpiaa>نزِ</tajweed>لَتۡ سُورَة<tajweed class=ikhpiaa>ࣱ فَ</tajweed>مِنۡهُ<tajweed class=idghaam_shafawi>م مَّ</tajweed><tajweed class=idghaam_ghunnah>ن یَ</tajweed>قُولُ أَیُّكُمۡ زَادَتۡهُ هَ<tajweed class=madda_normal>ـ</tajweed>ٰذِه<tajweed class=madda_permissible>ِۦ</tajweed>ۤ إِیم<tajweed class=madda_normal>َ</tajweed>ـ<tajweed class=ikhpiaa>ٰنࣰاۚ</tajweed> ف<tajweed class=ghunnah>َأَ</tajweed>مّ<tajweed class=ham_wasl>َ</tajweed>ا ٱلَّذِینَ ءَامَ<tajweed class=silent>نُ</tajweed>وا۟ فَزَادَتۡهُمۡ إِ<tajweed class=madda_normal>ی</tajweed>م<tajweed class=idghaam_ghunnah>َـٰنࣰ</tajweed>ا وَهُمۡ یَ<tajweed class=qalaqala>سۡ</tajweed>تَبۡ<tajweed class=madda_permissible>ش</tajweed>ِرُونَ",
+      "rules_count": 16
+    },
+    {
+      "verse_key": "9:125",
+      "text_plain": "وَأَمَّا ٱلَّذِینَ فِی قُلُوبِهِم مَّرَضࣱ فَزَادَتۡهُمۡ رِجۡسًا إِلَىٰ رِجۡسِهِمۡ وَمَاتُوا۟ وَهُمۡ كَـٰفِرُونَ",
+      "text_tajweed_html": "وَأَ<tajweed class=ghunnah>مَّ</tajweed>ا <tajweed class=ham_wasl>ٱ</tajweed>لَّذِینَ فِی قُلُوبِهِ<tajweed class=idghaam_shafawi>م مَّ</tajweed>رَض<tajweed class=ikhpiaa>ࣱ فَ</tajweed>زَادَتۡهُمۡ رِ<tajweed class=qalaqala>جۡ</tajweed>سًا إِلَىٰ رِ<tajweed class=qalaqala>جۡ</tajweed>سِهِمۡ وَمَاتُو<tajweed class=silent>ا۟</tajweed> وَهُمۡ كَ<tajweed class=madda_normal>ـ</tajweed>ٰفِر<tajweed class=madda_permissible>ُ</tajweed>ونَ",
+      "rules_count": 9
+    },
+    {
+      "verse_key": "9:126",
+      "text_plain": "أَوَلَا یَرَوۡنَ أَنَّهُمۡ یُفۡتَنُونَ فِی كُلِّ عَامࣲ مَّرَّةً أَوۡ مَرَّتَیۡنِ ثُمَّ لَا یَتُوبُونَ وَلَا هُمۡ یَذَّكَّرُونَ",
+      "text_tajweed_html": "أَوَلَا یَرَوۡنَ أَ<tajweed class=ghunnah>نَّ</tajweed>هُمۡ یُفۡتَنُونَ فِی كُلِّ عَام<tajweed class=idghaam_ghunnah>ࣲ مَّ</tajweed>رَّةً أَوۡ مَرَّتَیۡنِ ثُ<tajweed class=ghunnah>مَّ</tajweed> لَا یَتُوبُونَ وَلَا هُمۡ یَذَّكَّرُ<tajweed class=madda_permissible>و</tajweed>نَ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "9:127",
+      "text_plain": "وَإِذَا مَاۤ أُنزِلَتۡ سُورَةࣱ نَّظَرَ بَعۡضُهُمۡ إِلَىٰ بَعۡضٍ هَلۡ یَرَىٰكُم مِّنۡ أَحَدࣲ ثُمَّ ٱنصَرَفُوا۟ۚ صَرَفَ ٱللَّهُ قُلُوبَهُم بِأَنَّهُمۡ قَوۡمࣱ لَّا یَفۡقَهُونَ",
+      "text_tajweed_html": "وَإِذَا مَ<tajweed class=madda_permissible>اۤ</tajweed> أُ<tajweed class=ikhpiaa>نزِ</tajweed>لَتۡ سُورَة<tajweed class=idghaam_ghunnah>ࣱ نَّ</tajweed>ظَرَ بَعۡضُهُمۡ إِلَىٰ بَعۡضٍ هَلۡ یَرَى<tajweed class=madda_normal>ٰ</tajweed>كُ<tajweed class=idghaam_shafawi>م مِّ</tajweed>نۡ أَحَد<tajweed class=ikhpiaa>ࣲ ثُ</tajweed><tajweed class=ghunnah>مَّ</tajweed> <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=ikhpiaa>نصَ</tajweed>رَفُو<tajweed class=silent>ا۟</tajweed>ۚ صَرَفَ<tajweed class=ham_wasl> </tajweed>ٱللَّهُ قُلُوبَه<tajweed class=ikhpiaa_shafawi>ُم ب</tajweed>ِأ<tajweed class=ghunnah>َنّ</tajweed>َهُمۡ قَوۡ<tajweed class=idghaam_wo_ghunnah>مࣱ لّ</tajweed>َا یَفۡقَه<tajweed class=madda_permissible>ُ</tajweed>ونَ",
+      "rules_count": 15
+    },
+    {
+      "verse_key": "9:128",
+      "text_plain": "لَقَدۡ جَاۤءَكُمۡ رَسُولࣱ مِّنۡ أَنفُسِكُمۡ عَزِیزٌ عَلَیۡهِ مَا عَنِتُّمۡ حَرِیصٌ عَلَیۡكُم بِٱلۡمُؤۡمِنِینَ رَءُوفࣱ رَّحِیمࣱ",
+      "text_tajweed_html": "لَقَ<tajweed class=qalaqala>دۡ</tajweed> جَ<tajweed class=madda_obligatory>اۤ</tajweed>ءَكُمۡ رَسُول<tajweed class=idghaam_ghunnah>ࣱ مِّ</tajweed>نۡ أَ<tajweed class=ikhpiaa>نفُ</tajweed>سِكُمۡ عَزِیزٌ عَلَیۡهِ مَا عَنِتُّمۡ حَرِیصٌ عَلَیۡكُ<tajweed class=ikhpiaa_shafawi>م بِ</tajweed><tajweed class=ham_wasl>ٱ</tajweed>لۡمُؤۡمِنِینَ رَءُوف<tajweed class=idghaam_wo_ghunnah>ࣱ رَّ</tajweed>حِ<tajweed class=madda_permissible>ی</tajweed>مࣱ",
+      "rules_count": 8
+    },
+    {
+      "verse_key": "9:129",
+      "text_plain": "فَإِن تَوَلَّوۡا۟ فَقُلۡ حَسۡبِیَ ٱللَّهُ لَاۤ إِلَـٰهَ إِلَّا هُوَۖ عَلَیۡهِ تَوَكَّلۡتُۖ وَهُوَ رَبُّ ٱلۡعَرۡشِ ٱلۡعَظِیمِ",
+      "text_tajweed_html": "فَإِ<tajweed class=ikhpiaa>ن تَ</tajweed>وَلَّوۡ<tajweed class=silent>ا۟</tajweed> فَقُلۡ حَسۡبِیَ <tajweed class=ham_wasl>ٱ</tajweed>للَّهُ لَ<tajweed class=madda_permissible>اۤ</tajweed> إِلَ<tajweed class=madda_normal>ـ</tajweed>ٰهَ إِلَّا هُوَۖ عَلَیۡهِ تَوَكَّلۡتُۖ وَهُوَ رَب<tajweed class=ham_wasl>ّ</tajweed>ُ ٱلۡعَرۡ<tajweed class=ham_wasl>ش</tajweed>ِ ٱلۡع<tajweed class=madda_permissible>َ</tajweed>ظِیمِ",
+      "rules_count": 8
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "surah_number": 57,
+  "name": "Al-Hadid",
+  "total_verses": 11,
+  "verses": [
+    {
+      "verse_key": "57:1",
+      "text_plain": "وَفُرُشࣲ مَّرۡفُوعَةٍ",
+      "text_tajweed_html": "وَفُرُش<tajweed class=idghaam_ghunnah>ࣲ مَّ</tajweed>رۡفُوعَةٍ",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "57:2",
+      "text_plain": "إِنَّاۤ أَنشَأۡنَـٰهُنَّ إِنشَاۤءࣰ",
+      "text_tajweed_html": "إِ<tajweed class=ghunnah>نَّ</tajweed><tajweed class=madda_permissible>اۤ</tajweed> أَ<tajweed class=ikhpiaa>نشَ</tajweed>أۡنَ<tajweed class=madda_normal>ـ</tajweed>ٰه<tajweed class=ghunnah>ُنّ</tajweed>َ إ<tajweed class=ikhpiaa>ِنش</tajweed><tajweed class=madda_obligatory>َا</tajweed>ۤءࣰ",
+      "rules_count": 7
+    },
+    {
+      "verse_key": "57:3",
+      "text_plain": "فَجَعَلۡنَـٰهُنَّ أَبۡكَارًا",
+      "text_tajweed_html": "فَجَعَلۡنَ<tajweed class=madda_normal>ـ</tajweed>ٰه<tajweed class=ghunnah>ُنّ</tajweed>َ أ<tajweed class=qalaqala>َب</tajweed>ۡكَارًا",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "57:4",
+      "text_plain": "عُرُبًا أَتۡرَابࣰا",
+      "text_tajweed_html": "عُرُبًا أَتۡرَابࣰا",
+      "rules_count": 0
+    },
+    {
+      "verse_key": "57:5",
+      "text_plain": "لِّأَصۡحَـٰبِ ٱلۡیَمِینِ",
+      "text_tajweed_html": "لِّأَصۡحَ<tajweed class=madda_normal>ـ</tajweed>ٰبِ<tajweed class=ham_wasl> </tajweed>ٱلۡیَم<tajweed class=madda_permissible>ِ</tajweed>ینِ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "57:6",
+      "text_plain": "ثُلَّةࣱ مِّنَ ٱلۡأَوَّلِینَ",
+      "text_tajweed_html": "ثُلَّة<tajweed class=idghaam_ghunnah>ࣱ مِّ</tajweed>نَ <tajweed class=ham_wasl>ٱ</tajweed>لۡأَوَّلِ<tajweed class=madda_permissible>ی</tajweed>نَ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "57:7",
+      "text_plain": "وَثُلَّةࣱ مِّنَ ٱلۡـَٔاخِرِینَ",
+      "text_tajweed_html": "وَثُلَّة<tajweed class=idghaam_ghunnah>ࣱ مِّ</tajweed>نَ <tajweed class=ham_wasl>ٱ</tajweed>لۡـَٔاخِر<tajweed class=madda_permissible>ِ</tajweed>ینَ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "57:8",
+      "text_plain": "وَأَصۡحَـٰبُ ٱلشِّمَالِ مَاۤ أَصۡحَـٰبُ ٱلشِّمَالِ",
+      "text_tajweed_html": "وَأَصۡحَ<tajweed class=madda_normal>ـ</tajweed>ٰبُ<tajweed class=ham_wasl> </tajweed><tajweed class=laam_shamsiyah>ٱ</tajweed>لشِّمَالِ م<tajweed class=madda_permissible>َا</tajweed>ۤ أَصۡح<tajweed class=madda_normal>َ</tajweed>ـٰب<tajweed class=ham_wasl>ُ</tajweed><tajweed class=laam_shamsiyah> </tajweed>ٱلشِّ<tajweed class=madda_permissible>م</tajweed>َالِ",
+      "rules_count": 8
+    },
+    {
+      "verse_key": "57:9",
+      "text_plain": "فِی سَمُومࣲ وَحَمِیمࣲ",
+      "text_tajweed_html": "فِی سَمُوم<tajweed class=idghaam_ghunnah>ࣲ وَ</tajweed>حَمِ<tajweed class=madda_permissible>ی</tajweed>مࣲ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "57:10",
+      "text_plain": "وَظِلࣲّ مِّن یَحۡمُومࣲ",
+      "text_tajweed_html": "وَظِلّ<tajweed class=idghaam_ghunnah>ࣲ مِّ</tajweed><tajweed class=idghaam_ghunnah>ن یَ</tajweed>حۡمُ<tajweed class=madda_permissible>و</tajweed>مࣲ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "57:11",
+      "text_plain": "لَّا بَارِدࣲ وَلَا كَرِیمٍ",
+      "text_tajweed_html": "لَّا بَارِد<tajweed class=idghaam_ghunnah>ࣲ وَ</tajweed>لَا كَرِ<tajweed class=madda_permissible>ی</tajweed>مٍ",
+      "rules_count": 2
+    }
+  ]
+}

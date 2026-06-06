@@ -31,6 +31,28 @@ class MushafRepository {
     return PageMeta.fromMap(rows.first);
   }
 
+  /// Returns the actual ayas (continuous id + sura/aya number) that belong to a
+  /// page, given the page's [startAya]/[endAya] continuous-id range. Used by the
+  /// Tajweed reading mode to render colour-coded plain Arabic per page.
+  Future<List<({int ayaId, int suraNo, int ayaNo})>> getPageAyas(
+    int startAya,
+    int endAya,
+  ) async {
+    if (startAya <= 0 || endAya < startAya) return const [];
+    final rows = await (await _db).rawQuery(
+      'SELECT aya_id, s_no, aya_no FROM t_aya '
+      'WHERE aya_id BETWEEN ? AND ? AND aya_no > 0 ORDER BY aya_id',
+      [startAya, endAya],
+    );
+    return rows
+        .map((r) => (
+              ayaId: (r['aya_id'] as num).toInt(),
+              suraNo: (r['s_no'] as num).toInt(),
+              ayaNo: (r['aya_no'] as num).toInt(),
+            ))
+        .toList(growable: false);
+  }
+
   Future<String> getSuraNameGlyph(int suraNo) async {
     final rows = await (await _db).rawQuery(
       'SELECT data FROM t_mushafpages WHERE suraid=? AND line=-1 LIMIT 1',

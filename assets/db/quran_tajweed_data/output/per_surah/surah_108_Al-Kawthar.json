@@ -1,0 +1,43 @@
+{
+  "surah_number": 108,
+  "name": "Al-Kawthar",
+  "total_verses": 6,
+  "verses": [
+    {
+      "verse_key": "108:1",
+      "text_plain": "وَهَدَیۡنَـٰهُ ٱلنَّجۡدَیۡنِ",
+      "text_tajweed_html": "وَهَدَیۡنَ<tajweed class=madda_normal>ـ</tajweed>ٰهُ<tajweed class=ham_wasl> </tajweed><tajweed class=laam_shamsiyah>ٱ</tajweed><tajweed class=ghunnah>لنّ</tajweed><tajweed class=qalaqala>َج</tajweed>ۡد<tajweed class=madda_permissible>َ</tajweed>یۡنِ",
+      "rules_count": 6
+    },
+    {
+      "verse_key": "108:2",
+      "text_plain": "فَلَا ٱقۡتَحَمَ ٱلۡعَقَبَةَ",
+      "text_tajweed_html": "فَلَا <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=qalaqala>قۡ</tajweed>تَحَمَ <tajweed class=ham_wasl>ٱ</tajweed>لۡعَقَبَةَ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "108:3",
+      "text_plain": "وَمَاۤ أَدۡرَىٰكَ مَا ٱلۡعَقَبَةُ",
+      "text_tajweed_html": "وَمَ<tajweed class=madda_permissible>اۤ</tajweed> أَ<tajweed class=qalaqala>دۡ</tajweed>رَى<tajweed class=madda_normal>ٰ</tajweed>كَ مَا <tajweed class=ham_wasl>ٱ</tajweed>لۡعَقَبَةُ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "108:4",
+      "text_plain": "فَكُّ رَقَبَةٍ",
+      "text_tajweed_html": "فَكُّ رَقَبَةٍ",
+      "rules_count": 0
+    },
+    {
+      "verse_key": "108:5",
+      "text_plain": "أَوۡ إِطۡعَـٰمࣱ فِی یَوۡمࣲ ذِی مَسۡغَبَةࣲ",
+      "text_tajweed_html": "أَوۡ إِ<tajweed class=qalaqala>طۡ</tajweed>عَ<tajweed class=madda_normal>ـ</tajweed>ٰ<tajweed class=ikhpiaa>مࣱ ف</tajweed>ِی یَوۡ<tajweed class=ikhpiaa>مࣲ ذ</tajweed>ِی مَسۡغَبَةࣲ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "108:6",
+      "text_plain": "یَتِیمࣰا ذَا مَقۡرَبَةٍ",
+      "text_tajweed_html": "یَتِیم<tajweed class=ikhpiaa>ࣰا ذَ</tajweed>ا مَ<tajweed class=qalaqala>قۡ</tajweed>رَبَةٍ",
+      "rules_count": 2
+    }
+  ]
+}
