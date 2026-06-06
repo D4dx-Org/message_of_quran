@@ -104,11 +104,9 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   double _navItemSize(int index) {
-    return switch (index) {
-      0 || 3 => _navIconSize - 4,
-      1 => _navIconSize - 1,
-      _ => _navIconSize,
-    };
+    // Render all bottom-nav icons at a single uniform size so no tab (e.g.
+    // Settings) appears smaller than the others.
+    return _navIconSize;
   }
 
   Widget _buildNavItemIcon({
