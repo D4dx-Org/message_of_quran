@@ -468,7 +468,7 @@ class _DrawerFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     return const D4dxBrandingFooter(
       key: ValueKey('drawer-footer'),
-      versionLabel: 'v${AppConstants.appVersion}',
+      versionLabel: ' ${AppConstants.appVersion}',
       showTopBorder: true,
     );
   }
