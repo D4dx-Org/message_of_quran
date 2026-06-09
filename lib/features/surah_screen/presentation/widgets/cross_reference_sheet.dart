@@ -120,13 +120,13 @@ String _formatInterpretationAyahNumbers(List<int> ayahNumbers) {
   return normalized.join(', ');
 }
 
-/// Scrim color used behind the first interpretation bottom sheet only.
+/// Shared scrim color used behind every interpretation / referenced bottom
+/// sheet.
 ///
-/// Nested / referenced sheets are shown with a transparent barrier so the
-/// scrim does not compound (otherwise every newly stacked sheet would add
-/// another dark layer and the screen would keep getting darker). This way the
-/// very first sheet draws a single, consistent shade and all subsequent
-/// stacked sheets reuse that same darkening underneath them.
+/// Each newly stacked sheet draws this same scrim so the sheet directly
+/// beneath it is dimmed ("shadowed"), keeping the latest sheet visually
+/// highlighted. Using a single consistent value across all sheets guarantees
+/// the shadow appears no matter which sheet variant is opened.
 const kInterpretationSheetBarrierColor = Colors.black54;
 
 const _kInterpretationSheetDragHandlePadding = EdgeInsets.only(
@@ -319,7 +319,7 @@ class CrossReferenceSheet extends StatefulWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      barrierColor: Colors.transparent,
+      barrierColor: kInterpretationSheetBarrierColor,
       constraints: bsMaxWidth != null
           ? BoxConstraints(maxWidth: bsMaxWidth)
           : null,
@@ -595,7 +595,12 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
                     child: Center(child: Text('Verse not found')),
                   )
                 : SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                    padding: EdgeInsets.fromLTRB(
+                      20,
+                      12,
+                      20,
+                      16 + MediaQuery.viewPaddingOf(context).bottom,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -953,7 +958,12 @@ class _NestedInterpretationSheetState
                     child: Center(child: Text('No explanation found')),
                   )
                 : SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                    padding: EdgeInsets.fromLTRB(
+                      20,
+                      12,
+                      20,
+                      16 + MediaQuery.viewPaddingOf(context).bottom,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: _items.map((item) {

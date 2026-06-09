@@ -339,43 +339,20 @@ class _MushafPageViewState extends State<MushafPageView> {
               Expanded(
                 child: PinchZoomView(
                   child: Center(
-                    child: tajweedEnabled
-                        ? Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4),
-                            child: LayoutBuilder(
-                              builder: (context, constraints) => FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: SizedBox(
-                                  width: constraints.maxWidth,
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      if (isLandscape && isFirstTwoPages)
-                                        const SizedBox(height: kToolbarHeight),
-                                      if (isLandscape && isFirstTwoPages)
-                                        ...topWidgets,
-                                      ...lineWidgets,
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
-                        : SingleChildScrollView(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  if (isLandscape && isFirstTwoPages)
-                                    const SizedBox(height: kToolbarHeight),
-                                  if (isLandscape && isFirstTwoPages) ...topWidgets,
-                                  ...lineWidgets,
-                                ],
-                              ),
-                            ),
-                          ),
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (isLandscape && isFirstTwoPages)
+                              const SizedBox(height: kToolbarHeight),
+                            if (isLandscape && isFirstTwoPages) ...topWidgets,
+                            ...lineWidgets,
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -516,15 +493,20 @@ class _MushafPageViewState extends State<MushafPageView> {
       height: sizes.lineHeightFactor,
       color: _textColor,
     );
-    // Ayah-end marker keeps the standard reading font; QuranTaha renders the
-    // ﴾﴿ ornamental parentheses as oversized decorative glyphs.
-    final markerStyle = AppTextTheme.surahArabiStyle(context).copyWith(
+    // Circular end-of-ayah ornament, matching the QCF page-glyph markers used
+    // when Tajweed is off. AmiriQuran renders U+06DD (ARABIC END OF AYAH) as a
+    // decorative circle enclosing the following Arabic-Indic verse number.
+    final markerStyle = TextStyle(
+      fontFamily: 'AmiriQuran',
       fontSize: sizes.ayaTextSize,
       height: sizes.lineHeightFactor,
       color: _highlightColor,
     );
 
-    final spans = <InlineSpan>[];
+    // Render each verse on its own centered line so the layout mirrors the
+    // non-Tajweed QCF page (one ayah per centered line), instead of a single
+    // justified paragraph.
+    final verseLines = <Widget>[];
     for (final aya in ayas) {
       final html = TajweedHtmlService.displayHtmlFor(aya.suraNo, aya.ayaNo);
       if (html == null) continue;
@@ -535,27 +517,37 @@ class _MushafPageViewState extends State<MushafPageView> {
               backgroundColor: _highlightColor.withValues(alpha: 0.15),
             )
           : baseStyle;
-      spans.addAll(parseTajweedHtml(html, ayaStyle));
-      spans.add(
+      final spans = <InlineSpan>[
+        ...parseTajweedHtml(html, ayaStyle),
         TextSpan(
-          text: ' \uFD3E${_toArabicNumerals(aya.ayaNo)}\uFD3F ',
+          text: ' \u06DD${_toArabicNumerals(aya.ayaNo)} ',
           style: markerStyle,
+        ),
+      ];
+      verseLines.add(
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2),
+          child: Text.rich(
+            TextSpan(children: spans),
+            textDirection: TextDirection.rtl,
+            textAlign: TextAlign.center,
+            textHeightBehavior: const TextHeightBehavior(
+              applyHeightToFirstAscent: false,
+              applyHeightToLastDescent: false,
+            ),
+          ),
         ),
       );
     }
 
-    if (spans.isEmpty) return const SizedBox.shrink();
+    if (verseLines.isEmpty) return const SizedBox.shrink();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-      child: Text.rich(
-        TextSpan(children: spans),
-        textDirection: TextDirection.rtl,
-        textAlign: TextAlign.justify,
-        textHeightBehavior: const TextHeightBehavior(
-          applyHeightToFirstAscent: false,
-          applyHeightToLastDescent: false,
-        ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: verseLines,
       ),
     );
   }
