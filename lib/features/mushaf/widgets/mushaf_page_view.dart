@@ -511,15 +511,22 @@ class _MushafPageViewState extends State<MushafPageView> {
     List<({int ayaId, int suraNo, int ayaNo})> ayas,
     _TextSizes sizes,
   ) {
-    final baseStyle = AppTextTheme.surahArabiStyle(context).copyWith(
+    final baseStyle = AppTextTheme.tajweedArabiStyle(context).copyWith(
       fontSize: sizes.ayaTextSize,
       height: sizes.lineHeightFactor,
       color: _textColor,
     );
+    // Ayah-end marker keeps the standard reading font; QuranTaha renders the
+    // ﴾﴿ ornamental parentheses as oversized decorative glyphs.
+    final markerStyle = AppTextTheme.surahArabiStyle(context).copyWith(
+      fontSize: sizes.ayaTextSize,
+      height: sizes.lineHeightFactor,
+      color: _highlightColor,
+    );
 
     final spans = <InlineSpan>[];
     for (final aya in ayas) {
-      final html = TajweedHtmlService.htmlFor(aya.suraNo, aya.ayaNo);
+      final html = TajweedHtmlService.displayHtmlFor(aya.suraNo, aya.ayaNo);
       if (html == null) continue;
       final isActive =
           widget.playingAyaId == aya.ayaId || widget.selectedAyaId == aya.ayaId;
@@ -532,7 +539,7 @@ class _MushafPageViewState extends State<MushafPageView> {
       spans.add(
         TextSpan(
           text: ' \uFD3E${_toArabicNumerals(aya.ayaNo)}\uFD3F ',
-          style: baseStyle.copyWith(color: _highlightColor),
+          style: markerStyle,
         ),
       );
     }

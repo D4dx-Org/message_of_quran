@@ -2519,8 +2519,6 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                     final actionIconColor = isDarkMode
                                                                         ? Colors.white.withValues(alpha: 0.7)
                                                                         : AppTheme.appIconTheme;
-                                                                    const translationText =
-                                                                        '';
                                                                     return Row(
                                                                       children: [
                                                                         Consumer<
@@ -3009,7 +3007,12 @@ class _TajweedHtmlTextState extends State<_TajweedHtmlText> {
   Widget build(BuildContext context) {
     final fontProvider = Provider.of<FontSizeChangerProvider>(context);
     final quranJustify = fontProvider.quranJustify;
-    final baseStyle = AppTextTheme.surahArabiStyle(context);
+    final baseStyle = AppTextTheme.tajweedArabiStyle(context);
+    // Ayah-end marker keeps the standard reading font; QuranTaha renders the
+    // ﴾﴿ ornamental parentheses as oversized decorative glyphs.
+    final markerStyle = AppTextTheme.surahArabiStyle(context).copyWith(
+      color: Theme.of(context).colorScheme.primary,
+    );
 
     if (!_loaded) {
       return SizedBox(
@@ -3026,7 +3029,7 @@ class _TajweedHtmlTextState extends State<_TajweedHtmlText> {
 
     final spans = <InlineSpan>[];
     for (var ayah = widget.verseFrom; ayah <= widget.verseTo; ayah++) {
-      final html = TajweedHtmlService.htmlFor(widget.surahNo, ayah);
+      final html = TajweedHtmlService.displayHtmlFor(widget.surahNo, ayah);
       if (html == null) continue;
       final isPlaying = widget.playingAyahId == ayah;
       final ayahStyle = isPlaying
@@ -3038,9 +3041,7 @@ class _TajweedHtmlTextState extends State<_TajweedHtmlText> {
       spans.add(
         TextSpan(
           text: ' \uFD3E${_toArabicNumerals(ayah)}\uFD3F ',
-          style: baseStyle.copyWith(
-            color: Theme.of(context).colorScheme.primary,
-          ),
+          style: markerStyle,
         ),
       );
     }

@@ -3,6 +3,40 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
+final RegExp _leadingBasmalaHtmlRegex = RegExp(
+  r'^\s*'
+  r'ب[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]*'
+  r'س[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]*'
+  r'م[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]*\s+'
+  r'[اٱ][\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]*'
+  r'ل[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]*'
+  r'ل[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]*'
+  r'ه[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]*\s+'
+  r'[اٱ][\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]*'
+  r'ل[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]*'
+  r'ر[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]*'
+  r'ح[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]*'
+  r'م[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]*'
+  r'ن[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]*\s+'
+  r'[اٱ][\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]*'
+  r'ل[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]*'
+  r'ر[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]*'
+  r'ح[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]*'
+  r'[يیى][\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]*'
+  r'م[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]*'
+  r'(?:\s+|(?=<tajweed class=))',
+);
+
+final RegExp _leadingTajweedInnerSpaceRegex = RegExp(
+  r'^(<tajweed class=[a-z_]+>)\s+',
+);
+
+String _stripLeadingBasmalaHtml(String html) {
+  final stripped = html.replaceFirst(_leadingBasmalaHtmlRegex, '');
+  if (stripped == html) return html;
+  return stripped.replaceFirst(_leadingTajweedInnerSpaceRegex, r'$1');
+}
+
 /// Loads the bundled colour-coded Tajweed data (quran.com style) and exposes a
 /// `verseKey -> text_tajweed_html` lookup plus a parser that turns that HTML
 /// into coloured [InlineSpan]s.
@@ -47,6 +81,16 @@ class TajweedHtmlService {
 
   /// Returns the raw Tajweed HTML for a verse, or null if not loaded/missing.
   static String? htmlFor(int surah, int ayah) => _verseHtml?['$surah:$ayah'];
+
+  /// Like [htmlFor], but for the first verse of a surah it strips the leading
+  /// Basmala so it is not shown twice alongside the decorative Bismillah header.
+  /// Surah 1 (Basmala is verse 1:1) and surah 9 (no Basmala) are left untouched.
+  static String? displayHtmlFor(int surah, int ayah) {
+    final html = htmlFor(surah, ayah);
+    if (html == null) return null;
+    if (surah == 1 || surah == 9 || ayah != 1) return html;
+    return _stripLeadingBasmalaHtml(html);
+  }
 }
 
 /// quran.com colour scheme for each Tajweed rule, mirroring
