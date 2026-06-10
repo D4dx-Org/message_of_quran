@@ -600,7 +600,6 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
 
   void _showDownloadDialog(BuildContext context) {
     final maxW = ResponsiveHelper.bottomSheetMaxWidth(context);
-    final isDownloadSupported = _downloadManager.isDownloadSupported;
     showDialog<void>(
       context: context,
       builder: (ctx) => Center(
@@ -608,22 +607,13 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
           constraints: BoxConstraints(maxWidth: maxW ?? double.infinity),
           child: MushafDownloadRequiredDialog(
             onCancel: () => Navigator.of(ctx).pop(),
-            onDownload: isDownloadSupported
-                ? () {
-                    Navigator.of(ctx).pop();
-                    _downloadManager.startDownload();
-                    _showDownloadBanner(
-                      'Mushaf download started. You can continue using the app.',
-                    );
-                  }
-                : null,
-            title:
-                isDownloadSupported ? 'Download Required' : 'Preview Only on Web',
-            message: isDownloadSupported
-                ? null
-                : 'Pages 1–2 are available in the browser.\n'
-                    'Full Mushaf download is currently available only in the app.',
-            cancelLabel: isDownloadSupported ? 'Cancel' : 'Close',
+            onDownload: () {
+              Navigator.of(ctx).pop();
+              _downloadManager.startDownload();
+              _showDownloadBanner(
+                'Mushaf download started. You can continue using the app.',
+              );
+            },
           ),
         ),
       ),

@@ -17,6 +17,7 @@ import 'package:the_message_of_the_quran/features/home_screen/providers/juz_hizb
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
 import 'package:the_message_of_the_quran/features/mushaf/widgets/star_number.dart';
 import 'package:the_message_of_the_quran/features/search_screen/presentation/widgets/surah_quick_search.dart';
+import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
@@ -50,7 +51,15 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    // Restore the last-active sub-tab (Surah = 0, Juz = 1) from HomeProvider
+    // so that returning via SurahScreen's Home button reopens the correct tab.
+    final initialTabIndex =
+        context.read<HomeProvider>().homeSubTabIndex.clamp(0, 1);
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: initialTabIndex,
+    );
     _tabController.addListener(_handleTabChange);
     _listController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -85,6 +94,9 @@ class _HomeScreenState extends State<HomeScreen>
 
   void _handleTabChange() {
     if (_tabController.indexIsChanging) return;
+    // Persist the new active sub-tab so it can be restored if MainScreen is
+    // rebuilt (e.g. when the user presses the Home button in SurahScreen).
+    context.read<HomeProvider>().setHomeSubTabIndex(_tabController.index);
     if (_tabController.index != 0) {
       if (_showScrollToTop) {
         setState(() => _showScrollToTop = false);
@@ -108,6 +120,10 @@ class _HomeScreenState extends State<HomeScreen>
     BuildContext context, {
     required int surahNumber,
     int? ayahId,
+    // When false the Surah-tab highlight (lastSurahTabSelection) is not
+    // updated.  Pass false when opening from the Juz tab so that the two
+    // tabs remain fully independent.
+    bool saveTabSelection = true,
   }) async {
     final surahProvider = context.read<SurahProvider>();
     final index = surahProvider.surahList.indexWhere(
@@ -121,15 +137,17 @@ class _HomeScreenState extends State<HomeScreen>
       MaterialPageRoute(builder: (_) => SurahScreen(scrollToAyahId: ayahId)),
     );
     if (!context.mounted) return;
-    // Use the surah the provider is currently on, so a jump to a different
-    // surah inside the SurahScreen is reflected here instead of the
-    // originally opened surah.
-    final currentIndex = surahProvider.index;
-    if (currentIndex >= 0 &&
-        currentIndex < surahProvider.surahList.length) {
-      context.read<LastReadProvider>().saveLastSurahTabSelection(
-            surahProvider.surahList[currentIndex].surahNumber,
-          );
+    if (saveTabSelection) {
+      // Use the surah the provider is currently on, so a jump to a different
+      // surah inside the SurahScreen is reflected here instead of the
+      // originally opened surah.
+      final currentIndex = surahProvider.index;
+      if (currentIndex >= 0 &&
+          currentIndex < surahProvider.surahList.length) {
+        context.read<LastReadProvider>().saveLastSurahTabSelection(
+              surahProvider.surahList[currentIndex].surahNumber,
+            );
+      }
     }
   }
 
@@ -137,10 +155,13 @@ class _HomeScreenState extends State<HomeScreen>
     BuildContext context, {
     required JuzHizbModel juz,
   }) async {
+    // saveTabSelection: false keeps the Surah tab's independent highlight
+    // untouched when the user navigates from the Juz tab.
     await _openSurah(
       context,
       surahNumber: juz.surahNumber,
       ayahId: juz.ayahNumber,
+      saveTabSelection: false,
     );
     if (!context.mounted) return;
     await context.read<JuzHizbProvider>().selectJuz(juz.number);
@@ -658,6 +679,8 @@ class _HomeScreenState extends State<HomeScreen>
     final surahByNumber = {
       for (final surah in surahProvider.surahList) surah.surahNumber: surah,
     };
+    final lastSurahTabSelection =
+        context.watch<LastReadProvider>().lastSurahTabSelection;
     final compactGridMaxCrossAxisExtent = isMalayalam ? 308.0 : 288.0;
 
     switch (_selectedWebSectionIndex) {
@@ -700,6 +723,7 @@ class _HomeScreenState extends State<HomeScreen>
                 juz.ayahNumber,
                 isMalayalam: isMalayalam,
               ),
+              isHighlighted: juzHizbProvider.selectedJuzNumber == juz.number,
               onTap: () => _openJuz(context, juz: juz),
             );
           },
@@ -738,6 +762,7 @@ class _HomeScreenState extends State<HomeScreen>
                 surah.ayathCount,
                 isMalayalam: isMalayalam,
               ),
+              isHighlighted: lastSurahTabSelection == surah.surahNumber,
               onTap: () => _openSurah(context, surahNumber: surah.surahNumber),
             );
           },
@@ -1056,6 +1081,7 @@ class _WebCompactSurahCard extends StatelessWidget {
     required this.placeLabel,
     required this.ayahCountLabel,
     required this.onTap,
+    this.isHighlighted = false,
   });
 
   final bool isMalayalam;
@@ -1064,6 +1090,7 @@ class _WebCompactSurahCard extends StatelessWidget {
   final String placeLabel;
   final String ayahCountLabel;
   final VoidCallback onTap;
+  final bool isHighlighted;
 
   @override
   Widget build(BuildContext context) {
@@ -1096,7 +1123,7 @@ class _WebCompactSurahCard extends StatelessWidget {
       padding: const EdgeInsets.all(10),
       child: Row(
         children: [
-          StarNumber(number: number, size: 40),
+          StarNumber(number: number, size: 40, isHighlighted: isHighlighted),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -1156,6 +1183,7 @@ class _WebCompactJuzCard extends StatelessWidget {
     required this.subtitle,
     required this.ayahReferenceLabel,
     required this.onTap,
+    this.isHighlighted = false,
   });
 
   final bool isMalayalam;
@@ -1164,6 +1192,7 @@ class _WebCompactJuzCard extends StatelessWidget {
   final String subtitle;
   final String ayahReferenceLabel;
   final VoidCallback onTap;
+  final bool isHighlighted;
 
   @override
   Widget build(BuildContext context) {
@@ -1196,7 +1225,7 @@ class _WebCompactJuzCard extends StatelessWidget {
       padding: const EdgeInsets.all(10),
       child: Row(
         children: [
-          StarNumber(number: number, size: 40),
+          StarNumber(number: number, size: 40, isHighlighted: isHighlighted),
           const SizedBox(width: 12),
           Expanded(
             child: Column(

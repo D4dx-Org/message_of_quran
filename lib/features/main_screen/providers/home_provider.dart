@@ -9,6 +9,15 @@ class HomeProvider extends ChangeNotifier {
 
   int get currentIndex => _currentIndex;
 
+  /// Tracks which sub-tab (Surah = 0, Juz = 1) was last active in HomeScreen.
+  /// Stored in-memory so that when SurahScreen rebuilds MainScreen via
+  /// _navigateToMainTab the home screen can restore the correct tab.
+  int homeSubTabIndex = 0;
+
+  void setHomeSubTabIndex(int index) {
+    homeSubTabIndex = index;
+  }
+
   void changeIndex(int newIndex) {
     if (newIndex < 0 || newIndex > 4) return;
     _currentIndex = newIndex;

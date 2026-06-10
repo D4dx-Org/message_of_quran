@@ -2259,9 +2259,6 @@ class _SurahScreenState extends State<SurahScreen> {
         appBar: CommonAppBar.appBar(
           context,
           showBrandLogo: true,
-          onSurahInfoTap: _hasPreface
-              ? () => _showSurahInfo(context, controller)
-              : null,
         ),
         headerContent: useDesktopWebReaderLayout
             ? _buildDesktopReaderHeader(context, controller)

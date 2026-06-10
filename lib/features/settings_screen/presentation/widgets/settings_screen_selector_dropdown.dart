@@ -103,7 +103,7 @@ BorderSide settingsSelectorPopupBorderSide(Brightness brightness) {
   );
 }
 
-class SettingsScreenSelectorDropdown<T> extends StatelessWidget {
+class SettingsScreenSelectorDropdown<T> extends StatefulWidget {
   const SettingsScreenSelectorDropdown({
     super.key,
     required this.title,
@@ -128,6 +128,17 @@ class SettingsScreenSelectorDropdown<T> extends StatelessWidget {
   final bool showFullPopupLabels;
 
   @override
+  State<SettingsScreenSelectorDropdown<T>> createState() =>
+      _SettingsScreenSelectorDropdownState<T>();
+}
+
+class _SettingsScreenSelectorDropdownState<T>
+    extends State<SettingsScreenSelectorDropdown<T>> {
+  final _menuKey = GlobalKey<PopupMenuButtonState<T>>();
+
+  void _openMenu() => _menuKey.currentState?.showButtonMenu();
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final accentColor = appBarAccentColor(context);
@@ -142,14 +153,14 @@ class SettingsScreenSelectorDropdown<T> extends StatelessWidget {
       color: theme.colorScheme.onSurface,
       height: kSettingsSelectorTextHeight,
     );
-    final popupMeasurementTextStyle = showFullPopupLabels
+    final popupMeasurementTextStyle = widget.showFullPopupLabels
         ? selectorTextStyle.copyWith(fontWeight: FontWeight.w600)
         : selectorTextStyle;
-    final clampedVisibleCount = items.length < visibleItemCount
-        ? items.length
-        : visibleItemCount;
-    final labels = items.map(labelBuilder).toList(growable: false);
-    final selectedLabel = labelBuilder(value);
+    final clampedVisibleCount = widget.items.length < widget.visibleItemCount
+        ? widget.items.length
+        : widget.visibleItemCount;
+    final labels = widget.items.map(widget.labelBuilder).toList(growable: false);
+    final selectedLabel = widget.labelBuilder(widget.value);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -170,93 +181,12 @@ class SettingsScreenSelectorDropdown<T> extends StatelessWidget {
             maxWidth: popupWidth,
             maxHeight: settingsSelectorPopupMaxHeight(clampedVisibleCount),
           );
-          final popupOffset = Offset(
-            settingsSelectorPopupHorizontalOffset(
-              rowWidth: constraints.maxWidth,
-              popupWidth: popupWidth,
-            ),
-            8,
-          );
 
           return SizedBox(
             width: constraints.maxWidth,
-            child: PopupMenuButton<T>(
-              initialValue: value,
-              onSelected: (item) => onChanged(item),
-              position: PopupMenuPosition.under,
-              offset: popupOffset,
-              clipBehavior: Clip.antiAlias,
-              elevation: kSettingsSelectorPopupElevation,
-              shadowColor: settingsSelectorPopupShadowColor(theme.brightness),
-              padding: EdgeInsets.zero,
-              menuPadding: EdgeInsets.zero,
-              constraints: popupConstraints,
-              color: settingsSelectorPopupBackgroundColor(theme),
-              surfaceTintColor: settingsSelectorPopupBackgroundColor(theme),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-                side: settingsSelectorPopupBorderSide(theme.brightness),
-              ),
-              itemBuilder: (context) {
-                return items
-                    .map(
-                      (item) {
-                        final isSelected = item == value;
-
-                        return PopupMenuItem<T>(
-                          value: item,
-                          height: kSettingsSelectorItemHeight,
-                          padding: EdgeInsets.zero,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal:
-                                  kSettingsSelectorMenuItemHorizontalPadding,
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    labelBuilder(item),
-                                    maxLines: 1,
-                                    overflow: showFullPopupLabels
-                                        ? null
-                                        : TextOverflow.ellipsis,
-                                    textAlign: TextAlign.start,
-                                    style: selectorTextStyle.copyWith(
-                                      color: isSelected
-                                          ? accentColor
-                                          : theme.colorScheme.onSurface,
-                                      fontWeight: isSelected
-                                          ? FontWeight.w600
-                                          : FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: kSettingsSelectorMenuIndicatorGap,
-                                ),
-                                SizedBox(
-                                  width: kSettingsSelectorMenuIndicatorSlotWidth,
-                                  child: isSelected
-                                      ? Align(
-                                          alignment:
-                                              AlignmentDirectional.centerEnd,
-                                          child: Icon(
-                                            Icons.check_rounded,
-                                            size: 16,
-                                            color: accentColor,
-                                          ),
-                                        )
-                                      : null,
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    )
-                    .toList(growable: false);
-              },
+            child: InkWell(
+              onTap: _openMenu,
+              borderRadius: BorderRadius.circular(8),
               child: Padding(
                 padding: const EdgeInsets.only(
                   left: kSettingsSelectorSelectedValueLeftPadding,
@@ -266,12 +196,12 @@ class SettingsScreenSelectorDropdown<T> extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Icon(icon, color: accentColor, size: 22),
+                    Icon(widget.icon, color: accentColor, size: 22),
                     const SizedBox(width: 16),
                     Expanded(
                       flex: kSettingsSelectorTitleFlex,
                       child: Text(
-                        title,
+                        widget.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: titleTextStyle,
@@ -280,38 +210,135 @@ class SettingsScreenSelectorDropdown<T> extends StatelessWidget {
                     const SizedBox(width: kSettingsSelectorTitleValueGap),
                     Expanded(
                       flex: kSettingsSelectorValueFlex,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: showFullSelectedValue
-                                ? Align(
-                                    alignment: AlignmentDirectional.centerEnd,
-                                    child: FittedBox(
-                                      fit: BoxFit.scaleDown,
-                                      alignment:
-                                          AlignmentDirectional.centerEnd,
-                                      child: Text(
-                                        selectedLabel,
-                                        maxLines: 1,
-                                        textAlign: TextAlign.end,
-                                        style: selectorTextStyle,
-                                      ),
-                                    ),
+                      child: LayoutBuilder(
+                        builder: (ctx, valueConstraints) {
+                          // Anchor the popup to the value area's right edge
+                          final vOffset = Offset(
+                            math.max(0, valueConstraints.maxWidth - popupWidth),
+                            8,
+                          );
+                          return PopupMenuButton<T>(
+                            key: _menuKey,
+                            initialValue: widget.value,
+                            onSelected: (item) => widget.onChanged(item),
+                            position: PopupMenuPosition.under,
+                            offset: vOffset,
+                            clipBehavior: Clip.antiAlias,
+                            elevation: kSettingsSelectorPopupElevation,
+                            shadowColor:
+                                settingsSelectorPopupShadowColor(theme.brightness),
+                            padding: EdgeInsets.zero,
+                            menuPadding: EdgeInsets.zero,
+                            constraints: popupConstraints,
+                            color: settingsSelectorPopupBackgroundColor(theme),
+                            surfaceTintColor:
+                                settingsSelectorPopupBackgroundColor(theme),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              side: settingsSelectorPopupBorderSide(
+                                  theme.brightness),
+                            ),
+                            itemBuilder: (context) {
+                              return widget.items
+                                  .map(
+                                    (item) {
+                                      final isSelected = item == widget.value;
+                                      return PopupMenuItem<T>(
+                                        value: item,
+                                        height: kSettingsSelectorItemHeight,
+                                        padding: EdgeInsets.zero,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal:
+                                                kSettingsSelectorMenuItemHorizontalPadding,
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  widget.labelBuilder(item),
+                                                  maxLines: 1,
+                                                  overflow: widget
+                                                          .showFullPopupLabels
+                                                      ? null
+                                                      : TextOverflow.ellipsis,
+                                                  textAlign: TextAlign.start,
+                                                  style:
+                                                      selectorTextStyle.copyWith(
+                                                    color: isSelected
+                                                        ? accentColor
+                                                        : theme.colorScheme
+                                                            .onSurface,
+                                                    fontWeight: isSelected
+                                                        ? FontWeight.w600
+                                                        : FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                width:
+                                                    kSettingsSelectorMenuIndicatorGap,
+                                              ),
+                                              SizedBox(
+                                                width:
+                                                    kSettingsSelectorMenuIndicatorSlotWidth,
+                                                child: isSelected
+                                                    ? Align(
+                                                        alignment:
+                                                            AlignmentDirectional
+                                                                .centerEnd,
+                                                        child: Icon(
+                                                          Icons.check_rounded,
+                                                          size: 16,
+                                                          color: accentColor,
+                                                        ),
+                                                      )
+                                                    : null,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
                                   )
-                                : Text(
-                                    selectedLabel,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    textAlign: TextAlign.end,
-                                    style: selectorTextStyle,
-                                  ),
-                          ),
-                          Icon(
-                            Icons.arrow_drop_down,
-                            color: theme.colorScheme.onSurface,
-                            size: 22,
-                          ),
-                        ],
+                                  .toList(growable: false);
+                            },
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: widget.showFullSelectedValue
+                                      ? Align(
+                                          alignment:
+                                              AlignmentDirectional.centerEnd,
+                                          child: FittedBox(
+                                            fit: BoxFit.scaleDown,
+                                            alignment:
+                                                AlignmentDirectional.centerEnd,
+                                            child: Text(
+                                              selectedLabel,
+                                              maxLines: 1,
+                                              textAlign: TextAlign.end,
+                                              style: selectorTextStyle,
+                                            ),
+                                          ),
+                                        )
+                                      : Text(
+                                          selectedLabel,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.end,
+                                          style: selectorTextStyle,
+                                        ),
+                                ),
+                                Icon(
+                                  Icons.arrow_drop_down,
+                                  color: theme.colorScheme.onSurface,
+                                  size: 22,
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ],

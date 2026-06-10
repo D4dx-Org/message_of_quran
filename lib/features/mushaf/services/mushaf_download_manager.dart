@@ -31,39 +31,32 @@ class MushafDownloadManager extends ChangeNotifier {
   Future<void> startDownload() async {
     if (_status == MushafDownloadStatus.downloading) return;
 
-    if (!isDownloadSupported) {
-      _progress = 0;
-      _error = FontDownloadService.unsupportedPlatformMessage;
-      _status = MushafDownloadStatus.error;
-      notifyListeners();
-      _dismissNotification();
-      return;
-    }
-
     _status = MushafDownloadStatus.downloading;
     _progress = 0;
     _error = null;
     notifyListeners();
 
-    _showProgressNotification(0);
+    if (!kIsWeb) _showProgressNotification(0);
 
     try {
       await for (final p in FontDownloadService.instance.downloadFontPack()) {
         _progress = p;
         notifyListeners();
-        final percent = (p * 100).round();
-        _showProgressNotification(percent);
+        if (!kIsWeb) {
+          final percent = (p * 100).round();
+          _showProgressNotification(percent);
+        }
       }
 
       _status = MushafDownloadStatus.completed;
       notifyListeners();
-      _showCompletedNotification();
+      if (!kIsWeb) _showCompletedNotification();
     } catch (e) {
       log('MushafDownloadManager: error — $e');
       _error = e.toString().replaceFirst('Exception: ', '');
       _status = MushafDownloadStatus.error;
       notifyListeners();
-      _dismissNotification();
+      if (!kIsWeb) _dismissNotification();
     }
   }
 
@@ -72,7 +65,7 @@ class MushafDownloadManager extends ChangeNotifier {
     _status = MushafDownloadStatus.idle;
     _progress = 0;
     notifyListeners();
-    _dismissNotification();
+    if (!kIsWeb) _dismissNotification();
   }
 
   void reset() {

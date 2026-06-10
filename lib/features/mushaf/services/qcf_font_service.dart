@@ -2,8 +2,11 @@ import 'dart:collection';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
+
+import 'mushaf_font_store.dart';
 
 /// Thrown when a page font is not available (not bundled and not downloaded).
 class FontNotInstalledError implements Exception {
@@ -107,15 +110,25 @@ class QcfFontService {
 
   Future<bool> isFontAvailable(int pageNo) async {
     if (_bundledPages.contains(pageNo)) return true;
+    if (kIsWeb) {
+      return MushafFontStore.hasFont('QCF_P${_pad(pageNo)}.TTF');
+    }
     final file = await _localFile(pageNo);
     return file != null && file.existsSync() && (await file.length()) > 1000;
   }
 
   Future<ByteData> _resolveFontBytes(int pageNo) async {
-    final local = await _localFile(pageNo);
-    if (local != null && await local.exists()) {
-      final bytes = await local.readAsBytes();
-      return ByteData.sublistView(bytes);
+    if (kIsWeb) {
+      // Try IndexedDB-backed store first (populated after download).
+      final bytes =
+          await MushafFontStore.loadFont('QCF_P${_pad(pageNo)}.TTF');
+      if (bytes != null) return ByteData.sublistView(bytes);
+    } else {
+      final local = await _localFile(pageNo);
+      if (local != null && await local.exists()) {
+        final bytes = await local.readAsBytes();
+        return ByteData.sublistView(bytes);
+      }
     }
 
     if (_bundledPages.contains(pageNo)) {

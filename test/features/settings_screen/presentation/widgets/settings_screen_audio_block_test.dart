@@ -69,13 +69,12 @@ void main() {
     );
     expect(popupButton.constraints?.minWidth, expectedPopupWidth);
     expect(popupButton.constraints?.maxWidth, expectedPopupWidth);
+    // The popup is now anchored to the value area (not full row).
+    // actualRowWidth is the value-area width; offset right-aligns popup within it.
     expect(
       popupButton.offset,
       Offset(
-        settingsSelectorPopupHorizontalOffset(
-          rowWidth: actualRowWidth,
-          popupWidth: expectedPopupWidth,
-        ),
+        (actualRowWidth - expectedPopupWidth).clamp(0.0, double.infinity),
         8,
       ),
     );
@@ -92,19 +91,17 @@ void main() {
       settingsSelectorPopupBorderSide(Brightness.light),
     );
 
-    final selectedFieldPadding = find.descendant(
-      of: find.byType(PopupMenuButton<int>),
-      matching: find.byWidgetPredicate(
-        (widget) =>
-            widget is Padding &&
-            widget.padding ==
-                const EdgeInsets.only(
-                  left: kSettingsSelectorSelectedValueLeftPadding,
-                  right: kSettingsSelectorSelectedValueRightPadding,
-                  top: kSettingsSelectorVerticalPadding,
-                  bottom: kSettingsSelectorVerticalPadding,
-                ),
-      ),
+    // The row padding now lives on the InkWell child, not inside PopupMenuButton.
+    final selectedFieldPadding = find.byWidgetPredicate(
+      (widget) =>
+          widget is Padding &&
+          widget.padding ==
+              const EdgeInsets.only(
+                left: kSettingsSelectorSelectedValueLeftPadding,
+                right: kSettingsSelectorSelectedValueRightPadding,
+                top: kSettingsSelectorVerticalPadding,
+                bottom: kSettingsSelectorVerticalPadding,
+              ),
     );
     expect(selectedFieldPadding, findsOneWidget);
 

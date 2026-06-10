@@ -95,17 +95,17 @@ class _JumpToSheetState extends State<_JumpToSheet> {
     if (idx < 0) return;
     provider.assignIndex(idx);
 
-    // Update the home screen "latest read" highlight to the jumped-to surah.
-    if (widget.navCtx.mounted) {
-      Provider.of<LastReadProvider>(
-        widget.navCtx,
-        listen: false,
-      ).saveLastSurahTabSelection(surah.surahNumber);
-    }
-
     if (isOnRoot) {
-      // On home screen — push a fresh SurahScreen.
+      // On home screen — push a fresh SurahScreen and update the Surah tab
+      // highlight (only relevant when the user is navigating from the Surah
+      // home tab; updating it from a Juz-opened reader would contaminate the
+      // Surah tab's independent selection state).
       if (widget.navCtx.mounted) {
+        Provider.of<LastReadProvider>(
+          widget.navCtx,
+          listen: false,
+        ).saveLastSurahTabSelection(surah.surahNumber);
+
         Navigator.push(
           widget.navCtx,
           MaterialPageRoute(builder: (_) => const SurahScreen()),
@@ -113,6 +113,9 @@ class _JumpToSheetState extends State<_JumpToSheet> {
       }
     } else {
       // Already on SurahScreen — load data async; screen rebuilds via Provider.
+      // Do NOT update lastSurahTabSelection here: the user is jumping surahs
+      // inside the reader (possibly from the Juz tab), so the Surah tab's
+      // independent highlight must not be affected.
       provider.getAyasForCurrentSurah();
     }
   }
