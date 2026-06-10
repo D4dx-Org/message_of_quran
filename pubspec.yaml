@@ -64,6 +64,14 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+# iconsax 0.0.8 has a codepoint-overflow bug: 32 icon declarations wrap past
+# 0xFFFF and land at codepoints 0x00–0x1F, causing Flutter icon tree-shaking
+# to pass codepoint 0 to font-subset which aborts. Local override ships a
+# patched iconsax.dart with those 32 broken entries removed.
+dependency_overrides:
+  iconsax:
+    path: packages/iconsax
+
 flutter_launcher_icons:
   android: true
   ios: true
