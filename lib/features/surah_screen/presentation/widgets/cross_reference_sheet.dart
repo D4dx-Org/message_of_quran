@@ -17,9 +17,11 @@ import 'package:the_message_of_the_quran/core/utils/cross_reference_parser.dart'
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/core/utils/translation_alignment.dart';
+import 'package:the_message_of_the_quran/features/library/presentation/appendix_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/interpretation_note_marker.dart';
+import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/show_translation_gate.dart';
 
 class InterpretationSheetSurahHeaderText {
   const InterpretationSheetSurahHeaderText({this.title, this.subtitle});
@@ -117,6 +119,15 @@ String _formatInterpretationAyahNumbers(List<int> ayahNumbers) {
   }
   return normalized.join(', ');
 }
+
+/// Shared scrim color used behind every interpretation / referenced bottom
+/// sheet.
+///
+/// Each newly stacked sheet draws this same scrim so the sheet directly
+/// beneath it is dimmed ("shadowed"), keeping the latest sheet visually
+/// highlighted. Using a single consistent value across all sheets guarantees
+/// the shadow appears no matter which sheet variant is opened.
+const kInterpretationSheetBarrierColor = Colors.black54;
 
 const _kInterpretationSheetDragHandlePadding = EdgeInsets.only(
   top: 8,
@@ -308,7 +319,7 @@ class CrossReferenceSheet extends StatefulWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      barrierColor: Colors.transparent,
+      barrierColor: kInterpretationSheetBarrierColor,
       constraints: bsMaxWidth != null
           ? BoxConstraints(maxWidth: bsMaxWidth)
           : null,
@@ -335,7 +346,7 @@ class CrossReferenceSheet extends StatefulWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      barrierColor: Colors.transparent,
+      barrierColor: kInterpretationSheetBarrierColor,
       constraints: bsMaxWidth != null
           ? BoxConstraints(maxWidth: bsMaxWidth)
           : null,
@@ -369,6 +380,22 @@ class CrossReferenceSheet extends StatefulWidget {
         noteNumber: ref.noteNumber!,
       );
     }
+  }
+
+  /// Handles a tap on a parsed cross-reference. Appendix references navigate
+  /// to the Appendix screen; all other references open the relevant sheet.
+  static void handleReferenceTap(BuildContext context, CrossReference ref) {
+    if (ref.appendixNumber != null) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => AppendixScreen(
+            initialAppendixNumber: ref.appendixNumber,
+          ),
+        ),
+      );
+      return;
+    }
+    showParsedReference(context, ref);
   }
 
   @override
@@ -568,7 +595,12 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
                     child: Center(child: Text('Verse not found')),
                   )
                 : SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                    padding: EdgeInsets.fromLTRB(
+                      20,
+                      12,
+                      20,
+                      16 + MediaQuery.viewPaddingOf(context).bottom,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -613,13 +645,15 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
                         if (_arabic?.arabicText != null)
                           const SizedBox(height: 16),
                         // Translation text with tappable footnotes
-                        if (_translation?.translationText != null)
-                          _buildTranslationRichText(
+                        ShowTranslationGate(
+                          hasTranslation: _translation?.translationText != null,
+                          builder: (context) => _buildTranslationRichText(
                             context,
                             _translation!.translationText!,
                             fontSettings,
                             isMl,
                           ),
+                        ),
                         // Interpretation (if noteNumber was provided)
                         if (_interpretation.isNotEmpty) ...[
                           const Divider(height: 24),
@@ -786,7 +820,7 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
             ),
             recognizer: TapGestureRecognizer()
               ..onTap = () =>
-                  CrossReferenceSheet.showParsedReference(context, ref),
+                  CrossReferenceSheet.handleReferenceTap(context, ref),
           ),
         );
       } else {
@@ -924,7 +958,12 @@ class _NestedInterpretationSheetState
                     child: Center(child: Text('No explanation found')),
                   )
                 : SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                    padding: EdgeInsets.fromLTRB(
+                      20,
+                      12,
+                      20,
+                      16 + MediaQuery.viewPaddingOf(context).bottom,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: _items.map((item) {
@@ -988,7 +1027,7 @@ class _NestedInterpretationSheetState
             ),
             recognizer: TapGestureRecognizer()
               ..onTap = () =>
-                  CrossReferenceSheet.showParsedReference(context, ref),
+                  CrossReferenceSheet.handleReferenceTap(context, ref),
           ),
         );
       } else {

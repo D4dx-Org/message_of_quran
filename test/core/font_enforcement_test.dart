@@ -64,7 +64,7 @@ void main() {
     // Arabic and Quranic fonts remain explicit exceptions to the UI font rule.
     const allowedFontFamilyFragments = [
       "fontFamily: 'Amiri'",
-      "fontFamily: 'Uthmani'",
+      "fontFamily: 'Scheherazade'",
       "fontFamily: 'sura_names'",
       "fontFamily: 'QCF_BSML'",
       "fontFamily: hasGlyph ? 'QCF_BSML' : null",

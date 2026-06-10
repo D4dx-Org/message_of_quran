@@ -16,6 +16,19 @@ import 'package:the_message_of_the_quran/features/mushaf/data/mushaf_repository.
 import 'package:the_message_of_the_quran/features/mushaf/utils/mushaf_text_utils.dart';
 
 class SurahProvider extends ChangeNotifier {
+  static const String _rtlEmbeddingStart = '\u202B';
+  static const String _rtlEmbeddingEnd = '\u202C';
+  static const String _rtlParagraphMark = '\u200F';
+  static final RegExp _legacyTranslationPrefixRegex = RegExp(
+    r'^[\d,\-]+[\s.]*',
+  );
+  static final RegExp _arabicLetterRegex = RegExp(
+    r'[\u0621-\u064A\u066E-\u06D3\u06FA-\u06FF]',
+  );
+  static final RegExp _translationMarkerRegex = RegExp(
+    r'﴿[\u0660-\u06690-9]+﴾',
+  );
+
   ////////////////////////////////// Variables //////////////////////////////////
 
   bool _isDisposed = false;
@@ -119,127 +132,213 @@ class SurahProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  String getSelectedText() {
-    if (_selectedAyahs.isEmpty) return '';
-    final sorted = _selectedAyahs.toList()..sort();
+  String _cleanTranslationText(String text) {
+    return text
+        .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), ' ')
+        .replaceAll(RegExp(r'<[^>]+>'), '')
+        .replaceAll('&nbsp;', ' ')
+        .trim();
+  }
 
-    final surahName =
-        surahList.isNotEmpty && index >= 0 && index < surahList.length
-        ? surahList[index].name
-        : '';
+  String _stripLegacyTranslationPrefix(String text) {
+    return text.replaceFirst(_legacyTranslationPrefixRegex, '').trim();
+  }
+
+  List<String> _legacyTranslationSentences(String text) {
+    final parts = text.split('. ');
+    final sentences = <String>[];
+    for (int index = 0; index < parts.length; index++) {
+      var sentence = parts[index].trim();
+      if (sentence.isEmpty) continue;
+      if (index < parts.length - 1 && !sentence.endsWith('.')) {
+        sentence = '$sentence.';
+      }
+      sentences.add(sentence);
+    }
+    return sentences;
+  }
+
+  String _extractTranslationFromMarkerBlock(
+    String blockText,
+    int verseFrom,
+    int targetAyah,
+  ) {
+    final matches = _translationMarkerRegex.allMatches(blockText).toList();
+    if (matches.isEmpty) return '';
+
+    var currentAyah = verseFrom;
+    var start = 0;
+    for (final match in matches) {
+      final segment = blockText.substring(start, match.end).trim();
+      if (currentAyah == targetAyah && segment.isNotEmpty) {
+        return segment;
+      }
+      start = match.end;
+      currentAyah++;
+    }
+
+    if (start < blockText.length && currentAyah == targetAyah) {
+      return blockText.substring(start).trim();
+    }
+
+    return '';
+  }
+
+  String _extractTranslationFromLegacyText({
+    required String text,
+    required int verseFrom,
+    required int verseTo,
+    required int targetAyah,
+  }) {
+    final cleaned = _cleanTranslationText(text);
+    if (cleaned.isEmpty) return '';
+
+    final withoutPrefix = _stripLegacyTranslationPrefix(cleaned);
+    if (withoutPrefix.isEmpty) return '';
+
+    final markerBased = _extractTranslationFromMarkerBlock(
+      withoutPrefix,
+      verseFrom,
+      targetAyah,
+    );
+    if (markerBased.isNotEmpty) {
+      return markerBased;
+    }
+
+    final sentences = _legacyTranslationSentences(withoutPrefix);
+    final sentenceIndex = targetAyah - verseFrom;
+    if (sentenceIndex >= 0 && sentenceIndex < sentences.length) {
+      return sentences[sentenceIndex];
+    }
+
+    if (verseFrom == verseTo || targetAyah == verseFrom) {
+      return withoutPrefix;
+    }
+
+    return '';
+  }
+
+  String _arabicTextForAyah(int ayahNumber) {
+    for (final block in arabicBlockList) {
+      if (block.verseFrom == ayahNumber) {
+        return (block.arabicText ?? '').trim();
+      }
+    }
+    return '';
+  }
+
+  String _formatArabicTextForExport(String text) {
+    if (text.isEmpty || !_arabicLetterRegex.hasMatch(text)) {
+      return text;
+    }
+    return '$_rtlParagraphMark$_rtlEmbeddingStart$text$_rtlEmbeddingEnd$_rtlParagraphMark';
+  }
+
+  String _translationTextForAyah(int ayahNumber) {
+    TranslationBlockModel? directMatch;
+    final rangedMatches = <TranslationBlockModel>[];
+
+    for (final block in translationBlockList) {
+      final from = block.verseFrom ?? 0;
+      final to = block.verseTo ?? from;
+      if (ayahNumber < from || ayahNumber > to) continue;
+
+      if (from == ayahNumber && to == ayahNumber) {
+        directMatch ??= block;
+      } else {
+        rangedMatches.add(block);
+      }
+    }
+
+    if (directMatch != null) {
+      return _stripLegacyTranslationPrefix(
+        _cleanTranslationText(directMatch.translationText ?? ''),
+      );
+    }
+
+    if (rangedMatches.isEmpty) return '';
+
+    if (rangedMatches.length == 1) {
+      final block = rangedMatches.single;
+      return _extractTranslationFromLegacyText(
+        text: block.translationText ?? '',
+        verseFrom: block.verseFrom ?? ayahNumber,
+        verseTo: block.verseTo ?? ayahNumber,
+        targetAyah: ayahNumber,
+      );
+    }
+
+    final combinedText = rangedMatches
+        .map((block) => _cleanTranslationText(block.translationText ?? ''))
+        .where((text) => text.isNotEmpty)
+        .join(' ')
+        .trim();
+    if (combinedText.isEmpty) return '';
+
+    return _extractTranslationFromLegacyText(
+      text: combinedText,
+      verseFrom: rangedMatches.first.verseFrom ?? ayahNumber,
+      verseTo: rangedMatches.last.verseTo ?? ayahNumber,
+      targetAyah: ayahNumber,
+    );
+  }
+
+  String _surahNameForExport() {
+    if (surahList.isEmpty || index < 0 || index >= surahList.length) {
+      return '';
+    }
+    return surahList[index].name;
+  }
+
+  String _buildAyahExportText(Iterable<int> ayahNumbers) {
+    final sorted = ayahNumbers.toSet().toList()..sort();
+    if (sorted.isEmpty) return '';
+
     final buffer = StringBuffer();
+    final surahName = _surahNameForExport();
     if (surahName.isNotEmpty) {
       buffer.writeln(surahName);
       buffer.writeln();
     }
 
-    // Collect per-ayah Arabic text.
-    for (int i = 0; i < sorted.length; i++) {
-      final ayah = sorted[i];
-      String? ayahArabic;
-      for (final block in arabicBlockList) {
-        if (block.verseFrom == ayah) {
-          ayahArabic = block.arabicText;
-          break;
+    for (int index = 0; index < sorted.length; index++) {
+      final ayahNumber = sorted[index];
+      final arabicText = _arabicTextForAyah(ayahNumber);
+      final translationText = _translationTextForAyah(ayahNumber);
+
+      if (index > 0) {
+        buffer.writeln();
+      }
+
+      buffer.writeln('Ayah $ayahNumber');
+      if (arabicText.isNotEmpty) {
+        buffer.writeln(_formatArabicTextForExport(arabicText));
+      }
+      if (translationText.isNotEmpty) {
+        if (arabicText.isNotEmpty) {
+          buffer.writeln();
         }
-      }
-
-      buffer.writeln('Ayah $ayah');
-      if (ayahArabic != null && ayahArabic.isNotEmpty) {
-        buffer.writeln(ayahArabic.trim());
-      }
-      if (i < sorted.length - 1) buffer.writeln();
-    }
-
-    // Match translations per-ayah by grouping rows and mapping to ayahs.
-    final allLo = sorted.first;
-    final allHi = sorted.last;
-    final relevantTranslations = translationBlockList.where((b) {
-      final from = b.verseFrom ?? 0;
-      final to = b.verseTo ?? 0;
-      return from <= allHi && to >= allLo;
-    }).toList();
-
-    // Group by leading digit (same logic as the UI).
-    final tGroups = <List<TranslationBlockModel>>[];
-    for (final block in relevantTranslations) {
-      final preview = (block.translationText ?? '')
-          .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '')
-          .trim();
-      if (tGroups.isEmpty || RegExp(r'^\d').hasMatch(preview)) {
-        tGroups.add([block]);
-      } else {
-        tGroups.last.add(block);
+        buffer.writeln(translationText);
       }
     }
 
-    final prefixRegex = RegExp(r'^[\d,\-]+[\s.]*');
-    for (final group in tGroups) {
-      final firstText = (group.first.translationText ?? '')
-          .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '')
-          .trim();
-      final rangeMatch = RegExp(r'^([\d,\-]+)').firstMatch(firstText);
-      if (rangeMatch == null) continue;
-      final rangeStr = rangeMatch.group(1)!;
-      int gLo, gHi;
-      if (rangeStr.contains('-')) {
-        final parts = rangeStr.split('-');
-        gLo = int.tryParse(parts.first) ?? 0;
-        gHi = int.tryParse(parts.last) ?? gLo;
-      } else if (rangeStr.contains(',')) {
-        final nums = rangeStr
-            .split(',')
-            .map((s) => int.tryParse(s.trim()) ?? 0)
-            .toList();
-        gLo = nums.reduce((a, b) => a < b ? a : b);
-        gHi = nums.reduce((a, b) => a > b ? a : b);
-      } else {
-        gLo = int.tryParse(rangeStr) ?? 0;
-        gHi = gLo;
-      }
-      // Skip group if none of the selected ayahs fall within it.
-      final groupHasSelected = sorted.any((a) => a >= gLo && a <= gHi);
-      if (!groupHasSelected) continue;
-      final ayahCount = gHi - gLo + 1;
-
-      // Build per-ayah sentences: split each row by '. ' then flatten.
-      final sentences = <String>[];
-      for (int r = 0; r < group.length; r++) {
-        var rowText = (group[r].translationText ?? '')
-            .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '')
-            .trim();
-        if (r == 0) rowText = rowText.replaceFirst(prefixRegex, '').trim();
-        final parts = rowText.split('. ');
-        for (int p = 0; p < parts.length; p++) {
-          var s = parts[p].trim();
-          if (p < parts.length - 1 && s.isNotEmpty && !s.endsWith('.')) {
-            s = '$s.';
-          }
-          if (s.isNotEmpty) sentences.add(s);
-        }
-      }
-
-      // Map sentences to ayahs and pick only the selected ones.
-      if (sentences.length >= ayahCount) {
-        for (int a = gLo; a <= gHi; a++) {
-          if (_selectedAyahs.contains(a)) {
-            final idx = a - gLo;
-            if (idx < sentences.length) {
-              buffer.writeln(sentences[idx]);
-            }
-          }
-        }
-      } else {
-        for (final s in sentences) {
-          buffer.writeln(s);
-        }
-      }
-    }
     buffer.writeln();
+    final iOSLine = AppConstants.iosStoreUrl.isEmpty
+      ? 'iOS :'
+      : 'iOS : ${AppConstants.iosStoreUrl}';
     buffer.writeln('Source : ${AppConstants.appName}');
     buffer.writeln('Android : ${AppConstants.androidStoreUrl}');
-    buffer.writeln('iOS : ${AppConstants.iosStoreUrl}');
+    buffer.writeln(iOSLine);
+    buffer.writeln('powered by : D4DX Innovations');
     return buffer.toString().trimRight();
+  }
+
+  String getAyahText(int ayahNumber) {
+    return _buildAyahExportText([ayahNumber]);
+  }
+
+  String getSelectedText() {
+    return _buildAyahExportText(_selectedAyahs);
   }
 
   SurahProvider() {

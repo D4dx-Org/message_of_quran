@@ -34,7 +34,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
+        padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
         child: Consumer<TranslatorProvider>(
           builder: (context, provider, child) {
             if (provider.isLoading) {

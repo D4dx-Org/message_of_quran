@@ -9,7 +9,7 @@ void main() {
     const selectedValue = 'abdul_basit';
     const selectedLabel = 'Abdul Basit Abdul Samad (Mujawwad)';
     const otherLabel = 'Muhammad Siddiq Al-Minshawi (Mujawwad)';
-    String? changedValue;
+    String? changedValue = selectedValue;
 
     await tester.binding.setSurfaceSize(const Size(320, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -21,19 +21,11 @@ void main() {
             title: 'Reciters',
             icon: Icons.person,
             value: selectedValue,
-            buttonLabelWidth: 120,
-            menuLabelWidth: 280,
-            items: const [
-              SettingsScreenSelectorItem<String>(
-                value: selectedValue,
-                label: selectedLabel,
-              ),
-              SettingsScreenSelectorItem<String>(
-                value: 'minshawi',
-                label: otherLabel,
-              ),
-            ],
-            onSelected: (value) {
+            items: const [selectedValue, 'minshawi'],
+            labelBuilder: (value) =>
+                value == selectedValue ? selectedLabel : otherLabel,
+            visibleItemCount: 2,
+            onChanged: (value) {
               changedValue = value;
             },
           ),
@@ -56,8 +48,8 @@ void main() {
     final menuLabel = tester.widget<Text>(find.text(otherLabel));
     expect(menuLabel.maxLines, 1);
     expect(menuLabel.overflow, TextOverflow.ellipsis);
-    expect(menuLabel.textAlign, TextAlign.end);
-    expect(find.byIcon(Icons.check), findsOneWidget);
+    expect(menuLabel.textAlign, TextAlign.start);
+    expect(find.byIcon(Icons.check_rounded), findsOneWidget);
 
     final popupRow = find.ancestor(
       of: find.text(otherLabel),
@@ -73,7 +65,7 @@ void main() {
       lessThanOrEqualTo(tester.getSize(popupItem).width - 24),
     );
 
-    await tester.tap(find.text(otherLabel));
+    await tester.tap(find.text(otherLabel).last);
     await tester.pumpAndSettle();
 
     expect(changedValue, 'minshawi');

@@ -1,0 +1,35 @@
+{
+  "surah_number": 111,
+  "verses": [
+    {
+      "verse_key": "111:1",
+      "text_plain": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ تَبَّتۡ یَدَاۤ أَبِی لَهَبࣲ وَتَبَّ",
+      "text_tajweed_html": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ تَبَّتۡ یَد<tajweed class=madda_permissible>َا</tajweed>ۤ أَبِی لَهَ<tajweed class=idghaam_ghunnah>بࣲ و</tajweed>َت<tajweed class=qalaqala>َ</tajweed>بَّ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "111:2",
+      "text_plain": "مَاۤ أَغۡنَىٰ عَنۡهُ مَالُهُۥ وَمَا كَسَبَ",
+      "text_tajweed_html": "مَ<tajweed class=madda_permissible>اۤ</tajweed> أَغۡنَىٰ عَنۡهُ مَالُهُ<tajweed class=madda_normal>ۥ</tajweed> وَمَا كَسَ<tajweed class=qalaqala>ب</tajweed>َ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "111:3",
+      "text_plain": "سَیَصۡلَىٰ نَارࣰا ذَاتَ لَهَبࣲ",
+      "text_tajweed_html": "سَیَصۡلَىٰ نَار<tajweed class=ikhpiaa>ࣰا ذَ</tajweed>اتَ لَهَ<tajweed class=qalaqala>ب</tajweed>ࣲ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "111:4",
+      "text_plain": "وَٱمۡرَأَتُهُۥ حَمَّالَةَ ٱلۡحَطَبِ",
+      "text_tajweed_html": "وَ<tajweed class=ham_wasl>ٱ</tajweed>مۡرَأَتُهُ<tajweed class=madda_normal>ۥ</tajweed> حَ<tajweed class=ghunnah>مَّ</tajweed>الَةَ <tajweed class=ham_wasl>ٱ</tajweed>لۡحَطَ<tajweed class=qalaqala>ب</tajweed>ِ",
+      "rules_count": 5
+    },
+    {
+      "verse_key": "111:5",
+      "text_plain": "فِی جِیدِهَا حَبۡلࣱ مِّن مَّسَدِۭ",
+      "text_tajweed_html": "فِی جِیدِهَا حَ<tajweed class=qalaqala>بۡ</tajweed>ل<tajweed class=idghaam_ghunnah>ࣱ مِّ</tajweed><tajweed class=idghaam_ghunnah>ن مَّ</tajweed>سَ<tajweed class=qalaqala>د</tajweed>ِۭ",
+      "rules_count": 4
+    }
+  ]
+}

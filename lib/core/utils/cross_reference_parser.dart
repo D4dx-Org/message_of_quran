@@ -7,7 +7,7 @@ class CrossReference {
   /// The full matched text (e.g. "57:20" or "surah 2, note 6").
   final String matchedText;
 
-  /// The referenced surah number (1–114).
+  /// The referenced surah number (1–114). Zero for appendix references.
   final int surahNumber;
 
   /// The referenced ayah number, if available.
@@ -16,12 +16,24 @@ class CrossReference {
   /// The referenced footnote/note number, if available.
   final int? noteNumber;
 
+  /// The referenced appendix number, if this is an appendix reference.
+  final int? appendixNumber;
+
   const CrossReference({
     required this.matchedText,
     required this.surahNumber,
     this.ayahNumber,
     this.noteNumber,
+    this.appendixNumber,
   });
+
+  /// Creates an appendix cross-reference (e.g. "Appendix II").
+  const CrossReference.appendix({
+    required this.matchedText,
+    required this.appendixNumber,
+  })  : surahNumber = 0,
+        ayahNumber = null,
+        noteNumber = null;
 }
 
 /// A segment of parsed text — either plain text or a cross-reference.
@@ -139,6 +151,40 @@ List<TextSegment> parseForCrossReferences(String text, int currentSurahNumber) {
     }
   }
 
+  // 6. "Appendix II" / "Appendix 2" — English appendix reference
+  for (final m in _appendixPattern.allMatches(text)) {
+    final number = _parseAppendixNumber(m.group(1)!);
+    if (number != null) {
+      if (!_overlaps(matches, m.start, m.end)) {
+        matches.add(_RangedMatch(
+          start: m.start,
+          end: m.end,
+          ref: CrossReference.appendix(
+            matchedText: m.group(0)!,
+            appendixNumber: number,
+          ),
+        ));
+      }
+    }
+  }
+
+  // 7. "അനുബന്ധം രണ്ട്" — Malayalam appendix reference
+  for (final m in _malayalamAppendixPattern.allMatches(text)) {
+    final number = _malayalamNumberWords[m.group(1)];
+    if (number != null) {
+      if (!_overlaps(matches, m.start, m.end)) {
+        matches.add(_RangedMatch(
+          start: m.start,
+          end: m.end,
+          ref: CrossReference.appendix(
+            matchedText: m.group(0)!,
+            appendixNumber: number,
+          ),
+        ));
+      }
+    }
+  }
+
   if (matches.isEmpty) return [TextSegment.plain(text)];
 
   // Sort by position
@@ -194,6 +240,79 @@ final _noteAbovePattern = RegExp(
   r'notes?\s+(\d+)\s+(?:above|below)',
   caseSensitive: false,
 );
+
+/// "Appendix II" or "Appendix 2" — captures the Roman numeral or digits.
+final _appendixPattern = RegExp(
+  r'appendix\s+([IVXLC]+|\d+)\b',
+  caseSensitive: false,
+);
+
+/// "അനുബന്ധം രണ്ട്" — captures the Malayalam number word.
+final _malayalamAppendixPattern = RegExp(
+  r'അനുബന്ധം\s+(ഒന്ന്‌?|ഒന്നു്|രണ്ട്‌?|മൂന്ന്‌?|നാല്‌?|അഞ്ച്‌?|ആറ്‌?|ഏഴ്‌?|എട്ട്‌?|ഒൻപത്‌?|ഒമ്പത്‌?|പത്ത്‌?)',
+);
+
+/// Maps supported Malayalam number words (1–10) to their numeric value.
+const Map<String, int> _malayalamNumberWords = {
+  'ഒന്ന്': 1,
+  'ഒന്ന്‌': 1,
+  'ഒന്നു്': 1,
+  'രണ്ട്': 2,
+  'രണ്ട്‌': 2,
+  'മൂന്ന്': 3,
+  'മൂന്ന്‌': 3,
+  'നാല്': 4,
+  'നാല്‌': 4,
+  'അഞ്ച്': 5,
+  'അഞ്ച്‌': 5,
+  'ആറ്': 6,
+  'ആറ്‌': 6,
+  'ഏഴ്': 7,
+  'ഏഴ്‌': 7,
+  'എട്ട്': 8,
+  'എട്ട്‌': 8,
+  'ഒൻപത്': 9,
+  'ഒൻപത്‌': 9,
+  'ഒമ്പത്': 9,
+  'ഒമ്പത്‌': 9,
+  'പത്ത്': 10,
+  'പത്ത്‌': 10,
+};
+
+/// Parses an English appendix number from a Roman numeral or digit string.
+int? _parseAppendixNumber(String raw) {
+  final value = raw.trim();
+  final asInt = int.tryParse(value);
+  if (asInt != null) {
+    return (asInt >= 1 && asInt <= 99) ? asInt : null;
+  }
+  return _romanToInt(value.toUpperCase());
+}
+
+/// Converts a Roman numeral (I–XLIX range is plenty) to an int, or null.
+int? _romanToInt(String roman) {
+  if (roman.isEmpty) return null;
+  const values = {
+    'I': 1,
+    'V': 5,
+    'X': 10,
+    'L': 50,
+    'C': 100,
+  };
+  int total = 0;
+  int prev = 0;
+  for (int i = roman.length - 1; i >= 0; i--) {
+    final v = values[roman[i]];
+    if (v == null) return null;
+    if (v < prev) {
+      total -= v;
+    } else {
+      total += v;
+      prev = v;
+    }
+  }
+  return (total >= 1 && total <= 99) ? total : null;
+}
 
 // ─── Helpers ───
 

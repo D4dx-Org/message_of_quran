@@ -49,7 +49,7 @@ class AyahPosterWidget extends StatelessWidget {
                       'بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontFamily: 'Uthmani',
+                        fontFamily: 'Scheherazade',
                         fontSize: 14,
                         color: _gold.withValues(alpha: 0.55),
                         height: 1.8,
@@ -63,7 +63,7 @@ class AyahPosterWidget extends StatelessWidget {
                       textAlign: TextAlign.center,
                       textDirection: TextDirection.rtl,
                       style: const TextStyle(
-                        fontFamily: 'Uthmani',
+                        fontFamily: 'Scheherazade',
                         fontSize: 24,
                         color: _textDark,
                         height: 2.0,

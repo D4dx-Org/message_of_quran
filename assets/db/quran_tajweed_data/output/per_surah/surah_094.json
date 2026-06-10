@@ -1,0 +1,53 @@
+{
+  "surah_number": 94,
+  "verses": [
+    {
+      "verse_key": "94:1",
+      "text_plain": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ أَلَمۡ نَشۡرَحۡ لَكَ صَدۡرَكَ",
+      "text_tajweed_html": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ أَلَمۡ نَشۡرَحۡ لَكَ ص<tajweed class=qalaqala>َد</tajweed>ۡرَكَ",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "94:2",
+      "text_plain": "وَوَضَعۡنَا عَنكَ وِزۡرَكَ",
+      "text_tajweed_html": "وَوَضَعۡنَا عَ<tajweed class=ikhpiaa>نكَ</tajweed> وِزۡرَكَ",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "94:3",
+      "text_plain": "ٱلَّذِیۤ أَنقَضَ ظَهۡرَكَ",
+      "text_tajweed_html": "ٱلَّذِ<tajweed class=madda_permissible>یۤ</tajweed> أَ<tajweed class=ikhpiaa>نقَ</tajweed>ضَ ظَهۡرَكَ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "94:4",
+      "text_plain": "وَرَفَعۡنَا لَكَ ذِكۡرَكَ",
+      "text_tajweed_html": "وَرَفَعۡنَا لَكَ ذِكۡرَكَ",
+      "rules_count": 0
+    },
+    {
+      "verse_key": "94:5",
+      "text_plain": "فَإِنَّ مَعَ ٱلۡعُسۡرِ یُسۡرًا",
+      "text_tajweed_html": "فَإِ<tajweed class=ghunnah>نَّ</tajweed> مَعَ <tajweed class=ham_wasl>ٱ</tajweed>لۡعُسۡرِ یُسۡرًا",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "94:6",
+      "text_plain": "إِنَّ مَعَ ٱلۡعُسۡرِ یُسۡرࣰا",
+      "text_tajweed_html": "إِ<tajweed class=ghunnah>نَّ</tajweed> مَعَ <tajweed class=ham_wasl>ٱ</tajweed>لۡعُسۡرِ یُسۡرࣰا",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "94:7",
+      "text_plain": "فَإِذَا فَرَغۡتَ فَٱنصَبۡ",
+      "text_tajweed_html": "فَإِذَا فَرَغۡتَ فَ<tajweed class=ham_wasl>ٱ</tajweed><tajweed class=ikhpiaa>نصَ</tajweed><tajweed class=qalaqala>بۡ</tajweed>",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "94:8",
+      "text_plain": "وَإِلَىٰ رَبِّكَ فَٱرۡغَب",
+      "text_tajweed_html": "وَإِلَىٰ رَبِّكَ فَ<tajweed class=ham_wasl>ٱ</tajweed>رۡغَ<tajweed class=qalaqala>ب</tajweed>",
+      "rules_count": 2
+    }
+  ]
+}

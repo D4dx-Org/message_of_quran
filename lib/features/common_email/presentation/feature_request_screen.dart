@@ -113,7 +113,7 @@ class _FeatureRequestScreenState extends State<FeatureRequestScreen> {
       appBar: AppBar(title: const Text('Feature Request')),
       resizeToAvoidBottomInset: true,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 28),
         child: Form(
           key: _formKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,

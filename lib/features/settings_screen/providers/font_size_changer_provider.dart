@@ -19,7 +19,6 @@ class FontSizeChangerProvider extends ChangeNotifier {
 
   static const Map<String, String> fontDisplayNames = {
     'Amiri': 'Amiri',
-    'Uthmani': 'Uthmani',
     'Scheherazade': 'Scheherazade',
     'Lateef': 'Lateef',
     'AmiriQuran': 'Amiri Quran',

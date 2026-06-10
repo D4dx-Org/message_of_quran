@@ -68,7 +68,7 @@ class AppendixDetailScreen extends StatelessWidget {
           }
           final appendix = snapshot.data!;
           return SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

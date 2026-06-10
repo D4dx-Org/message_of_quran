@@ -1,0 +1,43 @@
+{
+  "surah_number": 103,
+  "name": "Al-Asr",
+  "total_verses": 6,
+  "verses": [
+    {
+      "verse_key": "103:1",
+      "text_plain": "كَلَّاۖ بَل لَّا تُكۡرِمُونَ ٱلۡیَتِیمَ",
+      "text_tajweed_html": "كَلَّاۖ بَل لَّا تُكۡرِمُونَ<tajweed class=ham_wasl> </tajweed>ٱلۡیَت<tajweed class=madda_permissible>ِ</tajweed>یمَ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "103:2",
+      "text_plain": "وَلَا تَحَـٰۤضُّونَ عَلَىٰ طَعَامِ ٱلۡمِسۡكِینِ",
+      "text_tajweed_html": "وَلَا تَحَ<tajweed class=madda_necessary>ـٰ</tajweed>ۤضُّونَ عَلَىٰ طَعَامِ<tajweed class=ham_wasl> </tajweed>ٱلۡمِسۡك<tajweed class=madda_permissible>ِ</tajweed>ینِ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "103:3",
+      "text_plain": "وَتَأۡكُلُونَ ٱلتُّرَاثَ أَكۡلࣰا لَّمࣰّا",
+      "text_tajweed_html": "وَتَأۡكُلُونَ <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>تُّرَاثَ أَكۡل<tajweed class=idghaam_wo_ghunnah>ࣰا لَّ</tajweed><tajweed class=ghunnah>مࣰّ</tajweed>ا",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "103:4",
+      "text_plain": "وَتُحِبُّونَ ٱلۡمَالَ حُبࣰّا جَمࣰّا",
+      "text_tajweed_html": "وَتُحِبُّونَ <tajweed class=ham_wasl>ٱ</tajweed>لۡمَالَ حُبّ<tajweed class=ikhpiaa>ࣰا جَ</tajweed><tajweed class=ghunnah>مࣰّ</tajweed>ا",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "103:5",
+      "text_plain": "كَلَّاۤۖ إِذَا دُكَّتِ ٱلۡأَرۡضُ دَكࣰّا دَكࣰّا",
+      "text_tajweed_html": "كَلَّ<tajweed class=madda_permissible>اۤ</tajweed>ۖ إِذَا دُكَّتِ<tajweed class=ham_wasl> </tajweed>ٱلۡأَرۡضُ دَك<tajweed class=ikhpiaa>ࣰّا د</tajweed>َكࣰّا",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "103:6",
+      "text_plain": "وَجَاۤءَ رَبُّكَ وَٱلۡمَلَكُ صَفࣰّا صَفࣰّا",
+      "text_tajweed_html": "وَجَ<tajweed class=madda_obligatory>اۤ</tajweed>ءَ رَبُّكَ وَ<tajweed class=ham_wasl>ٱ</tajweed>لۡمَلَكُ صَفّ<tajweed class=ikhpiaa>ࣰا صَ</tajweed>فࣰّا",
+      "rules_count": 3
+    }
+  ]
+}

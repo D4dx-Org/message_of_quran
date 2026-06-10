@@ -1,0 +1,73 @@
+{
+  "surah_number": 52,
+  "name": "At-Tur",
+  "total_verses": 11,
+  "verses": [
+    {
+      "verse_key": "52:1",
+      "text_plain": "عِندَ سِدۡرَةِ ٱلۡمُنتَهَىٰ",
+      "text_tajweed_html": "عِ<tajweed class=ikhpiaa>ندَ</tajweed> سِ<tajweed class=qalaqala>دۡ</tajweed>رَةِ <tajweed class=ham_wasl>ٱ</tajweed>لۡمُ<tajweed class=ikhpiaa>نتَ</tajweed>هَىٰ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "52:2",
+      "text_plain": "عِندَهَا جَنَّةُ ٱلۡمَأۡوَىٰۤ",
+      "text_tajweed_html": "عِ<tajweed class=ikhpiaa>ندَ</tajweed>هَا جَ<tajweed class=ghunnah>نَّ</tajweed>ةُ <tajweed class=ham_wasl>ٱ</tajweed>لۡمَأۡوَىٰۤ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "52:3",
+      "text_plain": "إِذۡ یَغۡشَى ٱلسِّدۡرَةَ مَا یَغۡشَىٰ",
+      "text_tajweed_html": "إِذۡ یَغۡشَى <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>سِّ<tajweed class=qalaqala>دۡ</tajweed>رَةَ مَا یَغۡشَىٰ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "52:4",
+      "text_plain": "مَا زَاغَ ٱلۡبَصَرُ وَمَا طَغَىٰ",
+      "text_tajweed_html": "مَا زَاغَ <tajweed class=ham_wasl>ٱ</tajweed>لۡبَصَرُ وَمَا طَغَىٰ",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "52:5",
+      "text_plain": "لَقَدۡ رَأَىٰ مِنۡ ءَایَـٰتِ رَبِّهِ ٱلۡكُبۡرَىٰۤ",
+      "text_tajweed_html": "لَقَ<tajweed class=qalaqala>دۡ</tajweed> رَأَىٰ مِنۡ ءَایَ<tajweed class=madda_normal>ـ</tajweed>ٰتِ رَبِّهِ<tajweed class=ham_wasl> </tajweed>ٱلۡك<tajweed class=qalaqala>ُب</tajweed>ۡرَىٰۤ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "52:6",
+      "text_plain": "أَفَرَءَیۡتُمُ ٱللَّـٰتَ وَٱلۡعُزَّىٰ",
+      "text_tajweed_html": "أَفَرَءَیۡتُمُ <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>لَّ<tajweed class=madda_normal>ـ</tajweed>ٰتَ و<tajweed class=ham_wasl>َ</tajweed>ٱلۡعُزَّىٰ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "52:7",
+      "text_plain": "وَمَنَوٰةَ ٱلثَّالِثَةَ ٱلۡأُخۡرَىٰۤ",
+      "text_tajweed_html": "وَمَنَ<tajweed class=silent>و</tajweed><tajweed class=madda_normal>ٰ</tajweed>ةَ <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>ثَّالِثَةَ <tajweed class=ham_wasl>ٱ</tajweed>لۡأُخۡرَىٰۤ",
+      "rules_count": 5
+    },
+    {
+      "verse_key": "52:8",
+      "text_plain": "أَلَكُمُ ٱلذَّكَرُ وَلَهُ ٱلۡأُنثَىٰ",
+      "text_tajweed_html": "أَلَكُمُ <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>ذَّكَرُ وَلَهُ <tajweed class=ham_wasl>ٱ</tajweed>لۡأُ<tajweed class=ikhpiaa>نثَ</tajweed>ىٰ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "52:9",
+      "text_plain": "تِلۡكَ إِذࣰا قِسۡمَةࣱ ضِیزَىٰۤ",
+      "text_tajweed_html": "تِلۡكَ إِذ<tajweed class=ikhpiaa>ࣰا قِ</tajweed>سۡمَة<tajweed class=ikhpiaa>ࣱ ضِ</tajweed>یزَىٰۤ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "52:10",
+      "text_plain": "إِنۡ هِیَ إِلَّاۤ أَسۡمَاۤءࣱ سَمَّیۡتُمُوهَاۤ أَنتُمۡ وَءَابَاۤؤُكُم مَّاۤ أَنزَلَ ٱللَّهُ بِهَا مِن سُلۡطَـٰنٍۚ إِن یَتَّبِعُونَ إِلَّا ٱلظَّنَّ وَمَا تَهۡوَى ٱلۡأَنفُسُۖ وَلَقَدۡ جَاۤءَهُم مِّن رَّبِّهِمُ ٱلۡهُدَىٰۤ",
+      "text_tajweed_html": "إِنۡ هِیَ إِلَّ<tajweed class=madda_permissible>اۤ</tajweed> أَسۡمَ<tajweed class=madda_obligatory>اۤ</tajweed>ء<tajweed class=ikhpiaa>ࣱ سَ</tajweed><tajweed class=ghunnah>مَّ</tajweed>یۡتُمُوهَ<tajweed class=madda_permissible>اۤ</tajweed> أَ<tajweed class=ikhpiaa>نتُ</tajweed>مۡ وَءَابَ<tajweed class=madda_obligatory>اۤ</tajweed>ؤُكُ<tajweed class=idghaam_shafawi>م مَّ</tajweed><tajweed class=madda_permissible>اۤ</tajweed> أَ<tajweed class=ikhpiaa>نزَ</tajweed>لَ <tajweed class=ham_wasl>ٱ</tajweed>للَّهُ بِهَا مِ<tajweed class=ikhpiaa>ن سُ</tajweed>لۡطَ<tajweed class=madda_normal>ـ</tajweed>ٰنٍۚ <tajweed class=idghaam_ghunnah>إِن </tajweed>یَتَّبِعُونَ إِلَّ<tajweed class=ham_wasl>ا</tajweed><tajweed class=laam_shamsiyah> </tajweed>ٱلظ<tajweed class=ghunnah>َّن</tajweed>َّ وَمَا تَهۡوَ<tajweed class=ham_wasl>ى</tajweed> ٱلۡ<tajweed class=ikhpiaa>أَن</tajweed>فُسُۖ وَل<tajweed class=qalaqala>َق</tajweed>َدۡ<tajweed class=madda_obligatory> ج</tajweed>َاۤء<tajweed class=idghaam_shafawi>َهُم </tajweed><tajweed class=idghaam_wo_ghunnah>مِّن </tajweed>رَّبِّهِ<tajweed class=ham_wasl>م</tajweed>ُ ٱلۡهُدَىٰۤ",
+      "rules_count": 24
+    },
+    {
+      "verse_key": "52:11",
+      "text_plain": "أَمۡ لِلۡإِنسَـٰنِ مَا تَمَنَّىٰ",
+      "text_tajweed_html": "أَمۡ لِلۡإِ<tajweed class=ikhpiaa>نسَ</tajweed><tajweed class=madda_normal>ـ</tajweed>ٰنِ مَا تَم<tajweed class=ghunnah>َنّ</tajweed>َىٰ",
+      "rules_count": 3
+    }
+  ]
+}

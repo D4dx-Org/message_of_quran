@@ -1,0 +1,53 @@
+{
+  "surah_number": 95,
+  "verses": [
+    {
+      "verse_key": "95:1",
+      "text_plain": "بِّسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ وَٱلتِّینِ وَٱلزَّیۡتُونِ",
+      "text_tajweed_html": "بِّسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ و<tajweed class=ham_wasl>َ</tajweed><tajweed class=laam_shamsiyah>ٱ</tajweed>لتِّینِ و<tajweed class=ham_wasl>َ</tajweed><tajweed class=laam_shamsiyah>ٱ</tajweed>لزَّیۡت<tajweed class=madda_permissible>ُ</tajweed>ونِ",
+      "rules_count": 5
+    },
+    {
+      "verse_key": "95:2",
+      "text_plain": "وَطُورِ سِینِینَ",
+      "text_tajweed_html": "وَطُورِ سِینِ<tajweed class=madda_permissible>ی</tajweed>نَ",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "95:3",
+      "text_plain": "وَهَـٰذَا ٱلۡبَلَدِ ٱلۡأَمِینِ",
+      "text_tajweed_html": "وَهَ<tajweed class=madda_normal>ـ</tajweed>ٰذَا<tajweed class=ham_wasl> </tajweed>ٱلۡبَلَدِ<tajweed class=ham_wasl> </tajweed>ٱلۡأَم<tajweed class=madda_permissible>ِ</tajweed>ینِ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "95:4",
+      "text_plain": "لَقَدۡ خَلَقۡنَا ٱلۡإِنسَـٰنَ فِیۤ أَحۡسَنِ تَقۡوِیمࣲ",
+      "text_tajweed_html": "لَقَ<tajweed class=qalaqala>دۡ</tajweed> خَلَ<tajweed class=qalaqala>قۡ</tajweed>نَا <tajweed class=ham_wasl>ٱ</tajweed>لۡإِ<tajweed class=ikhpiaa>نسَ</tajweed><tajweed class=madda_normal>ـ</tajweed>ٰنَ ف<tajweed class=madda_permissible>ِی</tajweed>ۤ أَحۡسَنِ ت<tajweed class=qalaqala>َق</tajweed>ۡو<tajweed class=madda_permissible>ِ</tajweed>یمࣲ",
+      "rules_count": 8
+    },
+    {
+      "verse_key": "95:5",
+      "text_plain": "ثُمَّ رَدَدۡنَـٰهُ أَسۡفَلَ سَـٰفِلِینَ",
+      "text_tajweed_html": "ثُ<tajweed class=ghunnah>مَّ</tajweed> رَدَ<tajweed class=qalaqala>دۡ</tajweed>نَ<tajweed class=madda_normal>ـ</tajweed>ٰهُ أَسۡفَلَ س<tajweed class=madda_normal>َ</tajweed>ـٰفِ<tajweed class=madda_permissible>ل</tajweed>ِینَ",
+      "rules_count": 5
+    },
+    {
+      "verse_key": "95:6",
+      "text_plain": "إِلَّا ٱلَّذِینَ ءَامَنُوا۟ وَعَمِلُوا۟ ٱلصَّـٰلِحَـٰتِ فَلَهُمۡ أَجۡرٌ غَیۡرُ مَمۡنُونࣲ",
+      "text_tajweed_html": "إِلَّا <tajweed class=ham_wasl>ٱ</tajweed>لَّذِینَ ءَامَنُو<tajweed class=silent>ا۟</tajweed> وَعَمِلُو<tajweed class=silent>ا۟</tajweed> <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>صَّ<tajweed class=madda_normal>ـ</tajweed>ٰلِح<tajweed class=madda_normal>َ</tajweed>ـٰتِ فَلَهُمۡ <tajweed class=qalaqala>أَ</tajweed>جۡرٌ غَیۡرُ مَمۡ<tajweed class=madda_permissible>ن</tajweed>ُونࣲ",
+      "rules_count": 9
+    },
+    {
+      "verse_key": "95:7",
+      "text_plain": "فَمَا یُكَذِّبُكَ بَعۡدُ بِٱلدِّینِ",
+      "text_tajweed_html": "فَمَا یُكَذِّبُكَ بَعۡدُ بِ<tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>دِّ<tajweed class=madda_permissible>ی</tajweed>نِ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "95:8",
+      "text_plain": "أَلَیۡسَ ٱللَّهُ بِأَحۡكَمِ ٱلۡحَـٰكِمِینَ",
+      "text_tajweed_html": "أَلَیۡسَ <tajweed class=ham_wasl>ٱ</tajweed>للَّهُ بِأَحۡكَمِ <tajweed class=ham_wasl>ٱ</tajweed>لۡحَ<tajweed class=madda_normal>ـ</tajweed>ٰكِم<tajweed class=madda_permissible>ِ</tajweed>ینَ",
+      "rules_count": 4
+    }
+  ]
+}

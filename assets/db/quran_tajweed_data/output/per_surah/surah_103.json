@@ -1,0 +1,23 @@
+{
+  "surah_number": 103,
+  "verses": [
+    {
+      "verse_key": "103:1",
+      "text_plain": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ وَٱلۡعَصۡرِ",
+      "text_tajweed_html": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ و<tajweed class=ham_wasl>َ</tajweed>ٱلۡعَصۡرِ",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "103:2",
+      "text_plain": "إِنَّ ٱلۡإِنسَـٰنَ لَفِی خُسۡرٍ",
+      "text_tajweed_html": "إِ<tajweed class=ghunnah>نَّ</tajweed> <tajweed class=ham_wasl>ٱ</tajweed>لۡإِ<tajweed class=ikhpiaa>نسَ</tajweed><tajweed class=madda_normal>ـ</tajweed>ٰنَ لَفِی خُسۡرٍ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "103:3",
+      "text_plain": "إِلَّا ٱلَّذِینَ ءَامَنُوا۟ وَعَمِلُوا۟ ٱلصَّـٰلِحَـٰتِ وَتَوَاصَوۡا۟ بِٱلۡحَقِّ وَتَوَاصَوۡا۟ بِٱلصَّبۡرِ",
+      "text_tajweed_html": "إِلَّا <tajweed class=ham_wasl>ٱ</tajweed>لَّذِینَ ءَامَنُو<tajweed class=silent>ا۟</tajweed> وَعَمِلُو<tajweed class=silent>ا۟</tajweed> <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>صَّ<tajweed class=madda_normal>ـ</tajweed>ٰلِح<tajweed class=madda_normal>َ</tajweed>ـٰتِ وَتَوَاصَ<tajweed class=silent>وۡ</tajweed>ا۟ <tajweed class=ham_wasl>ب</tajweed>ِٱلۡحَقِّ وَتَوَاصَ<tajweed class=silent>وۡ</tajweed>ا۟ <tajweed class=ham_wasl>ب</tajweed><tajweed class=laam_shamsiyah>ِ</tajweed>ٱلص<tajweed class=qalaqala>َّ</tajweed>بۡرِ",
+      "rules_count": 13
+    }
+  ]
+}

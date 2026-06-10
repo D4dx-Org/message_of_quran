@@ -121,7 +121,7 @@ class _AddProgressionScreenState extends State<AddProgressionScreen> {
         backgroundColor: AppTheme.appThemePrimary,
       ),
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

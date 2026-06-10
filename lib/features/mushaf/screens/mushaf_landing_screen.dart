@@ -850,7 +850,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
     );
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+      padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
       child: useTwoColumns
           ? Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1010,8 +1010,8 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
       );
     }
 
-    return Padding(
-      padding: EdgeInsets.fromLTRB(hPad, topSpacing, hPad, 0),
+        return Padding(
+      padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

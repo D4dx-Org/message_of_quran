@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_card.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_list_tile.dart';
@@ -77,153 +76,29 @@ class SettingsScreenTajweedBlock extends StatelessWidget {
                 ),
               ),
 
-              // ── Download progress / status ───────────────────────────
+              // ── Status ───────────────────────────────────────────────
+              // Tajweed now renders from bundled colour-coded data, so there is
+              // no download/extraction step — just show the enabled state.
               if (tajweed.enabled) ...[
-                if (tajweed.isExtracting) ...[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        LinearProgressIndicator(
-                          value: tajweed.extractTotalFiles > 0
-                              ? tajweed.extractProgress
-                              : null,
-                          backgroundColor:
-                              Theme.of(context).colorScheme.surfaceContainerHighest,
-                          color: accentColor,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          tajweed.extractTotalFiles > 0
-                              ? 'Extracting images ... '
-                                  '${(tajweed.extractProgress * 100).toStringAsFixed(0)}%'
-                              : 'Extracting images ...',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).colorScheme.outline,
-                              ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ] else if (tajweed.isDownloading) ...[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        LinearProgressIndicator(
-                          value: tajweed.downloadProgress,
-                          backgroundColor:
-                              Theme.of(context).colorScheme.surfaceContainerHighest,
-                          color: accentColor,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'Downloading tajweed ... '
-                          '${(tajweed.downloadProgress * 100).toStringAsFixed(0)}%',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).colorScheme.outline,
-                              ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ] else if (tajweed.isDownloadPaused) ...[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.pause_circle_outline,
-                          size: 16,
-                          color: Theme.of(context).colorScheme.outline,
-                        ),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: IgnorePointer(
-                            child: Text(
-                              'Download paused',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Theme.of(context).colorScheme.outline,
-                                  ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.check_circle_outline,
+                        size: 16,
+                        color: accentColor,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Tajweed Enabled',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: accentColor,
                             ),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: tajweed.resumeDownload,
-                          style: TextButton.styleFrom(
-                            foregroundColor: accentColor,
-                            textStyle: AppTextTheme.popinsDefault(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          child: const Text('Resume'),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ] else if (tajweed.downloadComplete) ...[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.check_circle_outline,
-                          size: 16,
-                          color: accentColor,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          'Tajweed Enabled',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: accentColor,
-                              ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ] else if (tajweed.downloadError != null) ...[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.error_outline,
-                          size: 16,
-                          color: Colors.red,
-                        ),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            tajweed.downloadError!,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall
-                                ?.copyWith(color: Colors.red),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: tajweed.retryDownload,
-                          child: const Text('Retry'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ] else ...[
-                  // Enabled but not yet started — will be triggered automatically.
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                    child: Text(
-                      'Preparing download…',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.outline,
-                          ),
-                    ),
-                  ),
-                ],
+                ),
               ],
             ],
           ),

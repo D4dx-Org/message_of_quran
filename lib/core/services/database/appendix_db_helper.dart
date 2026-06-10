@@ -19,7 +19,7 @@ class AppendixDbHelper {
 
     try {
       final result = await db.query(
-        DbConstants.appendicesTable,
+        malayalam ? DbConstants.mlAppendicesTable : DbConstants.appendicesTable,
         orderBy: '${DbConstants.appendixNumber} ASC',
       );
       return result.map((map) => AppendixModel.fromJson(map)).toList();
@@ -45,7 +45,7 @@ class AppendixDbHelper {
 
     try {
       final result = await db.query(
-        DbConstants.appendicesTable,
+        malayalam ? DbConstants.mlAppendicesTable : DbConstants.appendicesTable,
         where: '${DbConstants.appendixNumber} = ?',
         whereArgs: [number],
       );

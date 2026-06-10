@@ -121,7 +121,16 @@ class _HomeScreenState extends State<HomeScreen>
       MaterialPageRoute(builder: (_) => SurahScreen(scrollToAyahId: ayahId)),
     );
     if (!context.mounted) return;
-    context.read<LastReadProvider>().saveLastSurahTabSelection(surahNumber);
+    // Use the surah the provider is currently on, so a jump to a different
+    // surah inside the SurahScreen is reflected here instead of the
+    // originally opened surah.
+    final currentIndex = surahProvider.index;
+    if (currentIndex >= 0 &&
+        currentIndex < surahProvider.surahList.length) {
+      context.read<LastReadProvider>().saveLastSurahTabSelection(
+            surahProvider.surahList[currentIndex].surahNumber,
+          );
+    }
   }
 
   Future<void> _openJuz(
@@ -334,7 +343,7 @@ class _HomeScreenState extends State<HomeScreen>
     required bool isLoading,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(top: 20, bottom: 30),
+      padding: const EdgeInsets.only(top: 10, bottom: 30),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 920),
@@ -868,7 +877,7 @@ class _HomeScreenState extends State<HomeScreen>
     final homeContentMaxWidth = _webHomeContentMaxWidth(context);
     final homeContent = Column(
       children: [
-        const SizedBox(height: 20),
+        const SizedBox.shrink(),
         _buildTabBar(context),
         const SizedBox(height: 12),
         Expanded(child: _buildTabBody()),

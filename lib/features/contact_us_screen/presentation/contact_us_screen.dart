@@ -62,7 +62,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
       child: Container(
         decoration: const BoxDecoration(),
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.fromLTRB(24.0, 0, 24.0, 24.0),
           child: Consumer<ContactProvider>(
             builder: (context, contactProvider, child) {
               final content = contactProvider.contactContent;

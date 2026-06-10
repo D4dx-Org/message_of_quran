@@ -1,0 +1,31 @@
+{
+  "surah_number": 100,
+  "name": "Al-Adiyat",
+  "total_verses": 4,
+  "verses": [
+    {
+      "verse_key": "100:1",
+      "text_plain": "وَٱلشَّفۡعِ وَٱلۡوَتۡرِ",
+      "text_tajweed_html": "وَ<tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>شَّفۡعِ وَ<tajweed class=ham_wasl>ٱ</tajweed>لۡوَتۡرِ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "100:2",
+      "text_plain": "وَٱلَّیۡلِ إِذَا یَسۡرِ",
+      "text_tajweed_html": "وَ<tajweed class=ham_wasl>ٱ</tajweed>لَّیۡلِ إِذَا یَسۡرِ",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "100:3",
+      "text_plain": "هَلۡ فِی ذَ ٰ⁠لِكَ قَسَمࣱ لِّذِی حِجۡرٍ",
+      "text_tajweed_html": "هَلۡ فِی ذَ<tajweed class=madda_normal> </tajweed>ٰ⁠لِكَ قَس<tajweed class=idghaam_wo_ghunnah>َمࣱ ل</tajweed>ِّذِی <tajweed class=qalaqala>حِ</tajweed>جۡرٍ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "100:4",
+      "text_plain": "أَلَمۡ تَرَ كَیۡفَ فَعَلَ رَبُّكَ بِعَادٍ",
+      "text_tajweed_html": "أَلَمۡ تَرَ كَیۡفَ فَعَلَ رَبُّكَ بِعَ<tajweed class=madda_permissible>ا</tajweed><tajweed class=qalaqala>د</tajweed>ٍ",
+      "rules_count": 2
+    }
+  ]
+}

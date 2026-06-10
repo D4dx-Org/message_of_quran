@@ -1,0 +1,73 @@
+{
+  "surah_number": 87,
+  "name": "Al-Ala",
+  "total_verses": 11,
+  "verses": [
+    {
+      "verse_key": "87:1",
+      "text_plain": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ إِذَا ٱلسَّمَاۤءُ ٱنشَقَّتۡ",
+      "text_tajweed_html": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ إِذَا<tajweed class=ham_wasl> </tajweed><tajweed class=laam_shamsiyah>ٱ</tajweed>لسَّم<tajweed class=madda_obligatory>َا</tajweed>ۤءُ<tajweed class=ham_wasl> </tajweed><tajweed class=ikhpiaa>ٱنش</tajweed>َقَّتۡ",
+      "rules_count": 5
+    },
+    {
+      "verse_key": "87:2",
+      "text_plain": "وَأَذِنَتۡ لِرَبِّهَا وَحُقَّتۡ",
+      "text_tajweed_html": "وَأَذِنَتۡ لِرَبِّهَا وَحُقَّتۡ",
+      "rules_count": 0
+    },
+    {
+      "verse_key": "87:3",
+      "text_plain": "وَإِذَا ٱلۡأَرۡضُ مُدَّتۡ",
+      "text_tajweed_html": "وَإِذَا <tajweed class=ham_wasl>ٱ</tajweed>لۡأَرۡضُ مُدَّتۡ",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "87:4",
+      "text_plain": "وَأَلۡقَتۡ مَا فِیهَا وَتَخَلَّتۡ",
+      "text_tajweed_html": "وَأَلۡقَتۡ مَا فِیهَا وَتَخَلَّتۡ",
+      "rules_count": 0
+    },
+    {
+      "verse_key": "87:5",
+      "text_plain": "وَأَذِنَتۡ لِرَبِّهَا وَحُقَّتۡ",
+      "text_tajweed_html": "وَأَذِنَتۡ لِرَبِّهَا وَحُقَّتۡ",
+      "rules_count": 0
+    },
+    {
+      "verse_key": "87:6",
+      "text_plain": "یَـٰۤأَیُّهَا ٱلۡإِنسَـٰنُ إِنَّكَ كَادِحٌ إِلَىٰ رَبِّكَ كَدۡحࣰا فَمُلَـٰقِیهِ",
+      "text_tajweed_html": "یَ<tajweed class=madda_permissible>ـٰ</tajweed>ۤأَیُّهَا<tajweed class=ham_wasl> </tajweed>ٱلۡإ<tajweed class=ikhpiaa>ِنس</tajweed><tajweed class=madda_normal>َ</tajweed>ـٰنُ <tajweed class=ghunnah>إِن</tajweed>َّكَ كَادِحٌ إِلَىٰ رَبِّكَ <tajweed class=qalaqala>كَ</tajweed>د<tajweed class=ikhpiaa>ۡحࣰا </tajweed>فَمُ<tajweed class=madda_normal>ل</tajweed>َـ<tajweed class=madda_permissible>ٰ</tajweed>قِیهِ",
+      "rules_count": 9
+    },
+    {
+      "verse_key": "87:7",
+      "text_plain": "فَأَمَّا مَنۡ أُوتِیَ كِتَـٰبَهُۥ بِیَمِینِهِۦ",
+      "text_tajweed_html": "فَأَ<tajweed class=ghunnah>مَّ</tajweed>ا مَنۡ أُوتِیَ كِتَ<tajweed class=madda_normal>ـ</tajweed>ٰبَه<tajweed class=madda_normal>ُ</tajweed>ۥ بِیَمِینِهِۦ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "87:8",
+      "text_plain": "فَسَوۡفَ یُحَاسَبُ حِسَابࣰا یَسِیرࣰا",
+      "text_tajweed_html": "فَسَوۡفَ یُحَاسَبُ حِسَاب<tajweed class=idghaam_ghunnah>ࣰا یَ</tajweed>سِیرࣰا",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "87:9",
+      "text_plain": "وَیَنقَلِبُ إِلَىٰۤ أَهۡلِهِۦ مَسۡرُورࣰا",
+      "text_tajweed_html": "وَیَ<tajweed class=ikhpiaa>نقَ</tajweed>لِبُ إِلَ<tajweed class=madda_permissible>ىٰۤ</tajweed> أَهۡلِهِ<tajweed class=madda_normal>ۦ</tajweed> مَسۡرُورࣰا",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "87:10",
+      "text_plain": "وَأَمَّا مَنۡ أُوتِیَ كِتَـٰبَهُۥ وَرَاۤءَ ظَهۡرِهِۦ",
+      "text_tajweed_html": "وَأَ<tajweed class=ghunnah>مَّ</tajweed>ا مَنۡ أُوتِیَ كِتَ<tajweed class=madda_normal>ـ</tajweed>ٰبَه<tajweed class=madda_normal>ُ</tajweed>ۥ وَر<tajweed class=madda_obligatory>َا</tajweed>ۤءَ ظَهۡرِهِۦ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "87:11",
+      "text_plain": "فَسَوۡفَ یَدۡعُوا۟ ثُبُورࣰا",
+      "text_tajweed_html": "فَسَوۡفَ یَ<tajweed class=qalaqala>دۡ</tajweed>عُو<tajweed class=silent>ا۟</tajweed> ثُبُورࣰا",
+      "rules_count": 2
+    }
+  ]
+}

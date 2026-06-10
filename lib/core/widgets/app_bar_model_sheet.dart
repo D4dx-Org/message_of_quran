@@ -9,6 +9,7 @@ import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
+import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
 
 class AppBarModelSheet {
   AppBarModelSheet._();
@@ -93,6 +94,14 @@ class _JumpToSheetState extends State<_JumpToSheet> {
     );
     if (idx < 0) return;
     provider.assignIndex(idx);
+
+    // Update the home screen "latest read" highlight to the jumped-to surah.
+    if (widget.navCtx.mounted) {
+      Provider.of<LastReadProvider>(
+        widget.navCtx,
+        listen: false,
+      ).saveLastSurahTabSelection(surah.surahNumber);
+    }
 
     if (isOnRoot) {
       // On home screen — push a fresh SurahScreen.

@@ -45,7 +45,7 @@ class _HelpScreenState extends State<HelpScreen> {
             );
           }
           return ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
             itemCount: helpProvider.faqCategories.length,
             itemBuilder: (context, categoryIndex) {
               final category = helpProvider.faqCategories[categoryIndex];

@@ -1,0 +1,139 @@
+{
+  "surah_number": 79,
+  "name": "An-Naziat",
+  "total_verses": 22,
+  "verses": [
+    {
+      "verse_key": "79:1",
+      "text_plain": "وَٱلسَّـٰبِحَـٰتِ سَبۡحࣰا",
+      "text_tajweed_html": "وَ<tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>سَّ<tajweed class=madda_normal>ـ</tajweed>ٰبِح<tajweed class=madda_normal>َ</tajweed>ـٰتِ <tajweed class=qalaqala>سَ</tajweed>بۡحࣰا",
+      "rules_count": 5
+    },
+    {
+      "verse_key": "79:2",
+      "text_plain": "فَٱلسَّـٰبِقَـٰتِ سَبۡقࣰا",
+      "text_tajweed_html": "فَ<tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>سَّ<tajweed class=madda_normal>ـ</tajweed>ٰبِق<tajweed class=madda_normal>َ</tajweed>ـٰتِ <tajweed class=qalaqala>سَ</tajweed>بۡقࣰا",
+      "rules_count": 5
+    },
+    {
+      "verse_key": "79:3",
+      "text_plain": "فَٱلۡمُدَبِّرَ ٰ⁠تِ أَمۡرࣰا",
+      "text_tajweed_html": "فَ<tajweed class=ham_wasl>ٱ</tajweed>لۡمُدَبِّرَ<tajweed class=madda_normal> </tajweed>ٰ⁠تِ أَمۡرࣰا",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "79:4",
+      "text_plain": "یَوۡمَ تَرۡجُفُ ٱلرَّاجِفَةُ",
+      "text_tajweed_html": "یَوۡمَ تَرۡجُفُ <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>رَّاجِفَةُ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "79:5",
+      "text_plain": "تَتۡبَعُهَا ٱلرَّادِفَةُ",
+      "text_tajweed_html": "تَتۡبَعُهَا <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>رَّادِفَةُ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "79:6",
+      "text_plain": "قُلُوبࣱ یَوۡمَىِٕذࣲ وَاجِفَةٌ",
+      "text_tajweed_html": "قُلُوب<tajweed class=idghaam_ghunnah>ࣱ یَ</tajweed>وۡمَىِٕ<tajweed class=idghaam_ghunnah>ذࣲ و</tajweed>َاجِفَةٌ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "79:7",
+      "text_plain": "أَبۡصَـٰرُهَا خَـٰشِعَةࣱ",
+      "text_tajweed_html": "أَ<tajweed class=qalaqala>بۡ</tajweed>صَ<tajweed class=madda_normal>ـ</tajweed>ٰرُهَا خ<tajweed class=madda_normal>َ</tajweed>ـٰشِعَةࣱ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "79:8",
+      "text_plain": "یَقُولُونَ أَءِنَّا لَمَرۡدُودُونَ فِی ٱلۡحَافِرَةِ",
+      "text_tajweed_html": "یَقُولُونَ أَءِ<tajweed class=ghunnah>نَّ</tajweed>ا لَمَرۡدُودُونَ فِی <tajweed class=ham_wasl>ٱ</tajweed>لۡحَافِرَةِ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "79:9",
+      "text_plain": "أَءِذَا كُنَّا عِظَـٰمࣰا نَّخِرَةࣰ",
+      "text_tajweed_html": "أَءِذَا كُ<tajweed class=ghunnah>نَّ</tajweed>ا عِظَ<tajweed class=madda_normal>ـ</tajweed>ٰ<tajweed class=idghaam_ghunnah>مࣰا نّ</tajweed>َخِرَةࣰ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "79:10",
+      "text_plain": "قَالُوا۟ تِلۡكَ إِذࣰا كَرَّةٌ خَاسِرَةࣱ",
+      "text_tajweed_html": "قَالُو<tajweed class=silent>ا۟</tajweed> تِلۡكَ إِذ<tajweed class=ikhpiaa>ࣰا كَ</tajweed>رَّةٌ خَاسِرَةࣱ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "79:11",
+      "text_plain": "فَإِنَّمَا هِیَ زَجۡرَةࣱ وَ ٰ⁠حِدَةࣱ",
+      "text_tajweed_html": "فَإِ<tajweed class=ghunnah>نَّ</tajweed>مَا هِیَ زَ<tajweed class=qalaqala>جۡ</tajweed>رَة<tajweed class=idghaam_ghunnah>ࣱ وَ</tajweed><tajweed class=madda_normal> </tajweed>ٰ⁠حِدَةࣱ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "79:12",
+      "text_plain": "فَإِذَا هُم بِٱلسَّاهِرَةِ",
+      "text_tajweed_html": "فَإِذَا هُ<tajweed class=ikhpiaa_shafawi>م بِ</tajweed><tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>سَّاهِرَةِ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "79:13",
+      "text_plain": "هَلۡ أَتَىٰكَ حَدِیثُ مُوسَىٰۤ",
+      "text_tajweed_html": "هَلۡ أَتَى<tajweed class=madda_normal>ٰ</tajweed>كَ حَدِیثُ مُوسَىٰۤ",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "79:14",
+      "text_plain": "إِذۡ نَادَىٰهُ رَبُّهُۥ بِٱلۡوَادِ ٱلۡمُقَدَّسِ طُوًى",
+      "text_tajweed_html": "إِذۡ نَادَى<tajweed class=madda_normal>ٰ</tajweed>هُ رَبُّهُ<tajweed class=madda_normal>ۥ</tajweed> بِ<tajweed class=ham_wasl>ٱ</tajweed>لۡوَادِ <tajweed class=ham_wasl>ٱ</tajweed>لۡمُقَدَّسِ طُوًى",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "79:15",
+      "text_plain": "ٱذۡهَبۡ إِلَىٰ فِرۡعَوۡنَ إِنَّهُۥ طَغَىٰ",
+      "text_tajweed_html": "ٱذۡهَ<tajweed class=qalaqala>بۡ</tajweed> إِلَىٰ فِرۡعَوۡنَ إِ<tajweed class=ghunnah>نَّ</tajweed>هُ<tajweed class=madda_normal>ۥ</tajweed> طَغَىٰ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "79:16",
+      "text_plain": "فَقُلۡ هَل لَّكَ إِلَىٰۤ أَن تَزَكَّىٰ",
+      "text_tajweed_html": "فَقُلۡ هَل لَّكَ إِلَ<tajweed class=madda_permissible>ىٰۤ</tajweed> أَ<tajweed class=ikhpiaa>ن تَ</tajweed>زَكَّىٰ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "79:17",
+      "text_plain": "وَأَهۡدِیَكَ إِلَىٰ رَبِّكَ فَتَخۡشَىٰ",
+      "text_tajweed_html": "وَأَهۡدِیَكَ إِلَىٰ رَبِّكَ فَتَخۡشَىٰ",
+      "rules_count": 0
+    },
+    {
+      "verse_key": "79:18",
+      "text_plain": "فَأَرَىٰهُ ٱلۡـَٔایَةَ ٱلۡكُبۡرَىٰ",
+      "text_tajweed_html": "فَأَرَى<tajweed class=madda_normal>ٰ</tajweed>هُ <tajweed class=ham_wasl>ٱ</tajweed>لۡـَٔایَةَ<tajweed class=ham_wasl> </tajweed>ٱلۡك<tajweed class=qalaqala>ُب</tajweed>ۡرَىٰ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "79:19",
+      "text_plain": "فَكَذَّبَ وَعَصَىٰ",
+      "text_tajweed_html": "فَكَذَّبَ وَعَصَىٰ",
+      "rules_count": 0
+    },
+    {
+      "verse_key": "79:20",
+      "text_plain": "ثُمَّ أَدۡبَرَ یَسۡعَىٰ",
+      "text_tajweed_html": "ثُ<tajweed class=ghunnah>مَّ</tajweed> أَ<tajweed class=qalaqala>دۡ</tajweed>بَرَ یَسۡعَىٰ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "79:21",
+      "text_plain": "فَحَشَرَ فَنَادَىٰ",
+      "text_tajweed_html": "فَحَشَرَ فَنَادَىٰ",
+      "rules_count": 0
+    },
+    {
+      "verse_key": "79:22",
+      "text_plain": "فَقَالَ أَنَا۠ رَبُّكُمُ ٱلۡأَعۡلَىٰ",
+      "text_tajweed_html": "فَقَالَ أَنَا۠ رَبُّكُمُ <tajweed class=ham_wasl>ٱ</tajweed>لۡأَعۡلَىٰ",
+      "rules_count": 1
+    }
+  ]
+}

@@ -197,7 +197,6 @@ class AppTextTheme {
 
   static const Map<String, double> _arabicLineHeights = {
     'Lateef': 1.5,
-    'Uthmani': 1.5,
     'Amiri': 2.0,
     'Scheherazade': 2.0,
     'AmiriQuran': 2.0,
@@ -236,6 +235,25 @@ class AppTextTheme {
       fontWeight: FontWeight.w400,
       height: height,
       color: color,
+    );
+  }
+
+  /// Arabic style used for the coloured Tajweed renderer. Always uses the
+  /// bundled Uthmani Hafs font ('QuranTaha') so the letterforms and combining
+  /// marks match the quran.com tajweed presentation, regardless of the user's
+  /// selected reading font. Per-rule colours are applied on top via
+  /// `parseTajweedHtml`, so the base [color] here is only the default text colour.
+  static TextStyle tajweedArabiStyle(BuildContext ctx) {
+    final controller = Provider.of<FontSizeChangerProvider>(ctx);
+    final fontSize = controller.quranFontSize.toDouble();
+    final color = Theme.of(ctx).brightness == Brightness.dark ? null : Colors.black;
+    return TextStyle(
+      fontFamily: 'QuranTaha',
+      fontSize: fontSize,
+      fontWeight: FontWeight.w400,
+      height: 2.0,
+      color: color,
+      locale: const Locale('ar'),
     );
   }
 

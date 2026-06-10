@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
+import 'package:the_message_of_the_quran/core/constants/app_constants.dart';
 import 'package:the_message_of_the_quran/core/constants/useful_links.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
-import 'package:the_message_of_the_quran/core/utils/platform_helper.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/d4dx_branding_footer.dart';
 import 'package:the_message_of_the_quran/features/author_screen/author_screen.dart';
@@ -24,6 +24,18 @@ import 'package:url_launcher/url_launcher.dart';
 
 class CommonDrawer extends StatelessWidget {
   const CommonDrawer({super.key});
+
+  Rect? _sharePositionOriginFor(BuildContext context) {
+    final renderObject = context.findRenderObject();
+    if (renderObject is! RenderBox ||
+        !renderObject.attached ||
+        !renderObject.hasSize ||
+        renderObject.size.isEmpty) {
+      return null;
+    }
+
+    return renderObject.localToGlobal(Offset.zero) & renderObject.size;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -259,13 +271,26 @@ class CommonDrawer extends StatelessWidget {
                       _DrawerTile(
                         title: 'Share App',
                         icon: Icons.share_outlined,
-                        onTap: () async {
+                        onTapWithContext: (tileContext) async {
+                          final sharePositionOrigin =
+                              _sharePositionOriginFor(tileContext);
                           Navigator.pop(context);
                           await Future.delayed(
                             const Duration(milliseconds: 300),
                           );
+                          final buffer = StringBuffer()
+                            ..writeln(
+                              'Check out Quran Asad Malayalam – a beautiful Quran reader with Malayalam translation.',
+                            )
+                            ..writeln(
+                              'Android : ${AppConstants.androidStoreUrl}',
+                            );
+                          if (AppConstants.iosStoreUrl.isNotEmpty) {
+                            buffer.writeln('iOS : ${AppConstants.iosStoreUrl}');
+                          }
                           await Share.share(
-                            'Check out Quran Asad Malayalam – a beautiful Quran reader with Malayalam translation.\n${PlatformHelper.publicAppUrl}',
+                            buffer.toString().trimRight(),
+                            sharePositionOrigin: sharePositionOrigin,
                           );
                         },
                       ),
@@ -443,7 +468,7 @@ class _DrawerFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     return const D4dxBrandingFooter(
       key: ValueKey('drawer-footer'),
-      versionLabel: 'Version 1.0.0',
+      versionLabel: ' ${AppConstants.appVersion}',
       showTopBorder: true,
     );
   }
@@ -454,12 +479,14 @@ class _DrawerTile extends StatelessWidget {
     required this.title,
     required this.icon,
     this.onTap,
+    this.onTapWithContext,
     this.assetPath,
     this.isMalayalam = false,
   });
   final String title;
   final IconData icon;
   final VoidCallback? onTap;
+  final Future<void> Function(BuildContext context)? onTapWithContext;
   final String? assetPath;
   final bool isMalayalam;
 
@@ -478,28 +505,36 @@ class _DrawerTile extends StatelessWidget {
           )
         : Icon(icon, color: accentColor, size: 22 * scale);
 
-    return ListTile(
-      onTap: onTap,
-      leading: leadingWidget,
-      title: Text(
-        title,
-        style: AppTextTheme.localizedLabel(
-          isMalayalam: isMalayalam,
-          color: theme.textTheme.bodyMedium?.color,
-          fontSize: theme.textTheme.bodyMedium?.fontSize ?? 14,
-          fontWeight: FontWeight.w500,
+    return Builder(
+      builder: (tileContext) => ListTile(
+        onTap: () async {
+          if (onTapWithContext != null) {
+            await onTapWithContext!(tileContext);
+            return;
+          }
+          onTap?.call();
+        },
+        leading: leadingWidget,
+        title: Text(
+          title,
+          style: AppTextTheme.localizedLabel(
+            isMalayalam: isMalayalam,
+            color: theme.textTheme.bodyMedium?.color,
+            fontSize: theme.textTheme.bodyMedium?.fontSize ?? 14,
+            fontWeight: FontWeight.w500,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: 20 * scale,
+          vertical: 2 * scale,
+        ),
+        minLeadingWidth: 24 * scale,
+        horizontalTitleGap: 14 * scale,
+        dense: true,
+        visualDensity: VisualDensity.compact,
       ),
-      contentPadding: EdgeInsets.symmetric(
-        horizontal: 20 * scale,
-        vertical: 2 * scale,
-      ),
-      minLeadingWidth: 24 * scale,
-      horizontalTitleGap: 14 * scale,
-      dense: true,
-      visualDensity: VisualDensity.compact,
     );
   }
 }

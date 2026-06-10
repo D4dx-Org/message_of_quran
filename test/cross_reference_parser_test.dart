@@ -105,5 +105,51 @@ void main() {
       expect(
           result.where((s) => s.isCrossReference).length, 0);
     });
+
+    test('detects "Appendix II" as appendix reference', () {
+      final result = parseForCrossReferences('see Appendix II', 1);
+      final refs = result.where((s) => s.isCrossReference).toList();
+      expect(refs.length, 1);
+      expect(refs[0].text, 'Appendix II');
+      expect(refs[0].crossReference!.appendixNumber, 2);
+      expect(refs[0].crossReference!.surahNumber, 0);
+      expect(refs[0].crossReference!.ayahNumber, isNull);
+      expect(refs[0].crossReference!.noteNumber, isNull);
+    });
+
+    test('detects "Appendix 3" with digits', () {
+      final result = parseForCrossReferences('refer to Appendix 3 below.', 1);
+      final refs = result.where((s) => s.isCrossReference).toList();
+      expect(refs.length, 1);
+      expect(refs[0].text, 'Appendix 3');
+      expect(refs[0].crossReference!.appendixNumber, 3);
+    });
+
+    test('detects Roman numeral "Appendix IV"', () {
+      final result = parseForCrossReferences('Appendix IV explains it.', 1);
+      final refs = result.where((s) => s.isCrossReference).toList();
+      expect(refs.length, 1);
+      expect(refs[0].crossReference!.appendixNumber, 4);
+    });
+
+    test('detects Malayalam appendix reference', () {
+      final result = parseForCrossReferences('അനുബന്ധം രണ്ട് കാണുക', 1);
+      final refs = result.where((s) => s.isCrossReference).toList();
+      expect(refs.length, 1);
+      expect(refs[0].crossReference!.appendixNumber, 2);
+      expect(refs[0].crossReference!.surahNumber, 0);
+    });
+
+    test('detects Malayalam appendix "ഒന്ന്"', () {
+      final result = parseForCrossReferences('അനുബന്ധം ഒന്ന് കാണുക', 1);
+      final refs = result.where((s) => s.isCrossReference).toList();
+      expect(refs.length, 1);
+      expect(refs[0].crossReference!.appendixNumber, 1);
+    });
+
+    test('does not match plain word "appendix" without a number', () {
+      final result = parseForCrossReferences('see the appendix list.', 1);
+      expect(result.where((s) => s.isCrossReference).length, 0);
+    });
   });
 }

@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.1+3
+version: 1.0.3+7
 
 environment:
   sdk: ^3.9.2
@@ -94,9 +94,9 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/icons/revamp/
-    - assets/db/quran_asad.sqlite
-    - assets/db/quran_asad_malayalam_nw.db
+    - assets/db/quran_asad_combined_nw.sqlite
     - assets/db/DB.db
+    - assets/db/quran_tajweed_data/output/quran_tajweed_complete.json
     - assets/data/
     - shorebird.yaml
     - assets/fonts/QCF_BSML.TTF
@@ -116,10 +116,6 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: Uthmani
-      fonts:
-        - asset: "assets/fonts/KFGQPC Uthman Taha Naskh Regular.ttf"
-
     - family: Scheherazade
       fonts:
         - asset: assets/fonts/ScheherazadeNew-Regular.ttf

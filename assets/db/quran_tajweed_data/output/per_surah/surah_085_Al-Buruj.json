@@ -1,0 +1,97 @@
+{
+  "surah_number": 85,
+  "name": "Al-Buruj",
+  "total_verses": 15,
+  "verses": [
+    {
+      "verse_key": "85:1",
+      "text_plain": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ وَیۡلࣱ لِّلۡمُطَفِّفِینَ",
+      "text_tajweed_html": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ وَیۡ<tajweed class=idghaam_wo_ghunnah>لࣱ لّ</tajweed>ِلۡمُطَفِّف<tajweed class=madda_permissible>ِ</tajweed>ینَ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "85:2",
+      "text_plain": "ٱلَّذِینَ إِذَا ٱكۡتَالُوا۟ عَلَى ٱلنَّاسِ یَسۡتَوۡفُونَ",
+      "text_tajweed_html": "ٱلَّذِینَ إِذَا <tajweed class=ham_wasl>ٱ</tajweed>كۡتَالُو<tajweed class=silent>ا۟</tajweed> عَلَى <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed><tajweed class=ghunnah>نَّ</tajweed>اسِ یَسۡتَوۡفُ<tajweed class=madda_permissible>و</tajweed>نَ",
+      "rules_count": 6
+    },
+    {
+      "verse_key": "85:3",
+      "text_plain": "وَإِذَا كَالُوهُمۡ أَو وَّزَنُوهُمۡ یُخۡسِرُونَ",
+      "text_tajweed_html": "وَإِذَا كَالُوهُمۡ أَو وَّزَنُوهُمۡ یُخۡسِرُ<tajweed class=madda_permissible>و</tajweed>نَ",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "85:4",
+      "text_plain": "أَلَا یَظُنُّ أُو۟لَـٰۤىِٕكَ أَنَّهُم مَّبۡعُوثُونَ",
+      "text_tajweed_html": "أَلَا یَظُ<tajweed class=ghunnah>نُّ</tajweed> أُ<tajweed class=silent>و۟</tajweed>لَ<tajweed class=madda_obligatory>ـٰ</tajweed>ۤىِٕكَ <tajweed class=ghunnah>أَن</tajweed>َّ<tajweed class=idghaam_shafawi>هُم م</tajweed><tajweed class=qalaqala>َّ</tajweed>بۡعُو<tajweed class=madda_permissible>ث</tajweed>ُونَ",
+      "rules_count": 7
+    },
+    {
+      "verse_key": "85:5",
+      "text_plain": "لِیَوۡمٍ عَظِیمࣲ",
+      "text_tajweed_html": "لِیَوۡمٍ عَظِ<tajweed class=madda_permissible>ی</tajweed>مࣲ",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "85:6",
+      "text_plain": "یَوۡمَ یَقُومُ ٱلنَّاسُ لِرَبِّ ٱلۡعَـٰلَمِینَ",
+      "text_tajweed_html": "یَوۡمَ یَقُومُ <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed><tajweed class=ghunnah>نَّ</tajweed>اسُ لِرَبِّ <tajweed class=ham_wasl>ٱ</tajweed>لۡعَ<tajweed class=madda_normal>ـ</tajweed>ٰلَم<tajweed class=madda_permissible>ِ</tajweed>ینَ",
+      "rules_count": 6
+    },
+    {
+      "verse_key": "85:7",
+      "text_plain": "كَلَّاۤ إِنَّ كِتَـٰبَ ٱلۡفُجَّارِ لَفِی سِجِّینࣲ",
+      "text_tajweed_html": "كَلَّ<tajweed class=madda_permissible>اۤ</tajweed> إِ<tajweed class=ghunnah>نَّ</tajweed> كِتَ<tajweed class=madda_normal>ـ</tajweed>ٰبَ<tajweed class=ham_wasl> </tajweed>ٱلۡفُجَّارِ لَفِی سِجّ<tajweed class=madda_permissible>ِ</tajweed>ینࣲ",
+      "rules_count": 5
+    },
+    {
+      "verse_key": "85:8",
+      "text_plain": "وَمَاۤ أَدۡرَىٰكَ مَا سِجِّینࣱ",
+      "text_tajweed_html": "وَمَ<tajweed class=madda_permissible>اۤ</tajweed> أَ<tajweed class=qalaqala>دۡ</tajweed>رَى<tajweed class=madda_normal>ٰ</tajweed>كَ مَا سِجِّ<tajweed class=madda_permissible>ی</tajweed>نࣱ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "85:9",
+      "text_plain": "كِتَـٰبࣱ مَّرۡقُومࣱ",
+      "text_tajweed_html": "كِتَ<tajweed class=madda_normal>ـ</tajweed>ٰ<tajweed class=idghaam_ghunnah>بࣱ مّ</tajweed>َرۡق<tajweed class=madda_permissible>ُ</tajweed>ومࣱ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "85:10",
+      "text_plain": "وَیۡلࣱ یَوۡمَىِٕذࣲ لِّلۡمُكَذِّبِینَ",
+      "text_tajweed_html": "وَیۡل<tajweed class=idghaam_ghunnah>ࣱ یَ</tajweed>وۡمَىِٕ<tajweed class=idghaam_wo_ghunnah>ذࣲ لّ</tajweed>ِلۡمُكَذِّب<tajweed class=madda_permissible>ِ</tajweed>ینَ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "85:11",
+      "text_plain": "ٱلَّذِینَ یُكَذِّبُونَ بِیَوۡمِ ٱلدِّینِ",
+      "text_tajweed_html": "ٱلَّذِینَ یُكَذِّبُونَ بِیَوۡمِ <tajweed class=ham_wasl>ٱ</tajweed><tajweed class=laam_shamsiyah>ل</tajweed>دِّ<tajweed class=madda_permissible>ی</tajweed>نِ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "85:12",
+      "text_plain": "وَمَا یُكَذِّبُ بِهِۦۤ إِلَّا كُلُّ مُعۡتَدٍ أَثِیمٍ",
+      "text_tajweed_html": "وَمَا یُكَذِّبُ بِهِ<tajweed class=madda_permissible>ۦۤ</tajweed> إِلَّا كُلُّ مُعۡتَدٍ أَثِ<tajweed class=madda_permissible>ی</tajweed>مٍ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "85:13",
+      "text_plain": "إِذَا تُتۡلَىٰ عَلَیۡهِ ءَایَـٰتُنَا قَالَ أَسَـٰطِیرُ ٱلۡأَوَّلِینَ",
+      "text_tajweed_html": "إِذَا تُتۡلَىٰ عَلَیۡهِ ءَایَ<tajweed class=madda_normal>ـ</tajweed>ٰتُنَا قَالَ أَس<tajweed class=madda_normal>َ</tajweed>ـٰطِیر<tajweed class=ham_wasl>ُ</tajweed> ٱلۡأَوَّ<tajweed class=madda_permissible>ل</tajweed>ِینَ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "85:14",
+      "text_plain": "كَلَّاۖ بَلۡۜ رَانَ عَلَىٰ قُلُوبِهِم مَّا كَانُوا۟ یَكۡسِبُونَ",
+      "text_tajweed_html": "كَلَّاۖ بَلۡۜ رَانَ عَلَىٰ قُلُوبِ<tajweed class=idghaam_shafawi>هِم م</tajweed>َّا كَان<tajweed class=silent>ُو</tajweed>ا۟ یَكۡسِ<tajweed class=madda_permissible>ب</tajweed>ُونَ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "85:15",
+      "text_plain": "كَلَّاۤ إِنَّهُمۡ عَن رَّبِّهِمۡ یَوۡمَىِٕذࣲ لَّمَحۡجُوبُونَ",
+      "text_tajweed_html": "كَلَّ<tajweed class=madda_permissible>اۤ</tajweed> إِ<tajweed class=ghunnah>نَّ</tajweed>هُمۡ عَ<tajweed class=idghaam_wo_ghunnah>ن رَّ</tajweed>بِّهِمۡ یَوۡمَىِٕ<tajweed class=idghaam_wo_ghunnah>ذࣲ لّ</tajweed>َمَحۡجُوب<tajweed class=madda_permissible>ُ</tajweed>ونَ",
+      "rules_count": 5
+    }
+  ]
+}

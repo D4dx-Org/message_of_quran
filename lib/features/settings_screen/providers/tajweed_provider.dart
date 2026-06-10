@@ -107,9 +107,8 @@ class TajweedProvider extends ChangeNotifier {
     _downloadComplete = prefs.getBool(_downloadCompleteKey) ?? false;
     notifyListeners();
 
-    if (_enabled && !_downloadComplete) {
-      unawaited(_startDownload());
-    }
+    // Tajweed now renders from bundled colour-coded data, so no download is
+    // needed when the feature is enabled.
   }
 
   Future<void> setEnabled(bool value) async {
@@ -136,9 +135,7 @@ class TajweedProvider extends ChangeNotifier {
     await prefs.setBool(_enabledKey, value);
     notifyListeners();
 
-    if (!_downloadComplete) {
-      unawaited(_startDownload());
-    }
+    // Bundled Tajweed data is used directly; no download is triggered.
   }
 
   Future<void> retryDownload() async {

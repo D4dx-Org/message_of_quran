@@ -32,20 +32,20 @@ class SettingsScreenLayoutBlock extends StatelessWidget {
               ),
             ),
             const Divider(height: 1, indent: 16, endIndent: 16),
-          ],
-          Consumer<FontSizeChangerProvider>(
-            builder: (context, value, _) => SettingsScreenListTile(
-              title: 'Justify Interpretation',
-              icon: Icons.notes,
-              trailing: Switch(
-                value: value.interpretationJustify,
-                activeThumbColor: accentColor,
-                activeTrackColor: accentTrackColor,
-                onChanged: value.setInterpretationJustify,
+            Consumer<FontSizeChangerProvider>(
+              builder: (context, value, _) => SettingsScreenListTile(
+                title: 'Justify Interpretation',
+                icon: Icons.notes,
+                trailing: Switch(
+                  value: value.interpretationJustify,
+                  activeThumbColor: accentColor,
+                  activeTrackColor: accentTrackColor,
+                  onChanged: value.setInterpretationJustify,
+                ),
               ),
             ),
-          ),
-          const Divider(height: 1, indent: 16, endIndent: 16),
+            const Divider(height: 1, indent: 16, endIndent: 16),
+          ],
           Consumer<FontSizeChangerProvider>(
             builder: (context, value, _) => SettingsScreenListTile(
               title: 'Justify Quran Ayahs & Tajweed',

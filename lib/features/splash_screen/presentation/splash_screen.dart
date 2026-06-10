@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:the_message_of_the_quran/core/services/database/database_helper.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/features/force_update_screen/presentation/force_update_screen.dart';
 import 'package:the_message_of_the_quran/features/main_screen/presentation/main_screen.dart';
@@ -57,17 +56,27 @@ class _SplashScreenState extends State<SplashScreen> {
         context,
         listen: false,
       );
-      // Run the version check, DB init (started in background from main),
-      // and a minimum 3-second splash display in parallel.
-      await Future.wait([
-        controller.checkUpdate(),
-        DatabaseHelper.initializeServices().catchError((Object _) {}),
-        Future.delayed(const Duration(seconds: 3)),
-      ]);
+      debugPrint('Splash: waiting for minimum display and version check');
+      try {
+        await Future.wait<void>([
+          controller.checkUpdate(),
+          Future.delayed(const Duration(seconds: 3)),
+        ]).timeout(
+          const Duration(seconds: 12),
+          onTimeout: () {
+            debugPrint('Splash: startup gate timed out, continuing');
+            return <void>[];
+          },
+        );
+      } catch (error, stackTrace) {
+        debugPrint('Splash: startup gate failed - $error');
+        debugPrintStack(stackTrace: stackTrace);
+      }
 
       if (!mounted) return;
       await _restoreDefaultSystemUi();
       if (!mounted) return;
+      debugPrint('Splash: navigating to next route');
       Navigator.pushAndRemoveUntil(
         context,
         _buildNextRoute(controller),

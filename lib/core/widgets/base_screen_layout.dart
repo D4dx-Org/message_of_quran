@@ -3,12 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
 
+const _baseScreenLayoutBottomSafeAreaFillKey = Key(
+  'baseScreenLayoutBottomSafeAreaFill',
+);
+const _baseScreenLayoutContentInsetPaddingKey = Key(
+  'baseScreenLayoutContentInsetPadding',
+);
+
 /// A reusable screen layout that provides the app's signature UI pattern:
 /// brown background with a rounded white/cream content card.
 ///
 /// Used across all screens (except Splash and Force Update) to maintain
 /// visual consistency during navigation.
 class BaseScreenLayout extends StatelessWidget {
+  static const double defaultContentTopInset = 10;
+
   const BaseScreenLayout({
     super.key,
     required this.child,
@@ -22,6 +31,7 @@ class BaseScreenLayout extends StatelessWidget {
     this.bottomBorderRadius,
     this.endDrawer,
     this.resizeToAvoidBottomInset,
+    this.contentTopInset = defaultContentTopInset,
   });
 
   /// The main content displayed inside the rounded card area.
@@ -61,6 +71,64 @@ class BaseScreenLayout extends StatelessWidget {
   /// Whether the body should resize when the keyboard appears.
   final bool? resizeToAvoidBottomInset;
 
+  /// The top inset applied inside the rounded content card before [child].
+  final double contentTopInset;
+
+  static const _lightContentSurfaceBottomColor = Color.fromRGBO(
+    255,
+    250,
+    234,
+    1,
+  );
+  static const _darkContentSurfaceColor = Color(0xff0c2d52);
+
+  BoxDecoration _buildContentCardDecoration({
+    required bool isDarkMode,
+    required BorderRadius borderRadius,
+    Color? borderColor,
+  }) {
+    return BoxDecoration(
+      borderRadius: borderRadius,
+      gradient: isDarkMode
+          ? null
+          : const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color.fromRGBO(255, 255, 255, 1),
+                _lightContentSurfaceBottomColor,
+              ],
+            ),
+      color: isDarkMode ? _darkContentSurfaceColor : null,
+      border: borderColor != null ? Border.all(color: borderColor) : null,
+      boxShadow:
+          contentCardBoxShadows ??
+          const [
+            BoxShadow(
+              color: Color.fromRGBO(0, 0, 0, 0.25),
+              blurRadius: 4,
+              offset: Offset(0, -2),
+            ),
+          ],
+    );
+  }
+
+  Color _contentSurfaceColor({required bool isDarkMode}) {
+    return isDarkMode
+        ? _darkContentSurfaceColor
+        : _lightContentSurfaceBottomColor;
+  }
+
+  Widget _buildContentCardChild() {
+    if (contentTopInset == 0) return child;
+
+    return Padding(
+      key: _baseScreenLayoutContentInsetPaddingKey,
+      padding: EdgeInsets.only(top: contentTopInset),
+      child: child,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final body = _buildBody(context);
@@ -84,6 +152,7 @@ class BaseScreenLayout extends StatelessWidget {
   Widget _buildBody(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final theme = Theme.of(context);
+    final bottomViewPadding = MediaQuery.viewPaddingOf(context).bottom;
     const useDesktopWebShell = kIsWeb;
     final resolvedTopBorderRadius =
         topBorderRadius ??
@@ -122,32 +191,13 @@ class BaseScreenLayout extends StatelessWidget {
               ],
               Expanded(
                 child: Container(
-                  decoration: BoxDecoration(
+                  decoration: _buildContentCardDecoration(
+                    isDarkMode: isDarkMode,
                     borderRadius: contentCardBorderRadius,
-                    gradient: isDarkMode
-                        ? null
-                        : const LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Color.fromRGBO(255, 255, 255, 1),
-                              Color.fromRGBO(255, 250, 234, 1),
-                            ],
-                          ),
-                    color: isDarkMode ? const Color(0xff0c2d52) : null,
-                            border: Border.all(color: webCardBorderColor),
-                    boxShadow:
-                        contentCardBoxShadows ??
-                        const [
-                          BoxShadow(
-                            color: Color.fromRGBO(0, 0, 0, 0.25),
-                            blurRadius: 4,
-                            offset: Offset(0, -2),
-                          ),
-                        ],
+                    borderColor: webCardBorderColor,
                   ),
                   clipBehavior: Clip.antiAlias,
-                  child: child,
+                  child: _buildContentCardChild(),
                 ),
               ),
             ],
@@ -156,7 +206,7 @@ class BaseScreenLayout extends StatelessWidget {
       );
     }
 
-    return SafeArea(
+    final mobileBody = SafeArea(
       top: false,
       child: ResponsiveContentWrapper(
         child: Column(
@@ -164,36 +214,38 @@ class BaseScreenLayout extends StatelessWidget {
             if (headerContent != null) headerContent!,
             Expanded(
               child: Container(
-                decoration: BoxDecoration(
+                decoration: _buildContentCardDecoration(
+                  isDarkMode: isDarkMode,
                   borderRadius: contentCardBorderRadius,
-                  gradient: isDarkMode
-                      ? null
-                      : const LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Color.fromRGBO(255, 255, 255, 1),
-                            Color.fromRGBO(255, 250, 234, 1),
-                          ],
-                        ),
-                  color: isDarkMode ? const Color(0xff0c2d52) : null,
-                  boxShadow:
-                      contentCardBoxShadows ??
-                      const [
-                        BoxShadow(
-                          color: Color.fromRGBO(0, 0, 0, 0.25),
-                          blurRadius: 4,
-                          offset: Offset(0, -2),
-                        ),
-                      ],
                 ),
                 clipBehavior: Clip.antiAlias,
-                child: child,
+                child: _buildContentCardChild(),
               ),
             ),
           ],
         ),
       ),
+    );
+
+    if (bottomViewPadding <= 0) return mobileBody;
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: bottomViewPadding,
+          child: IgnorePointer(
+            child: ColoredBox(
+              key: _baseScreenLayoutBottomSafeAreaFillKey,
+              color: _contentSurfaceColor(isDarkMode: isDarkMode),
+            ),
+          ),
+        ),
+        mobileBody,
+      ],
     );
   }
 }

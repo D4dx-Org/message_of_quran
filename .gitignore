@@ -49,5 +49,6 @@ app.*.map.json
 /android/app/release
 
 
-db files
-/assets/db/
+# db files
+# /assets/db/
+daily_changes_2026-06-04.md

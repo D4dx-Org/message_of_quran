@@ -1,0 +1,37 @@
+{
+  "surah_number": 89,
+  "name": "Al-Fajr",
+  "total_verses": 5,
+  "verses": [
+    {
+      "verse_key": "89:1",
+      "text_plain": "فَمَا لَهُمۡ لَا یُؤۡمِنُونَ",
+      "text_tajweed_html": "فَمَا لَهُمۡ لَا یُؤۡمِنُ<tajweed class=madda_permissible>و</tajweed>نَ",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "89:2",
+      "text_plain": "وَإِذَا قُرِئَ عَلَیۡهِمُ ٱلۡقُرۡءَانُ لَا یَسۡجُدُونَ ۩",
+      "text_tajweed_html": "وَإِذَا قُرِئَ عَلَیۡهِمُ <tajweed class=ham_wasl>ٱ</tajweed>لۡقُرۡءَانُ لَا یَسۡجُدُ<tajweed class=madda_permissible>و</tajweed>نَ ۩",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "89:3",
+      "text_plain": "بَلِ ٱلَّذِینَ كَفَرُوا۟ یُكَذِّبُونَ",
+      "text_tajweed_html": "بَلِ <tajweed class=ham_wasl>ٱ</tajweed>لَّذِینَ كَفَرُو<tajweed class=silent>ا۟</tajweed> یُكَذِّبُ<tajweed class=madda_permissible>و</tajweed>نَ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "89:4",
+      "text_plain": "وَٱللَّهُ أَعۡلَمُ بِمَا یُوعُونَ",
+      "text_tajweed_html": "وَ<tajweed class=ham_wasl>ٱ</tajweed>للَّهُ أَعۡلَمُ بِمَا یُوعُ<tajweed class=madda_permissible>و</tajweed>نَ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "89:5",
+      "text_plain": "فَبَشِّرۡهُم بِعَذَابٍ أَلِیمٍ",
+      "text_tajweed_html": "فَبَشِّرۡهُ<tajweed class=ikhpiaa_shafawi>م بِ</tajweed>عَذَابٍ أَلِ<tajweed class=madda_permissible>ی</tajweed>مٍ",
+      "rules_count": 2
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "surah_number": 104,
+  "verses": [
+    {
+      "verse_key": "104:1",
+      "text_plain": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ وَیۡلࣱ لِّكُلِّ هُمَزَةࣲ لُّمَزَةٍ",
+      "text_tajweed_html": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ وَیۡ<tajweed class=idghaam_wo_ghunnah>لࣱ لّ</tajweed>ِكُلِّ هُمَزَ<tajweed class=idghaam_wo_ghunnah>ةࣲ لّ</tajweed>ُمَزَةٍ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "104:2",
+      "text_plain": "ٱلَّذِی جَمَعَ مَالࣰا وَعَدَّدَهُۥ",
+      "text_tajweed_html": "ٱلَّذِی جَمَعَ مَال<tajweed class=idghaam_ghunnah>ࣰا وَ</tajweed>عَدَّدَهُۥ",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "104:3",
+      "text_plain": "یَحۡسَبُ أَنَّ مَالَهُۥۤ أَخۡلَدَهُۥ",
+      "text_tajweed_html": "یَحۡسَبُ أَ<tajweed class=ghunnah>نَّ</tajweed> مَالَهُ<tajweed class=madda_permissible>ۥۤ</tajweed> أَخۡلَدَهُۥ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "104:4",
+      "text_plain": "كَلَّاۖ لَیُنۢبَذَنَّ فِی ٱلۡحُطَمَةِ",
+      "text_tajweed_html": "كَلَّاۖ لَیُ<tajweed class=iqlab>نۢ</tajweed>بَذ<tajweed class=ghunnah>َنّ</tajweed>َ فِی<tajweed class=ham_wasl> </tajweed>ٱلۡحُطَمَةِ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "104:5",
+      "text_plain": "وَمَاۤ أَدۡرَىٰكَ مَا ٱلۡحُطَمَةُ",
+      "text_tajweed_html": "وَمَ<tajweed class=madda_permissible>اۤ</tajweed> أَ<tajweed class=qalaqala>دۡ</tajweed>رَى<tajweed class=madda_normal>ٰ</tajweed>كَ مَا <tajweed class=ham_wasl>ٱ</tajweed>لۡحُطَمَةُ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "104:6",
+      "text_plain": "نَارُ ٱللَّهِ ٱلۡمُوقَدَةُ",
+      "text_tajweed_html": "نَارُ <tajweed class=ham_wasl>ٱ</tajweed>للَّهِ <tajweed class=ham_wasl>ٱ</tajweed>لۡمُوقَدَةُ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "104:7",
+      "text_plain": "ٱلَّتِی تَطَّلِعُ عَلَى ٱلۡأَفۡـِٔدَةِ",
+      "text_tajweed_html": "ٱلَّتِی تَطَّلِعُ عَلَى <tajweed class=ham_wasl>ٱ</tajweed>لۡأَفۡـِٔدَةِ",
+      "rules_count": 1
+    },
+    {
+      "verse_key": "104:8",
+      "text_plain": "إِنَّهَا عَلَیۡهِم مُّؤۡصَدَةࣱ",
+      "text_tajweed_html": "إِ<tajweed class=ghunnah>نَّ</tajweed>هَا عَلَیۡهِ<tajweed class=idghaam_shafawi>م مُّ</tajweed>ؤۡصَدَةࣱ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "104:9",
+      "text_plain": "فِی عَمَدࣲ مُّمَدَّدَةِۭ",
+      "text_tajweed_html": "فِی عَمَد<tajweed class=idghaam_ghunnah>ࣲ مُّ</tajweed>مَدَّدَةِۭ",
+      "rules_count": 1
+    }
+  ]
+}

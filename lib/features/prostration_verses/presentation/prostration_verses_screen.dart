@@ -190,7 +190,7 @@ class _ProstrationVersesScreenState extends State<ProstrationVersesScreen> {
       child: ListView.separated(
         padding: EdgeInsets.fromLTRB(
           horizontalPadding,
-          20 * scale,
+          0,
           horizontalPadding,
           24 * scale,
         ),

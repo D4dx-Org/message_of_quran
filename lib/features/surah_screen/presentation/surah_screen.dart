@@ -15,6 +15,7 @@ import 'package:the_message_of_the_quran/core/models/translation_block_model.dar
 import 'package:the_message_of_the_quran/core/services/database/database_helper.dart';
 import 'package:the_message_of_the_quran/core/services/database/preface_db_helper.dart';
 import 'package:the_message_of_the_quran/core/services/database/tajweed_db_helper.dart';
+import 'package:the_message_of_the_quran/core/services/tajweed_html_service.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
@@ -28,10 +29,12 @@ import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
 import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/core/widgets/scroll_to_top_button.dart';
+import 'package:the_message_of_the_quran/core/widgets/pinch_zoom_view.dart';
 import 'package:the_message_of_the_quran/features/bookmark_screen/presentation/bookmark_conflict_dialog.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/surah_action_dock.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/surah_screen_app_bar.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/cross_reference_sheet.dart';
+import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/show_translation_gate.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/interpretation_note_marker.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_auto_advance.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
@@ -85,6 +88,191 @@ class _SurahBismillahHeader extends StatelessWidget {
   }
 }
 
+/// Bottom-sheet content for the "Jump to Ayah" picker with an ayah-number
+/// search field. Owns its own [TextEditingController] so it is disposed safely
+/// after the sheet's close animation completes.
+class _JumpToAyahSheet extends StatefulWidget {
+  const _JumpToAyahSheet({
+    required this.arabicBlockList,
+    required this.isMalayalam,
+    required this.scrollController,
+    required this.onSelect,
+  });
+
+  final List<ArabicBlockModel> arabicBlockList;
+  final bool isMalayalam;
+  final ScrollController scrollController;
+
+  /// Called with the original block index and the ayah-start number when a row
+  /// is tapped.
+  final void Function(int blockIndex, int ayaStart) onSelect;
+
+  @override
+  State<_JumpToAyahSheet> createState() => _JumpToAyahSheetState();
+}
+
+class _JumpToAyahSheetState extends State<_JumpToAyahSheet> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isMl = widget.isMalayalam;
+    final query = _searchController.text.trim();
+    final typed = int.tryParse(query);
+    // Filter blocks by typed ayah number while preserving each block's original
+    // index so the jump/highlight logic stays correct.
+    final entries = <MapEntry<int, ArabicBlockModel>>[];
+    for (var i = 0; i < widget.arabicBlockList.length; i++) {
+      final block = widget.arabicBlockList[i];
+      if (query.isEmpty) {
+        entries.add(MapEntry(i, block));
+        continue;
+      }
+      final start = block.verseFrom ?? i + 1;
+      final end = block.verseTo ?? i + 1;
+      final matchesRange = typed != null && typed >= start && typed <= end;
+      final matchesText =
+          start.toString().contains(query) || end.toString().contains(query);
+      if (matchesRange || matchesText) {
+        entries.add(MapEntry(i, block));
+      }
+    }
+
+    return Column(
+      children: [
+        // Drag handle
+        Padding(
+          padding: const EdgeInsets.only(top: 10, bottom: 4),
+          child: Container(
+            height: 4,
+            width: 40,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade400,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Text(
+            isMl ? 'ആയത്തിലേക്ക് പോകുക' : 'Jump to Ayah',
+            style: AppTextTheme.localizedLabel(
+              isMalayalam: isMl,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        // Ayah number search field
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+          child: TextField(
+            controller: _searchController,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            onChanged: (_) => setState(() {}),
+            style: AppTextTheme.localizedLabel(
+              isMalayalam: isMl,
+              fontSize: 14,
+            ),
+            decoration: InputDecoration(
+              isDense: true,
+              hintText: isMl ? 'ആയത്ത് തിരയുക' : 'Search ayah',
+              hintStyle: AppTextTheme.localizedLabel(
+                isMalayalam: isMl,
+                fontSize: 14,
+              ),
+              prefixIcon: const Icon(Icons.search, size: 20),
+              suffixIcon: query.isEmpty
+                  ? null
+                  : IconButton(
+                      icon: const Icon(Icons.clear, size: 18),
+                      onPressed: () {
+                        _searchController.clear();
+                        setState(() {});
+                      },
+                    ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 10,
+              ),
+            ),
+          ),
+        ),
+        const Divider(height: 1),
+        Expanded(
+          child: entries.isEmpty
+              ? Center(
+                  child: Text(
+                    isMl ? 'ആയത്ത് കണ്ടെത്തിയില്ല' : 'No ayah found',
+                    style: AppTextTheme.localizedLabel(
+                      isMalayalam: isMl,
+                      fontSize: 14,
+                    ),
+                  ),
+                )
+              : ListView.separated(
+                  controller: widget.scrollController,
+                  itemCount: entries.length,
+                  separatorBuilder: (_, _) =>
+                      const Divider(height: 1, indent: 64),
+                  itemBuilder: (_, listIndex) {
+                    final i = entries[listIndex].key;
+                    final block = entries[listIndex].value;
+                    final start = block.verseFrom ?? i + 1;
+                    final end = block.verseTo ?? i + 1;
+                    final startText = start.toString();
+                    final label = start == end
+                        ? formatAyahReferenceLabel(start, isMalayalam: isMl)
+                        : formatAyahRangeLabel(start, end, isMalayalam: isMl);
+                    return ListTile(
+                      leading: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: AppTheme.appThemePrimary,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          startText,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      title: Text(
+                        label,
+                        style: AppTextTheme.localizedLabel(
+                          isMalayalam: isMl,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      onTap: () {
+                        final ayaStart = block.verseFrom ?? i + 1;
+                        widget.onSelect(i, ayaStart);
+                      },
+                    );
+                  },
+                ),
+        ),
+      ],
+    );
+  }
+}
+
 class SurahScreen extends StatefulWidget {
   /// When set, the screen scrolls to the ayah block with this ayaStart after
   /// the content loads (used from BookmarkScreen).
@@ -131,6 +319,18 @@ class _SurahScreenState extends State<SurahScreen> {
 
   int? _temporarilyHighlightedAyahId;
   Timer? _temporaryAyahHighlightTimer;
+
+  Rect? _sharePositionOriginFor(BuildContext context) {
+    final renderObject = context.findRenderObject();
+    if (renderObject is! RenderBox ||
+        !renderObject.attached ||
+        !renderObject.hasSize ||
+        renderObject.size.isEmpty) {
+      return null;
+    }
+
+    return renderObject.localToGlobal(Offset.zero) & renderObject.size;
+  }
 
   @override
   void didChangeDependencies() {
@@ -1002,6 +1202,22 @@ class _SurahScreenState extends State<SurahScreen> {
     final idx = _findAyahBlockIndex(blocks, ayaStart);
     if (idx < 0 || idx >= _itemKeys.length) return;
 
+    await _animateToBlockIndex(idx, ayaStartForHighlight: ayaStart);
+  }
+
+  /// Precisely scrolls to the block at [idx] and briefly highlights
+  /// [ayaStartForHighlight]. Pre-warms the lazy [SliverList] via an enlarged
+  /// cache window so distant ayahs (e.g. 40, 50, 100) are built before we read
+  /// their EXACT scroll offset from the target's RenderBox — then performs a
+  /// SINGLE smooth animation so the page lands cleanly on the target ayah.
+  Future<void> _animateToBlockIndex(
+    int idx, {
+    required int ayaStartForHighlight,
+  }) async {
+    if (!mounted || !_scrollController.hasClients) return;
+    if (idx < 0 || idx >= _itemKeys.length) return;
+
+    final blocks = _surahProv.arabicBlockList;
     var shouldHighlightTargetAyah = false;
 
     try {
@@ -1047,7 +1263,7 @@ class _SurahScreenState extends State<SurahScreen> {
       );
     } finally {
       if (mounted && shouldHighlightTargetAyah) {
-        _showTemporaryJumpHighlight(ayaStart);
+        _showTemporaryJumpHighlight(ayaStartForHighlight);
       }
       if (mounted && _deepLinkCacheExtent != null) {
         setState(() => _deepLinkCacheExtent = null);
@@ -1075,84 +1291,25 @@ class _SurahScreenState extends State<SurahScreen> {
         minChildSize: 0.35,
         maxChildSize: 0.88,
         expand: false,
-        builder: (_, scrollCtrl) => Column(
-          children: [
-            // Drag handle
-            Padding(
-              padding: const EdgeInsets.only(top: 10, bottom: 4),
-              child: Container(
-                height: 4,
-                width: 40,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade400,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(
-                isMl ? 'ആയത്തിലേക്ക് പോകുക' : 'Jump to Ayah',
-                style: AppTextTheme.localizedLabel(
-                  isMalayalam: isMl,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const Divider(height: 1),
-            Expanded(
-              child: ListView.separated(
-                controller: scrollCtrl,
-                itemCount: arabicBlockList.length,
-                separatorBuilder: (_, _) =>
-                    const Divider(height: 1, indent: 64),
-                itemBuilder: (_, i) {
-                  final block = arabicBlockList[i];
-                  final start = block.verseFrom ?? i + 1;
-                  final end = block.verseTo ?? i + 1;
-                  final startText = start.toString();
-                  final label = start == end
-                      ? formatAyahReferenceLabel(start, isMalayalam: isMl)
-                      : formatAyahRangeLabel(start, end, isMalayalam: isMl);
-                  return ListTile(
-                    leading: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: AppTheme.appThemePrimary,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        startText,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    title: Text(
-                      label,
-                      style: AppTextTheme.localizedLabel(
-                        isMalayalam: isMl,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (!mounted) return;
-                        _ensureAyahVisible(i);
-                      });
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
+        builder: (_, scrollCtrl) => _JumpToAyahSheet(
+          arabicBlockList: arabicBlockList,
+          isMalayalam: isMl,
+          scrollController: scrollCtrl,
+          onSelect: (i, ayaStart) {
+            Navigator.pop(context);
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted) return;
+              // Ayah 1 → scroll to top so the banner expands fully; all other
+              // ayahs → precise cache-warmed jump with a 3s highlight on the
+              // target verse.
+              if (i == 0) {
+                _ensureAyahVisible(0);
+                _showTemporaryJumpHighlight(ayaStart);
+              } else {
+                _animateToBlockIndex(i, ayaStartForHighlight: ayaStart);
+              }
+            });
+          },
         ),
       ),
     );
@@ -1756,7 +1913,7 @@ class _SurahScreenState extends State<SurahScreen> {
             style: linkStyle,
             recognizer: TapGestureRecognizer()
               ..onTap = () =>
-                  CrossReferenceSheet.showParsedReference(context, ref),
+                  CrossReferenceSheet.handleReferenceTap(context, ref),
           ),
         );
       } else {
@@ -1803,7 +1960,7 @@ class _SurahScreenState extends State<SurahScreen> {
           style: linkStyle,
           recognizer: TapGestureRecognizer()
             ..onTap = () =>
-                CrossReferenceSheet.showParsedReference(context, ref),
+                CrossReferenceSheet.handleReferenceTap(context, ref),
         );
       }
       return TextSpan(text: seg.text, style: style);
@@ -1825,6 +1982,7 @@ class _SurahScreenState extends State<SurahScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      barrierColor: kInterpretationSheetBarrierColor,
       constraints: bsMaxWidth != null
           ? BoxConstraints(maxWidth: bsMaxWidth)
           : null,
@@ -2030,21 +2188,29 @@ class _SurahScreenState extends State<SurahScreen> {
                         ),
                       ),
                       // Share
-                      IconButton(
-                        tooltip: 'Share',
-                        onPressed: isLoading
-                            ? null
-                            : () async {
-                                final text = combinedText();
-                                if (text.trim().isNotEmpty) {
-                                  await Share.share(text);
-                                }
-                              },
-                        icon: Icon(
-                          Icons.share_outlined,
-                          color: isLoading
-                              ? Colors.grey[400]
-                              : activeColor,
+                      Builder(
+                        builder: (shareButtonContext) => IconButton(
+                          tooltip: 'Share',
+                          onPressed: isLoading
+                              ? null
+                              : () async {
+                                  final text = combinedText();
+                                  if (text.trim().isNotEmpty) {
+                                    await Share.share(
+                                      text,
+                                      sharePositionOrigin:
+                                          _sharePositionOriginFor(
+                                            shareButtonContext,
+                                          ),
+                                    );
+                                  }
+                                },
+                          icon: Icon(
+                            Icons.share_outlined,
+                            color: isLoading
+                                ? Colors.grey[400]
+                                : activeColor,
+                          ),
                         ),
                       ),
                     ],
@@ -2159,7 +2325,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                 final content = Padding(
                                   padding: EdgeInsets.fromLTRB(
                                     hPad,
-                                    10,
+                                    0,
                                     hPad,
                                     0,
                                   ),
@@ -2184,25 +2350,27 @@ class _SurahScreenState extends State<SurahScreen> {
                                       onHorizontalDragEnd:
                                           _handleContinuousModeSwipe,
                                       child: ResponsiveContentWrapper(
-                                        child: NotificationListener<ScrollNotification>(
-                                          onNotification: _onScrollNotification,
-                                          child: CustomScrollView(
-                                            controller: _scrollController,
-                                            cacheExtent: _deepLinkCacheExtent,
-                                            slivers: [
-                                              if (!useDesktopWebReaderLayout)
-                                                const SurahScreenAppBar()
-                                              else
-                                                const SliverToBoxAdapter(
-                                                  child: SizedBox(height: 12),
-                                                ),
-                                              if (showDecorativeBismillah)
-                                                SliverToBoxAdapter(
-                                                  child: _SurahBismillahHeader(
-                                                    glyphText: controller
-                                                        .currentBismillahGlyph,
+                                        child: PinchZoomView(
+                                          child: NotificationListener<ScrollNotification>(
+                                            onNotification:
+                                                _onScrollNotification,
+                                            child: CustomScrollView(
+                                              controller: _scrollController,
+                                              cacheExtent: _deepLinkCacheExtent,
+                                              slivers: [
+                                                if (!useDesktopWebReaderLayout)
+                                                  const SurahScreenAppBar()
+                                                else
+                                                  const SliverToBoxAdapter(
+                                                    child: SizedBox(height: 12),
                                                   ),
-                                                ),
+                                                if (showDecorativeBismillah)
+                                                  SliverToBoxAdapter(
+                                                    child: _SurahBismillahHeader(
+                                                      glyphText: controller
+                                                          .currentBismillahGlyph,
+                                                    ),
+                                                  ),
                                               SliverList(
                                                 delegate: SliverChildBuilderDelegate(
                                                   (context, index) {
@@ -2291,9 +2459,8 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                                           ctx,
                                                                                         )
                                                                                         .quranJustify;
-                                                                                if (tajweed.enabled &&
-                                                                                    tajweed.downloadComplete) {
-                                                                                  return _TajweedWordRow(
+                                                                                if (tajweed.enabled) {
+                                                                                  return _TajweedHtmlText(
                                                                                     surahNo: surahNumber,
                                                                                     verseFrom: ayaStart,
                                                                                     verseTo: ayaEnd,
@@ -2331,18 +2498,22 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                       ],
                                                                     ),
                                                                   ),
-                                                                if (controller
-                                                                    .translationBlockList
-                                                                    .isNotEmpty)
-                                                                  _buildTranslationBlocks(
-                                                                    context,
-                                                                    controller
-                                                                        .translationBlockList,
-                                                                    ayaStart,
-                                                                    ayaEnd,
-                                                                    surahNumber,
-                                                                    controller,
-                                                                  ),
+                                                                ShowTranslationGate(
+                                                                  hasTranslation:
+                                                                      controller
+                                                                          .translationBlockList
+                                                                          .isNotEmpty,
+                                                                  builder:
+                                                                      (context) =>
+                                                                          _buildTranslationBlocks(
+                                                                            context,
+                                                                            controller.translationBlockList,
+                                                                            ayaStart,
+                                                                            ayaEnd,
+                                                                            surahNumber,
+                                                                            controller,
+                                                                          ),
+                                                                ),
                                                                 Builder(
                                                                   builder: (context) {
                                                                     final isBookmarked =
@@ -2354,8 +2525,6 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                     final actionIconColor = isDarkMode
                                                                         ? Colors.white.withValues(alpha: 0.7)
                                                                         : AppTheme.appIconTheme;
-                                                                    const translationText =
-                                                                        '';
                                                                     return Row(
                                                                       children: [
                                                                         Consumer<
@@ -2447,27 +2616,35 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                                 : actionIconColor,
                                                                           ),
                                                                         ),
-                                                                        IconButton(
-                                                                          tooltip:
-                                                                              'Share',
-                                                                          onPressed: () async {
-                                                                            final surah =
-                                                                                controller.surahList[controller.index];
-                                                                            final shareText =
-                                                                                '${surah.name} – Ayah $ayaStartText\n\n'
-                                                                                '${arabicText.isNotEmpty ? '$arabicText\n\n' : ''}'
-                                                                                '$translationText';
-                                                                            if (shareText.trim().isNotEmpty) {
-                                                                              await Share.share(
-                                                                                shareText,
-                                                                              );
-                                                                            }
-                                                                          },
-                                                                          icon: Icon(
-                                                                            Icons.share_outlined,
-                                                                            color:
-                                                                                actionIconColor,
-                                                                          ),
+                                                                        Builder(
+                                                                          builder:
+                                                                              (
+                                                                                shareButtonContext,
+                                                                              ) =>
+                                                                                  IconButton(
+                                                                                    tooltip:
+                                                                                        'Share',
+                                                                                    onPressed: () async {
+                                                                                      final shareText =
+                                                                                          controller.getAyahText(
+                                                                                            ayaStart,
+                                                                                          );
+                                                                                      if (shareText.trim().isNotEmpty) {
+                                                                                        await Share.share(
+                                                                                          shareText,
+                                                                                          sharePositionOrigin:
+                                                                                              _sharePositionOriginFor(
+                                                                                                shareButtonContext,
+                                                                                              ),
+                                                                                        );
+                                                                                      }
+                                                                                    },
+                                                                                    icon: Icon(
+                                                                                      Icons.share_outlined,
+                                                                                      color:
+                                                                                          actionIconColor,
+                                                                                    ),
+                                                                                  ),
                                                                         ),
                                                                       ],
                                                                     );
@@ -2501,6 +2678,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                               ),
                                             ],
                                           ),
+                                        ),
                                         ),
                                       ),
                                     ),
@@ -2801,13 +2979,103 @@ class _SurahScreenState extends State<SurahScreen> {
   }
 }
 
+// ── Tajweed coloured-HTML text (bundled quran.com data) ──────────────────────
+
+class _TajweedHtmlText extends StatefulWidget {
+  const _TajweedHtmlText({
+    required this.surahNo,
+    required this.verseFrom,
+    required this.verseTo,
+    this.playingAyahId,
+  });
+
+  final int surahNo;
+  final int verseFrom;
+  final int verseTo;
+  final int? playingAyahId;
+
+  @override
+  State<_TajweedHtmlText> createState() => _TajweedHtmlTextState();
+}
+
+class _TajweedHtmlTextState extends State<_TajweedHtmlText> {
+  bool _loaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    TajweedHtmlService.ensureLoaded().then((_) {
+      if (mounted) setState(() => _loaded = true);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final fontProvider = Provider.of<FontSizeChangerProvider>(context);
+    final quranJustify = fontProvider.quranJustify;
+    final baseStyle = AppTextTheme.tajweedArabiStyle(context);
+    // Ayah-end marker keeps the standard reading font; QuranTaha renders the
+    // ﴿﴾ ornamental parentheses as oversized decorative glyphs.
+    final markerStyle = AppTextTheme.surahArabiStyle(context).copyWith(
+      color: Theme.of(context).colorScheme.primary,
+    );
+
+    if (!_loaded) {
+      return SizedBox(
+        height: baseStyle.fontSize ?? 22,
+        child: const Center(
+          child: SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+      );
+    }
+
+    final spans = <InlineSpan>[];
+    for (var ayah = widget.verseFrom; ayah <= widget.verseTo; ayah++) {
+      final html = TajweedHtmlService.displayHtmlFor(widget.surahNo, ayah);
+      if (html == null) continue;
+      final isPlaying = widget.playingAyahId == ayah;
+      final ayahStyle = isPlaying
+          ? baseStyle.copyWith(backgroundColor: AppTheme.appIconTheme.withValues(alpha: 0.15))
+          : baseStyle;
+      spans.addAll(parseTajweedHtml(html, ayahStyle));
+      // Ayah-end marker, matching the Arabic ornamental parentheses used in the
+      // normal Arabic view (U+FD3F ﴿ ... U+FD3E ﴾).
+      spans.add(
+        TextSpan(
+          text: ' \uFD3F${_toArabicNumerals(ayah)}\uFD3E ',
+          style: markerStyle,
+        ),
+      );
+    }
+
+    if (spans.isEmpty) return const SizedBox.shrink();
+
+    return Text.rich(
+      TextSpan(children: spans),
+      textDirection: TextDirection.rtl,
+      textAlign: quranJustify ? TextAlign.justify : TextAlign.start,
+      textHeightBehavior: const TextHeightBehavior(
+        applyHeightToFirstAscent: false,
+        applyHeightToLastDescent: false,
+      ),
+    );
+  }
+}
+
 // ── Tajweed word-image row ────────────────────────────────────────────────────
+// NOTE: Currently unused. The Tajweed feature now renders via _TajweedHtmlText
+// (bundled colour-coded data). Kept temporarily; may be removed later.
 
 class _TajweedWordRow extends StatefulWidget {
   const _TajweedWordRow({
     required this.surahNo,
     required this.verseFrom,
     required this.verseTo,
+    // ignore: unused_element_parameter
     this.playingAyahId,
   });
 
@@ -2867,14 +3135,17 @@ class _TajweedWordRowState extends State<_TajweedWordRow> {
 
   @override
   Widget build(BuildContext context) {
-    final quranJustify = Provider.of<FontSizeChangerProvider>(
-      context,
-    ).quranJustify;
+    final fontProvider = Provider.of<FontSizeChangerProvider>(context);
+    final quranJustify = fontProvider.quranJustify;
+    // Scale the tajweed word images to the user's Qur'an font size so they
+    // track the "Qur'an Font Size" setting like the plain Arabic text does.
+    // 40px was the original fixed height tuned for the default size of 22.
+    final imageHeight = fontProvider.quranFontSize * (40 / 22);
     final words = _words;
     if (words == null) {
-      return const SizedBox(
-        height: 40,
-        child: Center(
+      return SizedBox(
+        height: imageHeight,
+        child: const Center(
           child: SizedBox(
             width: 20,
             height: 20,
@@ -2914,7 +3185,7 @@ class _TajweedWordRowState extends State<_TajweedWordRow> {
           child: localPath != null
               ? Image.file(
                   File(localPath),
-                  height: 40,
+                  height: imageHeight,
                   fit: BoxFit.fitHeight,
                   frameBuilder: isLast
                       ? (ctx, child, frame, wasSynchronouslyLoaded) {
@@ -3006,14 +3277,14 @@ class _AyahNumberBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // U+FD3E ﴾ and U+FD3F ﴿ are the Arabic ornamental parentheses that
+    // U+FD3F ﴿ and U+FD3E ﴾ are the Arabic ornamental parentheses that
     // bracket ayah numbers — exactly matching the reference image style.
     // TextDirection.ltr prevents the bidi algorithm from mirroring the glyphs.
     final badge = Text(
-      '\uFD3E${_toArabicNumerals(number)}\uFD3F',
+      '\uFD3F${_toArabicNumerals(number)}\uFD3E',
       textDirection: TextDirection.ltr,
       style: TextStyle(
-        fontFamily: 'Uthmani',
+        fontFamily: 'Scheherazade',
         fontSize: 20,
         color: highlighted
             ? AppTheme.appIconTheme

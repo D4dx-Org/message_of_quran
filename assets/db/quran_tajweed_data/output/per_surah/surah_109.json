@@ -1,0 +1,41 @@
+{
+  "surah_number": 109,
+  "verses": [
+    {
+      "verse_key": "109:1",
+      "text_plain": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ قُلۡ یَـٰۤأَیُّهَا ٱلۡكَـٰفِرُونَ",
+      "text_tajweed_html": "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ قُلۡ ی<tajweed class=madda_permissible>َـ</tajweed>ٰۤأَیُّهَ<tajweed class=ham_wasl>ا</tajweed> ٱلۡ<tajweed class=madda_normal>ك</tajweed>َـٰف<tajweed class=madda_permissible>ِ</tajweed>رُونَ",
+      "rules_count": 4
+    },
+    {
+      "verse_key": "109:2",
+      "text_plain": "لَاۤ أَعۡبُدُ مَا تَعۡبُدُونَ",
+      "text_tajweed_html": "لَ<tajweed class=madda_permissible>اۤ</tajweed> أَعۡبُدُ مَا تَعۡبُدُ<tajweed class=madda_permissible>و</tajweed>نَ",
+      "rules_count": 2
+    },
+    {
+      "verse_key": "109:3",
+      "text_plain": "وَلَاۤ أَنتُمۡ عَـٰبِدُونَ مَاۤ أَعۡبُدُ",
+      "text_tajweed_html": "وَلَ<tajweed class=madda_permissible>اۤ</tajweed> أَ<tajweed class=ikhpiaa>نتُ</tajweed>مۡ عَ<tajweed class=madda_normal>ـ</tajweed>ٰبِدُونَ م<tajweed class=madda_permissible>َا</tajweed>ۤ أَعۡب<tajweed class=qalaqala>ُ</tajweed>دُ",
+      "rules_count": 5
+    },
+    {
+      "verse_key": "109:4",
+      "text_plain": "وَلَاۤ أَنَا۠ عَابِدࣱ مَّا عَبَدتُّمۡ",
+      "text_tajweed_html": "وَلَ<tajweed class=madda_permissible>اۤ</tajweed> أَنَا۠ عَابِد<tajweed class=idghaam_ghunnah>ࣱ مَّ</tajweed>ا عَبَ<tajweed class=idghaam_mutajanisayn>د</tajweed>تُّمۡ",
+      "rules_count": 3
+    },
+    {
+      "verse_key": "109:5",
+      "text_plain": "وَلَاۤ أَنتُمۡ عَـٰبِدُونَ مَاۤ أَعۡبُدُ",
+      "text_tajweed_html": "وَلَ<tajweed class=madda_permissible>اۤ</tajweed> أَ<tajweed class=ikhpiaa>نتُ</tajweed>مۡ عَ<tajweed class=madda_normal>ـ</tajweed>ٰبِدُونَ م<tajweed class=madda_permissible>َا</tajweed>ۤ أَعۡب<tajweed class=qalaqala>ُ</tajweed>دُ",
+      "rules_count": 5
+    },
+    {
+      "verse_key": "109:6",
+      "text_plain": "لَكُمۡ دِینُكُمۡ وَلِیَ دِینِ",
+      "text_tajweed_html": "لَكُمۡ دِینُكُمۡ وَلِیَ دِ<tajweed class=madda_permissible>ی</tajweed>نِ",
+      "rules_count": 1
+    }
+  ]
+}
