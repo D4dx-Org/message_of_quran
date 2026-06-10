@@ -503,10 +503,11 @@ class _MushafPageViewState extends State<MushafPageView> {
       color: _highlightColor,
     );
 
-    // Render each verse on its own centered line so the layout mirrors the
-    // non-Tajweed QCF page (one ayah per centered line), instead of a single
-    // justified paragraph.
-    final verseLines = <Widget>[];
+    // All verses for this sura-section are merged into a single Text.rich so
+    // the text wraps continuously across lines like a real Mushaf — each verse
+    // immediately follows the previous one's ornament marker without forcing a
+    // new line per verse.
+    final allSpans = <InlineSpan>[];
     for (final aya in ayas) {
       final html = TajweedHtmlService.displayHtmlFor(aya.suraNo, aya.ayaNo);
       if (html == null) continue;
@@ -517,37 +518,25 @@ class _MushafPageViewState extends State<MushafPageView> {
               backgroundColor: _highlightColor.withValues(alpha: 0.15),
             )
           : baseStyle;
-      final spans = <InlineSpan>[
-        ...parseTajweedHtml(html, ayaStyle),
-        TextSpan(
-          text: ' \u06DD${_toArabicNumerals(aya.ayaNo)} ',
-          style: markerStyle,
-        ),
-      ];
-      verseLines.add(
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 2),
-          child: Text.rich(
-            TextSpan(children: spans),
-            textDirection: TextDirection.rtl,
-            textAlign: TextAlign.center,
-            textHeightBehavior: const TextHeightBehavior(
-              applyHeightToFirstAscent: false,
-              applyHeightToLastDescent: false,
-            ),
-          ),
-        ),
-      );
+      allSpans.addAll(parseTajweedHtml(html, ayaStyle));
+      allSpans.add(TextSpan(
+        text: ' \u06DD${_toArabicNumerals(aya.ayaNo)} ',
+        style: markerStyle,
+      ));
     }
 
-    if (verseLines.isEmpty) return const SizedBox.shrink();
+    if (allSpans.isEmpty) return const SizedBox.shrink();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: verseLines,
+      child: Text.rich(
+        TextSpan(children: allSpans),
+        textDirection: TextDirection.rtl,
+        textAlign: TextAlign.start,
+        textHeightBehavior: const TextHeightBehavior(
+          applyHeightToFirstAscent: false,
+          applyHeightToLastDescent: false,
+        ),
       ),
     );
   }
