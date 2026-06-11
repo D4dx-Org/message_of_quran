@@ -10,6 +10,7 @@ import '../services/mushaf_download_manager.dart';
 import '../services/qcf_font_service.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/app_text_theme.dart';
+import '../../../core/theme/theme_provider.dart';
 import '../../../core/services/tajweed_html_service.dart';
 import '../../../core/widgets/pinch_zoom_view.dart';
 import '../../settings_screen/providers/tajweed_provider.dart';
@@ -500,7 +501,7 @@ class _MushafPageViewState extends State<MushafPageView> {
       fontFamily: 'AmiriQuran',
       fontSize: sizes.ayaTextSize,
       height: sizes.lineHeightFactor,
-      color: _highlightColor,
+      color: appBarAccentColor(context),
     );
 
     // All verses for this sura-section are merged into a single Text.rich so

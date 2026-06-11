@@ -3011,7 +3011,7 @@ class _TajweedHtmlTextState extends State<_TajweedHtmlText> {
     // Ayah-end marker keeps the standard reading font; QuranTaha renders the
     // ﴿﴾ ornamental parentheses as oversized decorative glyphs.
     final markerStyle = AppTextTheme.surahArabiStyle(context).copyWith(
-      color: Theme.of(context).colorScheme.primary,
+      color: appBarAccentColor(context),
     );
 
     if (!_loaded) {
