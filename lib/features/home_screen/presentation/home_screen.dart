@@ -434,7 +434,12 @@ class _HomeScreenState extends State<HomeScreen>
     required List<SurahModel> surahList,
   }) {
     final featured = <({SurahModel surah, int? ayahId, String title})>[];
-    for (final chip in SurahChipRow.chips) {
+    for (
+      final chip in SurahChipRow.visibleChips(
+        isMalayalam: isMalayalam,
+        surahList: surahList,
+      )
+    ) {
       final surah = surahList
           .where((item) => item.surahNumber == chip.surahNumber)
           .firstOrNull;

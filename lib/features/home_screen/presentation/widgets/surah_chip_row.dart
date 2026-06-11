@@ -8,29 +8,72 @@ import 'package:the_message_of_the_quran/features/settings_screen/providers/lang
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
+typedef _SurahChipConfig = ({
+  int surahNumber,
+  int? ayahId,
+  String? malayalamFallbackLabel,
+});
+
 class SurahChipRow extends StatelessWidget {
   const SurahChipRow({super.key});
 
-  static const List<({int surahNumber, int? ayahId})> chips = [
-    (surahNumber: 2, ayahId: 255),
-    (surahNumber: 36, ayahId: null),
-    (surahNumber: 67, ayahId: null),
-    (surahNumber: 55, ayahId: null),
-    (surahNumber: 56, ayahId: null),
-    (surahNumber: 18, ayahId: null),
+  static const List<_SurahChipConfig> chips = [
+    (
+      surahNumber: 2,
+      ayahId: 255,
+      malayalamFallbackLabel: 'ആയത്തുൽ കുർസി',
+    ),
+    (surahNumber: 36, ayahId: null, malayalamFallbackLabel: null),
+    (surahNumber: 67, ayahId: null, malayalamFallbackLabel: null),
+    (surahNumber: 55, ayahId: null, malayalamFallbackLabel: null),
+    (surahNumber: 56, ayahId: null, malayalamFallbackLabel: null),
+    (
+      surahNumber: 18,
+      ayahId: null,
+      malayalamFallbackLabel: 'അൽ കഹ്ഫ്',
+    ),
   ];
+
+  static List<_SurahChipConfig> visibleChips({
+    required bool isMalayalam,
+    required List<SurahModel> surahList,
+  }) {
+    if (!isMalayalam) {
+      return chips;
+    }
+
+    return chips.where((chip) {
+      if (chip.ayahId == 255 || chip.malayalamFallbackLabel != null) {
+        return true;
+      }
+
+      final surah = surahList
+          .where((item) => item.surahNumber == chip.surahNumber)
+          .firstOrNull;
+      return surah != null && surah.malayalamName.trim().isNotEmpty;
+    }).toList(growable: false);
+  }
 
   static String _chipLabel({
     required bool isMalayalam,
     required List<SurahModel> surahList,
-    required int surahNumber,
-    int? ayahId,
+    required _SurahChipConfig chip,
   }) {
+    final surahNumber = chip.surahNumber;
+    final ayahId = chip.ayahId;
+
     if (ayahId == 255) return formatAyatulKursiLabel(isMalayalam: isMalayalam);
 
     final surah = surahList
         .where((s) => s.surahNumber == surahNumber)
         .firstOrNull;
+    if (isMalayalam && chip.malayalamFallbackLabel != null) {
+      final hasMalayalamName = surah != null && surah.malayalamName.trim().isNotEmpty;
+      if (!hasMalayalamName) {
+        return chip.malayalamFallbackLabel!;
+      }
+    }
+
     if (surah == null) return 'Surah $surahNumber';
 
     return formatSurahListDisplayText(
@@ -46,21 +89,24 @@ class SurahChipRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     final surahList = context.watch<SurahProvider>().surahList;
+    final visibleItems = visibleChips(
+      isMalayalam: isMalayalam,
+      surahList: surahList,
+    );
 
     return SizedBox(
       height: 40,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: chips.length,
+        itemCount: visibleItems.length,
         separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
-          final chip = chips[index];
+          final chip = visibleItems[index];
           final label = _chipLabel(
             isMalayalam: isMalayalam,
             surahList: surahList,
-            surahNumber: chip.surahNumber,
-            ayahId: chip.ayahId,
+            chip: chip,
           );
 
           return GestureDetector(

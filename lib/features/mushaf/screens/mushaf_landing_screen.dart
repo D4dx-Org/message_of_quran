@@ -9,6 +9,7 @@ import '../../../core/theme/app_text_theme.dart';
 import '../../../core/utils/responsive_helper.dart';
 import '../../../core/widgets/base_screen_layout.dart';
 import '../../../core/widgets/responsive_content_wrapper.dart';
+import '../../settings_screen/providers/language_provider.dart';
 import '../provider/mushaf_landing_provider.dart';
 import '../services/mushaf_download_manager.dart';
 import '../utils/surah_unicode.dart';
@@ -28,11 +29,19 @@ class _SurahMeta {
 }
 
 class _QuickAccessItem {
-  const _QuickAccessItem({required this.label, this.surahNo, this.ayahNo});
+  const _QuickAccessItem({
+    required this.label,
+    this.surahNo,
+    this.ayahNo,
+    this.mlLabel,
+  });
 
   final String label;
   final int? surahNo;
   final int? ayahNo;
+  /// Malayalam label. When non-null, this item is shown in Malayalam mode
+  /// using this string. When null, the item is hidden in Malayalam mode.
+  final String? mlLabel;
 }
 
 const List<int> _revelationOrder = [
@@ -303,12 +312,21 @@ const List<(String juzName, String startingSurah)> _juzMeta = [
 ];
 
 const List<_QuickAccessItem> _quickAccessItems = [
-  _QuickAccessItem(label: 'Ayatul Kursi', surahNo: 2, ayahNo: 255),
+  _QuickAccessItem(
+    label: 'Ayatul Kursi',
+    surahNo: 2,
+    ayahNo: 255,
+    mlLabel: 'ആയത്തുൽ കുർസി',
+  ),
   _QuickAccessItem(label: 'Surah Yaseen', surahNo: 36),
   _QuickAccessItem(label: 'Surah Al-Mulk', surahNo: 67),
   _QuickAccessItem(label: 'Ar-Rahman', surahNo: 55),
   _QuickAccessItem(label: 'Al-Waqi\'ah', surahNo: 56),
-  _QuickAccessItem(label: 'Al-Kahf', surahNo: 18),
+  _QuickAccessItem(
+    label: 'Al-Kahf',
+    surahNo: 18,
+    mlLabel: 'അൽ കഹ്ഫ്',
+  ),
 ];
 
 // ─── Colors ───────────────────────────────────────────────────────────────
@@ -979,24 +997,29 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
     bool isDarkMode,
     bool isLandscape,
   ) {
+    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     final spacing = isLandscape ? 6.0 : 8.0;
+    final items = isMalayalam
+        ? _quickAccessItems.where((e) => e.mlLabel != null).toList()
+        : _quickAccessItems;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: List.generate(_quickAccessItems.length, (index) {
-          final item = _quickAccessItems[index];
+        children: List.generate(items.length, (index) {
+          final item = items[index];
 
           return Padding(
             padding: EdgeInsets.only(
-              right: index == _quickAccessItems.length - 1 ? 0 : spacing,
+              right: index == items.length - 1 ? 0 : spacing,
             ),
             child: _buildQuickAccessChip(
               context,
               item,
               isDarkMode,
               isLandscape,
+              isMalayalam: isMalayalam,
             ),
           );
         }),
@@ -1008,8 +1031,9 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
     BuildContext context,
     _QuickAccessItem item,
     bool isDarkMode,
-    bool isLandscape,
-  ) {
+    bool isLandscape, {
+    bool isMalayalam = false,
+  }) {
     final borderColor = AppTheme.appIconTheme.withValues(alpha: 0.75);
     final chipBg = isDarkMode
         ? AppTheme.appIconTheme.withValues(alpha: 0.12)
@@ -1041,7 +1065,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
             border: Border.all(color: borderColor, width: 1.2),
           ),
           child: Text(
-            item.label,
+            isMalayalam && item.mlLabel != null ? item.mlLabel! : item.label,
             style: TextStyle(
               color: labelColor,
               fontSize: isLandscape ? 11 : 12,
