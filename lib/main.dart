@@ -122,8 +122,8 @@ List<NotificationChannel> _notificationChannels() {
   return [
     NotificationChannel(
       channelKey: 'mushaf_download',
-      channelName: 'Mushaf Download',
-      channelDescription: 'Shows Mushaf font download progress',
+      channelName: "Mus'haf Download",
+      channelDescription: "Shows Mus'haf font download progress",
       importance: NotificationImportance.Low,
       enableVibration: false,
       playSound: false,

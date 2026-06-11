@@ -40,7 +40,7 @@ class StaticFaqData {
               id: 'static_4',
               title: 'What reading modes are available?',
               description:
-                  'The app offers different reading modes including Mushaf view and translation view. You can switch between them based on your preference.',
+                  "The app offers different reading modes including Mus'haf view and translation view. You can switch between them based on your preference.",
               createdBy: 'system',
               createdByRole: 'admin',
               sortOrder: 4,

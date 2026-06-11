@@ -85,8 +85,8 @@ class MushafDownloadManager extends ChangeNotifier {
       content: NotificationContent(
         id: _kMushafDownloadNotificationId,
         channelKey: mushafDownloadChannelKey,
-        title: 'Downloading Mushaf',
-        body: 'Mushaf font pack — $percent%',
+        title: "Downloading Mus'haf",
+        body: "Mus'haf font pack — $percent%",
         notificationLayout: NotificationLayout.ProgressBar,
         progress: percent.toDouble(),
         locked: true,
@@ -101,8 +101,8 @@ class MushafDownloadManager extends ChangeNotifier {
       content: NotificationContent(
         id: _kMushafDownloadNotificationId,
         channelKey: mushafDownloadChannelKey,
-        title: 'Mushaf Download Complete',
-        body: 'The Mushaf font pack has been installed successfully.',
+        title: "Mus'haf Download Complete",
+        body: "The Mus'haf font pack has been installed successfully.",
         notificationLayout: NotificationLayout.Default,
         autoDismissible: true,
       ),

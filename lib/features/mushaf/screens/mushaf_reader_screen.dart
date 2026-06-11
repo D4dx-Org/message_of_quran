@@ -225,7 +225,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
                   ..showSnackBar(
                     const SnackBar(
                       content: Text(
-                        'Mushaf download started. You can continue using the app.',
+                        "Mus'haf download started. You can continue using the app.",
                       ),
                       duration: Duration(seconds: 3),
                     ),
@@ -534,7 +534,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'Mushaf Reader',
+                    "Mus'haf Reader",
                     style: AppTextTheme.popinsDefault(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,

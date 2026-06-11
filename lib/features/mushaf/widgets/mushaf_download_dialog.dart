@@ -80,7 +80,7 @@ class _DownloadDialogBody extends StatelessWidget {
             children: [
               const Text(
                 'Pages 1–2 are available offline.\n'
-                'Download the Mushaf to read the full Quran.',
+                "Download the Mus'haf to read the full Quran.",
                 style: TextStyle(fontSize: 14),
               ),
               if (progress != null) ...[

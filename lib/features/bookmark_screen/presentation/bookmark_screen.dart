@@ -28,7 +28,7 @@ class BookmarkScreen extends StatelessWidget {
   }
 
   String _bookmarkChipLabel(AyahBookmarkModel bookmark) {
-    return _isMushafBookmark(bookmark) ? 'Mushaf Block' : 'Quran Block';
+    return _isMushafBookmark(bookmark) ? "Mus'haf Block" : 'Quran Block';
   }
 
   String _bookmarkTitle(AyahBookmarkModel bookmark) {

@@ -43,7 +43,7 @@ class MushafDownloadRequiredDialog extends StatelessWidget {
       ),
       content: Text(
         'Pages 1–2 are available offline.\n'
-        'Download the Mushaf font pack to read the full Quran.\n\n'
+        "Download the Mus'haf font pack to read the full Quran.\n\n"
         'The download will continue in the background.',
         style: AppTextTheme.popinsDefault(fontSize: 14),
       ),

@@ -95,7 +95,7 @@ class _MainScreenState extends State<MainScreen> {
 
   void _onItemTapped(int index) {
     Provider.of<HomeProvider>(context, listen: false).changeIndex(index);
-    final screenNames = ['Home', 'Bookmarks', 'Mushaf', 'Settings', 'About Us'];
+    final screenNames = ['Home', 'Bookmarks', "Mus'haf", 'Settings', 'About Us'];
     // ignore: deprecated_member_use
     SemanticsService.announce(
       '${screenNames[index.clamp(0, 4)]} screen',
@@ -195,7 +195,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget _buildWebShell(BuildContext context, Widget pageBody, int displayIndex) {
-    const navLabels = ['Home', 'Bookmarks', 'Mushaf', 'Settings', 'About'];
+    const navLabels = ['Home', 'Bookmarks', "Mus'haf", 'Settings', 'About'];
     final theme = Theme.of(context);
     const shellColor = AppTheme.appThemePrimary;
     const accentColor = AppTheme.appBarForegroundColor;
@@ -438,7 +438,7 @@ class _MainScreenState extends State<MainScreen> {
             title: [
               'Home',
               'Bookmarks',
-              'Mushaf',
+              "Mus'haf",
               'Settings',
               isMalayalam
                   ? 'ഞങ്ങളെക്കുറിച്ച്'

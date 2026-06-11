@@ -12,7 +12,7 @@ class FontNotInstalledError implements Exception {
 
   @override
   String toString() => 'Font for page $pageNo is not installed. '
-      'Please download the Mushaf font pack.';
+      "Please download the Mus'haf font pack.";
 }
 
 /// Manages dynamic loading of QCF page fonts via [FontLoader].
