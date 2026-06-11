@@ -4,8 +4,10 @@ populate_malayalam_part3.py
 Parses assets/db/Part III_word.docx and inserts Malayalam Quran data
 for surahs 19-36 into assets/db/quran_asad_combined_nw.sqlite.
 
-Populates tables: malayalam_surahs, malayalam_verses
-(No footnotes in Part III document)
+Populates tables:
+  - malayalam_surahs    (surah metadata + introduction)
+  - malayalam_verses    (verse translations with [^N] footnote markers)
+  - malayalam_footnotes (footnote content, globally unique footnote_number)
 
 Run from repo root:
     python scripts/populate_malayalam_part3.py
@@ -13,11 +15,23 @@ Run from repo root:
 
 import os
 import sys
+import io
 import re
 import shutil
 import sqlite3
+import zipfile
+
+# Ensure UTF-8 output on Windows (Malayalam characters)
+if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
 from docx import Document
+from docx.oxml.ns import qn
+from lxml import etree
+
+# Global footnote numbers for surahs 1-18 end at 1430.
+# Part III footnotes start from 1431 (or fetched dynamically from DB).
+PART3_FN_START = 1431
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -77,14 +91,84 @@ VERSE_TYPO_FIXES: dict = {
 
 
 # ---------------------------------------------------------------------------
-# Helpers
+# Footnote helpers
+# ---------------------------------------------------------------------------
+
+def get_docx_footnotes(docx_path: str) -> dict:
+    """Read all built-in Word footnotes directly from word/footnotes.xml in the docx ZIP.
+
+    Returns {local_id (int): text (str)}.
+    Skips Word's separator entries (IDs -1 and 0).
+    Uses lxml directly to avoid python-docx API limitations.
+    """
+    W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+
+    def wqn(tag):
+        return "{" + W + "}" + tag
+
+    try:
+        with zipfile.ZipFile(docx_path) as z:
+            if "word/footnotes.xml" not in z.namelist():
+                return {}
+            fn_xml = z.read("word/footnotes.xml")
+    except Exception:
+        return {}
+
+    try:
+        root = etree.fromstring(fn_xml)
+    except Exception:
+        return {}
+
+    result = {}
+    for fn in root.findall(wqn("footnote")):
+        fn_id_str = fn.get(wqn("id"))
+        if fn_id_str is None:
+            continue
+        fn_id = int(fn_id_str)
+        if fn_id < 1:  # skip Word's separator entries (-1, 0)
+            continue
+        texts = [t.text for t in fn.iter(wqn("t")) if t.text]
+        text = "".join(texts).strip()
+        # Strip leading footnote-number prefix that Word includes in the text
+        # (e.g. "6. " or "6 " at the start of footnote content)
+        text = re.sub(r"^\d+\.?\s*", "", text).strip()
+        if text:
+            result[fn_id] = text
+    return result
+
+
+def build_verse_text_with_fn_refs(para, local_to_global: dict) -> str:
+    """Reconstruct paragraph text with [^N] markers where footnote references appear.
+
+    Word stores footnote references as <w:footnoteReference w:id="N"/> elements
+    inside a run.  para.text silently drops these — so we iterate runs manually.
+    """
+    parts = []
+    for run in para.runs:
+        if run.text:
+            parts.append(run.text)
+        for fn_ref in run._r.findall(qn("w:footnoteReference")):
+            local_id_str = fn_ref.get(qn("w:id"))
+            if local_id_str is None:
+                continue
+            local_id = int(local_id_str)
+            global_id = local_to_global.get(local_id)
+            if global_id is not None:
+                parts.append(f"[^{global_id}]")
+    return "".join(parts).strip()
+
+
+# ---------------------------------------------------------------------------
+# General helpers
 # ---------------------------------------------------------------------------
 
 def get_font_size(para):
-    """Return font size (pt) of the paragraph's first non-empty run, or
-    fall back to the paragraph style's font size.  Returns None if unknown."""
+    """Return font size (pt) of the paragraph's first run that declares one,
+    whether or not that run contains text (e.g. footnote-reference-only runs
+    still carry font formatting).  Falls back to the paragraph style font
+    size, then returns None."""
     for run in para.runs:
-        if run.text.strip() and run.font.size:
+        if run.font.size:
             return round(run.font.size.pt, 1)
     if para.style and para.style.font.size:
         return round(para.style.font.size.pt, 1)
@@ -99,14 +183,36 @@ def is_normal(para):
 # Parse docx
 # ---------------------------------------------------------------------------
 
-def parse_docx(path):
-    """Return a list of surah dicts with keys:
+def parse_docx(path, fn_start: int):
+    """Parse the Word document and return (surahs, footnotes).
+
+    surahs: list of dicts with keys:
         chapter_number, arabic_name, malayalam_name, english_translation,
         revelation_period, introduction, verses (list of (verse_num, text))
+
+    footnotes: list of (global_id, content) tuples.
     """
     doc = Document(path)
     paras = doc.paragraphs
 
+    # --- Build footnote id mapping ----------------------------------------
+    doc_footnotes = get_docx_footnotes(path)  # {local_id: text}
+    sorted_local_ids = sorted(doc_footnotes.keys())
+    local_to_global = {
+        local_id: fn_start + idx
+        for idx, local_id in enumerate(sorted_local_ids)
+    }
+    footnotes_to_insert = [
+        (local_to_global[lid], doc_footnotes[lid])
+        for lid in sorted_local_ids
+    ]
+    if doc_footnotes:
+        print(f"  Found {len(doc_footnotes)} footnotes in Word document "
+              f"(global IDs {fn_start}\u2013{fn_start + len(doc_footnotes) - 1})")
+    else:
+        print("  No built-in Word footnotes found in document.")
+
+    # --- Parse paragraphs -------------------------------------------------
     surahs = []
     current = None
     surah_number = 18  # will be incremented to 19 on first heading
@@ -117,8 +223,9 @@ def parse_docx(path):
     seen_verse_nums: set = set()
 
     for para in paras:
-        text = para.text.strip()
-        if not text:
+        # Use plain text for non-verse paragraphs (headings, period, intro)
+        plain_text = para.text.strip()
+        if not plain_text:
             continue
 
         sz = get_font_size(para)
@@ -136,7 +243,7 @@ def parse_docx(path):
             current = {
                 "chapter_number": surah_number,
                 "arabic_name": arabic_name,
-                "malayalam_name": text,
+                "malayalam_name": plain_text,
                 "english_translation": english_trans,
                 "revelation_period": "",
                 "intro_parts": [],  # collect 9pt paragraphs
@@ -154,13 +261,13 @@ def parse_docx(path):
         # ---- Revelation period: Normal, ~8 pt ------------------------------
         if normal and sz is not None and abs(sz - 8.0) < 0.6:
             if not current["revelation_period"]:
-                current["revelation_period"] = text
+                current["revelation_period"] = plain_text
                 collecting_intro = True
             continue
 
         # ---- Introduction text: Normal, ~9 pt ------------------------------
         if normal and sz is not None and abs(sz - 9.0) < 0.6 and collecting_intro:
-            current["intro_parts"].append(text)
+            current["intro_parts"].append(plain_text)
             continue
 
         # ---- Arabic verse / Bismillah: Normal, ~16 pt ----------------------
@@ -172,14 +279,38 @@ def parse_docx(path):
         if normal and sz is not None and (
             abs(sz - 9.5) < 0.6 or abs(sz - 12.0) < 0.6
         ):
-            m = VERSE_PREFIX_RE.match(text)
+            # Use marker-aware builder so [^N] refs are embedded in verse text
+            full_text = build_verse_text_with_fn_refs(para, local_to_global)
+            if not full_text:
+                continue
+
+            # Some verse paragraphs have a footnote reference run (no text) as
+            # their very first element — before the "NN:NN" verse-number prefix.
+            # E.g. "[^1431] (36:9) text…"
+            # Peel off any leading [^N] markers so the verse-prefix regex can
+            # match, then re-attach them to the front of the verse body text.
+            LEADING_FN_RE = re.compile(r"^((?:\[\^\d+\]\s*)+)(.*)", re.DOTALL)
+            lm = LEADING_FN_RE.match(full_text)
+            if lm:
+                leading_fn_str = lm.group(1).rstrip()
+                prefix_search_text = lm.group(2)
+            else:
+                leading_fn_str = ""
+                prefix_search_text = full_text
+
+            m = VERSE_PREFIX_RE.match(prefix_search_text)
             if not m:
                 # No verse-number prefix → Bismillah translation or similar; skip
                 continue
 
             raw_surah = int(m.group(1))
             raw_verse = int(m.group(2))
-            verse_text = text[m.end():]
+            # Re-attach leading [^N] markers to the start of the verse body
+            body = prefix_search_text[m.end():]
+            if leading_fn_str:
+                verse_text = leading_fn_str + (" " if body and not body.startswith(" ") else "") + body
+            else:
+                verse_text = body
 
             # Check for combined-verse range suffix (e.g., "34:30-31 text").
             # If present, we will store the text under EVERY verse in the range.
@@ -238,14 +369,28 @@ def parse_docx(path):
         else:
             surah["introduction"] = rev
 
-    return surahs
+    return surahs, footnotes_to_insert
+
+
+# ---------------------------------------------------------------------------
+# Database helpers
+# ---------------------------------------------------------------------------
+
+def get_current_fn_max(db_path: str) -> int:
+    """Return the current maximum footnote_number in malayalam_footnotes."""
+    con = sqlite3.connect(db_path)
+    c = con.cursor()
+    c.execute("SELECT MAX(footnote_number) FROM malayalam_footnotes")
+    row = c.fetchone()
+    con.close()
+    return row[0] if row and row[0] is not None else 0
 
 
 # ---------------------------------------------------------------------------
 # Database insertion
 # ---------------------------------------------------------------------------
 
-def insert_into_db(db_path, surahs):
+def insert_into_db(db_path, surahs, footnotes):
     con = sqlite3.connect(db_path)
     c = con.cursor()
 
@@ -269,15 +414,26 @@ def insert_into_db(db_path, surahs):
     c.execute(
         "DELETE FROM malayalam_surahs WHERE chapter_number >= 19 AND chapter_number <= 36"
     )
+
+    # Remove any existing Part III footnotes (idempotency)
+    if footnotes:
+        first_fn_num = footnotes[0][0]
+        c.execute(
+            "DELETE FROM malayalam_footnotes WHERE footnote_number >= ?",
+            (first_fn_num,),
+        )
+        print(f"Removing existing footnotes with footnote_number >= {first_fn_num} ...")
+
     con.commit()
 
     # Insert surahs and verses
     total_verses = 0
     for surah in surahs:
         cn = surah["chapter_number"]
+        fn_verse_count = sum(1 for _, vt in surah["verses"] if "[^" in vt)
         print(
             f"  Inserting Surah {cn} ({surah['arabic_name']}): "
-            f"{len(surah['verses'])} verses ..."
+            f"{len(surah['verses'])} verses, {fn_verse_count} with footnote refs ..."
         )
 
         c.execute(
@@ -309,6 +465,15 @@ def insert_into_db(db_path, surahs):
             )
         total_verses += len(surah["verses"])
 
+    # Insert footnotes
+    print(f"\nInserting {len(footnotes)} footnotes ...")
+    for global_id, content in footnotes:
+        c.execute(
+            "INSERT INTO malayalam_footnotes (footnote_number, content) "
+            "VALUES (?, ?)",
+            (global_id, content),
+        )
+
     con.commit()
     con.close()
     return total_verses
@@ -327,6 +492,12 @@ def main():
     if not os.path.exists(DB_PATH):
         sys.exit(f"ERROR: Database not found: {DB_PATH}")
 
+    # fn_start is always PART3_FN_START (1431).
+    # The delete inside insert_into_db removes any previously inserted Part III
+    # footnotes before re-inserting, so this is always idempotent.
+    fn_start = PART3_FN_START
+    print(f"Footnote IDs will start at: {fn_start}")
+
     # --- Backup ---
     print(f"\nBacking up DB to: {BACKUP_PATH}")
     shutil.copy2(DB_PATH, BACKUP_PATH)
@@ -339,14 +510,14 @@ def main():
 
     # --- Parse ---
     print("\nParsing Word document ...")
-    surahs = parse_docx(DOCX_PATH)
+    surahs, footnotes = parse_docx(DOCX_PATH, fn_start)
 
-    print(f"Parsed {len(surahs)} surahs:")
+    print(f"\nParsed {len(surahs)} surahs:")
     for s in surahs:
+        fn_count = sum(1 for _, vt in s["verses"] if "[^" in vt)
         print(
             f"  Surah {s['chapter_number']:2d} {s['arabic_name']:<15} "
-            f"| {len(s['verses']):3d} verses "
-            f"| rev_period: {s['revelation_period'][:30]!r}"
+            f"| {len(s['verses']):3d} verses | {fn_count:3d} with fn refs"
         )
 
     if len(surahs) != 18:
@@ -360,7 +531,7 @@ def main():
 
     # --- Insert ---
     print("\nInserting into DB ...")
-    total_verses = insert_into_db(DB_PATH, surahs)
+    total_verses = insert_into_db(DB_PATH, surahs, footnotes)
 
     # --- Verify ---
     print("\n--- Verification ---")
@@ -372,23 +543,33 @@ def main():
     c.execute("SELECT COUNT(*) FROM malayalam_verses")
     verse_count = c.fetchone()[0]
     c.execute("SELECT COUNT(*) FROM malayalam_footnotes")
-    fn_count = c.fetchone()[0]
-
+    fn_total = c.fetchone()[0]
     c.execute(
-        "SELECT chapter_number, arabic_name, malayalam_name FROM malayalam_surahs "
-        "WHERE chapter_number >= 19 ORDER BY chapter_number"
+        "SELECT COUNT(*) FROM malayalam_verses "
+        "WHERE surah_id >= 19 AND malayalam_translation LIKE '%[^%'"
     )
-    new_surahs = c.fetchall()
+    verses_with_fn = c.fetchone()[0]
+
+    # Sample annotated verses in surah 19
+    c.execute(
+        "SELECT verse_number, malayalam_translation FROM malayalam_verses "
+        "WHERE surah_id = 19 AND malayalam_translation LIKE '%[^%' "
+        "ORDER BY verse_number LIMIT 3"
+    )
+    samples = c.fetchall()
     con.close()
 
-    print(f"malayalam_surahs  total rows : {surah_count}")
-    print(f"malayalam_verses  total rows : {verse_count}")
-    print(f"malayalam_footnotes total rows: {fn_count}")
-    print(f"\nNewly inserted surahs ({len(new_surahs)}):")
-    for row in new_surahs:
-        print(f"  ch={row[0]:2d}  arabic={row[1]:<15}  malayalam={row[2][:40]}")
+    print(f"malayalam_surahs  total rows  : {surah_count}")
+    print(f"malayalam_verses  total rows  : {verse_count}")
+    print(f"malayalam_footnotes total rows: {fn_total}")
+    print(f"Part-III verses with [^N]     : {verses_with_fn}")
+    if samples:
+        print("\nSample annotated verses (Surah 19):")
+        for vn, vt in samples:
+            print(f"  v{vn}: {vt[:120]}")
 
-    print(f"\nDone. Inserted {len(surahs)} surahs and {total_verses} verses.")
+    print(f"\nDone. Inserted {len(surahs)} surahs, {total_verses} verses, "
+          f"{len(footnotes)} footnotes.")
 
 
 if __name__ == "__main__":
