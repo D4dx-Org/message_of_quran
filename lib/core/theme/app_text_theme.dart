@@ -248,7 +248,7 @@ class AppTextTheme {
     final fontSize = controller.quranFontSize.toDouble();
     final color = Theme.of(ctx).brightness == Brightness.dark ? null : Colors.black;
     return TextStyle(
-      fontFamily: 'QuranTaha',
+      fontFamily: 'Scheherazade',
       fontSize: fontSize,
       fontWeight: FontWeight.w400,
       height: 2.0,
