@@ -37,6 +37,7 @@ import 'package:the_message_of_the_quran/features/surah_screen/presentation/widg
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/show_translation_gate.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/interpretation_note_marker.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_auto_advance.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/play_settings_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/tajweed_provider.dart';
@@ -403,7 +404,12 @@ class _SurahScreenState extends State<SurahScreen> {
   }
 
   bool _useDesktopWebReaderLayout(BuildContext context) {
-    return kIsWeb;
+    if (!kIsWeb) return false;
+    return MediaQuery.sizeOf(context).width >= 980;
+  }
+
+  bool _useCompactWebReaderLayout(BuildContext context) {
+    return kIsWeb && !_useDesktopWebReaderLayout(context);
   }
 
   Widget _buildDesktopReaderActionButton({
@@ -516,7 +522,7 @@ class _SurahScreenState extends State<SurahScreen> {
                   context: context,
                   assetPath: 'assets/icons/settings-img.png',
                   label: isMalayalam ? 'സെറ്റിംഗ്സ്' : 'Settings',
-                  onPressed: () => _navigateToMainTab(3),
+                  onPressed: _openSettingsFromSurah,
                 ),
                 if (_hasPreface)
                   _buildDesktopReaderActionButton(
@@ -855,6 +861,21 @@ class _SurahScreenState extends State<SurahScreen> {
     await Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => const MainScreen()),
       (route) => false,
+    );
+  }
+
+  Future<void> _openSettingsFromSurah() async {
+    if (!mounted) return;
+
+    _saveLastRead();
+    await context.read<AudioProvider>().stopAudio();
+
+    if (!mounted) return;
+
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => const SettingsScreen(showStandaloneBackAppBar: true),
+      ),
     );
   }
 
@@ -2230,6 +2251,7 @@ class _SurahScreenState extends State<SurahScreen> {
   Widget build(BuildContext context) {
     final controller = Provider.of<SurahProvider>(context);
     final useDesktopWebReaderLayout = _useDesktopWebReaderLayout(context);
+    final useCompactWebReaderLayout = _useCompactWebReaderLayout(context);
     final rootBottomInset = MediaQuery.viewPaddingOf(context).bottom;
     final actionDockBottomPadding = resolveSurahActionDockBottomPadding(
       rootBottomInset: rootBottomInset,
@@ -2237,7 +2259,8 @@ class _SurahScreenState extends State<SurahScreen> {
     final actionDockClearance = resolveSurahActionDockClearance(
       rootBottomInset: rootBottomInset,
     );
-    final readerBottomClearance = useDesktopWebReaderLayout
+    final readerBottomClearance =
+        useDesktopWebReaderLayout || useCompactWebReaderLayout
         ? 28.0
         : actionDockClearance;
 
@@ -2250,10 +2273,10 @@ class _SurahScreenState extends State<SurahScreen> {
         }
       },
       child: BaseScreenLayout(
-        topBorderRadius: useDesktopWebReaderLayout
+        topBorderRadius: kIsWeb
             ? AppTheme.desktopContentCardRadius
             : 40,
-        bottomBorderRadius: useDesktopWebReaderLayout
+        bottomBorderRadius: kIsWeb
             ? AppTheme.desktopContentCardRadius
             : 0,
         appBar: CommonAppBar.appBar(
@@ -2355,7 +2378,17 @@ class _SurahScreenState extends State<SurahScreen> {
                                               controller: _scrollController,
                                               cacheExtent: _deepLinkCacheExtent,
                                               slivers: [
-                                                if (!useDesktopWebReaderLayout)
+                                                if (useCompactWebReaderLayout)
+                                                  SliverToBoxAdapter(
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.only(bottom: 12),
+                                                      child: _buildDesktopReaderHeader(
+                                                        context,
+                                                        controller,
+                                                      ),
+                                                    ),
+                                                  )
+                                                else if (!useDesktopWebReaderLayout)
                                                   const SurahScreenAppBar()
                                                 else
                                                   const SliverToBoxAdapter(
@@ -2686,7 +2719,9 @@ class _SurahScreenState extends State<SurahScreen> {
                               },
                             ),
                     ),
-                    if (controller.arabicBlockList.isNotEmpty && !useDesktopWebReaderLayout)
+                    if (controller.arabicBlockList.isNotEmpty &&
+                        !useDesktopWebReaderLayout &&
+                        !useCompactWebReaderLayout)
                       SurahActionDock(
                         visible: _showActionDock,
                         bottomPadding: actionDockBottomPadding,
@@ -2696,7 +2731,7 @@ class _SurahScreenState extends State<SurahScreen> {
                           _showJumpTo(context, _surahProv.arabicBlockList);
                         },
                         onPlayFromBeginningPressed: _restartSurahPlayback,
-                        onSettingsPressed: () => _navigateToMainTab(3),
+                        onSettingsPressed: _openSettingsFromSurah,
                       ),
                   ],
                 ),

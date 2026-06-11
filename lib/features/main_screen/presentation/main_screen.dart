@@ -12,6 +12,7 @@ import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper
 import 'package:the_message_of_the_quran/features/about_screen/presentation/about_screen.dart';
 import 'package:the_message_of_the_quran/features/bookmark_screen/presentation/bookmark_screen.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/home_screen.dart';
+import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_screen_svg.dart';
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/mushaf/screens/mushaf_landing_screen.dart';
 import 'package:the_message_of_the_quran/features/search_screen/presentation/widgets/surah_quick_search.dart';
@@ -233,10 +234,70 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  Widget _buildWebSearchButton({
+    required BuildContext context,
+    required Color accentColor,
+    bool compact = false,
+  }) {
+    final iconColor = accentColor.withValues(alpha: 0.78);
+    final textColor = accentColor.withValues(alpha: 0.90);
+
+    return Semantics(
+      button: true,
+      label: 'Search navigation item',
+      child: InkWell(
+        onTap: () => showSurahQuickSearchDialog(context),
+        mouseCursor: SystemMouseCursors.click,
+        borderRadius: BorderRadius.circular(compact ? 16 : 18),
+        hoverColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        splashColor: accentColor.withValues(alpha: 0.10),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+          padding: EdgeInsets.symmetric(
+            horizontal: compact ? 8 : 14,
+            vertical: compact ? 3 : 10,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(compact ? 16 : 18),
+            border: Border.all(color: Colors.transparent),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              HomeScreenSvg(
+                icon: 'search',
+                color: iconColor,
+                width: _navItemSize(0) * (compact ? 0.72 : 0.95),
+                height: _navItemSize(0) * (compact ? 0.72 : 0.95),
+              ),
+              SizedBox(height: compact ? 2 : 8),
+              Text(
+                'Search',
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: compact ? 10.5 : 13.5,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              SizedBox(height: compact ? 2 : 8),
+              SizedBox(height: compact ? 1.5 : 2.5),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildWebToolbarActions(BuildContext context, int displayIndex) {
     final screenWidth = MediaQuery.sizeOf(context).width;
-    final isScrollableToolbar = screenWidth < 900;
+    final isScrollableToolbar = screenWidth < 640;
     final navMaxWidth = (screenWidth * 0.24).clamp(180.0, 320.0).toDouble();
+    final scrollableToolbarViewportWidth = (screenWidth * 0.55)
+        .clamp(190.0, 220.0)
+        .toDouble();
     const accentColor = AppTheme.appBarForegroundColor;
 
     final navRow = Row(
@@ -256,12 +317,10 @@ class _MainScreenState extends State<MainScreen> {
     final trailingActions = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        IconButton(
-          icon: const Icon(Icons.search, color: Colors.white),
-          tooltip: 'Search',
-          padding: EdgeInsets.zero,
-          visualDensity: VisualDensity.compact,
-          onPressed: () => showSurahQuickSearchDialog(context),
+        _buildWebSearchButton(
+          context: context,
+          accentColor: accentColor,
+          compact: true,
         ),
         const SizedBox(width: 8),
         const AppBarLanguageButton(),
@@ -271,15 +330,18 @@ class _MainScreenState extends State<MainScreen> {
     if (isScrollableToolbar) {
       return Padding(
         padding: const EdgeInsets.only(right: 8),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              navRow,
-              const SizedBox(width: 6),
-              trailingActions,
-            ],
+        child: SizedBox(
+          width: scrollableToolbarViewportWidth,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                navRow,
+                const SizedBox(width: 6),
+                trailingActions,
+              ],
+            ),
           ),
         ),
       );

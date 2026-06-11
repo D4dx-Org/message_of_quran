@@ -89,7 +89,7 @@ class CommonAppBar {
             const AppBarLanguageButton(),
             const SizedBox(width: 8),
             IconButton(
-              icon: const Icon(Icons.search, color: Colors.white),
+              icon: const HomeScreenSvg(icon: 'search', color: Colors.white),
               tooltip: 'Search',
               padding: EdgeInsets.zero,
               visualDensity: VisualDensity.compact,
