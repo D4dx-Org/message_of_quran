@@ -381,6 +381,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(_handleTabChanged);
     _p = MushafLandingProvider();
     _downloadManager.addListener(_onDownloadStateChanged);
   }
@@ -389,9 +390,43 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
   void dispose() {
     _downloadBannerTimer?.cancel();
     _downloadManager.removeListener(_onDownloadStateChanged);
+    _tabController.removeListener(_handleTabChanged);
     _tabController.dispose();
     _p.dispose();
     super.dispose();
+  }
+
+  void _handleTabChanged() {
+    if (_tabController.indexIsChanging || !mounted) return;
+    setState(() {});
+  }
+
+  Widget _buildSelectedTabContent(
+    BuildContext context,
+    bool isDarkMode, {
+    bool useInnerScroll = false,
+  }) {
+    switch (_tabController.index) {
+      case 1:
+        return _buildJuzTab(
+          context,
+          isDarkMode,
+          useInnerScroll: useInnerScroll,
+        );
+      case 2:
+        return _buildRevelationTab(
+          context,
+          isDarkMode,
+          useInnerScroll: useInnerScroll,
+        );
+      case 0:
+      default:
+        return _buildSurahTab(
+          context,
+          isDarkMode,
+          useInnerScroll: useInnerScroll,
+        );
+    }
   }
 
   void _onDownloadStateChanged() {
@@ -653,42 +688,27 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
     }
 
     if (isLandscape) {
-      return NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) => [
-          SliverToBoxAdapter(
-            child: _buildRecentlyReadSection(context, isDarkMode, isLandscape),
-          ),
-          SliverToBoxAdapter(
-            child: _buildTabBar(context, isDarkMode, isLandscape),
-          ),
-        ],
-        body: TabBarView(
-          controller: _tabController,
+      return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSurahTab(context, isDarkMode),
-            _buildJuzTab(context, isDarkMode),
-            _buildRevelationTab(context, isDarkMode),
+            _buildRecentlyReadSection(context, isDarkMode, isLandscape),
+            _buildTabBar(context, isDarkMode, isLandscape),
+            _buildSelectedTabContent(context, isDarkMode),
           ],
         ),
       );
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildRecentlyReadSection(context, isDarkMode, isLandscape),
-        _buildTabBar(context, isDarkMode, isLandscape),
-        Expanded(
-          child: TabBarView(
-            controller: _tabController,
-            children: [
-              _buildSurahTab(context, isDarkMode),
-              _buildJuzTab(context, isDarkMode),
-              _buildRevelationTab(context, isDarkMode),
-            ],
-          ),
-        ),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildRecentlyReadSection(context, isDarkMode, isLandscape),
+          _buildTabBar(context, isDarkMode, isLandscape),
+          _buildSelectedTabContent(context, isDarkMode),
+        ],
+      ),
     );
   }
 
@@ -825,42 +845,46 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
           const SizedBox(height: 10),
           _buildTabBar(context, isDarkMode, useTwoColumns),
           const SizedBox(height: 8),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildSurahTab(context, isDarkMode),
-                _buildJuzTab(context, isDarkMode),
-                _buildRevelationTab(context, isDarkMode),
-              ],
-            ),
-          ),
+          if (useTwoColumns)
+            Expanded(
+              child: _buildSelectedTabContent(
+                context,
+                isDarkMode,
+                useInnerScroll: true,
+              ),
+            )
+          else
+            _buildSelectedTabContent(context, isDarkMode),
         ],
       ),
     );
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
-      child: useTwoColumns
-          ? Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: 320,
-                  child: SingleChildScrollView(child: overviewPanel),
-                ),
-                const SizedBox(width: 24),
-                Expanded(child: browserPanel),
-              ],
-            )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                overviewPanel,
-                const SizedBox(height: 24),
-                Expanded(child: browserPanel),
-              ],
-            ),
+    if (useTwoColumns) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(width: 320, child: overviewPanel),
+            const SizedBox(width: 24),
+            Expanded(child: browserPanel),
+          ],
+        ),
+      );
+    }
+
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            overviewPanel,
+            const SizedBox(height: 24),
+            browserPanel,
+          ],
+        ),
+      ),
     );
   }
 
@@ -1187,85 +1211,115 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
 
   // ─── Surah Tab ────────────────────────────────────────────────────────────
 
-  Widget _buildSurahTab(BuildContext context, bool isDarkMode) {
+  Widget _buildSurahTab(
+    BuildContext context,
+    bool isDarkMode, {
+    bool useInnerScroll = false,
+  }) {
     final surahs = _p.sortAscending ? _surahMeta : _surahMeta.reversed.toList();
     final sortLabelColor = isDarkMode ? Colors.white54 : Colors.black45;
     final sortStatusColor = isDarkMode ? sortLabelColor : _kPrimaryColor;
 
-    return Column(
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: ResponsiveHelper.horizontalPadding(context),
-            vertical: 0,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              GestureDetector(
-                onTap: _p.toggleSort,
-                child: Row(
-                  children: [
-                    Text(
-                      'SORT BY: ',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: sortLabelColor,
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                    Text(
-                      _p.sortAscending ? 'ASCENDING' : 'DESCENDING',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: sortStatusColor,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Icon(
-                      _p.sortAscending
-                          ? Icons.keyboard_arrow_up
-                          : Icons.keyboard_arrow_down,
-                      size: 16,
-                      color: sortStatusColor,
-                    ),
-                  ],
+    final sortRow = Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: ResponsiveHelper.horizontalPadding(context),
+        vertical: 0,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          GestureDetector(
+            onTap: _p.toggleSort,
+            child: Row(
+              children: [
+                Text(
+                  'SORT BY: ',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: sortLabelColor,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.5,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: ResponsiveContentWrapper(
-            child: ListView.builder(
-              padding: EdgeInsets.fromLTRB(
-                ResponsiveHelper.horizontalPadding(context),
-                0,
-                ResponsiveHelper.horizontalPadding(context),
-                0,
-              ),
-              itemCount: surahs.length,
-              itemBuilder: (context, i) =>
-                  _buildSurahCard(context, surahs[i], isDarkMode),
+                Text(
+                  _p.sortAscending ? 'ASCENDING' : 'DESCENDING',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: sortStatusColor,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Icon(
+                  _p.sortAscending
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
+                  size: 16,
+                  color: sortStatusColor,
+                ),
+              ],
             ),
           ),
+        ],
+      ),
+    );
+
+    final surahList = ListView.builder(
+      shrinkWrap: !useInnerScroll,
+      physics: useInnerScroll
+          ? null
+          : const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.fromLTRB(
+        ResponsiveHelper.horizontalPadding(context),
+        0,
+        ResponsiveHelper.horizontalPadding(context),
+        0,
+      ),
+      itemCount: surahs.length,
+      itemBuilder: (context, i) =>
+          _buildSurahCard(context, surahs[i], isDarkMode),
+    );
+
+    if (useInnerScroll) {
+      return ResponsiveContentWrapper(
+        child: Column(
+          children: [
+            sortRow,
+            Expanded(child: surahList),
+          ],
         ),
-      ],
+      );
+    }
+
+    return ResponsiveContentWrapper(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          sortRow,
+          surahList,
+        ],
+      ),
     );
   }
 
   // ─── Juz Tab ──────────────────────────────────────────────────────────────
 
-  Widget _buildJuzTab(BuildContext context, bool isDarkMode) {
+  Widget _buildJuzTab(
+    BuildContext context,
+    bool isDarkMode, {
+    bool useInnerScroll = false,
+  }) {
     final bottomPadding =
         MediaQuery.of(context).padding.bottom + _embeddedBottomNavOffset + 16;
 
     final hPad = ResponsiveHelper.horizontalPadding(context);
     return ResponsiveContentWrapper(
       child: ListView.builder(
+        shrinkWrap: !useInnerScroll,
+        physics: useInnerScroll
+            ? null
+            : const NeverScrollableScrollPhysics(),
         padding: EdgeInsets.fromLTRB(hPad, 8, hPad, bottomPadding),
         itemCount: 30,
         itemBuilder: (context, i) {
@@ -1289,7 +1343,11 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
 
   // ─── Revelation Tab ───────────────────────────────────────────────────────
 
-  Widget _buildRevelationTab(BuildContext context, bool isDarkMode) {
+  Widget _buildRevelationTab(
+    BuildContext context,
+    bool isDarkMode, {
+    bool useInnerScroll = false,
+  }) {
     final bottomPadding =
         MediaQuery.of(context).padding.bottom + _embeddedBottomNavOffset + 16;
     final surahs = <_SurahMeta>[];
@@ -1300,6 +1358,10 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
     final hPad = ResponsiveHelper.horizontalPadding(context);
     return ResponsiveContentWrapper(
       child: ListView.builder(
+        shrinkWrap: !useInnerScroll,
+        physics: useInnerScroll
+            ? null
+            : const NeverScrollableScrollPhysics(),
         padding: EdgeInsets.fromLTRB(hPad, 8, hPad, bottomPadding),
         itemCount: surahs.length,
         itemBuilder: (context, i) => _buildSurahCard(

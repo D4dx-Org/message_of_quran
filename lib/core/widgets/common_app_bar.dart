@@ -44,7 +44,12 @@ class CommonAppBar {
   }
 
   /// Primary-themed app bar for the home screen matching the current brand.
-  static PreferredSizeWidget homeAppBar(BuildContext ctx) {
+  static PreferredSizeWidget homeAppBar(
+    BuildContext ctx, {
+    bool showOrnament = true,
+    List<Widget>? actions,
+    PreferredSizeWidget? bottom,
+  }) {
     final scale = ResponsiveHelper.scaleFactor(ctx);
     final ornamentTop = -48.0 * scale;
     final ornamentOverflow = 75.0 * scale;
@@ -55,39 +60,44 @@ class CommonAppBar {
       backgroundColor: AppTheme.appThemePrimary,
       elevation: 0,
       clipBehavior: Clip.none,
-      flexibleSpace: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          PositionedDirectional(
-            top: ornamentTop,
-            end: -ornamentOverflow,
-            child: Image.asset(
-              'assets/images/home_side_image.png',
-              width: ornamentWidth,
-              height: ornamentHeight,
-              fit: BoxFit.contain,
-              color: AppTheme.appThemeRawChips,
-              colorBlendMode: BlendMode.srcIn,
-            ),
-          ),
-        ],
-      ),
+      flexibleSpace: showOrnament
+          ? Stack(
+              clipBehavior: Clip.none,
+              children: [
+                PositionedDirectional(
+                  top: ornamentTop,
+                  end: -ornamentOverflow,
+                  child: Image.asset(
+                    'assets/images/home_side_image.png',
+                    width: ornamentWidth,
+                    height: ornamentHeight,
+                    fit: BoxFit.contain,
+                    color: AppTheme.appThemeRawChips,
+                    colorBlendMode: BlendMode.srcIn,
+                  ),
+                ),
+              ],
+            )
+          : null,
       titleSpacing: 4 * scale,
       title: _brandLogo(scale),
       centerTitle: false,
       leading: Builder(builder: (context) => _drawerMenuButton(context)),
-      actions: [
-        const AppBarLanguageButton(),
-        const SizedBox(width: 8),
-        IconButton(
-          icon: const Icon(Icons.search, color: Colors.white),
-          tooltip: 'Search',
-          padding: EdgeInsets.zero,
-          visualDensity: VisualDensity.compact,
-          onPressed: () => showSurahQuickSearchDialog(ctx),
-        ),
-        const SizedBox(width: 8),
-      ],
+      actions:
+          actions ??
+          [
+            const AppBarLanguageButton(),
+            const SizedBox(width: 8),
+            IconButton(
+              icon: const Icon(Icons.search, color: Colors.white),
+              tooltip: 'Search',
+              padding: EdgeInsets.zero,
+              visualDensity: VisualDensity.compact,
+              onPressed: () => showSurahQuickSearchDialog(ctx),
+            ),
+            const SizedBox(width: 8),
+          ],
+      bottom: bottom,
     );
   }
 

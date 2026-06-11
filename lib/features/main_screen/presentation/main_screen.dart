@@ -156,6 +156,7 @@ class _MainScreenState extends State<MainScreen> {
     required String label,
     required int selectedIndex,
     required Color accentColor,
+    bool compact = false,
   }) {
     final isSelected = pageIndex == selectedIndex;
     final isHovered = kIsWeb && _hoveredWebNavItems.contains(pageIndex);
@@ -177,17 +178,20 @@ class _MainScreenState extends State<MainScreen> {
         onTap: () => _onItemTapped(pageIndex),
         onHover: (hovered) => _setWebNavHovered(pageIndex, hovered),
         mouseCursor: SystemMouseCursors.click,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(compact ? 16 : 18),
         hoverColor: Colors.transparent,
         highlightColor: Colors.transparent,
         splashColor: accentColor.withValues(alpha: 0.10),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
           curve: Curves.easeOut,
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          padding: EdgeInsets.symmetric(
+            horizontal: compact ? 8 : 14,
+            vertical: compact ? 3 : 10,
+          ),
           decoration: BoxDecoration(
             color: showHoverBox ? hoverBackgroundColor : Colors.transparent,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(compact ? 16 : 18),
             border: Border.all(
               color: showHoverBox ? hoverBorderColor : Colors.transparent,
             ),
@@ -198,25 +202,25 @@ class _MainScreenState extends State<MainScreen> {
               _buildNavItemIcon(
                 index: pageIndex,
                 color: iconColor,
-                size: _navItemSize(pageIndex) * 0.95,
+                size: _navItemSize(pageIndex) * (compact ? 0.72 : 0.95),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: compact ? 2 : 8),
               Text(
                 label,
                 style: TextStyle(
                   color: textColor,
-                  fontSize: 13.5,
+                  fontSize: compact ? 10.5 : 13.5,
                   fontWeight: isSelected || isHovered
                       ? FontWeight.w700
                       : FontWeight.w500,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: compact ? 2 : 8),
               AnimatedContainer(
                 duration: const Duration(milliseconds: 180),
                 curve: Curves.easeOut,
-                height: 2.5,
-                width: isSelected ? 28 : 0,
+                height: compact ? 1.5 : 2.5,
+                width: isSelected ? (compact ? 18 : 28) : 0,
                 decoration: BoxDecoration(
                   color: accentColor,
                   borderRadius: BorderRadius.circular(999),
@@ -225,6 +229,77 @@ class _MainScreenState extends State<MainScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildWebToolbarActions(BuildContext context, int displayIndex) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final isScrollableToolbar = screenWidth < 900;
+    final navMaxWidth = (screenWidth * 0.24).clamp(180.0, 320.0).toDouble();
+    const accentColor = AppTheme.appBarForegroundColor;
+
+    final navRow = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(
+        _webNavItems.length,
+        (index) => _buildWebNavButton(
+          pageIndex: _webNavItems[index].pageIndex,
+          label: _webNavItems[index].label,
+          selectedIndex: displayIndex,
+          accentColor: accentColor,
+          compact: true,
+        ),
+      ),
+    );
+
+    final trailingActions = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.search, color: Colors.white),
+          tooltip: 'Search',
+          padding: EdgeInsets.zero,
+          visualDensity: VisualDensity.compact,
+          onPressed: () => showSurahQuickSearchDialog(context),
+        ),
+        const SizedBox(width: 8),
+        const AppBarLanguageButton(),
+      ],
+    );
+
+    if (isScrollableToolbar) {
+      return Padding(
+        padding: const EdgeInsets.only(right: 8),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              navRow,
+              const SizedBox(width: 6),
+              trailingActions,
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: navMaxWidth),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: navRow,
+            ),
+          ),
+          const SizedBox(width: 6),
+          trailingActions,
+        ],
       ),
     );
   }
@@ -241,7 +316,7 @@ class _MainScreenState extends State<MainScreen> {
     const headerAccent = AppTheme.appThemePrimary;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
       child: ResponsiveContentWrapper(
         maxWidth: _webShellMaxWidth,
         child: Align(
@@ -284,10 +359,6 @@ class _MainScreenState extends State<MainScreen> {
     bool isMalayalam,
   ) {
     final theme = Theme.of(context);
-    const shellColor = AppTheme.appThemePrimary;
-    const accentColor = AppTheme.appBarForegroundColor;
-    final outlineColor = Colors.black.withValues(alpha: 0.10);
-    final actionSurface = accentColor.withValues(alpha: 0.10);
 
     return PopScope(
       canPop: displayIndex == 0,
@@ -297,205 +368,20 @@ class _MainScreenState extends State<MainScreen> {
       child: Scaffold(
         key: _scaffoldKey,
         backgroundColor: theme.scaffoldBackgroundColor,
+        appBar: CommonAppBar.homeAppBar(
+          context,
+          showOrnament: false,
+          actions: [_buildWebToolbarActions(context, displayIndex)],
+        ),
         drawer: const CommonDrawer(),
         body: Column(
           children: [
-            SafeArea(
-              bottom: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
-                child: ResponsiveContentWrapper(
-                  maxWidth: _webShellMaxWidth,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: shellColor,
-                      borderRadius: BorderRadius.circular(26),
-                      boxShadow: [
-                        BoxShadow(
-                          color: outlineColor,
-                          blurRadius: 22,
-                          offset: const Offset(0, 10),
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 16,
-                      ),
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          final isCompactShell = constraints.maxWidth < 980;
-                          final hideHeaderLogo = constraints.maxWidth < 720;
-
-                          Widget buildMenuButton() {
-                            return Builder(
-                              builder: (context) => DecoratedBox(
-                                decoration: BoxDecoration(
-                                  color: actionSurface,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: accentColor.withValues(alpha: 0.18),
-                                  ),
-                                ),
-                                child: IconButton(
-                                  tooltip: 'Open menu',
-                                  onPressed: () =>
-                                      Scaffold.of(context).openDrawer(),
-                                  icon: const Icon(
-                                    Icons.menu,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            );
-                          }
-
-                          Widget buildSearchButton() {
-                            return DecoratedBox(
-                              decoration: BoxDecoration(
-                                color: actionSurface,
-                                borderRadius: BorderRadius.circular(999),
-                                border: Border.all(
-                                  color: accentColor.withValues(alpha: 0.18),
-                                ),
-                              ),
-                              child: IconButton(
-                                tooltip: 'Search',
-                                onPressed: () =>
-                                    showSurahQuickSearchDialog(context),
-                                icon: const Icon(
-                                  Icons.search,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            );
-                          }
-
-                          Widget buildLeadingGroup() {
-                            return Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                buildMenuButton(),
-                                const SizedBox(width: 16),
-                                Image.asset(
-                                  'assets/images/Group-logo.png',
-                                  height: 40,
-                                  fit: BoxFit.contain,
-                                  semanticLabel: 'Quran Asad Malayalam logo',
-                                ),
-                              ],
-                            );
-                          }
-
-                          Widget buildNavScroller({
-                            required Alignment alignment,
-                          }) {
-                            return LayoutBuilder(
-                              builder: (context, constraints) {
-                                final navRow = Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: List.generate(
-                                    _webNavItems.length,
-                                    (index) => _buildWebNavButton(
-                                      pageIndex: _webNavItems[index].pageIndex,
-                                      label: _webNavItems[index].label,
-                                      selectedIndex: displayIndex == 2
-                                          ? 0
-                                          : displayIndex,
-                                      accentColor: accentColor,
-                                    ),
-                                  ),
-                                );
-
-                                return SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                      minWidth: constraints.maxWidth,
-                                    ),
-                                    child: Align(
-                                      alignment: alignment,
-                                      child: navRow,
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
-                          }
-
-                          Widget buildTrailingCluster({required bool compact}) {
-                            return Row(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Expanded(
-                                  child: buildNavScroller(
-                                    alignment: Alignment.centerRight,
-                                  ),
-                                ),
-                                SizedBox(width: compact ? 8 : 12),
-                                buildSearchButton(),
-                                const SizedBox(width: 12),
-                                const AppBarLanguageButton(),
-                              ],
-                            );
-                          }
-
-                          if (isCompactShell) {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    buildMenuButton(),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: buildTrailingCluster(
-                                        compact: true,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                if (!hideHeaderLogo) ...[
-                                  const SizedBox(height: 14),
-                                  Image.asset(
-                                    'assets/images/Group-logo.png',
-                                    height: 34,
-                                    fit: BoxFit.contain,
-                                    semanticLabel: 'Quran Asad Malayalam logo',
-                                  ),
-                                ],
-                              ],
-                            );
-                          }
-
-                          return Row(
-                            children: [
-                              Expanded(
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: buildLeadingGroup(),
-                                ),
-                              ),
-                              const SizedBox(width: 24),
-                              Expanded(
-                                flex: 3,
-                                child: buildTrailingCluster(compact: false),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ),
+            if (displayIndex == 2)
+              _buildWebReadModeToggle(
+                context: context,
+                displayIndex: displayIndex,
+                isMalayalam: isMalayalam,
               ),
-            ),
-            _buildWebReadModeToggle(
-              context: context,
-              displayIndex: displayIndex,
-              isMalayalam: isMalayalam,
-            ),
             Expanded(child: pageBody),
           ],
         ),
