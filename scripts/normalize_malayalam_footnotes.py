@@ -5,7 +5,7 @@ import sqlite3
 from pathlib import Path
 
 
-DB_PATH = Path(__file__).resolve().parent.parent / 'assets' / 'db' / 'quran_asad_malayalam_nw.db'
+DB_PATH = Path(__file__).resolve().parent.parent / 'assets' / 'db' / 'quran_asad_combined_nw.sqlite'
 MALAYALAM_RANGE = ('\u0D00', '\u0D7F')
 
 
@@ -34,7 +34,7 @@ def update_footnotes(db_path: Path, dry_run: bool) -> tuple[int, list[tuple[int,
     cursor = conn.cursor()
 
     rows = cursor.execute(
-        'SELECT id, footnote_number, content FROM footnotes ORDER BY id'
+        'SELECT id, footnote_number, content FROM malayalam_footnotes ORDER BY id'
     ).fetchall()
 
     changes: list[tuple[int, int, str, str]] = []
@@ -46,7 +46,7 @@ def update_footnotes(db_path: Path, dry_run: bool) -> tuple[int, list[tuple[int,
 
     if not dry_run and changes:
         cursor.executemany(
-            'UPDATE footnotes SET content = ? WHERE id = ?',
+            'UPDATE malayalam_footnotes SET content = ? WHERE id = ?',
             [(normalized, row_id) for row_id, _, _, normalized in changes],
         )
         conn.commit()
