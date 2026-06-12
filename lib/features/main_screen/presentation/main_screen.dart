@@ -294,7 +294,6 @@ class _MainScreenState extends State<MainScreen> {
   Widget _buildWebToolbarActions(BuildContext context, int displayIndex) {
     final screenWidth = MediaQuery.sizeOf(context).width;
     final isScrollableToolbar = screenWidth < 640;
-    final navMaxWidth = (screenWidth * 0.24).clamp(180.0, 320.0).toDouble();
     final scrollableToolbarViewportWidth = (screenWidth * 0.55)
         .clamp(190.0, 220.0)
         .toDouble();
@@ -352,13 +351,7 @@ class _MainScreenState extends State<MainScreen> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: navMaxWidth),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: navRow,
-            ),
-          ),
+          navRow,
           const SizedBox(width: 6),
           trailingActions,
         ],
