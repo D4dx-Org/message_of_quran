@@ -17,7 +17,9 @@ import 'package:the_message_of_the_quran/features/settings_screen/providers/lang
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
+  const SettingsScreen({super.key, this.appBar});
+
+  final PreferredSizeWidget? appBar;
 
   bool _useDesktopWebLayout(BuildContext context) {
     return kIsWeb;
@@ -143,6 +145,7 @@ class SettingsScreen extends StatelessWidget {
     final useDesktopWebLayout = _useDesktopWebLayout(context);
 
     return BaseScreenLayout(
+      appBar: appBar,
       contentCardBoxShadows: const [],
       child: useDesktopWebLayout
           ? _buildDesktopBody(context)

@@ -37,6 +37,7 @@ import 'package:the_message_of_the_quran/features/surah_screen/presentation/widg
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/show_translation_gate.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/interpretation_note_marker.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_auto_advance.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/presentation/reader_settings_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/play_settings_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/tajweed_provider.dart';
@@ -86,6 +87,18 @@ class _SurahBismillahHeader extends StatelessWidget {
       ),
     );
   }
+}
+
+class _ReaderViewportAnchor {
+  const _ReaderViewportAnchor({
+    required this.ayahStart,
+    required this.globalTop,
+    this.scrollOffset,
+  });
+
+  final int ayahStart;
+  final double globalTop;
+  final double? scrollOffset;
 }
 
 /// Bottom-sheet content for the "Jump to Ayah" picker with an ayah-number
@@ -516,7 +529,9 @@ class _SurahScreenState extends State<SurahScreen> {
                   context: context,
                   assetPath: 'assets/icons/settings-img.png',
                   label: isMalayalam ? 'സെറ്റിംഗ്സ്' : 'Settings',
-                  onPressed: () => _navigateToMainTab(3),
+                  onPressed: () {
+                    _openReaderSettings();
+                  },
                 ),
                 if (_hasPreface)
                   _buildDesktopReaderActionButton(
@@ -848,14 +863,140 @@ class _SurahScreenState extends State<SurahScreen> {
   Future<void> _navigateToMainTab(int tabIndex) async {
     if (!mounted) return;
 
-    _saveLastRead();
-    context.read<AudioProvider>().stopAudio();
-    context.read<HomeProvider>().changeIndex(tabIndex);
+    final audioProvider = context.read<AudioProvider>();
+    final homeProvider = context.read<HomeProvider>();
+    final navigator = Navigator.of(context);
 
-    await Navigator.of(context).pushAndRemoveUntil(
+    _saveLastRead();
+    await audioProvider.stopAudio();
+    if (!mounted) return;
+    homeProvider.changeIndex(tabIndex);
+
+    await navigator.pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => const MainScreen()),
       (route) => false,
     );
+  }
+
+  _ReaderViewportAnchor? _captureReaderViewportAnchor() {
+    final blocks = _surahProv.arabicBlockList;
+    if (blocks.isEmpty) return null;
+    final screenHeight = MediaQuery.sizeOf(context).height;
+
+    for (int i = 0; i < _itemKeys.length && i < blocks.length; i++) {
+      final ctx = _itemKeys[i].currentContext;
+      if (ctx == null) continue;
+      final box = ctx.findRenderObject() as RenderBox?;
+      if (box == null || !box.attached) continue;
+      final topY = box.localToGlobal(Offset.zero).dy;
+      final bottomY = topY + box.size.height;
+      if (bottomY <= 0) continue;
+      if (topY >= screenHeight) break;
+      return _ReaderViewportAnchor(
+        ayahStart: blocks[i].verseFrom ?? i + 1,
+        globalTop: topY,
+        scrollOffset: _scrollController.hasClients ? _scrollController.offset : null,
+      );
+    }
+
+    final fallbackAyah = _lastKnownAyahStart;
+    if (fallbackAyah == null) return null;
+
+    return _ReaderViewportAnchor(
+      ayahStart: fallbackAyah,
+      globalTop: 0,
+      scrollOffset: _scrollController.hasClients ? _scrollController.offset : null,
+    );
+  }
+
+  Future<void> _restoreReaderViewport(_ReaderViewportAnchor anchor) async {
+    if (!mounted || !_scrollController.hasClients) return;
+
+    final blocks = _surahProv.arabicBlockList;
+    final idx = _findAyahBlockIndex(blocks, anchor.ayahStart);
+    if (idx < 0 || idx >= _itemKeys.length) {
+      final fallbackOffset = anchor.scrollOffset;
+      if (fallbackOffset == null) return;
+      final clampedOffset = fallbackOffset
+          .clamp(0.0, _scrollController.position.maxScrollExtent)
+          .toDouble();
+      if ((_scrollController.offset - clampedOffset).abs() > 0.5) {
+        _scrollController.jumpTo(clampedOffset);
+      }
+      return;
+    }
+
+    for (int attempt = 0; attempt < 3; attempt++) {
+      if (!mounted || !_scrollController.hasClients) return;
+
+      final targetCtx = _itemKeys[idx].currentContext;
+      final targetBox = targetCtx?.findRenderObject() as RenderBox?;
+
+      if (targetCtx == null || targetBox == null || !targetBox.attached) {
+        final maxExtent = _scrollController.position.maxScrollExtent;
+        final estimatedOffset =
+            _estimateScrollOffsetForIndex(idx) ??
+            ((idx / blocks.length) * maxExtent).clamp(0.0, maxExtent).toDouble();
+        _scrollController.jumpTo(estimatedOffset);
+        await WidgetsBinding.instance.endOfFrame;
+        continue;
+      }
+
+      final currentTop = targetBox.localToGlobal(Offset.zero).dy;
+      final desiredOffset = (_scrollController.offset + currentTop - anchor.globalTop)
+          .clamp(0.0, _scrollController.position.maxScrollExtent)
+          .toDouble();
+
+      if ((_scrollController.offset - desiredOffset).abs() <= 0.5) {
+        return;
+      }
+
+      _scrollController.jumpTo(desiredOffset);
+      await WidgetsBinding.instance.endOfFrame;
+
+      if (!mounted || !_scrollController.hasClients) return;
+
+      final settledCtx = _itemKeys[idx].currentContext;
+      final settledBox = settledCtx?.findRenderObject() as RenderBox?;
+      if (settledCtx == null || settledBox == null || !settledBox.attached) {
+        continue;
+      }
+
+      if ((settledBox.localToGlobal(Offset.zero).dy - anchor.globalTop).abs() <= 1.0) {
+        return;
+      }
+    }
+
+    final fallbackOffset = anchor.scrollOffset;
+    if (!mounted || !_scrollController.hasClients || fallbackOffset == null) return;
+
+    final clampedOffset = fallbackOffset
+        .clamp(0.0, _scrollController.position.maxScrollExtent)
+        .toDouble();
+    if ((_scrollController.offset - clampedOffset).abs() > 0.5) {
+      _scrollController.jumpTo(clampedOffset);
+    }
+  }
+
+  Future<void> _openReaderSettings() async {
+    if (!mounted) return;
+
+    final audioProvider = context.read<AudioProvider>();
+    final navigator = Navigator.of(context);
+    final restoreAnchor = _captureReaderViewportAnchor();
+
+    _saveLastRead();
+    await audioProvider.stopAudio();
+    if (!mounted) return;
+
+    await navigator.push(
+      MaterialPageRoute(builder: (_) => const ReaderSettingsScreen()),
+    );
+
+    if (!mounted || restoreAnchor == null) return;
+
+    await WidgetsBinding.instance.endOfFrame;
+    await _restoreReaderViewport(restoreAnchor);
   }
 
   Future<void> _restartSurahPlayback() async {
@@ -2693,7 +2834,10 @@ class _SurahScreenState extends State<SurahScreen> {
                           _showJumpTo(context, _surahProv.arabicBlockList);
                         },
                         onPlayFromBeginningPressed: _restartSurahPlayback,
-                        onSettingsPressed: () => _navigateToMainTab(3),
+                        onSettingsPressed: () {
+                          _hideActionDock();
+                          _openReaderSettings();
+                        },
                       ),
                   ],
                 ),
