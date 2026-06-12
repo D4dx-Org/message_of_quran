@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
+import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/platform_helper.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
@@ -17,10 +18,42 @@ import 'package:the_message_of_the_quran/features/settings_screen/providers/lang
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
+  const SettingsScreen({
+    super.key,
+    this.showStandaloneBackAppBar = false,
+  });
+
+  final bool showStandaloneBackAppBar;
 
   bool _useDesktopWebLayout(BuildContext context) {
     return PlatformHelper.isWeb;
+  }
+
+  PreferredSizeWidget? _buildStandaloneAppBar(BuildContext context) {
+    if (!showStandaloneBackAppBar) return null;
+
+    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
+    final scale = ResponsiveHelper.scaleFactor(context);
+
+    return AppBar(
+      automaticallyImplyLeading: false,
+      backgroundColor: AppTheme.appThemePrimary,
+      elevation: 0,
+      centerTitle: true,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+        onPressed: () => Navigator.of(context).maybePop(),
+      ),
+      title: Text(
+        isMalayalam ? 'സെറ്റിംഗ്സ്' : 'Settings',
+        style: AppTextTheme.localizedTitle(
+          isMalayalam: isMalayalam,
+          fontSize: 18 * scale,
+          fontWeight: FontWeight.w600,
+          color: appBarTitleMatchedAccentColor(context),
+        ),
+      ),
+    );
   }
 
   static bool shouldShowGeneralSection({required bool isWeb}) {
@@ -157,6 +190,7 @@ class SettingsScreen extends StatelessWidget {
     );
 
     return BaseScreenLayout(
+      appBar: _buildStandaloneAppBar(context),
       contentCardBoxShadows: const [],
       child: useDesktopWebLayout
           ? _buildDesktopBody(context)

@@ -357,6 +357,77 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
+  Widget _buildWebBrandingHero(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    final emblemWidth = (width * 0.12).clamp(108.0, 170.0).toDouble();
+    final titleWidth = (width * 0.26).clamp(210.0, 430.0).toDouble();
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 10),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              'assets/images/splash_logo.png',
+              width: emblemWidth,
+              fit: BoxFit.contain,
+              filterQuality: FilterQuality.high,
+            ),
+            const SizedBox(height: 12),
+            Image.asset(
+              'assets/images/splash_text_logo.png',
+              width: titleWidth,
+              fit: BoxFit.contain,
+              filterQuality: FilterQuality.high,
+              color: AppTheme.appThemePrimary,
+              colorBlendMode: BlendMode.srcIn,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWebReadModeToggle(BuildContext context) {
+    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+      child: Align(
+        alignment: Alignment.center,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: AppTheme.appThemePrimary.withValues(alpha: 0.06),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: AppTheme.appThemePrimary.withValues(alpha: 0.18),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(4),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _WebHomeReadModeButton(
+                  label: isMalayalam ? 'ഖുർആൻ വായനം' : 'Read Al-Qur\'an',
+                  selected: true,
+                  onTap: () => context.read<HomeProvider>().changeIndex(0),
+                ),
+                const SizedBox(width: 4),
+                _WebHomeReadModeButton(
+                  label: isMalayalam ? 'മുഷ്ഹഫ്' : 'Read Mushaf',
+                  selected: false,
+                  onTap: () => context.read<HomeProvider>().changeIndex(2),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildWebHero(
     BuildContext context, {
     required bool isMalayalam,
@@ -364,7 +435,7 @@ class _HomeScreenState extends State<HomeScreen>
     required bool isLoading,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(top: 10, bottom: 30),
+      padding: const EdgeInsets.only(top: 6, bottom: 30),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 920),
@@ -626,9 +697,13 @@ class _HomeScreenState extends State<HomeScreen>
     return LayoutBuilder(
       builder: (context, constraints) {
         const dropdownWidth = 220.0;
+        final stackedColumns = constraints.maxWidth < 640 ? 1 : 2;
+        final stackedSpacing = 12.0 * (stackedColumns - 1);
         final stackedDropdownWidth = isCompactWebHome
-            ? constraints.maxWidth
-            : dropdownWidth;
+          ? ((constraints.maxWidth - stackedSpacing) / stackedColumns)
+              .clamp(0.0, isMalayalam ? 420.0 : 400.0)
+              .toDouble()
+          : dropdownWidth;
         final minInlineWidth = isMalayalam ? 560.0 : 520.0;
         final canFitInlineHeader = constraints.maxWidth >= minInlineWidth;
 
@@ -655,7 +730,7 @@ class _HomeScreenState extends State<HomeScreen>
             buildTabStrip(),
             const SizedBox(height: 10),
             Align(
-              alignment: Alignment.centerRight,
+              alignment: Alignment.centerLeft,
               child: buildSectionDropdown(
                 width: stackedDropdownWidth,
                 fieldKey: dropdownFieldKey,
@@ -681,7 +756,7 @@ class _HomeScreenState extends State<HomeScreen>
     };
     final lastSurahTabSelection =
         context.watch<LastReadProvider>().lastSurahTabSelection;
-    final compactGridMaxCrossAxisExtent = isMalayalam ? 308.0 : 288.0;
+    final compactGridMaxCrossAxisExtent = isMalayalam ? 420.0 : 400.0;
 
     switch (_selectedWebSectionIndex) {
       case 1:
@@ -691,7 +766,6 @@ class _HomeScreenState extends State<HomeScreen>
         return _buildWebCardGrid(
           itemCount: juzHizbProvider.juzList.length,
           maxCrossAxisExtent: compactGridMaxCrossAxisExtent,
-          mainAxisExtent: 90,
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,
           itemBuilder: (context, index) {
@@ -737,7 +811,6 @@ class _HomeScreenState extends State<HomeScreen>
         return _buildWebCardGrid(
           itemCount: surahProvider.surahList.length,
           maxCrossAxisExtent: compactGridMaxCrossAxisExtent,
-          mainAxisExtent: 90,
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,
           itemBuilder: (context, index) {
@@ -753,6 +826,7 @@ class _HomeScreenState extends State<HomeScreen>
               isMalayalam: isMalayalam,
               number: surah.surahNumber,
               title: displayText.title,
+              subtitle: displayText.subtitle,
               placeLabel: localizeSurahPlace(
                 surah.place,
                 isMalayalam: isMalayalam,
@@ -774,21 +848,33 @@ class _HomeScreenState extends State<HomeScreen>
     required int itemCount,
     required IndexedWidgetBuilder itemBuilder,
     double maxCrossAxisExtent = 460,
-    double mainAxisExtent = 132,
     double crossAxisSpacing = 16,
     double mainAxisSpacing = 16,
   }) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: itemCount,
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: maxCrossAxisExtent,
-        mainAxisExtent: mainAxisExtent,
-        crossAxisSpacing: crossAxisSpacing,
-        mainAxisSpacing: mainAxisSpacing,
-      ),
-      itemBuilder: itemBuilder,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final availableWidth = constraints.maxWidth;
+        final columns = availableWidth < 640
+            ? 1
+            : availableWidth < 960
+            ? 2
+            : 3;
+        final totalSpacing = crossAxisSpacing * (columns - 1);
+        final itemWidth =
+            ((availableWidth - totalSpacing) / columns).clamp(0.0, maxCrossAxisExtent);
+
+        return Wrap(
+          spacing: crossAxisSpacing,
+          runSpacing: mainAxisSpacing,
+          children: List.generate(
+            itemCount,
+            (index) => SizedBox(
+              width: itemWidth,
+              child: itemBuilder(context, index),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -813,6 +899,8 @@ class _HomeScreenState extends State<HomeScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    _buildWebBrandingHero(context),
+                    _buildWebReadModeToggle(context),
                     _buildWebHero(
                       context,
                       isMalayalam: isMalayalam,
@@ -935,6 +1023,50 @@ class _HomeScreenState extends State<HomeScreen>
               maxWidth: homeContentMaxWidth,
               child: homeContent,
             ),
+    );
+  }
+}
+
+class _WebHomeReadModeButton extends StatelessWidget {
+  const _WebHomeReadModeButton({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final unselectedColor = isDarkMode
+        ? Colors.white70
+        : AppTheme.appThemePrimary.withValues(alpha: 0.92);
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: selected
+              ? AppTheme.appThemePrimary.withValues(alpha: 0.12)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Text(
+          label,
+          style: AppTextTheme.popinsDefault(
+            fontSize: 15,
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+            color: selected ? AppTheme.appThemePrimary : unselectedColor,
+          ),
+        ),
+      ),
     );
   }
 }
@@ -1078,6 +1210,7 @@ class _WebCompactSurahCard extends StatelessWidget {
     required this.isMalayalam,
     required this.number,
     required this.title,
+    required this.subtitle,
     required this.placeLabel,
     required this.ayahCountLabel,
     required this.onTap,
@@ -1087,6 +1220,7 @@ class _WebCompactSurahCard extends StatelessWidget {
   final bool isMalayalam;
   final int number;
   final String title;
+  final String subtitle;
   final String placeLabel;
   final String ayahCountLabel;
   final VoidCallback onTap;
@@ -1112,6 +1246,7 @@ class _WebCompactSurahCard extends StatelessWidget {
         ? Colors.white
         : AppTheme.appThemePrimary;
     final secondaryTextColor = isDarkMode ? Colors.white70 : Colors.grey[600]!;
+    final trailingColumnWidth = isMalayalam ? 112.0 : 90.0;
 
     return _WebHoverSurface(
       onTap: onTap,
@@ -1120,53 +1255,99 @@ class _WebCompactSurahCard extends StatelessWidget {
       hoverSurfaceColor: hoverSurfaceColor,
       hoverBorderColor: hoverBorderColor,
       borderRadius: BorderRadius.circular(16),
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(8),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           StarNumber(number: number, size: 40, isHighlighted: isHighlighted),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextTheme.localizedLabel(
-                    isMalayalam: isMalayalam,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: primaryTextColor,
+                SizedBox(
+                  width: double.infinity,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      title,
+                      maxLines: 1,
+                      softWrap: false,
+                      style: AppTextTheme.localizedLabel(
+                        isMalayalam: isMalayalam,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: primaryTextColor,
+                      ),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  placeLabel,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextTheme.localizedBody(
-                    isMalayalam: isMalayalam,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: secondaryTextColor,
+                if (subtitle.trim().isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        subtitle,
+                        maxLines: 1,
+                        softWrap: false,
+                        style: AppTextTheme.localizedBody(
+                          isMalayalam: isMalayalam,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: secondaryTextColor,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ),
           const SizedBox(width: 10),
-          Text(
-            ayahCountLabel,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.right,
-            style: AppTextTheme.localizedBody(
-              isMalayalam: isMalayalam,
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: secondaryTextColor,
+          SizedBox(
+            width: trailingColumnWidth,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      placeLabel,
+                      maxLines: 1,
+                      softWrap: false,
+                      textAlign: TextAlign.right,
+                      style: AppTextTheme.localizedLabel(
+                        isMalayalam: isMalayalam,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: secondaryTextColor,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  ayahCountLabel,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.right,
+                  style: AppTextTheme.localizedLabel(
+                    isMalayalam: isMalayalam,
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w500,
+                    color: secondaryTextColor,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -1222,37 +1403,52 @@ class _WebCompactJuzCard extends StatelessWidget {
       hoverSurfaceColor: hoverSurfaceColor,
       hoverBorderColor: hoverBorderColor,
       borderRadius: BorderRadius.circular(16),
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(8),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           StarNumber(number: number, size: 40, isHighlighted: isHighlighted),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextTheme.localizedLabel(
-                    isMalayalam: isMalayalam,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: primaryTextColor,
+                SizedBox(
+                  width: double.infinity,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      title,
+                      maxLines: 1,
+                      softWrap: false,
+                      style: AppTextTheme.localizedLabel(
+                        isMalayalam: isMalayalam,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: primaryTextColor,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextTheme.localizedBody(
-                    isMalayalam: isMalayalam,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: secondaryTextColor,
+                SizedBox(
+                  width: double.infinity,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      subtitle,
+                      maxLines: 1,
+                      softWrap: false,
+                      style: AppTextTheme.localizedBody(
+                        isMalayalam: isMalayalam,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: secondaryTextColor,
+                      ),
+                    ),
                   ),
                 ),
               ],
