@@ -1647,8 +1647,21 @@ class _SurahScreenState extends State<SurahScreen> {
   }) {
     final isDark = isDarkMode(context: context);
     final colorScheme = Theme.of(context).colorScheme;
+    final labelStyle = AppTextTheme.localizedBody(
+      isMalayalam: isMalayalam,
+      fontSize: 12,
+      color: isDark
+          ? colorScheme.onSurface.withValues(alpha: 0.7)
+          : Colors.grey.shade600,
+    );
+    final valueStyle = AppTextTheme.localizedLabel(
+      isMalayalam: isMalayalam,
+      fontSize: 14,
+      fontWeight: FontWeight.bold,
+      color: isDark ? colorScheme.onSurface : AppTheme.appThemePrimary,
+    );
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: isDark ? colorScheme.outlineVariant : Colors.grey.shade200,
         borderRadius: BorderRadius.circular(12),
@@ -1656,31 +1669,16 @@ class _SurahScreenState extends State<SurahScreen> {
             ? Border.all(color: colorScheme.outline.withValues(alpha: 0.6))
             : null,
       ),
-      child: Column(
-        children: [
-          Text(
-            label,
-            style: AppTextTheme.localizedBody(
-              isMalayalam: isMalayalam,
-              fontSize: 12,
-              color: isDark
-                  ? colorScheme.onSurface.withValues(alpha: 0.7)
-                  : Colors.grey.shade600,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            value,
-            style: AppTextTheme.localizedLabel(
-              isMalayalam: isMalayalam,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: isDark
-                  ? colorScheme.onSurface
-                  : AppTheme.appThemePrimary,
-            ),
-          ),
-        ],
+      child: Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(text: '$label ', style: labelStyle),
+            TextSpan(text: value, style: valueStyle),
+          ],
+        ),
+        textAlign: TextAlign.center,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }
