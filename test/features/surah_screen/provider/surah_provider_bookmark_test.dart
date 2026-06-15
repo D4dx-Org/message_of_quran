@@ -324,6 +324,77 @@ void main() {
         );
       },
     );
+
+    test('mushaf page bookmarks track page number independently', () async {
+      await provider.onBookMarkAdd(
+        2,
+        255,
+        surahName: 'Al-Baqarah',
+        navigationTarget: BookmarkNavigationTarget.mushafPage,
+        pageNumber: 42,
+      );
+      await provider.onBookMarkAdd(
+        2,
+        255,
+        surahName: 'Al-Baqarah',
+        navigationTarget: BookmarkNavigationTarget.mushafPage,
+        pageNumber: 43,
+      );
+
+      expect(
+        provider.isAyahBookmarkedForTarget(
+          2,
+          255,
+          BookmarkNavigationTarget.mushafPage,
+          42,
+        ),
+        isTrue,
+      );
+      expect(
+        provider.isAyahBookmarkedForTarget(
+          2,
+          255,
+          BookmarkNavigationTarget.mushafPage,
+          43,
+        ),
+        isTrue,
+      );
+      expect(
+        provider
+            .getBookmarksForSurah(
+              2,
+              navigationTarget: BookmarkNavigationTarget.mushafPage,
+            )
+            .map((bookmark) => bookmark.pageNumber),
+        orderedEquals([43, 42]),
+      );
+
+      await provider.onBookMarkRemoveByAyah(
+        2,
+        255,
+        navigationTarget: BookmarkNavigationTarget.mushafPage,
+        pageNumber: 42,
+      );
+
+      expect(
+        provider.isAyahBookmarkedForTarget(
+          2,
+          255,
+          BookmarkNavigationTarget.mushafPage,
+          42,
+        ),
+        isFalse,
+      );
+      expect(
+        provider.isAyahBookmarkedForTarget(
+          2,
+          255,
+          BookmarkNavigationTarget.mushafPage,
+          43,
+        ),
+        isTrue,
+      );
+    });
   });
 
   group('SurahProvider selected ayah copy', () {

@@ -19,6 +19,10 @@ class BookmarkScreen extends StatelessWidget {
     return bookmark.navigationTarget == BookmarkNavigationTarget.mushaf;
   }
 
+  bool _isMushafPageBookmark(AyahBookmarkModel bookmark) {
+    return bookmark.navigationTarget == BookmarkNavigationTarget.mushafPage;
+  }
+
   Widget _buildBookmarkIcon(Color color) {
     return Icon(
       Icons.bookmark,
@@ -28,14 +32,26 @@ class BookmarkScreen extends StatelessWidget {
   }
 
   String _bookmarkChipLabel(AyahBookmarkModel bookmark) {
+    if (_isMushafPageBookmark(bookmark)) {
+      return "Mus'haf Page";
+    }
     return _isMushafBookmark(bookmark) ? "Mus'haf Block" : 'Quran Block';
   }
 
   String _bookmarkTitle(AyahBookmarkModel bookmark) {
+    if (_isMushafPageBookmark(bookmark)) {
+      return bookmark.surahName ?? 'Surah ${bookmark.surahNumber}';
+    }
     return bookmark.surahName ?? 'Surah ${bookmark.surahNumber}';
   }
 
   String _bookmarkDetails(AyahBookmarkModel bookmark) {
+    if (_isMushafPageBookmark(bookmark)) {
+      final page = bookmark.pageNumber;
+      return page != null
+          ? 'Surah: ${bookmark.surahNumber}, Page: $page'
+          : 'Surah: ${bookmark.surahNumber}';
+    }
     return 'Surah: ${bookmark.surahNumber}, Ayah: ${bookmark.ayahId}';
   }
 
@@ -56,6 +72,21 @@ class BookmarkScreen extends StatelessWidget {
   void _openBookmark(BuildContext context, AyahBookmarkModel bookmark) {
     final nav = Navigator.of(context);
     final surahProv = Provider.of<SurahProvider>(context, listen: false);
+
+    if (_isMushafPageBookmark(bookmark)) {
+      nav.push(
+        MaterialPageRoute(
+          builder: (_) => MushafReaderScreen(
+            initialPage: bookmark.pageNumber,
+            initialSurahNo: bookmark.pageNumber == null
+                ? bookmark.surahNumber
+                : null,
+            initialAyaNo: bookmark.pageNumber == null ? bookmark.ayahId : null,
+          ),
+        ),
+      );
+      return;
+    }
 
     if (_isMushafBookmark(bookmark)) {
       nav.push(
@@ -104,7 +135,40 @@ class BookmarkScreen extends StatelessWidget {
       bookmark.ayahId,
       label == null || label.isEmpty ? null : label,
       navigationTarget: bookmark.navigationTarget,
+      pageNumber: bookmark.pageNumber,
     );
+  }
+
+  String _bookmarkSemanticsLabel(AyahBookmarkModel bookmark) {
+    if (_isMushafPageBookmark(bookmark)) {
+      final page = bookmark.pageNumber;
+      final pageLabel = page != null ? 'Page $page, ' : '';
+      final label = bookmark.label;
+      final labelSuffix = label != null && label.isNotEmpty ? ', $label' : '';
+      return '$pageLabel${bookmark.surahName ?? 'Surah ${bookmark.surahNumber}'}, Ayah ${bookmark.ayahId}$labelSuffix';
+    }
+
+    return '${bookmark.surahName ?? 'Surah ${bookmark.surahNumber}'}, Ayah ${bookmark.ayahId}${bookmark.label != null && bookmark.label!.isNotEmpty ? ', ${bookmark.label}' : ''}';
+  }
+
+  String _editSemanticsLabel(AyahBookmarkModel bookmark) {
+    if (_isMushafPageBookmark(bookmark)) {
+      final page = bookmark.pageNumber;
+      return page != null
+          ? 'Edit label for Page $page'
+          : 'Edit label for Mus\'haf page bookmark';
+    }
+    return 'Edit label for Ayah ${bookmark.ayahId}';
+  }
+
+  String _deleteSemanticsLabel(AyahBookmarkModel bookmark) {
+    if (_isMushafPageBookmark(bookmark)) {
+      final page = bookmark.pageNumber;
+      return page != null
+          ? 'Remove bookmark for Page $page'
+          : 'Remove Mus\'haf page bookmark';
+    }
+    return 'Remove bookmark for Ayah ${bookmark.ayahId}';
   }
 
   @override
@@ -145,12 +209,13 @@ class BookmarkScreen extends StatelessWidget {
                           final bookmark = value.bookmarkedList[index];
                           final bodyText = _bookmarkBody(bookmark);
                           return Padding(
-                            key: ValueKey('bookmark_${bookmark.surahNumber}_${bookmark.ayahId}'),
+                            key: ValueKey(
+                              'bookmark_${bookmark.navigationTarget}_${bookmark.pageNumber ?? 0}_${bookmark.surahNumber}_${bookmark.ayahId}',
+                            ),
                             padding: const EdgeInsets.only(bottom: 8),
                             child: Semantics(
                               button: true,
-                              label:
-                                  '${bookmark.surahName ?? 'Surah ${bookmark.surahNumber}'}, Ayah ${bookmark.ayahId}${bookmark.label != null && bookmark.label!.isNotEmpty ? ', ${bookmark.label}' : ''}',
+                              label: _bookmarkSemanticsLabel(bookmark),
                               hint:
                                   'Double tap to open. Use the action buttons to edit or delete.',
                               child: SettingsScreenCard(
@@ -224,8 +289,9 @@ class BookmarkScreen extends StatelessWidget {
                                                     children: [
                                                       Semantics(
                                                         button: true,
-                                                        label:
-                                                            'Edit label for Ayah ${bookmark.ayahId}',
+                                                        label: _editSemanticsLabel(
+                                                          bookmark,
+                                                        ),
                                                         child: IconButton(
                                                           tooltip: 'Edit label',
                                                           onPressed: () =>
@@ -242,7 +308,9 @@ class BookmarkScreen extends StatelessWidget {
                                                       Semantics(
                                                         button: true,
                                                         label:
-                                                            'Remove bookmark for Ayah ${bookmark.ayahId}',
+                                                            _deleteSemanticsLabel(
+                                                              bookmark,
+                                                            ),
                                                         child: IconButton(
                                                           tooltip:
                                                               'Delete bookmark',

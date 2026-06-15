@@ -102,6 +102,7 @@ class DbConstants {
   static const String bookmarkSurahArabicNumber = "surah_arabic_number";
   static const String bookmarkLabel = "label";
   static const String bookmarkNavigationTarget = "navigation_target";
+  static const String bookmarkPageNumber = "page_number";
 
   /// Preface / Surah description (quran_asad.sqlite → prefaces)
   static const String prefaceTable = "prefaces";

@@ -22,7 +22,8 @@ class DatabaseHelper {
       'surah_arabic_number TEXT, '
       'label TEXT, '
       'navigation_target TEXT NOT NULL, '
-      'UNIQUE(surah_number, ayah_id, navigation_target)'
+      'page_number INTEGER NOT NULL DEFAULT 0, '
+      'UNIQUE(surah_number, ayah_id, navigation_target, page_number)'
       ')';
 
   factory DatabaseHelper() => _instance;
@@ -85,7 +86,7 @@ class DatabaseHelper {
     final userDbPath = await _databasePathFor(DbConstants.userDbName);
     userDatabase = await openDatabase(
       userDbPath,
-      version: 5,
+      version: 6,
       onConfigure: (db) async {
         await db.rawQuery('PRAGMA journal_mode=WAL');
       },
@@ -109,7 +110,7 @@ class DatabaseHelper {
           await db.execute(ProgressionDbHelper.createProgressionDaysTable);
           await db.execute(ProgressionDbHelper.createProgressionAyahsTable);
         }
-        if (oldVersion < 5) {
+        if (oldVersion < 6) {
           await db.execute('ALTER TABLE bookmarks RENAME TO bookmarks_legacy');
           await db.execute(_createBookmarksTableSql);
           await db.execute(
@@ -121,7 +122,8 @@ class DatabaseHelper {
             'surah_arabic_name, '
             'surah_arabic_number, '
             'label, '
-            'navigation_target'
+            'navigation_target, '
+            'page_number'
             ') '
             'SELECT '
             'surah_number, '
@@ -131,7 +133,8 @@ class DatabaseHelper {
             'surah_arabic_name, '
             'surah_arabic_number, '
             'label, '
-            "COALESCE(NULLIF(navigation_target, ''), 'surah') "
+            "COALESCE(NULLIF(navigation_target, ''), 'surah'), "
+            '0 '
             'FROM bookmarks_legacy',
           );
           await db.execute('DROP TABLE bookmarks_legacy');

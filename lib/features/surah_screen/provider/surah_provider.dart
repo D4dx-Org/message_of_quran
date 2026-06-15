@@ -464,14 +464,19 @@ class SurahProvider extends ChangeNotifier {
     int surahNumber,
     int ayahId, {
     String navigationTarget = BookmarkNavigationTarget.surah,
+    int? pageNumber,
   }) {
     final normalizedTarget = BookmarkNavigationTarget.normalize(
       navigationTarget,
     );
+    final normalizedPageNumber = pageNumber != null && pageNumber > 0
+        ? pageNumber
+        : null;
     for (final bookmark in bookmarkedList) {
       if (bookmark.surahNumber == surahNumber &&
           bookmark.ayahId == ayahId &&
-          bookmark.navigationTarget == normalizedTarget) {
+          bookmark.navigationTarget == normalizedTarget &&
+          bookmark.pageNumber == normalizedPageNumber) {
         return bookmark;
       }
     }
@@ -496,9 +501,15 @@ class SurahProvider extends ChangeNotifier {
     int ayahId, {
     required String navigationTarget,
   }) {
+    final normalizedTarget = BookmarkNavigationTarget.normalize(
+      navigationTarget,
+    );
+    if (normalizedTarget == BookmarkNavigationTarget.mushafPage) {
+      return false;
+    }
     final bookmarks = getBookmarksForSurah(
       surahNumber,
-      navigationTarget: navigationTarget,
+      navigationTarget: normalizedTarget,
     );
     if (bookmarks.isEmpty) return false;
     return bookmarks.any((bookmark) => bookmark.ayahId != ayahId);
@@ -508,11 +519,13 @@ class SurahProvider extends ChangeNotifier {
     int surahNumber,
     int ayahId, {
     String navigationTarget = BookmarkNavigationTarget.surah,
+    int? pageNumber,
   }) {
     return getBookmark(
           surahNumber,
           ayahId,
           navigationTarget: navigationTarget,
+          pageNumber: pageNumber,
         ) !=
         null;
   }
@@ -521,11 +534,21 @@ class SurahProvider extends ChangeNotifier {
     int surahNumber,
     int ayahId,
     String navigationTarget,
+    [int? pageNumber]
   ) {
     return isAyahBookmarked(
       surahNumber,
       ayahId,
       navigationTarget: navigationTarget,
+      pageNumber: pageNumber,
+    );
+  }
+
+  bool isMushafPageBookmarked(int pageNumber) {
+    return bookmarkedList.any(
+      (bookmark) =>
+          bookmark.navigationTarget == BookmarkNavigationTarget.mushafPage &&
+          bookmark.pageNumber == pageNumber,
     );
   }
 
@@ -537,6 +560,7 @@ class SurahProvider extends ChangeNotifier {
     String? surahArabicName,
     String? surahArabicNumber,
     String? navigationTarget,
+    int? pageNumber,
     bool replaceSameSurah = false,
   }) async {
     final normalizedTarget = BookmarkNavigationTarget.normalize(
@@ -546,6 +570,7 @@ class SurahProvider extends ChangeNotifier {
       surahNumber,
       ayahId,
       navigationTarget: normalizedTarget,
+      pageNumber: pageNumber,
     );
     if (existingBookmark != null) {
       return false;
@@ -567,6 +592,7 @@ class SurahProvider extends ChangeNotifier {
       surahArabicName: surahArabicName ?? metadataSource?.surahArabicName,
       surahArabicNumber: surahArabicNumber ?? metadataSource?.surahArabicNumber,
       navigationTarget: normalizedTarget,
+      pageNumber: pageNumber,
     );
     try {
       if (replaceSameSurah && sameSurahBookmarks.isNotEmpty) {
@@ -586,7 +612,8 @@ class SurahProvider extends ChangeNotifier {
         (b) =>
             b.surahNumber == surahNumber &&
             b.ayahId == ayahId &&
-            b.navigationTarget == normalizedTarget,
+        b.navigationTarget == normalizedTarget &&
+        b.pageNumber == bookmark.pageNumber,
       );
       bookmarkedList.insert(0, bookmark);
       notifyListeners();
@@ -601,6 +628,7 @@ class SurahProvider extends ChangeNotifier {
     int surahNumber,
     int ayahId, {
     String navigationTarget = BookmarkNavigationTarget.surah,
+    int? pageNumber,
   }) async {
     final normalizedTarget = BookmarkNavigationTarget.normalize(
       navigationTarget,
@@ -610,12 +638,14 @@ class SurahProvider extends ChangeNotifier {
         surahNumber,
         ayahId,
         navigationTarget: normalizedTarget,
+        pageNumber: pageNumber,
       );
       bookmarkedList.removeWhere(
         (b) =>
             b.surahNumber == surahNumber &&
             b.ayahId == ayahId &&
-            b.navigationTarget == normalizedTarget,
+            b.navigationTarget == normalizedTarget &&
+            b.pageNumber == (pageNumber != null && pageNumber > 0 ? pageNumber : null),
       );
       notifyListeners();
     } catch (e) {
@@ -628,22 +658,28 @@ class SurahProvider extends ChangeNotifier {
     int ayahId,
     String? label, {
     String navigationTarget = BookmarkNavigationTarget.surah,
+    int? pageNumber,
   }) async {
     final normalizedTarget = BookmarkNavigationTarget.normalize(
       navigationTarget,
     );
+    final normalizedPageNumber = pageNumber != null && pageNumber > 0
+        ? pageNumber
+        : null;
     try {
       await BookmarkDbHelper.updateLabel(
         surahNumber,
         ayahId,
         label,
         navigationTarget: normalizedTarget,
+        pageNumber: normalizedPageNumber,
       );
       final idx = bookmarkedList.indexWhere(
         (b) =>
             b.surahNumber == surahNumber &&
             b.ayahId == ayahId &&
-            b.navigationTarget == normalizedTarget,
+            b.navigationTarget == normalizedTarget &&
+            b.pageNumber == normalizedPageNumber,
       );
       if (idx >= 0) {
         final old = bookmarkedList[idx];
@@ -656,6 +692,7 @@ class SurahProvider extends ChangeNotifier {
           surahArabicNumber: old.surahArabicNumber,
           label: label,
           navigationTarget: normalizedTarget,
+          pageNumber: old.pageNumber,
         );
         notifyListeners();
       }
@@ -690,6 +727,7 @@ class SurahProvider extends ChangeNotifier {
         item.surahNumber,
         item.ayahId,
         navigationTarget: item.navigationTarget,
+        pageNumber: item.pageNumber,
       );
       bookmarkedList.removeAt(index);
       notifyListeners();

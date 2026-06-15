@@ -14,7 +14,9 @@ import '../services/mushaf_download_manager.dart';
 import '../../../core/widgets/base_screen_layout.dart';
 import '../../../core/theme/app_text_theme.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../settings_screen/presentation/reader_settings_screen.dart';
 import '../../surah_screen/provider/surah_provider.dart';
+import '../models/page_meta.dart';
 import '../widgets/mushaf_download_required_dialog.dart';
 import '../widgets/mushaf_page_view.dart';
 
@@ -22,6 +24,18 @@ const _kPrimaryColor = AppTheme.appIconTheme;
 const _kSecondaryDark = AppTheme.appIconTheme;
 const _kNeutral500 = Color(0xFF525866);
 const _kDefaultFontSize = 24.0;
+
+class _MushafReaderAnchor {
+  const _MushafReaderAnchor({
+    required this.page,
+    required this.isListView,
+    this.listOffset,
+  });
+
+  final int page;
+  final bool isListView;
+  final double? listOffset;
+}
 
 /// Full-screen Mushaf reader with an offline 2-page preview.
 class MushafReaderScreen extends StatefulWidget {
@@ -321,6 +335,144 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
     }
   }
 
+  PageMeta? _currentPageMetaSync() {
+    if (_p.currentPage <= 0 || _p.currentPage > _p.allPageMetas.length) {
+      return null;
+    }
+    return _p.allPageMetas[_p.currentPage - 1];
+  }
+
+  Future<PageMeta?> _currentPageMeta() async {
+    final cached = _currentPageMetaSync();
+    if (cached != null) return cached;
+    return _p.repository.getPageMeta(_p.currentPage);
+  }
+
+  _MushafReaderAnchor _captureReaderAnchor() {
+    return _MushafReaderAnchor(
+      page: _p.currentPage,
+      isListView: _p.isListView,
+      listOffset: _p.isListView && _p.listScrollController.hasClients
+          ? _p.listScrollController.offset
+          : null,
+    );
+  }
+
+  Future<void> _restoreReaderAnchor(_MushafReaderAnchor anchor) async {
+    if (!mounted) return;
+
+    if (_p.isListView != anchor.isListView) {
+      _p.isAutoNavigating = true;
+      _setJumpTarget(anchor.page);
+      _p.toggleListView();
+      await WidgetsBinding.instance.endOfFrame;
+    }
+
+    if (!mounted) return;
+
+    if (anchor.isListView) {
+      if (_p.listScrollController.hasClients && anchor.listOffset != null) {
+        final position = _p.listScrollController.position;
+        final targetOffset = anchor.listOffset!
+            .clamp(0.0, position.maxScrollExtent)
+            .toDouble();
+        if ((_p.listScrollController.offset - targetOffset).abs() > 0.5) {
+          _p.isAutoNavigating = true;
+          _p.listScrollController.jumpTo(targetOffset);
+          _p.onListScrollUpdate(targetOffset, _p.listPageHeight);
+        }
+      } else {
+        _setJumpTarget(anchor.page);
+        _p.tryNavigateTo(anchor.page);
+      }
+      _p.isAutoNavigating = false;
+      return;
+    }
+
+    final targetIndex = anchor.page - 1;
+    if (_p.pageController?.hasClients ?? false) {
+      final currentIndex = _p.pageController!.page?.round();
+      if (currentIndex != targetIndex) {
+        _p.pageController!.jumpToPage(targetIndex);
+      } else if (_p.currentPage != anchor.page) {
+        _p.onPageChanged(targetIndex);
+      }
+    } else {
+      _setJumpTarget(anchor.page);
+      _p.tryNavigateTo(anchor.page);
+    }
+
+    _p.isAutoNavigating = false;
+  }
+
+  Future<void> _openReaderSettings() async {
+    if (!mounted) return;
+
+    final navigator = Navigator.of(context);
+    final anchor = _captureReaderAnchor();
+
+    await _p.stopAndClear();
+    if (!mounted) return;
+
+    await navigator.push(
+      MaterialPageRoute(builder: (_) => const ReaderSettingsScreen()),
+    );
+
+    if (!mounted) return;
+    await WidgetsBinding.instance.endOfFrame;
+    await _restoreReaderAnchor(anchor);
+  }
+
+  Future<void> _toggleCurrentPageBookmark(bool isBookmarked) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final surahProvider = context.read<SurahProvider>();
+    final pageMeta = await _currentPageMeta();
+    if (!mounted || pageMeta == null) return;
+
+    const navigationTarget = BookmarkNavigationTarget.mushafPage;
+
+    if (isBookmarked) {
+      await surahProvider.onBookMarkRemoveByAyah(
+        pageMeta.suraNo,
+        pageMeta.startAya,
+        navigationTarget: navigationTarget,
+        pageNumber: pageMeta.pageNo,
+      );
+      if (!mounted) return;
+      messenger
+        ..clearSnackBars()
+        ..showSnackBar(const SnackBar(content: Text('Page bookmark removed')));
+      return;
+    }
+
+    if (surahProvider.surahList.isEmpty) {
+      await surahProvider.getAllSurah();
+    }
+    if (!mounted) return;
+
+    dynamic surah;
+    for (final item in surahProvider.surahList) {
+      if (item.surahNumber == pageMeta.suraNo) {
+        surah = item;
+        break;
+      }
+    }
+
+    final didAdd = await surahProvider.onBookMarkAdd(
+      pageMeta.suraNo,
+      pageMeta.startAya,
+      surahName: surah?.name as String?,
+      surahArabicName: surah?.arabicName as String?,
+      navigationTarget: navigationTarget,
+      pageNumber: pageMeta.pageNo,
+    );
+
+    if (!mounted || !didAdd) return;
+    messenger
+      ..clearSnackBars()
+      ..showSnackBar(const SnackBar(content: Text('Page bookmark added')));
+  }
+
   Future<void> _toggleBookmarkForSelectedAyah(
     int suraNo,
     int ayaNo,
@@ -500,6 +652,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
   }
 
   Widget _buildDesktopReaderToolbar(BuildContext context) {
+    final surahProvider = context.watch<SurahProvider>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final surfaceColor = isDark ? const Color(0xff163d6e) : Colors.white;
     final titleColor = isDark ? Colors.white : _kSecondaryDark;
@@ -508,6 +661,9 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
         ? Colors.white.withValues(alpha: 0.08)
         : Colors.black.withValues(alpha: 0.08);
     final totalPages = _lastReadablePage();
+    final isCurrentPageBookmarked = surahProvider.isMushafPageBookmarked(
+      _p.currentPage,
+    );
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -627,6 +783,25 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
                           color: titleColor,
                         ),
                       ),
+                      IconButton(
+                        tooltip: isCurrentPageBookmarked
+                            ? 'Remove page bookmark'
+                            : 'Bookmark this page',
+                        onPressed: () => _toggleCurrentPageBookmark(
+                          isCurrentPageBookmarked,
+                        ),
+                        icon: Icon(
+                          isCurrentPageBookmarked
+                              ? Icons.bookmark_rounded
+                              : Icons.bookmark_border_rounded,
+                          color: titleColor,
+                        ),
+                      ),
+                      IconButton(
+                        tooltip: 'Reader settings',
+                        onPressed: _openReaderSettings,
+                        icon: Icon(Icons.settings_rounded, color: titleColor),
+                      ),
                       const Spacer(),
                       paginationRow,
                     ],
@@ -655,6 +830,25 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
                         : Icons.view_carousel_rounded,
                     color: titleColor,
                   ),
+                ),
+                IconButton(
+                  tooltip: isCurrentPageBookmarked
+                      ? 'Remove page bookmark'
+                      : 'Bookmark this page',
+                  onPressed: () => _toggleCurrentPageBookmark(
+                    isCurrentPageBookmarked,
+                  ),
+                  icon: Icon(
+                    isCurrentPageBookmarked
+                        ? Icons.bookmark_rounded
+                        : Icons.bookmark_border_rounded,
+                    color: titleColor,
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Reader settings',
+                  onPressed: _openReaderSettings,
+                  icon: Icon(Icons.settings_rounded, color: titleColor),
                 ),
                 const SizedBox(width: 12),
                 paginationRow,
@@ -771,11 +965,15 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
   // ─── App bar ──────────────────────────────────────────────────────────────
 
   Widget _buildAppBar(BuildContext context) {
+    final surahProvider = context.watch<SurahProvider>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark
         ? const Color(0xff0c2d52).withValues(alpha: 0.95)
         : AppTheme.appThemePrimary;
     const textColor = Colors.white;
+    final isCurrentPageBookmarked = surahProvider.isMushafPageBookmarked(
+      _p.currentPage,
+    );
 
     final hPad = ResponsiveHelper.horizontalPadding(context);
     return Container(
@@ -817,6 +1015,26 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
             ),
             onPressed: _toggleReaderViewMode,
           ),
+          IconButton(
+            icon: Icon(
+              isCurrentPageBookmarked
+                  ? Icons.bookmark_rounded
+                  : Icons.bookmark_border_rounded,
+              color: textColor,
+            ),
+            tooltip: isCurrentPageBookmarked
+                ? 'Remove page bookmark'
+                : 'Bookmark this page',
+            onPressed: () => _toggleCurrentPageBookmark(
+              isCurrentPageBookmarked,
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings_rounded),
+            color: textColor,
+            tooltip: 'Reader settings',
+            onPressed: _openReaderSettings,
+          ),
         ],
       ),
     );
@@ -830,6 +1048,55 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
         ? const Color(0xff0c2d52).withValues(alpha: 0.95)
         : AppTheme.appThemePrimary;
     const textColor = Colors.white;
+    final scale = ResponsiveHelper.scaleFactor(context);
+
+    Widget navButton({
+      required bool enabled,
+      required IconData icon,
+      required VoidCallback onPressed,
+      required String tooltip,
+    }) {
+      return SizedBox(
+        width: 40 * scale,
+        height: 40 * scale,
+        child: enabled
+            ? IconButton(
+                tooltip: tooltip,
+                icon: Icon(icon),
+                color: textColor,
+                onPressed: onPressed,
+              )
+            : null,
+      );
+    }
+
+    final playButton = _p.isLoadingAudio
+        ? const SizedBox(
+            width: 28,
+            height: 28,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+            ),
+          )
+        : GestureDetector(
+            onTap: _p.isPlaying || _p.playingLabel != null
+                ? _p.togglePlayPause
+                : _p.onPlayPressed,
+            child: Container(
+              width: 40 * scale,
+              height: 40 * scale,
+              decoration: const BoxDecoration(
+                color: _kSecondaryDark,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                _p.isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                color: Colors.white,
+                size: 28 * scale,
+              ),
+            ),
+          );
 
     final hPad = ResponsiveHelper.horizontalPadding(context);
     return Container(
@@ -840,61 +1107,41 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
         right: hPad,
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          // Previous page (hidden on last page)
-          if (_p.currentPage <
-              (_p.fontsInstalled
-                  ? MushafReaderProvider.totalPages
-                  : MushafReaderProvider.previewLimit))
-            IconButton(
-              icon: const Icon(Icons.chevron_left_rounded),
-              color: textColor,
-              onPressed: _goToHigherPage,
-            )
-          else
-            SizedBox(width: 48 * ResponsiveHelper.scaleFactor(context)),
-          // Play/pause audio
-          if (_p.isLoadingAudio)
-            const SizedBox(
-              width: 40,
-              height: 40,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
-          else
-            GestureDetector(
-              onTap: _p.isPlaying || _p.playingLabel != null
-                  ? _p
-                        .togglePlayPause // already loaded → just pause/resume
-                  : _p.onPlayPressed, // nothing loaded → fetch and play
-              child: Container(
-                width: 40 * ResponsiveHelper.scaleFactor(context),
-                height: 40 * ResponsiveHelper.scaleFactor(context),
-                decoration: const BoxDecoration(
-                  color: _kSecondaryDark,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  _p.isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                  color: Colors.white,
-                  size: 28 * ResponsiveHelper.scaleFactor(context),
-                ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: navButton(
+                enabled: _p.currentPage < _lastReadablePage(),
+                icon: Icons.chevron_left_rounded,
+                onPressed: _goToHigherPage,
+                tooltip: 'Previous page',
               ),
             ),
-          // Page indicator
-          Text(
-            '${_p.currentPage} / ${_p.fontsInstalled ? MushafReaderProvider.totalPages : MushafReaderProvider.previewLimit}',
-            style: const TextStyle(color: textColor, fontSize: 13),
           ),
-          // Next page (hidden on first page)
-          if (_p.currentPage > 1)
-            IconButton(
-              icon: const Icon(Icons.chevron_right_rounded),
-              color: textColor,
-              onPressed: _goToLowerPage,
-            )
-          else
-            SizedBox(width: 48 * ResponsiveHelper.scaleFactor(context)),
+          Expanded(
+            child: Center(child: playButton),
+          ),
+          Expanded(
+            flex: 2,
+            child: Center(
+              child: Text(
+                '${_p.currentPage} / ${_lastReadablePage()}',
+                style: const TextStyle(color: textColor, fontSize: 13),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: navButton(
+                enabled: _p.currentPage > 1,
+                icon: Icons.chevron_right_rounded,
+                onPressed: _goToLowerPage,
+                tooltip: 'Next page',
+              ),
+            ),
+          ),
         ],
       ),
     );

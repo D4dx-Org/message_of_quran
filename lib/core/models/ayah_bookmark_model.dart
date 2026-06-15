@@ -3,12 +3,14 @@ import 'package:the_message_of_the_quran/core/constants/db_constants.dart';
 class BookmarkNavigationTarget {
   static const String surah = 'surah';
   static const String mushaf = 'mushaf';
+  static const String mushafPage = 'mushaf_page';
 
   static bool isValid(String? value) {
-    return value == surah || value == mushaf;
+    return value == surah || value == mushaf || value == mushafPage;
   }
 
   static String normalize(String? value) {
+    if (value == mushafPage) return mushafPage;
     return value == mushaf ? mushaf : surah;
   }
 }
@@ -22,6 +24,7 @@ class AyahBookmarkModel {
   final String? surahArabicNumber;
   final String? label;
   final String navigationTarget;
+  final int? pageNumber;
 
   AyahBookmarkModel({
     required this.surahNumber,
@@ -31,8 +34,17 @@ class AyahBookmarkModel {
     this.surahArabicName,
     this.surahArabicNumber,
     this.label,
+    int? pageNumber,
     String? navigationTarget,
-  }) : navigationTarget = BookmarkNavigationTarget.normalize(navigationTarget);
+  })  : navigationTarget = BookmarkNavigationTarget.normalize(
+         navigationTarget,
+       ),
+       pageNumber = _normalizePageNumber(pageNumber);
+
+  static int? _normalizePageNumber(int? value) {
+    if (value == null || value <= 0) return null;
+    return value;
+  }
 
   Map<String, dynamic> toMap() {
     return {
@@ -44,10 +56,12 @@ class AyahBookmarkModel {
       DbConstants.bookmarkSurahArabicNumber: surahArabicNumber,
       DbConstants.bookmarkLabel: label,
       DbConstants.bookmarkNavigationTarget: navigationTarget,
+      DbConstants.bookmarkPageNumber: pageNumber ?? 0,
     };
   }
 
   factory AyahBookmarkModel.fromMap(Map<String, dynamic> map) {
+    final rawPageNumber = (map[DbConstants.bookmarkPageNumber] as num?)?.toInt();
     return AyahBookmarkModel(
       surahNumber: map[DbConstants.bookmarkSurahNumber] as int? ?? 0,
       ayahId: map[DbConstants.bookmarkAyahId] as int? ?? 0,
@@ -57,6 +71,7 @@ class AyahBookmarkModel {
       surahArabicNumber: map[DbConstants.bookmarkSurahArabicNumber] as String?,
       label: map[DbConstants.bookmarkLabel] as String?,
       navigationTarget: map[DbConstants.bookmarkNavigationTarget] as String?,
+      pageNumber: rawPageNumber,
     );
   }
 
@@ -67,8 +82,14 @@ class AyahBookmarkModel {
           runtimeType == other.runtimeType &&
           surahNumber == other.surahNumber &&
           ayahId == other.ayahId &&
-          navigationTarget == other.navigationTarget;
+          navigationTarget == other.navigationTarget &&
+          pageNumber == other.pageNumber;
 
   @override
-  int get hashCode => Object.hash(surahNumber, ayahId, navigationTarget);
+  int get hashCode => Object.hash(
+    surahNumber,
+    ayahId,
+    navigationTarget,
+    pageNumber,
+  );
 }

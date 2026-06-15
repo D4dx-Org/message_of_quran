@@ -37,20 +37,26 @@ class BookmarkDbHelper {
     int surahNumber,
     int ayahId, {
     required String navigationTarget,
+    int? pageNumber,
   }) async {
     final db = DatabaseHelper.userDatabase;
     if (db == null) return;
     try {
+      final normalizedPageNumber = pageNumber != null && pageNumber > 0
+          ? pageNumber
+          : 0;
       await db.delete(
         DbConstants.bookmarksTableName,
         where:
             '${DbConstants.bookmarkSurahNumber} = ? AND '
             '${DbConstants.bookmarkAyahId} = ? AND '
-            '${DbConstants.bookmarkNavigationTarget} = ?',
+            '${DbConstants.bookmarkNavigationTarget} = ? AND '
+            '${DbConstants.bookmarkPageNumber} = ?',
         whereArgs: [
           surahNumber,
           ayahId,
           BookmarkNavigationTarget.normalize(navigationTarget),
+          normalizedPageNumber,
         ],
       );
     } catch (e) {
@@ -85,21 +91,27 @@ class BookmarkDbHelper {
     int ayahId,
     String? label, {
     required String navigationTarget,
+    int? pageNumber,
   }) async {
     final db = DatabaseHelper.userDatabase;
     if (db == null) return;
     try {
+      final normalizedPageNumber = pageNumber != null && pageNumber > 0
+          ? pageNumber
+          : 0;
       await db.update(
         DbConstants.bookmarksTableName,
         {DbConstants.bookmarkLabel: label},
         where:
             '${DbConstants.bookmarkSurahNumber} = ? AND '
             '${DbConstants.bookmarkAyahId} = ? AND '
-            '${DbConstants.bookmarkNavigationTarget} = ?',
+            '${DbConstants.bookmarkNavigationTarget} = ? AND '
+            '${DbConstants.bookmarkPageNumber} = ?',
         whereArgs: [
           surahNumber,
           ayahId,
           BookmarkNavigationTarget.normalize(navigationTarget),
+          normalizedPageNumber,
         ],
       );
     } catch (e) {
