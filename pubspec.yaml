@@ -99,12 +99,6 @@ flutter:
     - assets/db/quran_tajweed_data/output/quran_tajweed_complete.json
     - assets/data/
     - shorebird.yaml
-    - assets/fonts/QCF_BSML.TTF
-    - assets/fonts/QCF_P1.TTF
-    - assets/fonts/QCF_P2.TTF
-    - assets/fonts/QCF_P305.ttf
-    - assets/fonts/QCF_P603.TTF
-    - assets/fonts/QCF_P604.TTF
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
