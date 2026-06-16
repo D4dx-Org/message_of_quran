@@ -380,7 +380,9 @@ class _HomeScreenState extends State<HomeScreen>
               width: titleWidth,
               fit: BoxFit.contain,
               filterQuality: FilterQuality.high,
-              color: AppTheme.appThemePrimary,
+              color: _isDarkWebSurface(context)
+                  ? Colors.white.withValues(alpha: 0.85)
+                  : AppTheme.appThemePrimary,
               colorBlendMode: BlendMode.srcIn,
             ),
           ],
@@ -391,6 +393,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildWebReadModeToggle(BuildContext context) {
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
@@ -398,10 +401,14 @@ class _HomeScreenState extends State<HomeScreen>
         alignment: Alignment.center,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: AppTheme.appThemePrimary.withValues(alpha: 0.06),
+            color: isDarkMode
+                ? Colors.white.withValues(alpha: 0.08)
+                : AppTheme.appThemePrimary.withValues(alpha: 0.06),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: AppTheme.appThemePrimary.withValues(alpha: 0.18),
+              color: isDarkMode
+                  ? Colors.white.withValues(alpha: 0.18)
+                  : AppTheme.appThemePrimary.withValues(alpha: 0.18),
             ),
           ),
           child: Padding(
@@ -1021,6 +1028,11 @@ class _WebHomeReadModeButton extends StatelessWidget {
     final unselectedColor = isDarkMode
         ? Colors.white70
         : AppTheme.appThemePrimary.withValues(alpha: 0.92);
+    final selectedTextColor =
+        isDarkMode ? Colors.white : AppTheme.appThemePrimary;
+    final selectedBgColor = isDarkMode
+        ? Colors.white.withValues(alpha: 0.18)
+        : AppTheme.appThemePrimary.withValues(alpha: 0.12);
 
     return InkWell(
       onTap: onTap,
@@ -1030,9 +1042,7 @@ class _WebHomeReadModeButton extends StatelessWidget {
         curve: Curves.easeOut,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: selected
-              ? AppTheme.appThemePrimary.withValues(alpha: 0.12)
-              : Colors.transparent,
+          color: selected ? selectedBgColor : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Text(
@@ -1040,7 +1050,7 @@ class _WebHomeReadModeButton extends StatelessWidget {
           style: AppTextTheme.popinsDefault(
             fontSize: 15,
             fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-            color: selected ? AppTheme.appThemePrimary : unselectedColor,
+            color: selected ? selectedTextColor : unselectedColor,
           ),
         ),
       ),

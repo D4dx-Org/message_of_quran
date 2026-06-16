@@ -44,6 +44,7 @@ import 'package:the_message_of_the_quran/features/settings_screen/providers/tajw
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/reading_progress_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/audio_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
@@ -548,6 +549,19 @@ class _SurahScreenState extends State<SurahScreen> {
   Future<void> _navigateToMainTab(int tabIndex) async {
     if (!mounted) return;
     final navigator = Navigator.of(context);
+
+    // Settings: push on top of the surah route so that popping returns to
+    // the exact scroll position. Audio is not stopped.
+    if (tabIndex == 3) {
+      _saveLastRead();
+      if (!mounted) return;
+      await navigator.push(
+        MaterialPageRoute(
+          builder: (_) => const SettingsScreen(showStandaloneBackAppBar: true),
+        ),
+      );
+      return;
+    }
 
     _saveLastRead();
     await context.read<AudioProvider>().stopAudio();

@@ -1360,7 +1360,7 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
               '${surah.surahNumber}',
               style: TextStyle(
                 color: isSelected
-                    ? Colors.white
+                    ? (isDark ? AppTheme.appThemePrimary : Colors.white)
                     : (isDark ? Colors.white70 : Colors.black87),
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
@@ -1465,7 +1465,7 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
               '$start',
               style: TextStyle(
                 color: isSelected
-                    ? Colors.white
+                    ? (isDark ? AppTheme.appThemePrimary : Colors.white)
                     : (isDark ? Colors.white70 : Colors.black87),
                 fontSize: 12,
                 fontWeight: FontWeight.bold,

@@ -172,6 +172,7 @@ class _MainScreenState extends State<MainScreen> {
     }
 
     const headerAccent = AppTheme.appThemePrimary;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
@@ -181,9 +182,15 @@ class _MainScreenState extends State<MainScreen> {
           alignment: Alignment.center,
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: headerAccent.withValues(alpha: 0.06),
+              color: isDarkMode
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : headerAccent.withValues(alpha: 0.06),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: headerAccent.withValues(alpha: 0.18)),
+              border: Border.all(
+                color: isDarkMode
+                    ? Colors.white.withValues(alpha: 0.18)
+                    : headerAccent.withValues(alpha: 0.18),
+              ),
             ),
             child: Padding(
               padding: const EdgeInsets.all(4),
@@ -523,6 +530,11 @@ class _WebReadModeButton extends StatelessWidget {
     final unselectedColor = isDarkMode
         ? Colors.white70
         : AppTheme.appThemePrimary.withValues(alpha: 0.92);
+    final selectedTextColor =
+        isDarkMode ? Colors.white : AppTheme.appThemePrimary;
+    final selectedBgColor = isDarkMode
+        ? Colors.white.withValues(alpha: 0.18)
+        : AppTheme.appThemePrimary.withValues(alpha: 0.12);
 
     return InkWell(
       onTap: onTap,
@@ -532,7 +544,7 @@ class _WebReadModeButton extends StatelessWidget {
         curve: Curves.easeOut,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: selected ? AppTheme.appThemeSecondary : Colors.transparent,
+          color: selected ? selectedBgColor : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Text(
@@ -540,7 +552,7 @@ class _WebReadModeButton extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
-            color: selected ? AppTheme.appThemePrimary : unselectedColor,
+            color: selected ? selectedTextColor : unselectedColor,
             fontSize: 14,
             fontWeight: FontWeight.w700,
           ),
