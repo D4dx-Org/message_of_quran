@@ -2846,6 +2846,15 @@ class _SurahScreenState extends State<SurahScreen> {
                               ),
                             ),
                           ),
+                          // Close mini-player
+                          IconButton(
+                            tooltip: 'Close player',
+                            onPressed: () => audio.stopAudio(),
+                            icon: const Icon(
+                              Icons.close,
+                              color: AppTheme.appIconTheme,
+                            ),
+                          ),
                         ],
                       ),
                     ),
