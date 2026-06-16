@@ -2984,8 +2984,9 @@ class _TajweedHtmlTextState extends State<_TajweedHtmlText> {
     final baseStyle = AppTextTheme.tajweedArabiStyle(context);
     // Ayah-end marker keeps the standard reading font; QuranTaha renders the
     // ﴿﴾ ornamental parentheses as oversized decorative glyphs.
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final markerStyle = AppTextTheme.surahArabiStyle(context).copyWith(
-      color: Theme.of(context).colorScheme.primary,
+      color: isDark ? Colors.white : Theme.of(context).colorScheme.primary,
     );
 
     if (!_loaded) {
@@ -3248,6 +3249,7 @@ class _AyahNumberBadge extends StatelessWidget {
     // U+FD3F ﴿ and U+FD3E ﴾ are the Arabic ornamental parentheses that
     // bracket ayah numbers — exactly matching the reference image style.
     // TextDirection.ltr prevents the bidi algorithm from mirroring the glyphs.
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final badge = Text(
       '\uFD3F${_toArabicNumerals(number)}\uFD3E',
       textDirection: TextDirection.ltr,
@@ -3256,7 +3258,7 @@ class _AyahNumberBadge extends StatelessWidget {
         fontSize: 20,
         color: highlighted
             ? AppTheme.appIconTheme
-            : Theme.of(context).colorScheme.primary,
+            : (isDark ? Colors.white : Theme.of(context).colorScheme.primary),
         height: 1,
       ),
     );

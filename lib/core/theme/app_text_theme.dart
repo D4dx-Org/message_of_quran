@@ -217,7 +217,7 @@ class AppTextTheme {
     final controller = Provider.of<FontSizeChangerProvider>(ctx);
     final height = _arabicLineHeights[controller.fontType] ?? 2.0;
     final fontSize = controller.quranFontSize.toDouble();
-    final color = Theme.of(ctx).brightness == Brightness.dark ? null : Colors.black;
+    final color = Theme.of(ctx).brightness == Brightness.dark ? Colors.white : Colors.black;
     if (controller.fontType == 'Amiri') {
       return TextStyle(
         fontFamily: 'Amiri',
@@ -246,7 +246,7 @@ class AppTextTheme {
   static TextStyle tajweedArabiStyle(BuildContext ctx) {
     final controller = Provider.of<FontSizeChangerProvider>(ctx);
     final fontSize = controller.quranFontSize.toDouble();
-    final color = Theme.of(ctx).brightness == Brightness.dark ? null : Colors.black;
+    final color = Theme.of(ctx).brightness == Brightness.dark ? Colors.white : Colors.black;
     return TextStyle(
       fontFamily: 'QuranTaha',
       fontSize: fontSize,
