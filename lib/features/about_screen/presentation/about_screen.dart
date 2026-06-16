@@ -7,7 +7,12 @@ import 'package:the_message_of_the_quran/features/settings_screen/providers/lang
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutScreen extends StatefulWidget {
-  const AboutScreen({super.key});
+  const AboutScreen({
+    super.key,
+    this.showStandaloneBackAppBar = false,
+  });
+
+  final bool showStandaloneBackAppBar;
 
   @override
   State<AboutScreen> createState() => _AboutScreenState();
@@ -41,6 +46,30 @@ class _AboutScreenState extends State<AboutScreen> {
   Widget build(BuildContext context) {
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     return BaseScreenLayout(
+      appBar: widget.showStandaloneBackAppBar
+          ? AppBar(
+              automaticallyImplyLeading: false,
+              backgroundColor: const Color(0xFF234C7C),
+              elevation: 0,
+              centerTitle: true,
+              leading: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: Colors.white,
+                ),
+                onPressed: () => Navigator.of(context).maybePop(),
+              ),
+              title: Text(
+                isMalayalam ? 'ഞങ്ങളെക്കുറിച്ച്' : 'About',
+                style: AppTextTheme.localizedTitle(
+                  isMalayalam: isMalayalam,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            )
+          : null,
       child: Consumer<AboutProvider>(
         builder: (context, provider, _) {
           if (provider.isAboutLoading) {

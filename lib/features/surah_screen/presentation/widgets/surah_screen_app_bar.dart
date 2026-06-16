@@ -1,12 +1,19 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:the_message_of_the_quran/core/models/arabic_block_model.dart';
+import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
+
+const _kMakkahIcon = 'assets/icons/revamp/makkah_icon.svg';
+const _kMadinahIcon = 'assets/icons/revamp/madeena_icon.svg';
 
 String _resolveOrdinalLabel(String ordinalLabel, int surahNumber) {
   final trimmed = ordinalLabel.trim();
@@ -263,6 +270,8 @@ class SurahInfoStrip extends StatelessWidget {
   final VoidCallback? onNext;
   final bool showPrevious;
   final bool showNext;
+  final Widget? footer;
+  final Widget? trailingActions;
 
   const SurahInfoStrip({
     super.key,
@@ -277,6 +286,8 @@ class SurahInfoStrip extends StatelessWidget {
     this.onNext,
     this.showPrevious = true,
     this.showNext = true,
+    this.footer,
+    this.trailingActions,
   });
 
   @override
@@ -345,83 +356,96 @@ class SurahInfoStrip extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       decoration: stripDecoration,
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          _navBtn(
-            context,
-            Icons.arrow_back_ios_new,
-            showPrevious,
-            onPrevious,
-            useDesktopWebSurface: useDesktopWebSurface,
-          ),
-          const SizedBox(width: 4),
-          Expanded(
-            child: LayoutBuilder(
-              builder: (context, constraints) => Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    headerTitle,
-                    style: AppTextTheme.localizedLabel(
-                      isMalayalam: isMalayalam,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: secondaryTextColor,
-                      letterSpacing: 0.4,
-                      height: 1.2,
-                    ),
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  SizedBox(
-                    width: constraints.maxWidth,
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.center,
-                      child: Text(
-                        nameLine,
-                        style: AppTextTheme.localizedTitle(
+          Row(
+            children: [
+              _navBtn(
+                context,
+                Icons.arrow_back_ios_new,
+                showPrevious,
+                onPrevious,
+                useDesktopWebSurface: useDesktopWebSurface,
+              ),
+              const SizedBox(width: 4),
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) => Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        headerTitle,
+                        style: AppTextTheme.localizedLabel(
                           isMalayalam: isMalayalam,
-                          fontSize: 16,
+                          fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: primaryTextColor,
-                          height: 1.15,
+                          color: secondaryTextColor,
+                          letterSpacing: 0.4,
+                          height: 1.2,
                         ),
                         textAlign: TextAlign.center,
                         maxLines: 1,
-                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
+                      const SizedBox(height: 4),
+                      SizedBox(
+                        width: constraints.maxWidth,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.center,
+                          child: Text(
+                            nameLine,
+                            style: AppTextTheme.localizedTitle(
+                              isMalayalam: isMalayalam,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: primaryTextColor,
+                              height: 1.15,
+                            ),
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            softWrap: false,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        placeLine,
+                        style: AppTextTheme.localizedBody(
+                          isMalayalam: isMalayalam,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: secondaryTextColor,
+                          letterSpacing: 0.2,
+                          height: 1.2,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 3),
-                  Text(
-                    placeLine,
-                    style: AppTextTheme.localizedBody(
-                      isMalayalam: isMalayalam,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: secondaryTextColor,
-                      letterSpacing: 0.2,
-                      height: 1.2,
-                    ),
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+                ),
               ),
-            ),
+              if (trailingActions != null) ...[
+                const SizedBox(width: 10),
+                trailingActions!,
+              ],
+              const SizedBox(width: 10),
+              _navBtn(
+                context,
+                Icons.arrow_forward_ios_rounded,
+                showNext,
+                onNext,
+                useDesktopWebSurface: useDesktopWebSurface,
+              ),
+            ],
           ),
-          const SizedBox(width: 4),
-          _navBtn(
-            context,
-            Icons.arrow_forward_ios_rounded,
-            showNext,
-            onNext,
-            useDesktopWebSurface: useDesktopWebSurface,
-          ),
+          if (footer != null) ...[
+            const SizedBox(height: 14),
+            footer!,
+          ],
         ],
       ),
     );
@@ -480,7 +504,20 @@ class SurahInfoStrip extends StatelessWidget {
 
 /// Sliver wrapper for continuous scroll mode.
 class SurahScreenAppBar extends StatelessWidget {
-  const SurahScreenAppBar({super.key});
+  const SurahScreenAppBar({
+    super.key,
+    required this.arabicBlockList,
+    required this.currentAyahNumber,
+    required this.onAyahSelected,
+    this.onPlayPressed,
+    this.onInfoPressed,
+  });
+
+  final List<ArabicBlockModel> arabicBlockList;
+  final int currentAyahNumber;
+  final ValueChanged<int> onAyahSelected;
+  final VoidCallback? onPlayPressed;
+  final VoidCallback? onInfoPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -492,6 +529,7 @@ class SurahScreenAppBar extends StatelessWidget {
             return const SizedBox.shrink();
           }
           final surah = sp.surahList[sp.index];
+
           return SurahInfoStrip(
             surahName: surah.name,
             surahTranslation: surah.description,
@@ -504,8 +542,1007 @@ class SurahScreenAppBar extends StatelessWidget {
             showNext: sp.index > 0,
             onPrevious: () => sp.onSwipe(false),
             onNext: () => sp.onSwipe(true),
+            trailingActions: (onPlayPressed == null && onInfoPressed == null)
+                ? null
+                : SurahBannerActions(
+                    isMalayalam: isMalayalam,
+                    onPlayPressed: onPlayPressed,
+                    onInfoPressed: onInfoPressed,
+                    compact: true,
+                  ),
           );
         },
+      ),
+    );
+  }
+}
+
+class SurahBannerActions extends StatelessWidget {
+  const SurahBannerActions({
+    super.key,
+    required this.isMalayalam,
+    this.onPlayPressed,
+    this.onInfoPressed,
+    this.compact = false,
+  });
+
+  final bool isMalayalam;
+  final VoidCallback? onPlayPressed;
+  final VoidCallback? onInfoPressed;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    if (onPlayPressed == null && onInfoPressed == null) {
+      return const SizedBox.shrink();
+    }
+
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    const useDesktopWebSurface = kIsWeb;
+    final iconColor = useDesktopWebSurface
+        ? (isDarkMode ? Colors.white70 : AppTheme.appThemePrimary)
+        : Colors.white.withValues(alpha: 0.9);
+    final borderColor = useDesktopWebSurface
+        ? (isDarkMode
+              ? Colors.white.withValues(alpha: 0.16)
+              : AppTheme.appThemePrimary.withValues(alpha: 0.16))
+        : AppTheme.appIconTheme.withValues(alpha: 0.4);
+    final fillColor = useDesktopWebSurface
+        ? (isDarkMode
+              ? Colors.white.withValues(alpha: 0.06)
+              : AppTheme.appThemePrimary.withValues(alpha: 0.06))
+        : Colors.white.withValues(alpha: 0.08);
+
+    Widget buildActionIcon({
+      required IconData icon,
+      required String tooltip,
+      required VoidCallback onPressed,
+    }) {
+      return Tooltip(
+        message: tooltip,
+        child: Material(
+          color: fillColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(compact ? 12 : 14),
+            side: BorderSide(color: borderColor),
+          ),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(compact ? 12 : 14),
+            onTap: onPressed,
+            child: SizedBox(
+              width: compact ? 34 : 40,
+              height: compact ? 34 : 40,
+              child: Icon(icon, color: iconColor, size: compact ? 18 : 20),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (onPlayPressed != null)
+            buildActionIcon(
+              icon: Icons.play_circle_outline_rounded,
+              tooltip: isMalayalam ? 'പ്ലേ' : 'Play',
+              onPressed: onPlayPressed!,
+            ),
+          if (onPlayPressed != null && onInfoPressed != null)
+            const SizedBox(width: 10),
+          if (onInfoPressed != null)
+            buildActionIcon(
+              icon: Icons.info_outline_rounded,
+              tooltip: isMalayalam ? 'വിവരം' : 'Info',
+              onPressed: onInfoPressed!,
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class SurahHeaderControls extends StatelessWidget {
+  const SurahHeaderControls({
+    super.key,
+    required this.isMalayalam,
+    required this.surahList,
+    required this.currentSurahNumber,
+    required this.arabicBlockList,
+    required this.currentAyahNumber,
+    required this.onAyahSelected,
+    this.onPlayPressed,
+    this.onInfoPressed,
+    this.compact = false,
+    this.showActions = true,
+  });
+
+  final bool isMalayalam;
+  final List<SurahModel> surahList;
+  final int currentSurahNumber;
+  final List<ArabicBlockModel> arabicBlockList;
+  final int currentAyahNumber;
+  final ValueChanged<int> onAyahSelected;
+  final VoidCallback? onPlayPressed;
+  final VoidCallback? onInfoPressed;
+  final bool compact;
+  final bool showActions;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final width = MediaQuery.sizeOf(context).width;
+    final scale = ResponsiveHelper.scaleFactor(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final fieldFill = compact
+        ? Colors.white.withValues(alpha: isDarkMode ? 0.10 : 0.12)
+        : (isDarkMode
+              ? Colors.white.withValues(alpha: 0.05)
+              : AppTheme.appThemePrimary.withValues(alpha: 0.05));
+    final fieldBorder = compact
+        ? Colors.white.withValues(alpha: 0.20)
+        : (isDarkMode
+              ? Colors.white.withValues(alpha: 0.14)
+              : AppTheme.appThemePrimary.withValues(alpha: 0.14));
+    final labelColor = compact
+        ? Colors.white
+        : (isDarkMode ? Colors.white70 : AppTheme.appThemePrimary);
+    // Color for items inside the dropdown popup (renders on card/white background).
+    final popupItemColor = isDarkMode ? Colors.white : Colors.black87;
+    final itemTextStyle = AppTextTheme.localizedLabel(
+      isMalayalam: isMalayalam,
+      fontSize: (compact ? 10 : 13) * scale,
+      fontWeight: FontWeight.w500,
+      color: labelColor,
+    );
+    final popupItemTextStyle = itemTextStyle.copyWith(
+      color: popupItemColor,
+      fontSize: (compact ? 11 : 13) * scale,
+      height: 1.0,
+    );
+
+    // Builds a popup item wrapped in tight vertical padding for compact rows.
+    Widget popupItemChild(String text, {bool selected = false}) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Text(
+          text,
+          overflow: TextOverflow.ellipsis,
+          style: popupItemTextStyle.copyWith(
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+          ),
+        ),
+      );
+    }
+
+    final surahItems = surahList.map<DropdownMenuItem<int>>((surah) {
+      final displayText = formatSurahListDisplayText(
+        isMalayalam: isMalayalam,
+        surahName: surah.name,
+        surahTranslation: surah.description,
+        malayalamName: surah.malayalamName,
+        surahNumber: surah.surahNumber,
+      );
+      return DropdownMenuItem<int>(
+        value: surah.surahNumber,
+        child: popupItemChild(
+          '${surah.surahNumber}. ${displayText.title}',
+          selected: surah.surahNumber == currentSurahNumber,
+        ),
+      );
+    }).toList(growable: false);
+
+    // Parallel list of label-only widgets used by selectedItemBuilder so that
+    // the closed-button label always renders in white (labelColor / itemTextStyle)
+    // regardless of the black popup item style.
+    final surahSelectedLabels = surahList.map<Widget>((surah) {
+      final displayText = formatSurahListDisplayText(
+        isMalayalam: isMalayalam,
+        surahName: surah.name,
+        surahTranslation: surah.description,
+        malayalamName: surah.malayalamName,
+        surahNumber: surah.surahNumber,
+      );
+      return Text(
+        '${surah.surahNumber}. ${displayText.title}',
+        overflow: TextOverflow.ellipsis,
+        style: itemTextStyle,
+      );
+    }).toList(growable: false);
+
+    final ayahItems = arabicBlockList.asMap().entries.map((entry) {
+      final index = entry.key;
+      final block = entry.value;
+      final start = block.verseFrom ?? index + 1;
+      final end = block.verseTo ?? index + 1;
+      return DropdownMenuItem<int>(
+        value: start,
+        child: popupItemChild(
+          start == end
+              ? formatAyahReferenceLabel(start, isMalayalam: isMalayalam)
+              : formatAyahRangeLabel(start, end, isMalayalam: isMalayalam),
+          selected: start == currentAyahNumber,
+        ),
+      );
+    }).toList(growable: false);
+
+    final ayahSelectedLabels = arabicBlockList.asMap().entries.map<Widget>((entry) {
+      final index = entry.key;
+      final block = entry.value;
+      final start = block.verseFrom ?? index + 1;
+      final end = block.verseTo ?? index + 1;
+      return Text(
+        start == end
+            ? formatAyahReferenceLabel(start, isMalayalam: isMalayalam)
+            : formatAyahRangeLabel(start, end, isMalayalam: isMalayalam),
+        overflow: TextOverflow.ellipsis,
+        style: itemTextStyle,
+      );
+    }).toList(growable: false);
+
+    Widget buildDropdown({
+      required String label,
+      required int? value,
+      required List<DropdownMenuItem<int>> items,
+      required ValueChanged<int?> onChanged,
+      List<Widget>? selectedLabels,
+    }) {
+      // DropdownButton asserts that value must be present in items when non-null.
+      // Guard against empty lists or stale values during initial load.
+      final safeValue = (value != null && items.any((item) => item.value == value))
+          ? value
+          : null;
+      final dropdown = DecoratedBox(
+        decoration: BoxDecoration(
+          color: fieldFill,
+          borderRadius: BorderRadius.circular(compact ? 8 : 14),
+          border: Border.all(color: fieldBorder),
+        ),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton<int>(
+            value: safeValue,
+            hint: Text(label, style: itemTextStyle),
+            // selectedItemBuilder renders the closed-button label in white
+            // (itemTextStyle) while popup items keep their black popupItemTextStyle.
+            selectedItemBuilder: selectedLabels != null
+                ? (_) => selectedLabels
+                : null,
+            isExpanded: !compact,
+            isDense: compact,
+            // null = use intrinsic item height (avoids the >=48 assertion)
+            itemHeight: null,
+            borderRadius: BorderRadius.circular(compact ? 8 : 14),
+            padding: EdgeInsets.symmetric(
+              horizontal: compact ? 6 : 14,
+              vertical: compact ? 0 : 2,
+            ),
+            dropdownColor: theme.cardColor,
+            iconEnabledColor: labelColor,
+            style: itemTextStyle,
+            items: items,
+            onChanged: onChanged,
+          ),
+        ),
+      );
+
+      if (compact) {
+        return dropdown;
+      }
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 6),
+            child: Text(
+              label,
+              style: itemTextStyle.copyWith(
+                fontSize: 11 * scale,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          dropdown,
+        ],
+      );
+    }
+
+    Widget buildActionIcon({
+      required IconData icon,
+      required String tooltip,
+      required VoidCallback onPressed,
+    }) {
+      return Tooltip(
+        message: tooltip,
+        child: Material(
+          color: fieldFill,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(compact ? 10 : 14),
+            side: BorderSide(color: fieldBorder),
+          ),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(compact ? 10 : 14),
+            onTap: onPressed,
+            child: SizedBox(
+              width: compact ? 32 : 44,
+              height: compact ? 32 : 44,
+              child: Icon(icon, color: labelColor, size: compact ? 18 : 22),
+            ),
+          ),
+        ),
+      );
+    }
+
+    final ayahDropdown = buildDropdown(
+      label: isMalayalam ? 'ജം ടു ആയത്ത്' : 'Jump to Ayah',
+      value: currentAyahNumber,
+      items: ayahItems,
+      selectedLabels: ayahSelectedLabels.isNotEmpty ? ayahSelectedLabels : null,
+      onChanged: (value) {
+        if (value == null) return;
+        onAyahSelected(value);
+      },
+    );
+
+    final surahDropdown = buildDropdown(
+      label: isMalayalam ? 'ജം ടു സൂറ' : 'Jump to Surah',
+      value: currentSurahNumber,
+      items: surahItems,
+      selectedLabels: surahSelectedLabels.isNotEmpty ? surahSelectedLabels : null,
+      onChanged: (value) async {
+        if (value == null) return;
+        await context.read<SurahProvider>().selectSurahByNumber(value);
+      },
+    );
+
+    final actionButtons = <Widget>[
+      if (showActions && onPlayPressed != null)
+        buildActionIcon(
+          icon: Icons.play_circle_outline_rounded,
+          tooltip: isMalayalam ? 'പ്ലേ' : 'Play',
+          onPressed: onPlayPressed!,
+        ),
+      if (showActions && onInfoPressed != null) ...[
+        if (showActions && onPlayPressed != null) const SizedBox(width: 10),
+        buildActionIcon(
+          icon: Icons.info_outline_rounded,
+          tooltip: isMalayalam ? 'വിവരം' : 'Info',
+          onPressed: onInfoPressed!,
+        ),
+      ],
+    ];
+
+    if (width < 720) {
+      if (compact) {
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SurahJumpButton(
+              isMalayalam: isMalayalam,
+              surahList: surahList,
+              currentSurahNumber: currentSurahNumber,
+              arabicBlockList: arabicBlockList,
+              currentAyahNumber: currentAyahNumber,
+              onAyahSelected: onAyahSelected,
+            ),
+            if (actionButtons.isNotEmpty) ...[const SizedBox(width: 6), ...actionButtons],
+          ],
+        );
+      }
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ayahDropdown,
+          const SizedBox(height: 10),
+          surahDropdown,
+          if (actionButtons.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: actionButtons,
+            ),
+          ],
+        ],
+      );
+    }
+
+    if (compact) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SurahJumpButton(
+            isMalayalam: isMalayalam,
+            surahList: surahList,
+            currentSurahNumber: currentSurahNumber,
+            arabicBlockList: arabicBlockList,
+            currentAyahNumber: currentAyahNumber,
+            onAyahSelected: onAyahSelected,
+          ),
+          if (actionButtons.isNotEmpty) ...[
+            const SizedBox(width: 6),
+            ...actionButtons,
+          ],
+        ],
+      );
+    }
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Expanded(child: ayahDropdown),
+        const SizedBox(width: 12),
+        Expanded(child: surahDropdown),
+        if (actionButtons.isNotEmpty) ...[
+          const SizedBox(width: 12),
+          Row(children: actionButtons),
+        ],
+      ],
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SurahJumpButton — compact chip that opens the Surah/Ayah navigator sheet.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// A single compact chip shown in the app bar. Tapping it opens
+/// [_SurahNavigatorSheet], which lets the user jump to any surah or ayah.
+/// It is stateful so it remembers the last explicitly-jumped-to ayah and
+/// highlights that one when the sheet is reopened.
+class SurahJumpButton extends StatefulWidget {
+  const SurahJumpButton({
+    super.key,
+    required this.isMalayalam,
+    required this.surahList,
+    required this.currentSurahNumber,
+    required this.arabicBlockList,
+    required this.currentAyahNumber,
+    required this.onAyahSelected,
+  });
+
+  final bool isMalayalam;
+  final List<SurahModel> surahList;
+  final int currentSurahNumber;
+  final List<ArabicBlockModel> arabicBlockList;
+  final int currentAyahNumber;
+  final ValueChanged<int> onAyahSelected;
+
+  @override
+  State<SurahJumpButton> createState() => _SurahJumpButtonState();
+}
+
+class _SurahJumpButtonState extends State<SurahJumpButton> {
+  /// The ayah the user most recently jumped to via this sheet.
+  /// null = fall back to the scroll-derived [widget.currentAyahNumber].
+  int? _lastJumpedAyah;
+
+  @override
+  void didUpdateWidget(SurahJumpButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Reset when the surah changes so the sheet starts at the first ayah.
+    if (oldWidget.currentSurahNumber != widget.currentSurahNumber) {
+      _lastJumpedAyah = null;
+    }
+  }
+
+  int get _selectedAyah => _lastJumpedAyah ?? widget.currentAyahNumber;
+
+  SurahModel? _findSurah() {
+    for (final s in widget.surahList) {
+      if (s.surahNumber == widget.currentSurahNumber) return s;
+    }
+    return null;
+  }
+
+  void _openSheet(BuildContext context) {
+    final bsMaxWidth = ResponsiveHelper.bottomSheetMaxWidth(context);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).cardColor,
+      constraints:
+          bsMaxWidth != null ? BoxConstraints(maxWidth: bsMaxWidth) : null,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetCtx) => _SurahNavigatorSheet(
+        isMalayalam: widget.isMalayalam,
+        surahList: widget.surahList,
+        currentSurahNumber: widget.currentSurahNumber,
+        arabicBlockList: widget.arabicBlockList,
+        // Use the last explicitly-selected ayah, not the scroll-position one.
+        currentAyahNumber: _selectedAyah,
+        onSurahSelected: (surahNumber) async {
+          Navigator.of(sheetCtx).pop();
+          // Reset jumped ayah for the new surah.
+          setState(() => _lastJumpedAyah = null);
+          await sheetCtx.read<SurahProvider>().selectSurahByNumber(surahNumber);
+        },
+        onAyahSelected: (ayahStart) {
+          Navigator.of(sheetCtx).pop();
+          // Remember this as the last explicitly-selected ayah.
+          setState(() => _lastJumpedAyah = ayahStart);
+          widget.onAyahSelected(ayahStart);
+        },
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scale = ResponsiveHelper.scaleFactor(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final surah = _findSurah();
+
+    final displayText = surah != null
+        ? formatSurahListDisplayText(
+            isMalayalam: widget.isMalayalam,
+            surahName: surah.name,
+            surahTranslation: surah.description,
+            malayalamName: surah.malayalamName,
+            surahNumber: surah.surahNumber,
+          )
+        : null;
+    final surahLabel =
+        displayText?.title ?? (widget.isMalayalam ? 'സൂറ' : 'Surah');
+
+    const white = Colors.white;
+    final fill = white.withValues(alpha: isDark ? 0.10 : 0.13);
+    final border = white.withValues(alpha: 0.22);
+
+    return Semantics(
+      button: true,
+      label: 'Jump to surah or ayah',
+      child: GestureDetector(
+        onTap: () => _openSheet(context),
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 180),
+          padding: EdgeInsets.symmetric(
+            horizontal: 8 * scale,
+            vertical: 6 * scale,
+          ),
+          decoration: BoxDecoration(
+            color: fill,
+            borderRadius: BorderRadius.circular(9 * scale),
+            border: Border.all(color: border),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: Text(
+                  '${widget.currentSurahNumber}. $surahLabel',
+                  style: TextStyle(
+                    color: white,
+                    fontSize: 10.5 * scale,
+                    fontWeight: FontWeight.w600,
+                    height: 1.2,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+              SizedBox(width: 3 * scale),
+              Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: white.withValues(alpha: 0.80),
+                size: 16 * scale,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// _SurahNavigatorSheet — modal sheet with Surah / Ayah tabs.
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _SurahNavigatorSheet extends StatefulWidget {
+  const _SurahNavigatorSheet({
+    required this.isMalayalam,
+    required this.surahList,
+    required this.currentSurahNumber,
+    required this.arabicBlockList,
+    required this.currentAyahNumber,
+    required this.onSurahSelected,
+    required this.onAyahSelected,
+  });
+
+  final bool isMalayalam;
+  final List<SurahModel> surahList;
+  final int currentSurahNumber;
+  final List<ArabicBlockModel> arabicBlockList;
+  final int currentAyahNumber;
+  final ValueChanged<int> onSurahSelected;
+  final ValueChanged<int> onAyahSelected;
+
+  @override
+  State<_SurahNavigatorSheet> createState() => _SurahNavigatorSheetState();
+}
+
+class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
+  int _selectedTab = 0; // 0 = Surah, 1 = Ayah
+  final TextEditingController _searchCtrl = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  List<SurahModel> get _filteredSurahs {
+    if (_searchQuery.isEmpty) return widget.surahList;
+    final q = _searchQuery.toLowerCase();
+    return widget.surahList.where((s) {
+      return s.name.toLowerCase().contains(q) ||
+          s.malayalamName.toLowerCase().contains(q) ||
+          s.surahNumber.toString().contains(q) ||
+          s.description.toLowerCase().contains(q);
+    }).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final cs = theme.colorScheme;
+    final isMl = widget.isMalayalam;
+
+    return DraggableScrollableSheet(
+      initialChildSize: 0.75,
+      minChildSize: 0.4,
+      maxChildSize: 0.92,
+      expand: false,
+      builder: (_, scrollCtrl) {
+        return Column(
+          children: [
+            // Drag handle
+            Padding(
+              padding: const EdgeInsets.only(top: 10, bottom: 4),
+              child: Container(
+                height: 4,
+                width: 40,
+                decoration: BoxDecoration(
+                  color: cs.outline.withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            // Tab header row
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 6, 12, 6),
+              child: Row(
+                children: [
+                  _TabButton(
+                    label: isMl ? 'അദ്ധ്യായം' : 'Surah',
+                    isSelected: _selectedTab == 0,
+                    isMalayalam: isMl,
+                    onTap: () {
+                      if (_selectedTab != 0) {
+                        setState(() => _selectedTab = 0);
+                      }
+                    },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(
+                      '|',
+                      style: TextStyle(
+                        color: cs.outline,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                  _TabButton(
+                    label: isMl ? 'ആയത്ത്' : 'Ayah',
+                    isSelected: _selectedTab == 1,
+                    isMalayalam: isMl,
+                    onTap: () {
+                      if (_selectedTab != 1) {
+                        setState(() => _selectedTab = 1);
+                      }
+                    },
+                  ),
+                  const Spacer(),
+                  // Close button
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.10)
+                            : Colors.grey.shade200,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.close,
+                        size: 16,
+                        color: cs.onSurface,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1),
+            // Search field — only for Surah tab
+            if (_selectedTab == 0)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
+                child: TextField(
+                  controller: _searchCtrl,
+                  onChanged: (v) => setState(() => _searchQuery = v),
+                  decoration: InputDecoration(
+                    hintText: isMl ? 'സൂറ തിരയുക' : 'Search Surah',
+                    prefixIcon: const Icon(Icons.search, size: 20),
+                    filled: true,
+                    fillColor: isDark
+                        ? Colors.white.withValues(alpha: 0.06)
+                        : Colors.grey.shade100,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
+                    isDense: true,
+                  ),
+                ),
+              ),
+            // List body
+            Expanded(
+              child: _selectedTab == 0
+                  ? _buildSurahList(scrollCtrl, isDark, isMl, cs)
+                  : _buildAyahList(scrollCtrl, isDark, isMl, cs),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildSurahList(
+    ScrollController scrollCtrl,
+    bool isDark,
+    bool isMl,
+    ColorScheme cs,
+  ) {
+    final surahs = _filteredSurahs;
+    if (surahs.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Text(
+            isMl ? 'ഒന്നും കണ്ടെത്തിയില്ല' : 'No results found',
+            style: TextStyle(color: cs.outline, fontSize: 14),
+          ),
+        ),
+      );
+    }
+
+    return ListView.separated(
+      controller: scrollCtrl,
+      itemCount: surahs.length,
+      separatorBuilder: (_, __) =>
+          const Divider(height: 1, indent: 58, endIndent: 16),
+      itemBuilder: (_, i) {
+        final surah = surahs[i];
+        final isSelected = surah.surahNumber == widget.currentSurahNumber;
+        final displayText = formatSurahListDisplayText(
+          isMalayalam: isMl,
+          surahName: surah.name,
+          surahTranslation: surah.description,
+          malayalamName: surah.malayalamName,
+          surahNumber: surah.surahNumber,
+        );
+        final placeKind = resolveSurahPlaceKind(surah.place);
+        final placeIcon =
+            placeKind == SurahPlaceKind.makkah ? _kMakkahIcon : _kMadinahIcon;
+        final activeColor =
+            isDark ? Colors.white : AppTheme.appThemePrimary;
+
+        return ListTile(
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+          leading: Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? activeColor
+                  : (isDark
+                        ? Colors.white.withValues(alpha: 0.08)
+                        : Colors.grey.shade100),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              '${surah.surahNumber}',
+              style: TextStyle(
+                color: isSelected
+                    ? Colors.white
+                    : (isDark ? Colors.white70 : Colors.black87),
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          title: Text(
+            displayText.title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextTheme.localizedLabel(
+              isMalayalam: isMl,
+              fontSize: 14,
+              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+              color: isSelected ? activeColor : cs.onSurface,
+            ),
+          ),
+          subtitle: displayText.subtitle.isNotEmpty
+              ? Text(
+                  displayText.subtitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: cs.onSurface.withValues(alpha: 0.55),
+                  ),
+                )
+              : null,
+          trailing: SvgPicture.asset(
+            placeIcon,
+            width: 22,
+            height: 22,
+            colorFilter: ColorFilter.mode(
+              isSelected
+                  ? activeColor
+                  : (isDark
+                        ? Colors.white.withValues(alpha: 0.5)
+                        : AppTheme.appThemePrimary.withValues(alpha: 0.45)),
+              BlendMode.srcIn,
+            ),
+          ),
+          selected: isSelected,
+          onTap: () => widget.onSurahSelected(surah.surahNumber),
+        );
+      },
+    );
+  }
+
+  Widget _buildAyahList(
+    ScrollController scrollCtrl,
+    bool isDark,
+    bool isMl,
+    ColorScheme cs,
+  ) {
+    final blocks = widget.arabicBlockList;
+    if (blocks.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Text(
+            isMl ? 'ആയത്തുകൾ ലഭ്യമല്ല' : 'No ayahs available',
+            style: TextStyle(color: cs.outline, fontSize: 14),
+          ),
+        ),
+      );
+    }
+
+    final activeColor =
+        isDark ? Colors.white : AppTheme.appThemePrimary;
+
+    return ListView.separated(
+      controller: scrollCtrl,
+      itemCount: blocks.length,
+      separatorBuilder: (_, __) =>
+          const Divider(height: 1, indent: 58, endIndent: 16),
+      itemBuilder: (_, index) {
+        final block = blocks[index];
+        final start = block.verseFrom ?? index + 1;
+        final end = block.verseTo ?? index + 1;
+        final isSelected = start == widget.currentAyahNumber ||
+            (widget.currentAyahNumber >= start &&
+                widget.currentAyahNumber <= end);
+        final label = start == end
+            ? formatAyahReferenceLabel(start, isMalayalam: isMl)
+            : formatAyahRangeLabel(start, end, isMalayalam: isMl);
+
+        return ListTile(
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+          leading: Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? activeColor
+                  : (isDark
+                        ? Colors.white.withValues(alpha: 0.08)
+                        : Colors.grey.shade100),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              '$start',
+              style: TextStyle(
+                color: isSelected
+                    ? Colors.white
+                    : (isDark ? Colors.white70 : Colors.black87),
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          title: Text(
+            label,
+            style: AppTextTheme.localizedLabel(
+              isMalayalam: isMl,
+              fontSize: 14,
+              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+              color: isSelected ? activeColor : cs.onSurface,
+            ),
+          ),
+          selected: isSelected,
+          onTap: () => widget.onAyahSelected(start),
+        );
+      },
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// _TabButton — pill tab used inside the navigator sheet header.
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _TabButton extends StatelessWidget {
+  const _TabButton({
+    required this.label,
+    required this.isSelected,
+    required this.isMalayalam,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool isSelected;
+  final bool isMalayalam;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        padding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+        decoration: BoxDecoration(
+          color: isSelected ? AppTheme.appThemePrimary : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: AppTextTheme.localizedLabel(
+            isMalayalam: isMalayalam,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: isSelected ? Colors.white : cs.onSurface,
+          ),
+        ),
       ),
     );
   }

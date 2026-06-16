@@ -11,6 +11,7 @@ import 'package:the_message_of_the_quran/core/widgets/d4dx_branding_footer.dart'
 import 'package:the_message_of_the_quran/features/author_screen/author_screen.dart';
 import 'package:the_message_of_the_quran/features/author_screen/presentation/english_translator_screen.dart';
 import 'package:the_message_of_the_quran/features/author_screen/presentation/translator_screen.dart';
+import 'package:the_message_of_the_quran/features/about_screen/presentation/about_screen.dart';
 import 'package:the_message_of_the_quran/features/contact_us_screen/presentation/contact_us_screen.dart';
 import 'package:the_message_of_the_quran/features/library/presentation/appendix_screen.dart';
 import 'package:the_message_of_the_quran/features/library/presentation/foreword_screen.dart';
@@ -80,6 +81,23 @@ class CommonDrawer extends StatelessWidget {
                           controller.changeIndex(0);
                           Navigator.pop(context);
                           Navigator.popUntil(context, (route) => route.isFirst);
+                        },
+                      ),
+                      _DrawerTile(
+                        title: isMalayalam ? 'ഞങ്ങളെക്കുറിച്ച്' : 'About',
+                        icon: Icons.info_outline,
+                        assetPath: 'assets/icons/about-img.png',
+                        isMalayalam: isMalayalam,
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const AboutScreen(
+                                showStandaloneBackAppBar: true,
+                              ),
+                            ),
+                          );
                         },
                       ),
                       if (isMalayalam)
