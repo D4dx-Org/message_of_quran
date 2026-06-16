@@ -1040,17 +1040,15 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
   }
 
   void _openSheet(BuildContext context) {
-    final bsMaxWidth = ResponsiveHelper.bottomSheetMaxWidth(context);
-    showModalBottomSheet(
+    showDialog(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Theme.of(context).cardColor,
-      constraints:
-          bsMaxWidth != null ? BoxConstraints(maxWidth: bsMaxWidth) : null,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (sheetCtx) => _SurahNavigatorSheet(
+      barrierColor: Colors.black.withValues(alpha: 0.45),
+      builder: (sheetCtx) => Dialog(
+        backgroundColor: Theme.of(context).cardColor,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 36),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        clipBehavior: Clip.antiAlias,
+        child: _SurahNavigatorSheet(
         isMalayalam: widget.isMalayalam,
         surahList: widget.surahList,
         currentSurahNumber: widget.currentSurahNumber,
@@ -1070,7 +1068,7 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
           widget.onAyahSelected(ayahStart);
         },
       ),
-    );
+    ));
   }
 
   @override
@@ -1092,6 +1090,13 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
     final surahLabel =
         displayText?.title ?? (widget.isMalayalam ? 'സൂറ' : 'Surah');
 
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    // On narrow screens show only the surah number to prevent overflow.
+    final narrowChip = screenWidth < 640;
+    final chipLabel = narrowChip
+        ? '${widget.currentSurahNumber}'
+        : '${widget.currentSurahNumber}. $surahLabel';
+
     const white = Colors.white;
     final fill = white.withValues(alpha: isDark ? 0.10 : 0.13);
     final border = white.withValues(alpha: 0.22);
@@ -1102,7 +1107,7 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
       child: GestureDetector(
         onTap: () => _openSheet(context),
         child: Container(
-          constraints: const BoxConstraints(maxWidth: 180),
+          constraints: BoxConstraints(maxWidth: narrowChip ? 60 : 180),
           padding: EdgeInsets.symmetric(
             horizontal: 8 * scale,
             vertical: 6 * scale,
@@ -1117,7 +1122,7 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
             children: [
               Flexible(
                 child: Text(
-                  '${widget.currentSurahNumber}. $surahLabel',
+                  chipLabel,
                   style: TextStyle(
                     color: white,
                     fontSize: 10.5 * scale,
@@ -1172,11 +1177,15 @@ class _SurahNavigatorSheet extends StatefulWidget {
 class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
   int _selectedTab = 0; // 0 = Surah, 1 = Ayah
   final TextEditingController _searchCtrl = TextEditingController();
+  final ScrollController _surahScrollCtrl = ScrollController();
+  final ScrollController _ayahScrollCtrl = ScrollController();
   String _searchQuery = '';
 
   @override
   void dispose() {
     _searchCtrl.dispose();
+    _surahScrollCtrl.dispose();
+    _ayahScrollCtrl.dispose();
     super.dispose();
   }
 
@@ -1197,126 +1206,103 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
     final isDark = theme.brightness == Brightness.dark;
     final cs = theme.colorScheme;
     final isMl = widget.isMalayalam;
+    final screenHeight = MediaQuery.sizeOf(context).height;
 
-    return DraggableScrollableSheet(
-      initialChildSize: 0.75,
-      minChildSize: 0.4,
-      maxChildSize: 0.92,
-      expand: false,
-      builder: (_, scrollCtrl) {
-        return Column(
-          children: [
-            // Drag handle
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: screenHeight * 0.82),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Tab header row
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 12, 6),
+            child: Row(
+              children: [
+                _TabButton(
+                  label: isMl ? 'അദ്ധ്യായം' : 'Surah',
+                  isSelected: _selectedTab == 0,
+                  isMalayalam: isMl,
+                  onTap: () {
+                    if (_selectedTab != 0) {
+                      setState(() => _selectedTab = 0);
+                    }
+                  },
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Text(
+                    '|',
+                    style: TextStyle(color: cs.outline, fontSize: 14),
+                  ),
+                ),
+                _TabButton(
+                  label: isMl ? 'ആയത്ത്' : 'Ayah',
+                  isSelected: _selectedTab == 1,
+                  isMalayalam: isMl,
+                  onTap: () {
+                    if (_selectedTab != 1) {
+                      setState(() => _selectedTab = 1);
+                    }
+                  },
+                ),
+                const Spacer(),
+                // Close button
+                GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
+                  child: Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.10)
+                          : Colors.grey.shade200,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.close, size: 16, color: cs.onSurface),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1),
+          // Search field — only for Surah tab
+          if (_selectedTab == 0)
             Padding(
-              padding: const EdgeInsets.only(top: 10, bottom: 4),
-              child: Container(
-                height: 4,
-                width: 40,
-                decoration: BoxDecoration(
-                  color: cs.outline.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(2),
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
+              child: TextField(
+                controller: _searchCtrl,
+                onChanged: (v) => setState(() => _searchQuery = v),
+                decoration: InputDecoration(
+                  hintText: isMl ? 'സൂറ തിരയുക' : 'Search Surah',
+                  prefixIcon: const Icon(Icons.search, size: 20),
+                  filled: true,
+                  fillColor: isDark
+                      ? Colors.white.withValues(alpha: 0.06)
+                      : Colors.grey.shade100,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
+                  isDense: true,
                 ),
               ),
             ),
-            // Tab header row
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 6, 12, 6),
-              child: Row(
-                children: [
-                  _TabButton(
-                    label: isMl ? 'അദ്ധ്യായം' : 'Surah',
-                    isSelected: _selectedTab == 0,
-                    isMalayalam: isMl,
-                    onTap: () {
-                      if (_selectedTab != 0) {
-                        setState(() => _selectedTab = 0);
-                      }
-                    },
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(
-                      '|',
-                      style: TextStyle(
-                        color: cs.outline,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                  _TabButton(
-                    label: isMl ? 'ആയത്ത്' : 'Ayah',
-                    isSelected: _selectedTab == 1,
-                    isMalayalam: isMl,
-                    onTap: () {
-                      if (_selectedTab != 1) {
-                        setState(() => _selectedTab = 1);
-                      }
-                    },
-                  ),
-                  const Spacer(),
-                  // Close button
-                  GestureDetector(
-                    onTap: () => Navigator.of(context).pop(),
-                    child: Container(
-                      width: 28,
-                      height: 28,
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? Colors.white.withValues(alpha: 0.10)
-                            : Colors.grey.shade200,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.close,
-                        size: 16,
-                        color: cs.onSurface,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Divider(height: 1),
-            // Search field — only for Surah tab
-            if (_selectedTab == 0)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
-                child: TextField(
-                  controller: _searchCtrl,
-                  onChanged: (v) => setState(() => _searchQuery = v),
-                  decoration: InputDecoration(
-                    hintText: isMl ? 'സൂറ തിരയുക' : 'Search Surah',
-                    prefixIcon: const Icon(Icons.search, size: 20),
-                    filled: true,
-                    fillColor: isDark
-                        ? Colors.white.withValues(alpha: 0.06)
-                        : Colors.grey.shade100,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 10,
-                    ),
-                    isDense: true,
-                  ),
-                ),
-              ),
-            // List body
-            Expanded(
-              child: _selectedTab == 0
-                  ? _buildSurahList(scrollCtrl, isDark, isMl, cs)
-                  : _buildAyahList(scrollCtrl, isDark, isMl, cs),
-            ),
-          ],
-        );
-      },
+          // List body
+          Flexible(
+            child: _selectedTab == 0
+                ? _buildSurahList(isDark, isMl, cs)
+                : _buildAyahList(isDark, isMl, cs),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildSurahList(
-    ScrollController scrollCtrl,
     bool isDark,
     bool isMl,
     ColorScheme cs,
@@ -1335,7 +1321,7 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
     }
 
     return ListView.separated(
-      controller: scrollCtrl,
+      controller: _surahScrollCtrl,
       itemCount: surahs.length,
       separatorBuilder: (_, __) =>
           const Divider(height: 1, indent: 58, endIndent: 16),
@@ -1424,7 +1410,6 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
   }
 
   Widget _buildAyahList(
-    ScrollController scrollCtrl,
     bool isDark,
     bool isMl,
     ColorScheme cs,
@@ -1446,7 +1431,7 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
         isDark ? Colors.white : AppTheme.appThemePrimary;
 
     return ListView.separated(
-      controller: scrollCtrl,
+      controller: _ayahScrollCtrl,
       itemCount: blocks.length,
       separatorBuilder: (_, __) =>
           const Divider(height: 1, indent: 58, endIndent: 16),
