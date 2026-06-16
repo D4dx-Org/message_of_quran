@@ -416,7 +416,7 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 const SizedBox(width: 4),
                 _WebHomeReadModeButton(
-                  label: isMalayalam ? 'മുഷ്ഹഫ്' : 'Read Mushaf',
+                  label: isMalayalam ? 'മുസ്ഹഫ്' : 'Read Mushaf',
                   selected: false,
                   onTap: () => context.read<HomeProvider>().changeIndex(2),
                 ),

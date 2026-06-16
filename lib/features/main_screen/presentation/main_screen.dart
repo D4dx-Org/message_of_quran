@@ -394,7 +394,7 @@ class _MainScreenState extends State<MainScreen> {
                   ),
                   const SizedBox(width: 4),
                   _WebReadModeButton(
-                    label: isMalayalam ? 'മുഷ്ഹഫ്' : 'Read Mushaf',
+                    label: isMalayalam ? 'മുസ്ഹഫ്' : 'Read Mushaf',
                     selected: displayIndex == 2,
                     onTap: () => _onItemTapped(2),
                   ),
