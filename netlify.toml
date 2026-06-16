@@ -5,6 +5,7 @@
 [build]
   # Repo root IS the Flutter project, so no "base" needed.
   command = """
+    rm -rf flutter_sdk && \
     git clone https://github.com/flutter/flutter.git \
       --branch stable --depth 1 flutter_sdk && \
     export PATH="$PATH:$(pwd)/flutter_sdk/bin" && \
