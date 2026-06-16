@@ -85,6 +85,8 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _onItemTapped(int index) {
+    // Mushaf (index 2) is temporarily disabled — coming soon.
+    if (index == 2) return;
     Provider.of<HomeProvider>(context, listen: false).changeIndex(index);
     final screenNames = ['Home', 'Bookmarks', 'Mushaf', 'Settings'];
     // ignore: deprecated_member_use
@@ -162,61 +164,6 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  Widget _buildWebReadModeToggle({
-    required BuildContext context,
-    required int displayIndex,
-    required bool isMalayalam,
-  }) {
-    if (displayIndex != 0 && displayIndex != 2) {
-      return const SizedBox.shrink();
-    }
-
-    const headerAccent = AppTheme.appThemePrimary;
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-      child: ResponsiveContentWrapper(
-        maxWidth: _webShellMaxWidth,
-        child: Align(
-          alignment: Alignment.center,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: isDarkMode
-                  ? Colors.white.withValues(alpha: 0.08)
-                  : headerAccent.withValues(alpha: 0.06),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: isDarkMode
-                    ? Colors.white.withValues(alpha: 0.18)
-                    : headerAccent.withValues(alpha: 0.18),
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(4),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _WebReadModeButton(
-                    label: isMalayalam ? 'ഖുർആൻ വായനം' : 'Read Al-Qur\'an',
-                    selected: displayIndex == 0,
-                    onTap: () => _onItemTapped(0),
-                  ),
-                  const SizedBox(width: 4),
-                  _WebReadModeButton(
-                    label: isMalayalam ? 'മുസ്ഹഫ്' : 'Read Mushaf',
-                    selected: displayIndex == 2,
-                    onTap: () => _onItemTapped(2),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildWebShell(
     BuildContext context,
     Widget pageBody,
@@ -239,17 +186,7 @@ class _MainScreenState extends State<MainScreen> {
           actions: [_buildWebToolbarActions(context, displayIndex)],
         ),
         drawer: const CommonDrawer(),
-        body: Column(
-          children: [
-            if (displayIndex == 2)
-              _buildWebReadModeToggle(
-                context: context,
-                displayIndex: displayIndex,
-                isMalayalam: isMalayalam,
-              ),
-            Expanded(child: pageBody),
-          ],
-        ),
+        body: pageBody,
       ),
     );
   }
@@ -307,21 +244,6 @@ class _MainScreenState extends State<MainScreen> {
         child: Scaffold(
           key: _scaffoldKey,
           appBar: appBar,
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              _onItemTapped(2);
-            },
-            child: Image.asset(
-              _navItems[2].assetPath!,
-              width: _navIconSize,
-              height: _navIconSize,
-              color: isDarkMode && displayIndex != 2
-                  ? inactiveColor
-                  : Colors.white,
-            ),
-          ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerDocked,
           drawer: const CommonDrawer(),
           body: Row(
             children: [
@@ -386,24 +308,6 @@ class _MainScreenState extends State<MainScreen> {
       child: Scaffold(
         key: _scaffoldKey,
         appBar: appBar,
-        floatingActionButton: Transform.translate(
-          offset: Offset(0, 10 * scale),
-          child: FloatingActionButton(
-            onPressed: () {
-              _onItemTapped(2);
-            },
-            child: Image.asset(
-              _navItems[2].assetPath!,
-              width: _navIconSize * scale,
-              height: _navIconSize * scale,
-              color: isDarkMode && displayIndex != 2
-                  ? inactiveColor
-                  : Colors.white,
-            ),
-          ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-
         drawer: const CommonDrawer(),
         body: pageBody,
         bottomNavigationBar: Stack(
@@ -440,13 +344,12 @@ class _MainScreenState extends State<MainScreen> {
                   children: [
                     Row(
                       children: List.generate(_navItems.length, (index) {
+                        // Skip the Mushaf spacer (index 2) — FAB is removed.
+                        if (index == 2) return const SizedBox.shrink();
                         final item = _navItems[index];
                         final isSelected = displayIndex == index;
-                        final isMushaf = index == 2;
 
-                        final color = isMushaf
-                            ? Colors.white
-                            : isSelected
+                        final color = isSelected
                             ? (isDarkMode
                                   ? Colors.white
                                   : AppTheme.appIconTheme)
@@ -507,55 +410,6 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _WebReadModeButton extends StatelessWidget {
-  const _WebReadModeButton({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final unselectedColor = isDarkMode
-        ? Colors.white70
-        : AppTheme.appThemePrimary.withValues(alpha: 0.92);
-    final selectedTextColor =
-        isDarkMode ? Colors.white : AppTheme.appThemePrimary;
-    final selectedBgColor = isDarkMode
-        ? Colors.white.withValues(alpha: 0.18)
-        : AppTheme.appThemePrimary.withValues(alpha: 0.12);
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        curve: Curves.easeOut,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: selected ? selectedBgColor : Colors.transparent,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Text(
-          label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: selected ? selectedTextColor : unselectedColor,
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-          ),
         ),
       ),
     );

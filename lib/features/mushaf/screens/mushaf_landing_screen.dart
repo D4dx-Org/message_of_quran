@@ -467,7 +467,8 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
   }
 
   bool _useDesktopWebLayout(BuildContext context) {
-    return kIsWeb;
+    if (!kIsWeb) return false;
+    return MediaQuery.sizeOf(context).width >= 640;
   }
 
   Widget _buildDownloadBanner(BuildContext context) {
@@ -1017,7 +1018,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
             ),
           ),
           Padding(
-            padding: EdgeInsets.fromLTRB(hPad, isLandscape ? 6 : 8, hPad, 0),
+            padding: EdgeInsets.only(top: isLandscape ? 6.0 : 8.0),
             child: recentlyReadContent,
           ),
         ],

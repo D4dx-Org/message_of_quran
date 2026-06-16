@@ -391,50 +391,6 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildWebReadModeToggle(BuildContext context) {
-    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
-      child: Align(
-        alignment: Alignment.center,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: isDarkMode
-                ? Colors.white.withValues(alpha: 0.08)
-                : AppTheme.appThemePrimary.withValues(alpha: 0.06),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: isDarkMode
-                  ? Colors.white.withValues(alpha: 0.18)
-                  : AppTheme.appThemePrimary.withValues(alpha: 0.18),
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(4),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _WebHomeReadModeButton(
-                  label: isMalayalam ? 'ഖുർആൻ വായനം' : 'Read Al-Qur\'an',
-                  selected: true,
-                  onTap: () => context.read<HomeProvider>().changeIndex(0),
-                ),
-                const SizedBox(width: 4),
-                _WebHomeReadModeButton(
-                  label: isMalayalam ? 'മുസ്ഹഫ്' : 'Read Mushaf',
-                  selected: false,
-                  onTap: () => context.read<HomeProvider>().changeIndex(2),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildWebHero(
     BuildContext context, {
     required bool isMalayalam,
@@ -907,7 +863,6 @@ class _HomeScreenState extends State<HomeScreen>
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _buildWebBrandingHero(context),
-                    _buildWebReadModeToggle(context),
                     _buildWebHero(
                       context,
                       isMalayalam: isMalayalam,
@@ -1007,53 +962,6 @@ class _HomeScreenState extends State<HomeScreen>
               maxWidth: homeContentMaxWidth,
               child: homeContent,
             ),
-    );
-  }
-}
-
-class _WebHomeReadModeButton extends StatelessWidget {
-  const _WebHomeReadModeButton({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final unselectedColor = isDarkMode
-        ? Colors.white70
-        : AppTheme.appThemePrimary.withValues(alpha: 0.92);
-    final selectedTextColor =
-        isDarkMode ? Colors.white : AppTheme.appThemePrimary;
-    final selectedBgColor = isDarkMode
-        ? Colors.white.withValues(alpha: 0.18)
-        : AppTheme.appThemePrimary.withValues(alpha: 0.12);
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        curve: Curves.easeOut,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: selected ? selectedBgColor : Colors.transparent,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Text(
-          label,
-          style: AppTextTheme.popinsDefault(
-            fontSize: 15,
-            fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-            color: selected ? selectedTextColor : unselectedColor,
-          ),
-        ),
-      ),
     );
   }
 }
