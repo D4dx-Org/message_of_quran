@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/core/models/arabic_block_model.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
@@ -11,40 +13,82 @@ import 'package:the_message_of_the_quran/features/settings_screen/providers/lang
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
-Future<void> showSurahQuickSearchDialog(BuildContext context) async {
+Future<void> showSurahQuickSearchDialog(
+  BuildContext context, {
+  List<ArabicBlockModel>? arabicBlockList,
+  void Function(int ayaStart)? onAyahSelected,
+}) async {
   final surahProvider = context.read<SurahProvider>();
 
-  final selectedSurahNumber = await showDialog<int>(
+  final result = await showDialog<_QuickSearchResult>(
     context: context,
     barrierDismissible: true,
-    builder: (_) => const SurahQuickSearchDialog(),
+    builder: (_) => SurahQuickSearchDialog(
+      arabicBlockList: arabicBlockList,
+    ),
   );
 
-  if (selectedSurahNumber == null || !context.mounted) {
+  if (result == null || !context.mounted) return;
+
+  if (result.ayaStart != null) {
+    onAyahSelected?.call(result.ayaStart!);
     return;
   }
+
+  if (result.surahNumber == null) return;
 
   final index = surahProvider.surahList.indexWhere(
-    (surah) => surah.surahNumber == selectedSurahNumber,
+    (surah) => surah.surahNumber == result.surahNumber,
   );
-  if (index < 0) {
-    return;
-  }
+  if (index < 0) return;
 
   surahProvider.assignIndex(index);
-  await Navigator.of(
-    context,
-  ).push(MaterialPageRoute(builder: (_) => const SurahScreen()));
-  if (!context.mounted) {
-    return;
-  }
-  context.read<LastReadProvider>().saveLastSurahTabSelection(
-    selectedSurahNumber,
+  await Navigator.of(context).push(
+    MaterialPageRoute(builder: (_) => const SurahScreen()),
   );
+  if (!context.mounted) return;
+  context.read<LastReadProvider>().saveLastSurahTabSelection(result.surahNumber!);
 }
 
-class SurahQuickSearchDialog extends StatelessWidget {
-  const SurahQuickSearchDialog({super.key});
+class _QuickSearchResult {
+  const _QuickSearchResult.surah(this.surahNumber) : ayaStart = null;
+  const _QuickSearchResult.ayah(this.ayaStart) : surahNumber = null;
+  final int? surahNumber;
+  final int? ayaStart;
+}
+
+class SurahQuickSearchDialog extends StatefulWidget {
+  const SurahQuickSearchDialog({
+    super.key,
+    this.arabicBlockList,
+  });
+
+  final List<ArabicBlockModel>? arabicBlockList;
+
+  @override
+  State<SurahQuickSearchDialog> createState() => _SurahQuickSearchDialogState();
+}
+
+class _SurahQuickSearchDialogState extends State<SurahQuickSearchDialog>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
+  bool get _hasAyahTab =>
+      widget.arabicBlockList != null && widget.arabicBlockList!.isNotEmpty;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(
+      length: _hasAyahTab ? 2 : 1,
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,32 +97,177 @@ class SurahQuickSearchDialog extends StatelessWidget {
     final viewInsets = MediaQuery.viewInsetsOf(context);
     final width = MediaQuery.sizeOf(context).width;
 
+    // On wide screens, compute horizontal inset so the dialog is at most
+    // 620 px wide. On narrow screens keep a small 12 px edge margin.
+    const double maxDialogWidth = 620;
+    final double hInset = width < 640
+        ? 12.0
+        : ((width - maxDialogWidth) / 2).clamp(24.0, double.infinity);
+
     return Dialog(
       backgroundColor: Colors.transparent,
       elevation: 0,
       insetPadding: EdgeInsets.symmetric(
-        horizontal: width < 640 ? 12 : 24,
+        horizontal: hInset,
         vertical: 24,
       ),
       child: Padding(
         padding: EdgeInsets.only(bottom: viewInsets.bottom),
-        child: SingleChildScrollView(
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 620),
-              child: SurahQuickSearch(
-                isMalayalam: isMalayalam,
-                surahList: surahProvider.surahList,
-                isLoading: surahProvider.isSurahLoading,
-                autofocus: true,
-                onSurahSelected: (surahNumber) {
-                  Navigator.of(context).pop(surahNumber);
-                },
-              ),
-            ),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 620),
+            child: _hasAyahTab
+                ? _buildTabDialog(context, isMalayalam, surahProvider)
+                : SurahQuickSearch(
+                    isMalayalam: isMalayalam,
+                    surahList: surahProvider.surahList,
+                    isLoading: surahProvider.isSurahLoading,
+                    autofocus: true,
+                    onSurahSelected: (surahNumber) {
+                      Navigator.of(context).pop(
+                        _QuickSearchResult.surah(surahNumber),
+                      );
+                    },
+                  ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTabDialog(
+    BuildContext context,
+    bool isMalayalam,
+    SurahProvider surahProvider,
+  ) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final panelColor = isDark ? theme.cardColor : Colors.white;
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.12)
+        : (theme.dividerTheme.color ?? theme.colorScheme.outlineVariant);
+    final primaryColor = isDark ? Colors.white : AppTheme.appThemePrimary;
+
+    final dialogHeight = (MediaQuery.sizeOf(context).height * 0.82).clamp(300.0, 700.0);
+
+    return SizedBox(
+      height: dialogHeight,
+      child: Container(
+        decoration: BoxDecoration(
+          color: panelColor,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: borderColor),
+        ),
+        child: Column(
+          children: [
+          // Tab bar header
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: Row(
+              children: [
+                _buildTabChip(
+                  label: isMalayalam ? 'സൂറ' : 'Surah',
+                  index: 0,
+                  primaryColor: primaryColor,
+                  panelColor: panelColor,
+                  isDark: isDark,
+                ),
+                const SizedBox(width: 8),
+                _buildTabChip(
+                  label: isMalayalam ? 'ആയത്ത്' : 'Ayah',
+                  index: 1,
+                  primaryColor: primaryColor,
+                  panelColor: panelColor,
+                  isDark: isDark,
+                ),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.close_rounded, size: 20),
+                  onPressed: () => Navigator.of(context).pop(),
+                  padding: EdgeInsets.zero,
+                  visualDensity: VisualDensity.compact,
+                  color: primaryColor,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Divider(height: 1),
+          // Tab views
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              physics: const NeverScrollableScrollPhysics(),
+              children: [
+                // Surah tab
+                SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: SurahQuickSearch(
+                    isMalayalam: isMalayalam,
+                    surahList: surahProvider.surahList,
+                    isLoading: surahProvider.isSurahLoading,
+                    autofocus: true,
+                    onSurahSelected: (surahNumber) {
+                      Navigator.of(context).pop(
+                        _QuickSearchResult.surah(surahNumber),
+                      );
+                    },
+                  ),
+                ),
+                // Ayah tab
+                _AyahTabContent(
+                  arabicBlockList: widget.arabicBlockList!,
+                  isMalayalam: isMalayalam,
+                  primaryColor: primaryColor,
+                  isDark: isDark,
+                  onAyahSelected: (ayaStart) {
+                    Navigator.of(context).pop(
+                      _QuickSearchResult.ayah(ayaStart),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),    ),    );
+  }
+
+  Widget _buildTabChip({
+    required String label,
+    required int index,
+    required Color primaryColor,
+    required Color panelColor,
+    required bool isDark,
+  }) {
+    return AnimatedBuilder(
+      animation: _tabController,
+      builder: (context, _) {
+        final isSelected = _tabController.index == index;
+        return GestureDetector(
+          onTap: () => setState(() => _tabController.animateTo(index)),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 160),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? primaryColor
+                  : primaryColor.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              label,
+              style: TextStyle(
+                color: isSelected
+                    ? (isDark ? Colors.black87 : Colors.white)
+                    : primaryColor,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -521,6 +710,211 @@ class _SurahQuickSearchResultCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Ayah-tab content inside the quick-search dialog.
+/// Mirrors the UX of [_JumpToAyahSheet] in surah_screen.dart.
+class _AyahTabContent extends StatefulWidget {
+  const _AyahTabContent({
+    required this.arabicBlockList,
+    required this.isMalayalam,
+    required this.primaryColor,
+    required this.isDark,
+    required this.onAyahSelected,
+  });
+
+  final List<ArabicBlockModel> arabicBlockList;
+  final bool isMalayalam;
+  final Color primaryColor;
+  final bool isDark;
+  final ValueChanged<int> onAyahSelected;
+
+  @override
+  State<_AyahTabContent> createState() => _AyahTabContentState();
+}
+
+class _AyahTabContentState extends State<_AyahTabContent> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isMl = widget.isMalayalam;
+    final query = _searchController.text.trim();
+    final typed = int.tryParse(query);
+
+    final entries = <MapEntry<int, ArabicBlockModel>>[];
+    for (var i = 0; i < widget.arabicBlockList.length; i++) {
+      final block = widget.arabicBlockList[i];
+      if (query.isEmpty) {
+        entries.add(MapEntry(i, block));
+        continue;
+      }
+      final start = block.verseFrom ?? i + 1;
+      final end = block.verseTo ?? i + 1;
+      final matchesRange = typed != null && typed >= start && typed <= end;
+      final matchesText =
+          start.toString().contains(query) || end.toString().contains(query);
+      if (matchesRange || matchesText) {
+        entries.add(MapEntry(i, block));
+      }
+    }
+
+    final theme = Theme.of(context);
+    final borderColor = widget.isDark
+        ? Colors.white.withValues(alpha: 0.12)
+        : (theme.dividerTheme.color ?? theme.colorScheme.outlineVariant);
+    final secondaryTextColor =
+        widget.isDark ? Colors.white70 : Colors.grey[600]!;
+
+    // Build the search field pinned at the top.
+    Widget searchField = Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      child: TextField(
+        controller: _searchController,
+        keyboardType: TextInputType.number,
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        onChanged: (_) => setState(() {}),
+        autofocus: false,
+        style: AppTextTheme.localizedLabel(
+          isMalayalam: isMl,
+          fontSize: 14,
+          color: widget.primaryColor,
+        ),
+        decoration: InputDecoration(
+          isDense: true,
+          hintText: isMl ? 'ആയത്ത് തിരയുക' : 'Search ayah',
+          hintStyle: AppTextTheme.localizedBody(
+            isMalayalam: isMl,
+            fontSize: 14,
+            color: secondaryTextColor,
+          ),
+          prefixIcon: Icon(
+            Icons.search_rounded,
+            size: 20,
+            color: secondaryTextColor,
+          ),
+          suffixIcon: query.isEmpty
+              ? null
+              : IconButton(
+                  icon: Icon(Icons.clear, size: 18, color: secondaryTextColor),
+                  onPressed: () {
+                    _searchController.clear();
+                    setState(() {});
+                  },
+                ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: borderColor),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: borderColor),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: widget.primaryColor.withValues(alpha: 0.6),
+            ),
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 10,
+          ),
+          filled: true,
+          fillColor: widget.isDark
+              ? Colors.white.withValues(alpha: 0.05)
+              : widget.primaryColor.withValues(alpha: 0.04),
+        ),
+      ),
+    );
+
+    return Column(
+      children: [
+        // Pinned search field
+        searchField,
+        Divider(height: 1, color: borderColor),
+        // Scrollable ayah list
+        Expanded(
+          child: entries.isEmpty
+              ? Center(
+                  child: Text(
+                    isMl ? 'ആയത്ത് കണ്ടെത്തിയില്ല' : 'No ayah found',
+                    style: AppTextTheme.localizedBody(
+                      isMalayalam: isMl,
+                      fontSize: 14,
+                      color: secondaryTextColor,
+                    ),
+                  ),
+                )
+              : ListView.separated(
+                  itemCount: entries.length,
+                  separatorBuilder: (_, __) =>
+                      Divider(height: 1, indent: 64, color: borderColor),
+                  itemBuilder: (_, listIndex) {
+                    final i = entries[listIndex].key;
+                    final block = entries[listIndex].value;
+                    final start = block.verseFrom ?? i + 1;
+                    final end = block.verseTo ?? i + 1;
+                    final label = start == end
+                        ? formatAyahReferenceLabel(start, isMalayalam: isMl)
+                        : formatAyahRangeLabel(start, end, isMalayalam: isMl);
+
+                    return InkWell(
+                      onTap: () => widget.onAyahSelected(start),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                color: widget.isDark
+                                    ? widget.primaryColor.withValues(alpha: 0.18)
+                                    : widget.primaryColor.withValues(alpha: 0.10),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              alignment: Alignment.center,
+                              child: Text(
+                                start.toString(),
+                                style: TextStyle(
+                                  color: widget.primaryColor,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Text(
+                              label,
+                              style: AppTextTheme.localizedLabel(
+                                isMalayalam: isMl,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: widget.isDark
+                                    ? Colors.white
+                                    : Colors.black87,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+        ),
+      ],
     );
   }
 }

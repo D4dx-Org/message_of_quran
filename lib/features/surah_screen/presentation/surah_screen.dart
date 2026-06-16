@@ -436,26 +436,26 @@ class _SurahScreenState extends State<SurahScreen> {
     final surah = controller.surahList[controller.index];
 
     return SurahInfoStrip(
-      surahName: surah.name,
-      surahTranslation: surah.description,
-      malayalamName: surah.malayalamName,
-      place: surah.place,
-      ordinalLabel: surah.ordinalLabel,
-      surahNumber: surah.surahNumber,
-      isMalayalam: isMalayalam,
-      showPrevious: controller.index < controller.surahList.length - 1,
-      showNext: controller.index > 0,
-      onPrevious: () => controller.onSwipe(false),
-      onNext: () => controller.onSwipe(true),
-      trailingActions: SurahBannerActions(
-        isMalayalam: isMalayalam,
-        onPlayPressed: _restartSurahPlayback,
-        onInfoPressed: _hasPreface
-            ? () => _showSurahInfo(context, controller)
-            : null,
-        compact: true,
-      ),
-    );
+          surahName: surah.name,
+          surahTranslation: surah.description,
+          malayalamName: surah.malayalamName,
+          place: surah.place,
+          ordinalLabel: surah.ordinalLabel,
+          surahNumber: surah.surahNumber,
+          isMalayalam: isMalayalam,
+          showPrevious: controller.index < controller.surahList.length - 1,
+          showNext: controller.index > 0,
+          onPrevious: () => controller.onSwipe(false),
+          onNext: () => controller.onSwipe(true),
+          trailingActions: SurahBannerActions(
+            isMalayalam: isMalayalam,
+            onPlayPressed: _restartSurahPlayback,
+            onInfoPressed: _hasPreface
+                ? () => _showSurahInfo(context, controller)
+                : null,
+            compact: true,
+          ),
+        );
   }
 
   Widget _buildSurahAppBarTitleControls(SurahProvider controller) {
@@ -468,9 +468,6 @@ class _SurahScreenState extends State<SurahScreen> {
     final surah = controller.surahList[controller.index];
     final currentAyahNumber =
         _lastKnownAyahStart ?? (controller.arabicBlockList.firstOrNull?.verseFrom ?? 1);
-    // On narrow web/mobile screens hide the brand logo so the chip fits.
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    final showLogo = !kIsWeb || screenWidth >= 640;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -492,18 +489,12 @@ class _SurahScreenState extends State<SurahScreen> {
           showActions: false,
         );
 
-        if (!showLogo) {
-          // Narrow: just the chip, no logo.
-          return chip;
-        }
-
         return Row(
           children: [
             SizedBox(
               width: logoWidth,
               child: CommonAppBar.brandLogo(
                 context,
-                height: 26 * scale,
               ),
             ),
             SizedBox(width: maxWidth < 300 ? 4 : 8),
@@ -520,26 +511,15 @@ class _SurahScreenState extends State<SurahScreen> {
   Widget _buildSurahWebActions(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
     final isNarrow = screenWidth < 640;
-    final viewportWidth = (screenWidth * 0.55).clamp(160.0, 210.0).toDouble();
     final actions = CommonWebAppBarActions(
       selectedPageIndex: null,
       onPageSelected: (index) {
         unawaited(_navigateToMainTab(index));
       },
       compact: true,
+      showSearch: false,
+      showLabels: !isNarrow,
     );
-    if (isNarrow) {
-      return Padding(
-        padding: const EdgeInsets.only(right: 8),
-        child: SizedBox(
-          width: viewportWidth,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: actions,
-          ),
-        ),
-      );
-    }
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: actions,
@@ -2218,6 +2198,7 @@ class _SurahScreenState extends State<SurahScreen> {
         appBar: CommonAppBar.appBar(
           context,
           showBrandLogo: true,
+          showSearch: false,
           titleWidget: _buildSurahAppBarTitleControls(controller),
           actions: kIsWeb
               ? [_buildSurahWebActions(context)]

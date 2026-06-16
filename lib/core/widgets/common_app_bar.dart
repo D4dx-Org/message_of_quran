@@ -16,12 +16,16 @@ class CommonWebAppBarActions extends StatefulWidget {
     required this.onPageSelected,
     this.onSearchPressed,
     this.compact = true,
+    this.showSearch = true,
+    this.showLabels = true,
   });
 
   final int? selectedPageIndex;
   final ValueChanged<int> onPageSelected;
   final VoidCallback? onSearchPressed;
   final bool compact;
+  final bool showSearch;
+  final bool showLabels;
 
   @override
   State<CommonWebAppBarActions> createState() => _CommonWebAppBarActionsState();
@@ -113,18 +117,20 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
             mainAxisSize: MainAxisSize.min,
             children: [
               icon,
-              SizedBox(height: compact ? 2 : 8),
-              Text(
-                label,
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: compact ? 10.5 : 13.5,
-                  fontWeight: isSelected || isHovered
-                      ? FontWeight.w700
-                      : FontWeight.w500,
+              if (widget.showLabels) SizedBox(height: compact ? 2 : 8),
+              if (widget.showLabels)
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: compact ? 10.5 : 13.5,
+                    fontWeight: isSelected || isHovered
+                        ? FontWeight.w700
+                        : FontWeight.w500,
+                  ),
                 ),
-              ),
-              SizedBox(height: compact ? 2 : 8),
+              if (widget.showLabels) SizedBox(height: compact ? 2 : 8),
+              if (!widget.showLabels) const SizedBox(height: 2),
               AnimatedContainer(
                 duration: const Duration(milliseconds: 180),
                 curve: Curves.easeOut,
@@ -170,22 +176,23 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
               ),
             ),
           ),
-        _buildToolbarButton(
-          label: 'Search',
-          isSelected: false,
-          isHovered: _isSearchHovered,
-          onTap:
-              widget.onSearchPressed ?? () => showSurahQuickSearchDialog(context),
-          onHover: _setSearchHovered,
-          icon: HomeScreenSvg(
-            icon: 'search',
-            color: accentColor.withValues(alpha: _isSearchHovered ? 1.0 : 0.78),
-            width: iconSize,
-            height: iconSize,
+        if (widget.showSearch)
+          _buildToolbarButton(
+            label: 'Search',
+            isSelected: false,
+            isHovered: _isSearchHovered,
+            onTap:
+                widget.onSearchPressed ?? () => showSurahQuickSearchDialog(context),
+            onHover: _setSearchHovered,
+            icon: HomeScreenSvg(
+              icon: 'search',
+              color: accentColor.withValues(alpha: _isSearchHovered ? 1.0 : 0.78),
+              width: iconSize,
+              height: iconSize,
+            ),
           ),
-        ),
         const SizedBox(width: 8),
-        const AppBarLanguageButton(),
+        AppBarLanguageButton(showText: widget.showLabels, iconSize: iconSize),
       ],
     );
   }
@@ -274,14 +281,6 @@ class CommonAppBar {
           [
             const AppBarLanguageButton(),
             const SizedBox(width: 8),
-            IconButton(
-              icon: const HomeScreenSvg(icon: 'search', color: Colors.white),
-              tooltip: 'Search',
-              padding: EdgeInsets.zero,
-              visualDensity: VisualDensity.compact,
-              onPressed: () => showSurahQuickSearchDialog(ctx),
-            ),
-            const SizedBox(width: 8),
           ],
       bottom: bottom,
     );
@@ -298,6 +297,7 @@ class CommonAppBar {
     Widget? titleWidget,
     VoidCallback? onSurahInfoTap,
     List<Widget>? actions,
+    bool showSearch = true,
   }) {
     final scale = ResponsiveHelper.scaleFactor(ctx);
     final resolvedActions =
@@ -323,14 +323,15 @@ class CommonAppBar {
                   ),
                 const AppBarLanguageButton(),
                 const SizedBox(width: 8),
-                IconButton(
-                  icon: const HomeScreenSvg(icon: 'search', color: Colors.white),
-                  tooltip: 'Search',
-                  padding: EdgeInsets.zero,
-                  visualDensity: VisualDensity.compact,
-                  onPressed: () => showSurahQuickSearchDialog(ctx),
-                ),
-                const SizedBox(width: 8),
+                if (showSearch)
+                  IconButton(
+                    icon: const HomeScreenSvg(icon: 'search', color: Colors.white),
+                    tooltip: 'Search',
+                    padding: EdgeInsets.zero,
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () => showSurahQuickSearchDialog(ctx),
+                  ),
+                if (showSearch) const SizedBox(width: 8),
               ]
             : null);
 
