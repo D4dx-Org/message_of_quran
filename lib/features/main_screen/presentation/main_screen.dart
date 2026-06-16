@@ -7,7 +7,6 @@ import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
-import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
 import 'package:the_message_of_the_quran/features/bookmark_screen/presentation/bookmark_screen.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/home_screen.dart';
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
@@ -33,7 +32,6 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   static const double _navIconSize = 24;
-  static const double _webShellMaxWidth = 1180;
 
   static const List<({String label, IconData? iconData, String? assetPath})>
   _navItems = [
@@ -131,10 +129,7 @@ class _MainScreenState extends State<MainScreen> {
 
   Widget _buildWebToolbarActions(BuildContext context, int displayIndex) {
     final screenWidth = MediaQuery.sizeOf(context).width;
-    final isScrollableToolbar = screenWidth < 640;
-    final scrollableToolbarViewportWidth = (screenWidth * 0.55)
-        .clamp(190.0, 220.0)
-        .toDouble();
+    final isNarrow = screenWidth < 640;
     final selectedPageIndex = switch (displayIndex) {
       0 || 1 || 3 => displayIndex,
       _ => null,
@@ -143,20 +138,9 @@ class _MainScreenState extends State<MainScreen> {
       selectedPageIndex: selectedPageIndex,
       onPageSelected: _onItemTapped,
       compact: true,
+      showSearch: false,
+      showLabels: !isNarrow,
     );
-
-    if (isScrollableToolbar) {
-      return Padding(
-        padding: const EdgeInsets.only(right: 8),
-        child: SizedBox(
-          width: scrollableToolbarViewportWidth,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: toolbar,
-          ),
-        ),
-      );
-    }
 
     return Padding(
       padding: const EdgeInsets.only(right: 8),
@@ -386,17 +370,6 @@ class _MainScreenState extends State<MainScreen> {
                                         color: color,
                                         size: _navItemSize(index) * scale,
                                       ),
-                                    SizedBox(height: 3 * scale),
-                                    Text(
-                                      item.label,
-                                      style: TextStyle(
-                                        color: color,
-                                        fontSize: 10 * scale,
-                                        fontWeight: isSelected
-                                            ? FontWeight.w700
-                                            : FontWeight.w400,
-                                      ),
-                                    ),
                                   ],
                                 ),
                               ),

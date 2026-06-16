@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:the_message_of_the_quran/core/models/arabic_block_model.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
@@ -1040,12 +1041,18 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
   }
 
   void _openSheet(BuildContext context) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    const double maxSheetWidth = 620;
+    final double hInset = screenWidth < 640
+        ? 16.0
+        : ((screenWidth - maxSheetWidth) / 2).clamp(24.0, double.infinity);
+
     showDialog(
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.45),
       builder: (sheetCtx) => Dialog(
         backgroundColor: Theme.of(context).cardColor,
-        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 36),
+        insetPadding: EdgeInsets.symmetric(horizontal: hInset, vertical: 36),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         clipBehavior: Clip.antiAlias,
         child: _SurahNavigatorSheet(
@@ -1177,13 +1184,16 @@ class _SurahNavigatorSheet extends StatefulWidget {
 class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
   int _selectedTab = 0; // 0 = Surah, 1 = Ayah
   final TextEditingController _searchCtrl = TextEditingController();
+  final TextEditingController _ayahSearchCtrl = TextEditingController();
   final ScrollController _surahScrollCtrl = ScrollController();
   final ScrollController _ayahScrollCtrl = ScrollController();
   String _searchQuery = '';
+  String _ayahSearchQuery = '';
 
   @override
   void dispose() {
     _searchCtrl.dispose();
+    _ayahSearchCtrl.dispose();
     _surahScrollCtrl.dispose();
     _ayahScrollCtrl.dispose();
     super.dispose();
@@ -1265,37 +1275,62 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
             ),
           ),
           const Divider(height: 1),
-          // Search field — only for Surah tab
-          if (_selectedTab == 0)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
-              child: TextField(
-                controller: _searchCtrl,
-                onChanged: (v) => setState(() => _searchQuery = v),
-                decoration: InputDecoration(
-                  hintText: isMl ? 'സൂറ തിരയുക' : 'Search Surah',
-                  prefixIcon: const Icon(Icons.search, size: 20),
-                  filled: true,
-                  fillColor: isDark
-                      ? Colors.white.withValues(alpha: 0.06)
-                      : Colors.grey.shade100,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
-                  ),
-                  isDense: true,
+          // Search field — shown for both tabs
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
+            child: TextField(
+              controller: _selectedTab == 0 ? _searchCtrl : _ayahSearchCtrl,
+              keyboardType: _selectedTab == 1 ? TextInputType.number : TextInputType.text,
+              inputFormatters: _selectedTab == 1
+                  ? [FilteringTextInputFormatter.digitsOnly]
+                  : null,
+              onChanged: (v) => setState(() {
+                if (_selectedTab == 0) {
+                  _searchQuery = v;
+                } else {
+                  _ayahSearchQuery = v;
+                }
+              }),
+              decoration: InputDecoration(
+                hintText: _selectedTab == 0
+                    ? (isMl ? 'സൂറ തിരയുക' : 'Search Surah')
+                    : (isMl ? 'ആയത്ത് തിരയുക' : 'Search Ayah'),
+                prefixIcon: const Icon(Icons.search, size: 20),
+                suffixIcon: (_selectedTab == 0 ? _searchQuery : _ayahSearchQuery).isEmpty
+                    ? null
+                    : IconButton(
+                        icon: const Icon(Icons.clear, size: 18),
+                        onPressed: () => setState(() {
+                          if (_selectedTab == 0) {
+                            _searchCtrl.clear();
+                            _searchQuery = '';
+                          } else {
+                            _ayahSearchCtrl.clear();
+                            _ayahSearchQuery = '';
+                          }
+                        }),
+                      ),
+                filled: true,
+                fillColor: isDark
+                    ? Colors.white.withValues(alpha: 0.06)
+                    : Colors.grey.shade100,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
                 ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
+                isDense: true,
               ),
             ),
+          ),
           // List body
           Flexible(
             child: _selectedTab == 0
                 ? _buildSurahList(isDark, isMl, cs)
-                : _buildAyahList(isDark, isMl, cs),
+                : _buildAyahList(isDark, isMl, cs, _ayahSearchQuery),
           ),
         ],
       ),
@@ -1413,9 +1448,22 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
     bool isDark,
     bool isMl,
     ColorScheme cs,
+    String query,
   ) {
-    final blocks = widget.arabicBlockList;
-    if (blocks.isEmpty) {
+    final typed = int.tryParse(query);
+    final allBlocks = widget.arabicBlockList;
+    final blocks = query.isEmpty
+        ? allBlocks
+        : allBlocks.where((block) {
+            final i = allBlocks.indexOf(block);
+            final start = block.verseFrom ?? i + 1;
+            final end = block.verseTo ?? i + 1;
+            final matchesRange = typed != null && typed >= start && typed <= end;
+            final matchesText =
+                start.toString().contains(query) || end.toString().contains(query);
+            return matchesRange || matchesText;
+          }).toList();
+    if (allBlocks.isEmpty) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(24),

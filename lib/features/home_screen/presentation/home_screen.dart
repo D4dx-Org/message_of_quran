@@ -17,6 +17,7 @@ import 'package:the_message_of_the_quran/features/home_screen/providers/juz_hizb
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
 import 'package:the_message_of_the_quran/features/mushaf/widgets/star_number.dart';
 import 'package:the_message_of_the_quran/features/search_screen/presentation/widgets/surah_quick_search.dart';
+    // hide Expanded, AppTextTheme, InputDecoration;
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
