@@ -17,6 +17,10 @@
 [build.environment]
   # Prevents pub from showing prompts
   PUB_ENVIRONMENT = "bot.netlify"
+  # The Flutter SDK's dartdev snapshot contains hardcoded Google Analytics
+  # test keys (AIza***) that trigger Netlify's smart secrets scanner.
+  # These are false positives — not actual project secrets.
+  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Security & SharedArrayBuffer headers (required for sqflite_common_ffi_web)
