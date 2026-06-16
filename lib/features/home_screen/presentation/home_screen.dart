@@ -359,11 +359,11 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildWebBrandingHero(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
-    final emblemWidth = (width * 0.12).clamp(108.0, 170.0).toDouble();
-    final titleWidth = (width * 0.26).clamp(210.0, 430.0).toDouble();
+    final emblemWidth = (width * 0.15).clamp(130.0, 200.0).toDouble();
+    final titleWidth = (width * 0.17).clamp(145.0, 290.0).toDouble();
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 18, 20, 10),
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
       child: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -374,13 +374,15 @@ class _HomeScreenState extends State<HomeScreen>
               fit: BoxFit.contain,
               filterQuality: FilterQuality.high,
             ),
-            const SizedBox(height: 12),
+            // const SizedBox(height: 8),
             Image.asset(
               'assets/images/splash_text_logo.png',
               width: titleWidth,
               fit: BoxFit.contain,
               filterQuality: FilterQuality.high,
-              color: AppTheme.appThemePrimary,
+              color: _isDarkWebSurface(context)
+                  ? Colors.white.withValues(alpha: 0.85)
+                  : AppTheme.appThemePrimary,
               colorBlendMode: BlendMode.srcIn,
             ),
           ],
@@ -391,17 +393,22 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildWebReadModeToggle(BuildContext context) {
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
       child: Align(
         alignment: Alignment.center,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: AppTheme.appThemePrimary.withValues(alpha: 0.06),
+            color: isDarkMode
+                ? Colors.white.withValues(alpha: 0.08)
+                : AppTheme.appThemePrimary.withValues(alpha: 0.06),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: AppTheme.appThemePrimary.withValues(alpha: 0.18),
+              color: isDarkMode
+                  ? Colors.white.withValues(alpha: 0.18)
+                  : AppTheme.appThemePrimary.withValues(alpha: 0.18),
             ),
           ),
           child: Padding(
@@ -416,7 +423,7 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 const SizedBox(width: 4),
                 _WebHomeReadModeButton(
-                  label: isMalayalam ? 'മുഷ്ഹഫ്' : 'Read Mushaf',
+                  label: isMalayalam ? 'മുസ്ഹഫ്' : 'Read Mushaf',
                   selected: false,
                   onTap: () => context.read<HomeProvider>().changeIndex(2),
                 ),
@@ -917,33 +924,10 @@ class _HomeScreenState extends State<HomeScreen>
                       DecoratedBox(
                         decoration: _webPanelDecoration(context),
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
+                          padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                isMalayalam
-                                    ? 'ഖുർആൻ ബ്രൗസ് ചെയ്യുക'
-                                    : 'Browse the Qur\'an',
-                                style: AppTextTheme.localizedTitle(
-                                  isMalayalam: isMalayalam,
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w700,
-                                  color: _webPrimaryText(context),
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                isMalayalam
-                                    ? 'സൂറത്തുകളും ജുസുകളും വെബ്ബിൽ നിന്ന് വേഗത്തിൽ തുറക്കാം.'
-                                    : 'Open surahs and juz quickly in a web-first responsive layout.',
-                                style: AppTextTheme.localizedBody(
-                                  isMalayalam: isMalayalam,
-                                  fontSize: 14,
-                                  color: _webSecondaryText(context),
-                                ),
-                              ),
-                              const SizedBox(height: 14),
                               _buildWebSectionHeader(
                                 context,
                                 isMalayalam: isMalayalam,
@@ -1044,6 +1028,11 @@ class _WebHomeReadModeButton extends StatelessWidget {
     final unselectedColor = isDarkMode
         ? Colors.white70
         : AppTheme.appThemePrimary.withValues(alpha: 0.92);
+    final selectedTextColor =
+        isDarkMode ? Colors.white : AppTheme.appThemePrimary;
+    final selectedBgColor = isDarkMode
+        ? Colors.white.withValues(alpha: 0.18)
+        : AppTheme.appThemePrimary.withValues(alpha: 0.12);
 
     return InkWell(
       onTap: onTap,
@@ -1053,9 +1042,7 @@ class _WebHomeReadModeButton extends StatelessWidget {
         curve: Curves.easeOut,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: selected
-              ? AppTheme.appThemePrimary.withValues(alpha: 0.12)
-              : Colors.transparent,
+          color: selected ? selectedBgColor : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Text(
@@ -1063,7 +1050,7 @@ class _WebHomeReadModeButton extends StatelessWidget {
           style: AppTextTheme.popinsDefault(
             fontSize: 15,
             fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
-            color: selected ? AppTheme.appThemePrimary : unselectedColor,
+            color: selected ? selectedTextColor : unselectedColor,
           ),
         ),
       ),

@@ -30,19 +30,15 @@ class SurahActionDock extends StatelessWidget {
     required this.visible,
     required this.bottomPadding,
     this.useAssetIcons = true,
-    required this.onHomePressed,
-    required this.onJumpToAyahPressed,
     required this.onPlayFromBeginningPressed,
-    required this.onSettingsPressed,
+    this.onSurahInfoPressed,
   });
 
   final bool visible;
   final double bottomPadding;
   final bool useAssetIcons;
-  final VoidCallback onHomePressed;
-  final VoidCallback onJumpToAyahPressed;
   final VoidCallback onPlayFromBeginningPressed;
-  final VoidCallback onSettingsPressed;
+  final VoidCallback? onSurahInfoPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -100,46 +96,22 @@ class SurahActionDock extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             _SurahActionDockButton(
-                              tooltip: 'Home',
-                              assetPath: useAssetIcons
-                                  ? 'assets/icons/home-img.png'
-                                  : null,
-                              icon: useAssetIcons ? null : Icons.home_outlined,
-                              onPressed: onHomePressed,
-                            ),
-                            Container(
-                              width: 1,
-                              height: 24,
-                              color: dividerColor,
-                            ),
-                            _SurahActionDockButton(
-                              tooltip: 'Jump to Ayah',
-                              icon: Icons.format_list_numbered,
-                              onPressed: onJumpToAyahPressed,
-                            ),
-                            Container(
-                              width: 1,
-                              height: 24,
-                              color: dividerColor,
-                            ),
-                            _SurahActionDockButton(
                               tooltip: 'Play from beginning',
                               icon: Icons.play_circle_outline_rounded,
                               onPressed: onPlayFromBeginningPressed,
                             ),
-                            Container(
-                              width: 1,
-                              height: 24,
-                              color: dividerColor,
-                            ),
-                            _SurahActionDockButton(
-                              tooltip: 'Settings',
-                              assetPath: useAssetIcons
-                                  ? 'assets/icons/settings-img.png'
-                                  : null,
-                              icon: useAssetIcons ? null : Icons.settings_outlined,
-                              onPressed: onSettingsPressed,
-                            ),
+                            if (onSurahInfoPressed != null) ...[
+                              Container(
+                                width: 1,
+                                height: 24,
+                                color: dividerColor,
+                              ),
+                              _SurahActionDockButton(
+                                tooltip: 'Surah info',
+                                icon: Icons.info_outline_rounded,
+                                onPressed: onSurahInfoPressed!,
+                              ),
+                            ],
                           ],
                         ),
                       ),
@@ -159,13 +131,11 @@ class _SurahActionDockButton extends StatelessWidget {
   const _SurahActionDockButton({
     required this.tooltip,
     this.icon,
-    this.assetPath,
     required this.onPressed,
   });
 
   final String tooltip;
   final IconData? icon;
-  final String? assetPath;
   final VoidCallback onPressed;
 
   @override
@@ -173,9 +143,7 @@ class _SurahActionDockButton extends StatelessWidget {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final iconColor = isDarkMode ? Colors.white : AppTheme.appIconTheme;
 
-    final Widget iconWidget = assetPath != null
-        ? Image.asset(assetPath!, width: 24, height: 24, color: iconColor)
-        : Icon(icon, color: iconColor, size: 24);
+    final Widget iconWidget = Icon(icon, color: iconColor, size: 24);
 
     return Expanded(
       child: Semantics(

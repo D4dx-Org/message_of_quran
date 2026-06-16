@@ -5,17 +5,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
-import 'package:the_message_of_the_quran/core/widgets/app_bar_language_button.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
-import 'package:the_message_of_the_quran/features/about_screen/presentation/about_screen.dart';
 import 'package:the_message_of_the_quran/features/bookmark_screen/presentation/bookmark_screen.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/home_screen.dart';
-import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_screen_svg.dart';
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/mushaf/screens/mushaf_landing_screen.dart';
-import 'package:the_message_of_the_quran/features/search_screen/presentation/widgets/surah_quick_search.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
@@ -36,15 +32,8 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final Set<int> _hoveredWebNavItems = <int>{};
   static const double _navIconSize = 24;
   static const double _webShellMaxWidth = 1180;
-  static const List<({String label, int pageIndex})> _webNavItems = [
-    (label: 'Home', pageIndex: 0),
-    (label: 'Bookmarks', pageIndex: 1),
-    (label: 'About', pageIndex: 4),
-    (label: 'Settings', pageIndex: 3),
-  ];
 
   static const List<({String label, IconData? iconData, String? assetPath})>
   _navItems = [
@@ -60,7 +49,6 @@ class _MainScreenState extends State<MainScreen> {
       iconData: null,
       assetPath: 'assets/icons/settings-img.png',
     ),
-    (label: 'About', iconData: null, assetPath: 'assets/icons/about-img.png'),
   ];
 
   static const List<Widget> _pages = [
@@ -68,7 +56,6 @@ class _MainScreenState extends State<MainScreen> {
     BookmarkScreen(),
     MushafLandingScreen(), // index 2
     SettingsScreen(),
-    AboutScreen(),
   ];
 
   @override
@@ -99,24 +86,12 @@ class _MainScreenState extends State<MainScreen> {
 
   void _onItemTapped(int index) {
     Provider.of<HomeProvider>(context, listen: false).changeIndex(index);
-    final screenNames = ['Home', 'Bookmarks', 'Mushaf', 'Settings', 'About Us'];
+    final screenNames = ['Home', 'Bookmarks', 'Mushaf', 'Settings'];
     // ignore: deprecated_member_use
     SemanticsService.announce(
-      '${screenNames[index.clamp(0, 4)]} screen',
+      '${screenNames[index.clamp(0, 3)]} screen',
       TextDirection.ltr,
     );
-  }
-
-  void _setWebNavHovered(int pageIndex, bool hovered) {
-    final isTracked = _hoveredWebNavItems.contains(pageIndex);
-    if (isTracked == hovered) return;
-    setState(() {
-      if (hovered) {
-        _hoveredWebNavItems.add(pageIndex);
-      } else {
-        _hoveredWebNavItems.remove(pageIndex);
-      }
-    });
   }
 
   double _navItemSize(int index) {
@@ -152,178 +127,20 @@ class _MainScreenState extends State<MainScreen> {
     return kIsWeb;
   }
 
-  Widget _buildWebNavButton({
-    required int pageIndex,
-    required String label,
-    required int selectedIndex,
-    required Color accentColor,
-    bool compact = false,
-  }) {
-    final isSelected = pageIndex == selectedIndex;
-    final isHovered = kIsWeb && _hoveredWebNavItems.contains(pageIndex);
-    final showHoverBox = isHovered && !isSelected;
-    final iconColor = accentColor.withValues(
-      alpha: isSelected || isHovered ? 1.0 : 0.78,
-    );
-    final textColor = accentColor.withValues(
-      alpha: isSelected || isHovered ? 1.0 : 0.90,
-    );
-    final hoverBackgroundColor = accentColor.withValues(alpha: 0.14);
-    final hoverBorderColor = accentColor.withValues(alpha: 0.24);
-
-    return Semantics(
-      button: true,
-      selected: isSelected,
-      label: '$label navigation item',
-      child: InkWell(
-        onTap: () => _onItemTapped(pageIndex),
-        onHover: (hovered) => _setWebNavHovered(pageIndex, hovered),
-        mouseCursor: SystemMouseCursors.click,
-        borderRadius: BorderRadius.circular(compact ? 16 : 18),
-        hoverColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        splashColor: accentColor.withValues(alpha: 0.10),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          curve: Curves.easeOut,
-          padding: EdgeInsets.symmetric(
-            horizontal: compact ? 8 : 14,
-            vertical: compact ? 3 : 10,
-          ),
-          decoration: BoxDecoration(
-            color: showHoverBox ? hoverBackgroundColor : Colors.transparent,
-            borderRadius: BorderRadius.circular(compact ? 16 : 18),
-            border: Border.all(
-              color: showHoverBox ? hoverBorderColor : Colors.transparent,
-            ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildNavItemIcon(
-                index: pageIndex,
-                color: iconColor,
-                size: _navItemSize(pageIndex) * (compact ? 0.72 : 0.95),
-              ),
-              SizedBox(height: compact ? 2 : 8),
-              Text(
-                label,
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: compact ? 10.5 : 13.5,
-                  fontWeight: isSelected || isHovered
-                      ? FontWeight.w700
-                      : FontWeight.w500,
-                ),
-              ),
-              SizedBox(height: compact ? 2 : 8),
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                curve: Curves.easeOut,
-                height: compact ? 1.5 : 2.5,
-                width: isSelected ? (compact ? 18 : 28) : 0,
-                decoration: BoxDecoration(
-                  color: accentColor,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildWebSearchButton({
-    required BuildContext context,
-    required Color accentColor,
-    bool compact = false,
-  }) {
-    final iconColor = accentColor.withValues(alpha: 0.78);
-    final textColor = accentColor.withValues(alpha: 0.90);
-
-    return Semantics(
-      button: true,
-      label: 'Search navigation item',
-      child: InkWell(
-        onTap: () => showSurahQuickSearchDialog(context),
-        mouseCursor: SystemMouseCursors.click,
-        borderRadius: BorderRadius.circular(compact ? 16 : 18),
-        hoverColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        splashColor: accentColor.withValues(alpha: 0.10),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          curve: Curves.easeOut,
-          padding: EdgeInsets.symmetric(
-            horizontal: compact ? 8 : 14,
-            vertical: compact ? 3 : 10,
-          ),
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(compact ? 16 : 18),
-            border: Border.all(color: Colors.transparent),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              HomeScreenSvg(
-                icon: 'search',
-                color: iconColor,
-                width: _navItemSize(0) * (compact ? 0.72 : 0.95),
-                height: _navItemSize(0) * (compact ? 0.72 : 0.95),
-              ),
-              SizedBox(height: compact ? 2 : 8),
-              Text(
-                'Search',
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: compact ? 10.5 : 13.5,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              SizedBox(height: compact ? 2 : 8),
-              SizedBox(height: compact ? 1.5 : 2.5),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildWebToolbarActions(BuildContext context, int displayIndex) {
     final screenWidth = MediaQuery.sizeOf(context).width;
     final isScrollableToolbar = screenWidth < 640;
     final scrollableToolbarViewportWidth = (screenWidth * 0.55)
         .clamp(190.0, 220.0)
         .toDouble();
-    const accentColor = AppTheme.appBarForegroundColor;
-
-    final navRow = Row(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(
-        _webNavItems.length,
-        (index) => _buildWebNavButton(
-          pageIndex: _webNavItems[index].pageIndex,
-          label: _webNavItems[index].label,
-          selectedIndex: displayIndex,
-          accentColor: accentColor,
-          compact: true,
-        ),
-      ),
-    );
-
-    final trailingActions = Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _buildWebSearchButton(
-          context: context,
-          accentColor: accentColor,
-          compact: true,
-        ),
-        const SizedBox(width: 8),
-        const AppBarLanguageButton(),
-      ],
+    final selectedPageIndex = switch (displayIndex) {
+      0 || 1 || 3 => displayIndex,
+      _ => null,
+    };
+    final toolbar = CommonWebAppBarActions(
+      selectedPageIndex: selectedPageIndex,
+      onPageSelected: _onItemTapped,
+      compact: true,
     );
 
     if (isScrollableToolbar) {
@@ -333,14 +150,7 @@ class _MainScreenState extends State<MainScreen> {
           width: scrollableToolbarViewportWidth,
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                navRow,
-                const SizedBox(width: 6),
-                trailingActions,
-              ],
-            ),
+            child: toolbar,
           ),
         ),
       );
@@ -348,14 +158,7 @@ class _MainScreenState extends State<MainScreen> {
 
     return Padding(
       padding: const EdgeInsets.only(right: 8),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          navRow,
-          const SizedBox(width: 6),
-          trailingActions,
-        ],
-      ),
+      child: toolbar,
     );
   }
 
@@ -369,6 +172,7 @@ class _MainScreenState extends State<MainScreen> {
     }
 
     const headerAccent = AppTheme.appThemePrimary;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
@@ -378,9 +182,15 @@ class _MainScreenState extends State<MainScreen> {
           alignment: Alignment.center,
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: headerAccent.withValues(alpha: 0.06),
+              color: isDarkMode
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : headerAccent.withValues(alpha: 0.06),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: headerAccent.withValues(alpha: 0.18)),
+              border: Border.all(
+                color: isDarkMode
+                    ? Colors.white.withValues(alpha: 0.18)
+                    : headerAccent.withValues(alpha: 0.18),
+              ),
             ),
             child: Padding(
               padding: const EdgeInsets.all(4),
@@ -394,7 +204,7 @@ class _MainScreenState extends State<MainScreen> {
                   ),
                   const SizedBox(width: 4),
                   _WebReadModeButton(
-                    label: isMalayalam ? 'മുഷ്ഹഫ്' : 'Read Mushaf',
+                    label: isMalayalam ? 'മുസ്ഹഫ്' : 'Read Mushaf',
                     selected: displayIndex == 2,
                     onTap: () => _onItemTapped(2),
                   ),
@@ -476,16 +286,15 @@ class _MainScreenState extends State<MainScreen> {
         : CommonAppBar.appBar(
             context,
             centerTitle: true,
-            isActionsNeeded: displayIndex != 4 && displayIndex != 3,
+            isActionsNeeded: displayIndex != 3,
             showLeading: true,
-            isMalayalam: displayIndex == 4 && isMalayalam,
+            isMalayalam: false,
             title: [
               'Home',
               'Bookmarks',
               'Mushaf',
               'Settings',
-              isMalayalam ? 'ഞങ്ങളെക്കുറിച്ച്' : 'About Us',
-            ][displayIndex.clamp(0, 4)],
+            ][displayIndex.clamp(0, 3)],
           );
 
     // ── Tablet: NavigationRail on the left ──
@@ -721,6 +530,11 @@ class _WebReadModeButton extends StatelessWidget {
     final unselectedColor = isDarkMode
         ? Colors.white70
         : AppTheme.appThemePrimary.withValues(alpha: 0.92);
+    final selectedTextColor =
+        isDarkMode ? Colors.white : AppTheme.appThemePrimary;
+    final selectedBgColor = isDarkMode
+        ? Colors.white.withValues(alpha: 0.18)
+        : AppTheme.appThemePrimary.withValues(alpha: 0.12);
 
     return InkWell(
       onTap: onTap,
@@ -730,7 +544,7 @@ class _WebReadModeButton extends StatelessWidget {
         curve: Curves.easeOut,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: selected ? AppTheme.appThemeSecondary : Colors.transparent,
+          color: selected ? selectedBgColor : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Text(
@@ -738,7 +552,7 @@ class _WebReadModeButton extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
-            color: selected ? AppTheme.appThemePrimary : unselectedColor,
+            color: selected ? selectedTextColor : unselectedColor,
             fontSize: 14,
             fontWeight: FontWeight.w700,
           ),

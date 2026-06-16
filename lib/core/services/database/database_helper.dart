@@ -66,7 +66,9 @@ class DatabaseHelper {
     // ── quran_asad_combined_nw.sqlite (English + Malayalam) ──
     final storedAsadVersion =
         prefs.getInt(DbConstants.quranAsadDbVersionKey) ?? 0;
-    if (storedAsadVersion < DbConstants.quranAsadDbVersion) {
+    final shouldRefreshAsadBundle =
+      storedAsadVersion < DbConstants.quranAsadDbVersion;
+    if (shouldRefreshAsadBundle) {
       final asadPath = await _databasePathFor(DbConstants.quranAsadDbName);
       // Delete the old database and its journal files
       await db_io.deleteFileIfExists(asadPath);
@@ -76,7 +78,23 @@ class DatabaseHelper {
     quranAsadDb = await initDatabase(
       name: DbConstants.quranAsadDbName,
       dbName: DbConstants.quranAsadDbName,
+      forceAssetRefresh: shouldRefreshAsadBundle,
     );
+    if (!await _hasExpectedBundledMalayalamRows(quranAsadDb!)) {
+      final asadPath = await _databasePathFor(DbConstants.quranAsadDbName);
+      debugPrint(
+        'database helper : Persisted bundled DB is stale; refreshing from asset',
+      );
+      await quranAsadDb!.close();
+      quranAsadDb = null;
+      await db_io.deleteFileIfExists(asadPath);
+      await db_io.deleteWalShmFiles(asadPath);
+      quranAsadDb = await initDatabase(
+        name: DbConstants.quranAsadDbName,
+        dbName: DbConstants.quranAsadDbName,
+        forceAssetRefresh: true,
+      );
+    }
     await prefs.setInt(
       DbConstants.quranAsadDbVersionKey,
       DbConstants.quranAsadDbVersion,
@@ -154,9 +172,35 @@ class DatabaseHelper {
     userDatabase = null;
   }
 
+  static Future<bool> _hasExpectedBundledMalayalamRows(Database db) async {
+    // Sentinel rows from the refreshed bundled DB. If these are empty,
+    // the persisted copy predates the latest asset sync.
+    final rows = await db.rawQuery(
+      'SELECT COUNT(*) AS row_count '
+      'FROM malayalam_verses '
+      'WHERE ('
+      '(surah_id = 3 AND verse_number IN (82, 93)) '
+      'OR (surah_id = 10 AND verse_number = 62)'
+      ') '
+      'AND malayalam_translation IS NOT NULL '
+      "AND TRIM(malayalam_translation) != ''",
+    );
+
+    final count = rows.first['row_count'];
+    final rowCount = switch (count) {
+      int value => value,
+      num value => value.toInt(),
+      String value => int.tryParse(value) ?? 0,
+      _ => 0,
+    };
+
+    return rowCount == 3;
+  }
+
   static Future<Database> initDatabase({
     required String name,
     required String dbName,
+    bool forceAssetRefresh = false,
   }) async {
     final path = await _databasePathFor(name);
 
@@ -176,8 +220,12 @@ class DatabaseHelper {
     }
 
     final exists = await db_io.databaseExistsAt(path);
-    if (!exists) {
-      debugPrint("database helper : Creating new copy from asset");
+    if (forceAssetRefresh || !exists) {
+      debugPrint(
+        forceAssetRefresh
+            ? "database helper : Refreshing bundled database from asset"
+            : "database helper : Creating new copy from asset",
+      );
       await copyFromAsset();
     }
 

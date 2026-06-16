@@ -31,21 +31,20 @@ import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/core/widgets/scroll_to_top_button.dart';
 import 'package:the_message_of_the_quran/core/widgets/pinch_zoom_view.dart';
 import 'package:the_message_of_the_quran/features/bookmark_screen/presentation/bookmark_conflict_dialog.dart';
-import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/surah_action_dock.dart';
+import 'package:the_message_of_the_quran/features/main_screen/presentation/main_screen.dart';
+import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/surah_screen_app_bar.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/cross_reference_sheet.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/show_translation_gate.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/interpretation_note_marker.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_auto_advance.dart';
-import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/play_settings_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/tajweed_provider.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/reading_progress_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
-import 'package:the_message_of_the_quran/features/main_screen/presentation/main_screen.dart';
-import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/audio_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
@@ -86,6 +85,21 @@ class _SurahBismillahHeader extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _SurahMainScreenRedirect extends StatelessWidget {
+  const _SurahMainScreenRedirect({required this.targetIndex});
+
+  final int targetIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!context.mounted) return;
+      Provider.of<HomeProvider>(context, listen: false).changeIndex(targetIndex);
+    });
+    return const MainScreen();
   }
 }
 
@@ -290,7 +304,6 @@ class _SurahScreenState extends State<SurahScreen> {
   List<GlobalKey> _itemKeys = [];
   bool _showScrollToTop = false;
   bool _showBottomSurahNavOverlay = false;
-  bool _showActionDock = true;
   double? _deepLinkCacheExtent;
 
   /// Cached provider references — safe to use in dispose().
@@ -371,7 +384,6 @@ class _SurahScreenState extends State<SurahScreen> {
       _lastScrolledPlayingAyahId = null;
       _resetTemporaryJumpHighlight(rebuild: false);
       _showBottomSurahNavOverlay = false;
-      _showActionDock = true;
       _surahTransitionPending = false;
       _checkPrefaceAvailability();
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -412,43 +424,6 @@ class _SurahScreenState extends State<SurahScreen> {
     return kIsWeb && !_useDesktopWebReaderLayout(context);
   }
 
-  Widget _buildDesktopReaderActionButton({
-    required BuildContext context,
-    IconData? icon,
-    String? assetPath,
-    required String label,
-    required VoidCallback onPressed,
-  }) {
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
-    final foregroundColor = isDarkMode ? Colors.white : AppTheme.appIconTheme;
-    final iconWidget = assetPath != null
-        ? Image.asset(
-            assetPath,
-            width: 19,
-            height: 19,
-            color: foregroundColor,
-          )
-        : Icon(icon, size: 18);
-
-    return OutlinedButton.icon(
-      onPressed: onPressed,
-      style: OutlinedButton.styleFrom(
-        foregroundColor: foregroundColor,
-        side: BorderSide(color: foregroundColor.withValues(alpha: 0.16)),
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        textStyle: AppTextTheme.popinsDefault(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: foregroundColor,
-        ),
-      ),
-      icon: iconWidget,
-      label: Text(label),
-    );
-  }
-
   Widget _buildDesktopReaderHeader(
     BuildContext context,
     SurahProvider controller,
@@ -457,85 +432,146 @@ class _SurahScreenState extends State<SurahScreen> {
       return const SizedBox.shrink();
     }
 
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     final surah = controller.surahList[controller.index];
 
-    return Column(
-      children: [
-        SurahInfoStrip(
-          surahName: surah.name,
-          surahTranslation: surah.description,
-          malayalamName: surah.malayalamName,
-          place: surah.place,
-          ordinalLabel: surah.ordinalLabel,
-          surahNumber: surah.surahNumber,
+    return SurahInfoStrip(
+      surahName: surah.name,
+      surahTranslation: surah.description,
+      malayalamName: surah.malayalamName,
+      place: surah.place,
+      ordinalLabel: surah.ordinalLabel,
+      surahNumber: surah.surahNumber,
+      isMalayalam: isMalayalam,
+      showPrevious: controller.index < controller.surahList.length - 1,
+      showNext: controller.index > 0,
+      onPrevious: () => controller.onSwipe(false),
+      onNext: () => controller.onSwipe(true),
+      trailingActions: SurahBannerActions(
+        isMalayalam: isMalayalam,
+        onPlayPressed: _restartSurahPlayback,
+        onInfoPressed: _hasPreface
+            ? () => _showSurahInfo(context, controller)
+            : null,
+        compact: true,
+      ),
+    );
+  }
+
+  Widget _buildSurahAppBarTitleControls(SurahProvider controller) {
+    if (controller.surahList.isEmpty || controller.index >= controller.surahList.length) {
+      return CommonAppBar.brandLogo(context);
+    }
+
+    final scale = ResponsiveHelper.scaleFactor(context);
+    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
+    final surah = controller.surahList[controller.index];
+    final currentAyahNumber =
+        _lastKnownAyahStart ?? (controller.arabicBlockList.firstOrNull?.verseFrom ?? 1);
+    // On narrow web/mobile screens hide the brand logo so the chip fits.
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final showLogo = !kIsWeb || screenWidth >= 640;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxWidth = constraints.maxWidth;
+        final logoWidth = maxWidth < 250
+            ? 64.0 * scale
+            : maxWidth < 340
+                ? 80.0 * scale
+                : 108.0 * scale;
+
+        final chip = SurahHeaderControls(
           isMalayalam: isMalayalam,
-          showPrevious: controller.index < controller.surahList.length - 1,
-          showNext: controller.index > 0,
-          onPrevious: () => controller.onSwipe(false),
-          onNext: () => controller.onSwipe(true),
-        ),
-        const SizedBox(height: 12),
-        DecoratedBox(
-          decoration: BoxDecoration(
-            color: isDarkMode ? theme.cardColor : Colors.white.withValues(alpha: 0.9),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: (isDarkMode ? Colors.white : AppTheme.appIconTheme).withValues(alpha: 0.08),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: isDarkMode ? 0.14 : 0.08),
-                blurRadius: 18,
-                offset: const Offset(0, 8),
+          surahList: controller.surahList,
+          currentSurahNumber: surah.surahNumber,
+          arabicBlockList: controller.arabicBlockList,
+          currentAyahNumber: currentAyahNumber,
+          onAyahSelected: _jumpToAyah,
+          compact: true,
+          showActions: false,
+        );
+
+        if (!showLogo) {
+          // Narrow: just the chip, no logo.
+          return chip;
+        }
+
+        return Row(
+          children: [
+            SizedBox(
+              width: logoWidth,
+              child: CommonAppBar.brandLogo(
+                context,
+                height: 26 * scale,
               ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-            child: Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              alignment: WrapAlignment.center,
-              children: [
-                _buildDesktopReaderActionButton(
-                  context: context,
-                  assetPath: 'assets/icons/home-img.png',
-                  label: isMalayalam ? 'ഹോം' : 'Home',
-                  onPressed: () => _navigateToMainTab(0),
-                ),
-                _buildDesktopReaderActionButton(
-                  context: context,
-                  icon: Icons.format_list_numbered_rounded,
-                  label: isMalayalam ? 'ആയത്തിലേക്ക് പോകുക' : 'Jump to ayah',
-                  onPressed: () => _showJumpTo(context, controller.arabicBlockList),
-                ),
-                _buildDesktopReaderActionButton(
-                  context: context,
-                  icon: Icons.play_circle_outline_rounded,
-                  label: isMalayalam ? 'ആരംഭത്തിൽ നിന്ന് കേൾക്കുക' : 'Play from beginning',
-                  onPressed: _restartSurahPlayback,
-                ),
-                _buildDesktopReaderActionButton(
-                  context: context,
-                  assetPath: 'assets/icons/settings-img.png',
-                  label: isMalayalam ? 'സെറ്റിംഗ്സ്' : 'Settings',
-                  onPressed: _openSettingsFromSurah,
-                ),
-                if (_hasPreface)
-                  _buildDesktopReaderActionButton(
-                    context: context,
-                    icon: Icons.info_outline_rounded,
-                    label: isMalayalam ? 'സൂറത്ത് വിവരങ്ങൾ' : 'Surah info',
-                    onPressed: () => _showSurahInfo(context, controller),
-                  ),
-              ],
             ),
+            SizedBox(width: maxWidth < 300 ? 4 : 8),
+            Flexible(
+              fit: FlexFit.loose,
+              child: chip,
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildSurahWebActions(BuildContext context) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final isNarrow = screenWidth < 640;
+    final viewportWidth = (screenWidth * 0.55).clamp(160.0, 210.0).toDouble();
+    final actions = CommonWebAppBarActions(
+      selectedPageIndex: null,
+      onPageSelected: (index) {
+        unawaited(_navigateToMainTab(index));
+      },
+      compact: true,
+    );
+    if (isNarrow) {
+      return Padding(
+        padding: const EdgeInsets.only(right: 8),
+        child: SizedBox(
+          width: viewportWidth,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: actions,
           ),
         ),
-      ],
+      );
+    }
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: actions,
+    );
+  }
+
+  Future<void> _navigateToMainTab(int tabIndex) async {
+    if (!mounted) return;
+    final navigator = Navigator.of(context);
+
+    // Settings: push on top of the surah route so that popping returns to
+    // the exact scroll position. Audio is not stopped.
+    if (tabIndex == 3) {
+      _saveLastRead();
+      if (!mounted) return;
+      await navigator.push(
+        MaterialPageRoute(
+          builder: (_) => const SettingsScreen(showStandaloneBackAppBar: true),
+        ),
+      );
+      return;
+    }
+
+    _saveLastRead();
+    await context.read<AudioProvider>().stopAudio();
+    if (!mounted) return;
+
+    await navigator.pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (_) => _SurahMainScreenRedirect(targetIndex: tabIndex),
+      ),
+      (route) => false,
     );
   }
 
@@ -820,63 +856,17 @@ class _SurahScreenState extends State<SurahScreen> {
     );
   }
 
-  bool _onScrollNotification(ScrollNotification notification) {
-    if (!_showActionDock) return false;
+  void _jumpToAyah(int ayaStart) {
+    final idx = _findAyahBlockIndex(_surahProv.arabicBlockList, ayaStart);
+    if (idx < 0) return;
 
-    if (notification is ScrollStartNotification ||
-        notification is ScrollUpdateNotification ||
-        notification is OverscrollNotification) {
-      _hideActionDock();
+    if (idx == 0) {
+      _ensureAyahVisible(0);
+      _showTemporaryJumpHighlight(ayaStart);
+      return;
     }
 
-    if (notification is UserScrollNotification &&
-        notification.direction != ScrollDirection.idle) {
-      _hideActionDock();
-    }
-
-    return false;
-  }
-
-  void _toggleActionDock() {
-    if (!mounted || _surahProv.arabicBlockList.isEmpty) return;
-    setState(() {
-      _showActionDock = !_showActionDock;
-    });
-  }
-
-  void _hideActionDock() {
-    if (!_showActionDock || !mounted) return;
-    setState(() {
-      _showActionDock = false;
-    });
-  }
-
-  Future<void> _navigateToMainTab(int tabIndex) async {
-    if (!mounted) return;
-
-    _saveLastRead();
-    context.read<AudioProvider>().stopAudio();
-    context.read<HomeProvider>().changeIndex(tabIndex);
-
-    await Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const MainScreen()),
-      (route) => false,
-    );
-  }
-
-  Future<void> _openSettingsFromSurah() async {
-    if (!mounted) return;
-
-    _saveLastRead();
-    await context.read<AudioProvider>().stopAudio();
-
-    if (!mounted) return;
-
-    await Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => const SettingsScreen(showStandaloneBackAppBar: true),
-      ),
-    );
+    unawaited(_animateToBlockIndex(idx, ayaStartForHighlight: ayaStart));
   }
 
   Future<void> _restartSurahPlayback() async {
@@ -1290,50 +1280,6 @@ class _SurahScreenState extends State<SurahScreen> {
         setState(() => _deepLinkCacheExtent = null);
       }
     }
-  }
-
-  void _showJumpTo(
-    BuildContext context,
-    List<ArabicBlockModel> arabicBlockList,
-  ) {
-    final isMl = context.read<LanguageProvider>().isMalayalam;
-    final bsMaxWidth = ResponsiveHelper.bottomSheetMaxWidth(context);
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      constraints: bsMaxWidth != null
-          ? BoxConstraints(maxWidth: bsMaxWidth)
-          : null,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => DraggableScrollableSheet(
-        initialChildSize: 0.55,
-        minChildSize: 0.35,
-        maxChildSize: 0.88,
-        expand: false,
-        builder: (_, scrollCtrl) => _JumpToAyahSheet(
-          arabicBlockList: arabicBlockList,
-          isMalayalam: isMl,
-          scrollController: scrollCtrl,
-          onSelect: (i, ayaStart) {
-            Navigator.pop(context);
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (!mounted) return;
-              // Ayah 1 → scroll to top so the banner expands fully; all other
-              // ayahs → precise cache-warmed jump with a 3s highlight on the
-              // target verse.
-              if (i == 0) {
-                _ensureAyahVisible(0);
-                _showTemporaryJumpHighlight(ayaStart);
-              } else {
-                _animateToBlockIndex(i, ayaStartForHighlight: ayaStart);
-              }
-            });
-          },
-        ),
-      ),
-    );
   }
 
   void _showSurahInfo(BuildContext context, SurahProvider controller) {
@@ -2252,17 +2198,7 @@ class _SurahScreenState extends State<SurahScreen> {
     final controller = Provider.of<SurahProvider>(context);
     final useDesktopWebReaderLayout = _useDesktopWebReaderLayout(context);
     final useCompactWebReaderLayout = _useCompactWebReaderLayout(context);
-    final rootBottomInset = MediaQuery.viewPaddingOf(context).bottom;
-    final actionDockBottomPadding = resolveSurahActionDockBottomPadding(
-      rootBottomInset: rootBottomInset,
-    );
-    final actionDockClearance = resolveSurahActionDockClearance(
-      rootBottomInset: rootBottomInset,
-    );
-    final readerBottomClearance =
-        useDesktopWebReaderLayout || useCompactWebReaderLayout
-        ? 28.0
-        : actionDockClearance;
+    const readerBottomClearance = 28.0;
 
     return PopScope(
       canPop: true,
@@ -2282,6 +2218,10 @@ class _SurahScreenState extends State<SurahScreen> {
         appBar: CommonAppBar.appBar(
           context,
           showBrandLogo: true,
+          titleWidget: _buildSurahAppBarTitleControls(controller),
+          actions: kIsWeb
+              ? [_buildSurahWebActions(context)]
+              : null,
         ),
         headerContent: useDesktopWebReaderLayout
             ? _buildDesktopReaderHeader(context, controller)
@@ -2312,9 +2252,7 @@ class _SurahScreenState extends State<SurahScreen> {
                   }
                   if (controller.isSelectionActive) {
                     controller.clearSelection();
-                    return;
                   }
-                  _toggleActionDock();
                 },
                 child: Stack(
                   children: [
@@ -2371,10 +2309,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                           _handleContinuousModeSwipe,
                                       child: ResponsiveContentWrapper(
                                         child: PinchZoomView(
-                                          child: NotificationListener<ScrollNotification>(
-                                            onNotification:
-                                                _onScrollNotification,
-                                            child: CustomScrollView(
+                                          child: CustomScrollView(
                                               controller: _scrollController,
                                               cacheExtent: _deepLinkCacheExtent,
                                               slivers: [
@@ -2389,7 +2324,23 @@ class _SurahScreenState extends State<SurahScreen> {
                                                     ),
                                                   )
                                                 else if (!useDesktopWebReaderLayout)
-                                                  const SurahScreenAppBar()
+                                                  SurahScreenAppBar(
+                                                    arabicBlockList: controller.arabicBlockList,
+                                                    currentAyahNumber:
+                                                        _lastKnownAyahStart ??
+                                                        (controller.arabicBlockList.firstOrNull
+                                                                ?.verseFrom ??
+                                                            1),
+                                                    onAyahSelected: _jumpToAyah,
+                                                    onPlayPressed:
+                                                        _restartSurahPlayback,
+                                                    onInfoPressed: _hasPreface
+                                                        ? () => _showSurahInfo(
+                                                              context,
+                                                              controller,
+                                                            )
+                                                        : null,
+                                                  )
                                                 else
                                                   const SliverToBoxAdapter(
                                                     child: SizedBox(height: 12),
@@ -2701,14 +2652,13 @@ class _SurahScreenState extends State<SurahScreen> {
                                                       .length,
                                                 ),
                                               ),
-                                              SliverToBoxAdapter(
+                                              const SliverToBoxAdapter(
                                                 child: SizedBox(
                                                   height: readerBottomClearance,
                                                 ),
                                               ),
                                             ],
                                           ),
-                                        ),
                                         ),
                                       ),
                                     ),
@@ -2719,20 +2669,6 @@ class _SurahScreenState extends State<SurahScreen> {
                               },
                             ),
                     ),
-                    if (controller.arabicBlockList.isNotEmpty &&
-                        !useDesktopWebReaderLayout &&
-                        !useCompactWebReaderLayout)
-                      SurahActionDock(
-                        visible: _showActionDock,
-                        bottomPadding: actionDockBottomPadding,
-                        onHomePressed: () => _navigateToMainTab(0),
-                        onJumpToAyahPressed: () {
-                          _hideActionDock();
-                          _showJumpTo(context, _surahProv.arabicBlockList);
-                        },
-                        onPlayFromBeginningPressed: _restartSurahPlayback,
-                        onSettingsPressed: _openSettingsFromSurah,
-                      ),
                   ],
                 ),
               ),
@@ -3048,8 +2984,9 @@ class _TajweedHtmlTextState extends State<_TajweedHtmlText> {
     final baseStyle = AppTextTheme.tajweedArabiStyle(context);
     // Ayah-end marker keeps the standard reading font; QuranTaha renders the
     // ﴿﴾ ornamental parentheses as oversized decorative glyphs.
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final markerStyle = AppTextTheme.surahArabiStyle(context).copyWith(
-      color: Theme.of(context).colorScheme.primary,
+      color: isDark ? Colors.white : Theme.of(context).colorScheme.primary,
     );
 
     if (!_loaded) {
@@ -3312,6 +3249,7 @@ class _AyahNumberBadge extends StatelessWidget {
     // U+FD3F ﴿ and U+FD3E ﴾ are the Arabic ornamental parentheses that
     // bracket ayah numbers — exactly matching the reference image style.
     // TextDirection.ltr prevents the bidi algorithm from mirroring the glyphs.
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final badge = Text(
       '\uFD3F${_toArabicNumerals(number)}\uFD3E',
       textDirection: TextDirection.ltr,
@@ -3320,7 +3258,7 @@ class _AyahNumberBadge extends StatelessWidget {
         fontSize: 20,
         color: highlighted
             ? AppTheme.appIconTheme
-            : Theme.of(context).colorScheme.primary,
+            : (isDark ? Colors.white : Theme.of(context).colorScheme.primary),
         height: 1,
       ),
     );

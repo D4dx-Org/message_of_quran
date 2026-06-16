@@ -7,7 +7,9 @@ final sqflite.DatabaseFactory _webDatabaseFactory =
   databaseFactoryFfiWebNoWebWorker;
 
 Future<void> deleteFileIfExists(String path) async {
-  // No file system on web; handled by databaseFactory.
+  try {
+    await _webDatabaseFactory.deleteDatabase(path);
+  } catch (_) {}
 }
 
 Future<void> createDirectoryRecursive(String path) async {
