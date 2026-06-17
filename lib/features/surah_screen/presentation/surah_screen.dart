@@ -2276,9 +2276,18 @@ class _SurahScreenState extends State<SurahScreen> {
                                           .surahList[controller.index]
                                           .name
                                     : 'Surah';
-                                final hPad = ResponsiveHelper.horizontalPadding(
-                                  context,
-                                );
+                                // On web, BaseScreenLayout already constrains
+                                // the layout to maxWidth:1180 with 24dp
+                                // horizontal padding. Using the screen-width
+                                // formula here would over-pad on large monitors
+                                // (e.g. 154dp each side on a 1920px display).
+                                // A small fixed value lets ResponsiveContentWrapper
+                                // below handle centering via contentMaxWidth.
+                                final hPad = kIsWeb
+                                    ? 4.0
+                                    : ResponsiveHelper.horizontalPadding(
+                                        context,
+                                      );
                                 final content = Padding(
                                   padding: EdgeInsets.fromLTRB(
                                     hPad,
