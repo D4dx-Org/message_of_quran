@@ -67,7 +67,7 @@ class SettingsScreenTajweedBlock extends StatelessWidget {
                             ?.copyWith(color: Colors.grey),
                       ),
                       TextButton(
-                        onPressed: () => tajweed.cancelDownload(),
+                        onPressed: () => _confirmCancel(context, tajweed),
                         child: const Text('Cancel'),
                       ),
                     ],
@@ -183,6 +183,32 @@ class SettingsScreenTajweedBlock extends StatelessWidget {
 
     if (confirmed == true) {
       await tajweed.startDownload();
+    }
+  }
+
+  Future<void> _confirmCancel(
+    BuildContext context,
+    TajweedProvider tajweed,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Cancel Download?'),
+        content: const Text('Are you sure you want to cancel the download?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      tajweed.cancelDownload();
     }
   }
 
