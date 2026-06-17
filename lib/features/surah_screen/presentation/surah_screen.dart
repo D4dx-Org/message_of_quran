@@ -530,16 +530,11 @@ class _SurahScreenState extends State<SurahScreen> {
     if (!mounted) return;
     final navigator = Navigator.of(context);
 
-    // Settings: push on top of the surah route so that popping returns to
-    // the exact scroll position. Audio is not stopped.
+    // Settings: open as a dialog overlay so audio and scroll position are preserved.
     if (tabIndex == 3) {
       _saveLastRead();
       if (!mounted) return;
-      await navigator.push(
-        MaterialPageRoute(
-          builder: (_) => const SettingsScreen(showStandaloneBackAppBar: true),
-        ),
-      );
+      showSettingsDialog(context);
       return;
     }
 
