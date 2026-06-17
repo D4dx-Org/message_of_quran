@@ -1940,250 +1940,253 @@ class _SurahScreenState extends State<SurahScreen> {
     } else {
       controller.getInterpretationsForAyah(ayahNumber);
     }
-    final bsMaxWidth = ResponsiveHelper.bottomSheetMaxWidth(context);
-    showModalBottomSheet(
+    final size = MediaQuery.sizeOf(context);
+    const double maxDialogWidth = 620;
+    final double hInset = size.width < 640
+        ? 12.0
+        : ((size.width - maxDialogWidth) / 2).clamp(24.0, double.infinity);
+    final double maxHeight = (size.height * 0.85).clamp(300.0, 760.0);
+
+    showDialog<void>(
       context: context,
-      isScrollControlled: true,
+      barrierDismissible: true,
       barrierColor: kInterpretationSheetBarrierColor,
-      constraints: bsMaxWidth != null
-          ? BoxConstraints(maxWidth: bsMaxWidth)
-          : null,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => Consumer<SurahProvider>(
-        builder: (ctx, ctrl, _) {
-          final fontSettings = Provider.of<FontSizeChangerProvider>(ctx);
-          final isMalayalam = ctx.watch<LanguageProvider>().isMalayalam;
-          final isLoading = ctrl.currentInterpretationNumber == -1;
-          final hasBounds =
-              ctrl.minInterpretationNumber != -1 &&
-              ctrl.maxInterpretationNumber != -1;
-          final canPrev =
-              hasBounds &&
-              ctrl.currentInterpretationNumber > ctrl.minInterpretationNumber;
-          final canNext =
-              hasBounds &&
-              ctrl.currentInterpretationNumber < ctrl.maxInterpretationNumber;
-          final hasSurah =
-              ctrl.surahList.isNotEmpty &&
-              ctrl.index >= 0 &&
-              ctrl.index < ctrl.surahList.length;
-          final surah = hasSurah ? ctrl.surahList[ctrl.index] : null;
-          final headerSurahNumber = surah?.surahNumber ?? (ctrl.index + 1);
-          final headerInterpretationNumber =
-              ctrl.currentInterpretationNumber > 0
-              ? ctrl.currentInterpretationNumber
-              : (pageNumber ?? -1);
-          final displayInterpretationNumber = isMalayalam
-              ? headerInterpretationNumber - ctrl.mlFootnoteMinNumber + 1
-              : headerInterpretationNumber;
-          final surahHeader = formatInterpretationSheetSurahHeader(
-            isMalayalam: isMalayalam,
-            surah: surah,
-          );
-          final metadataLabel = headerInterpretationNumber > 0
-              ? formatInterpretationMetadataLabel(
-                  isMalayalam: isMalayalam,
-                  surahNumber: headerSurahNumber,
-                  interpretationNumber: displayInterpretationNumber,
-                  ayahNumbers: ctrl.currentInterpretationAyahNumbers,
-                )
-              : (isMalayalam
-                    ? 'സൂറത്ത് $headerSurahNumber'
-                    : 'Surah $headerSurahNumber');
+      builder: (dialogCtx) => Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        insetPadding: EdgeInsets.symmetric(horizontal: hInset, vertical: 24),
+        child: Consumer<SurahProvider>(
+          builder: (ctx, ctrl, _) {
+            final theme = Theme.of(ctx);
+            final isDark = theme.brightness == Brightness.dark;
+            final panelColor = isDark ? theme.cardColor : Colors.white;
+            final borderColor = isDark
+                ? Colors.white.withValues(alpha: 0.12)
+                : (theme.dividerTheme.color ?? theme.colorScheme.outlineVariant);
+            final fontSettings = Provider.of<FontSizeChangerProvider>(ctx);
+            final isMalayalam = ctx.watch<LanguageProvider>().isMalayalam;
+            final isLoading = ctrl.currentInterpretationNumber == -1;
+            final hasBounds =
+                ctrl.minInterpretationNumber != -1 &&
+                ctrl.maxInterpretationNumber != -1;
+            final canPrev =
+                hasBounds &&
+                ctrl.currentInterpretationNumber > ctrl.minInterpretationNumber;
+            final canNext =
+                hasBounds &&
+                ctrl.currentInterpretationNumber < ctrl.maxInterpretationNumber;
+            final hasSurah =
+                ctrl.surahList.isNotEmpty &&
+                ctrl.index >= 0 &&
+                ctrl.index < ctrl.surahList.length;
+            final surah = hasSurah ? ctrl.surahList[ctrl.index] : null;
+            final headerSurahNumber = surah?.surahNumber ?? (ctrl.index + 1);
+            final headerInterpretationNumber =
+                ctrl.currentInterpretationNumber > 0
+                ? ctrl.currentInterpretationNumber
+                : (pageNumber ?? -1);
+            final displayInterpretationNumber = isMalayalam
+                ? headerInterpretationNumber - ctrl.mlFootnoteMinNumber + 1
+                : headerInterpretationNumber;
+            final surahHeader = formatInterpretationSheetSurahHeader(
+              isMalayalam: isMalayalam,
+              surah: surah,
+            );
+            final metadataLabel = headerInterpretationNumber > 0
+                ? formatInterpretationMetadataLabel(
+                    isMalayalam: isMalayalam,
+                    surahNumber: headerSurahNumber,
+                    interpretationNumber: displayInterpretationNumber,
+                    ayahNumbers: ctrl.currentInterpretationAyahNumbers,
+                  )
+                : (isMalayalam
+                      ? 'സൂറത്ത് $headerSurahNumber'
+                      : 'Surah $headerSurahNumber');
 
-          // Build combined text for copy/share
-          String combinedText() {
-            final body = ctrl.interpretationList
-                .map((e) => e.interpretationText)
-                .join('\n\n');
-            final headerLines = <String>[
-              ...surahHeader.toLines(),
-              if (metadataLabel.trim().isNotEmpty) metadataLabel,
-            ];
-            final headerText = headerLines.join('\n').trim();
-            if (headerText.isEmpty) return body;
-            return body.trim().isEmpty ? headerText : '$headerText\n\n$body';
-          }
+            String combinedText() {
+              final body = ctrl.interpretationList
+                  .map((e) => e.interpretationText)
+                  .join('\n\n');
+              final headerLines = <String>[
+                ...surahHeader.toLines(),
+                if (metadataLabel.trim().isNotEmpty) metadataLabel,
+              ];
+              final headerText = headerLines.join('\n').trim();
+              if (headerText.isEmpty) return body;
+              return body.trim().isEmpty ? headerText : '$headerText\n\n$body';
+            }
 
-          return ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(ctx).size.height * 0.85,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Drag handle
-                Padding(
-                  padding: const EdgeInsets.only(top: 8, bottom: 2),
-                  child: Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[400],
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
+            return Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: maxDialogWidth,
+                  maxHeight: maxHeight,
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: panelColor,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: borderColor),
                   ),
-                ),
-                InterpretationSheetHeader(
-                  surahHeader: surahHeader,
-                  metadataLabel: metadataLabel,
-                  onClose: () => Navigator.of(ctx).pop(),
-                  padding: const EdgeInsets.fromLTRB(20, 0, 12, 8),
-                  closeButtonOffset: const Offset(0, -10),
-                  titleSpacing: 0,
-                  compactCloseButton: true,
-                ),
-                const Divider(height: 1),
-                // Content
-                Flexible(
-                  child: isLoading
-                      ? const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 32),
-                          child: Center(child: CircularProgressIndicator()),
-                        )
-                      : AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 300),
-                          child: SingleChildScrollView(
-                            key: ValueKey(ctrl.currentInterpretationNumber),
-                            padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: ctrl.interpretationList.map((item) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 16),
-                                  child: _buildInterpretationCrossRefText(
-                                    ctx,
-                                    item.interpretationText,
-                                    ctrl.surahList.isNotEmpty
-                                        ? ctrl.surahList[ctrl.index].surahNumber
-                                        : 0,
-                                    fontSettings.interpretationJustify,
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                          ),
-                        ),
-                ),
-                // Bottom bar: prev | page counter | next | copy | share
-                const Divider(height: 1),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    8,
-                    4,
-                    8,
-                    MediaQuery.of(ctx).padding.bottom + 8,
-                  ),
-                  child: Builder(
-                    builder: (barCtx) {
-                      final isDarkBar = Theme.of(barCtx).brightness == Brightness.dark;
-                      final activeColor = isDarkBar ? Colors.white : Colors.black;
-                      return Row(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Prev
-                      IconButton(
-                        tooltip: 'Previous',
-                        onPressed: canPrev
-                            ? () => ctrl.navigateInterpretation(false)
-                            : null,
-                        icon: Icon(
-                          Icons.chevron_left,
-                          color: canPrev
-                              ? activeColor
-                              : Colors.grey[400],
-                        ),
+                      // Header
+                      InterpretationSheetHeader(
+                        surahHeader: surahHeader,
+                        metadataLabel: metadataLabel,
+                        onClose: () => Navigator.of(ctx).pop(),
+                        padding: const EdgeInsets.fromLTRB(20, 12, 12, 8),
+                        closeButtonOffset: Offset.zero,
+                        titleSpacing: 0,
+                        compactCloseButton: true,
                       ),
-                      if (!isLoading && hasBounds)
-                        Text(
-                          isMalayalam
-                              ? '${ctrl.currentInterpretationNumber - ctrl.mlFootnoteMinNumber + 1} / ${ctrl.maxInterpretationNumber - ctrl.mlFootnoteMinNumber + 1}'
-                              : '${ctrl.currentInterpretationNumber} / ${ctrl.maxInterpretationNumber}',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: activeColor,
-                          ),
-                        ),
-                      // Next
-                      IconButton(
-                        tooltip: 'Next',
-                        onPressed: canNext
-                            ? () => ctrl.navigateInterpretation(true)
-                            : null,
-                        icon: Icon(
-                          Icons.chevron_right,
-                          color: canNext
-                              ? activeColor
-                              : Colors.grey[400],
-                        ),
+                      const Divider(height: 1),
+                      // Content
+                      Flexible(
+                        child: isLoading
+                            ? const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 32),
+                                child: Center(child: CircularProgressIndicator()),
+                              )
+                            : AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 300),
+                                child: SingleChildScrollView(
+                                  key: ValueKey(ctrl.currentInterpretationNumber),
+                                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: ctrl.interpretationList.map((item) {
+                                      return Padding(
+                                        padding: const EdgeInsets.only(bottom: 16),
+                                        child: _buildInterpretationCrossRefText(
+                                          ctx,
+                                          item.interpretationText,
+                                          ctrl.surahList.isNotEmpty
+                                              ? ctrl.surahList[ctrl.index].surahNumber
+                                              : 0,
+                                          fontSettings.interpretationJustify,
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              ),
                       ),
-                      const Spacer(),
-                      // Copy
-                      IconButton(
-                        tooltip: 'Copy',
-                        onPressed: isLoading
-                            ? null
-                            : () async {
-                                final text = combinedText();
-                                if (text.trim().isNotEmpty) {
-                                  await Clipboard.setData(
-                                    ClipboardData(text: text),
-                                  );
-                                  if (ctx.mounted) {
-                                    ScaffoldMessenger.of(ctx).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Copied to clipboard'),
-                                        duration: Duration(seconds: 2),
-                                      ),
-                                    );
-                                  }
-                                }
-                              },
-                        icon: Icon(
-                          Icons.copy_outlined,
-                          color: isLoading
-                              ? Colors.grey[400]
-                              : activeColor,
-                        ),
-                      ),
-                      // Share
-                      Builder(
-                        builder: (shareButtonContext) => IconButton(
-                          tooltip: 'Share',
-                          onPressed: isLoading
-                              ? null
-                              : () async {
-                                  final text = combinedText();
-                                  if (text.trim().isNotEmpty) {
-                                    await Share.share(
-                                      text,
-                                      sharePositionOrigin:
-                                          _sharePositionOriginFor(
-                                            shareButtonContext,
-                                          ),
-                                    );
-                                  }
-                                },
-                          icon: Icon(
-                            Icons.share_outlined,
-                            color: isLoading
-                                ? Colors.grey[400]
-                                : activeColor,
-                          ),
+                      // Bottom bar: prev | page counter | next | copy | share
+                      const Divider(height: 1),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
+                        child: Builder(
+                          builder: (barCtx) {
+                            final isDarkBar =
+                                Theme.of(barCtx).brightness == Brightness.dark;
+                            final activeColor =
+                                isDarkBar ? Colors.white : Colors.black;
+                            return Row(
+                              children: [
+                                IconButton(
+                                  tooltip: 'Previous',
+                                  onPressed: canPrev
+                                      ? () => ctrl.navigateInterpretation(false)
+                                      : null,
+                                  icon: Icon(
+                                    Icons.chevron_left,
+                                    color: canPrev
+                                        ? activeColor
+                                        : Colors.grey[400],
+                                  ),
+                                ),
+                                if (!isLoading && hasBounds)
+                                  Text(
+                                    isMalayalam
+                                        ? '${ctrl.currentInterpretationNumber - ctrl.mlFootnoteMinNumber + 1} / ${ctrl.maxInterpretationNumber - ctrl.mlFootnoteMinNumber + 1}'
+                                        : '${ctrl.currentInterpretationNumber} / ${ctrl.maxInterpretationNumber}',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: activeColor,
+                                    ),
+                                  ),
+                                IconButton(
+                                  tooltip: 'Next',
+                                  onPressed: canNext
+                                      ? () => ctrl.navigateInterpretation(true)
+                                      : null,
+                                  icon: Icon(
+                                    Icons.chevron_right,
+                                    color: canNext
+                                        ? activeColor
+                                        : Colors.grey[400],
+                                  ),
+                                ),
+                                const Spacer(),
+                                IconButton(
+                                  tooltip: 'Copy',
+                                  onPressed: isLoading
+                                      ? null
+                                      : () async {
+                                          final text = combinedText();
+                                          if (text.trim().isNotEmpty) {
+                                            await Clipboard.setData(
+                                              ClipboardData(text: text),
+                                            );
+                                            if (ctx.mounted) {
+                                              ScaffoldMessenger.of(ctx)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                      'Copied to clipboard'),
+                                                  duration:
+                                                      Duration(seconds: 2),
+                                                ),
+                                              );
+                                            }
+                                          }
+                                        },
+                                  icon: Icon(
+                                    Icons.copy_outlined,
+                                    color: isLoading
+                                        ? Colors.grey[400]
+                                        : activeColor,
+                                  ),
+                                ),
+                                Builder(
+                                  builder: (shareButtonContext) => IconButton(
+                                    tooltip: 'Share',
+                                    onPressed: isLoading
+                                        ? null
+                                        : () async {
+                                            final text = combinedText();
+                                            if (text.trim().isNotEmpty) {
+                                              await Share.share(
+                                                text,
+                                                sharePositionOrigin:
+                                                    _sharePositionOriginFor(
+                                                  shareButtonContext,
+                                                ),
+                                              );
+                                            }
+                                          },
+                                    icon: Icon(
+                                      Icons.share_outlined,
+                                      color: isLoading
+                                          ? Colors.grey[400]
+                                          : activeColor,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
                         ),
                       ),
                     ],
-                  );
-                    },
                   ),
                 ),
-              ],
-            ),
-          );
-        },
+              ),
+            );
+          },
+        ),
       ),
     );
   }
