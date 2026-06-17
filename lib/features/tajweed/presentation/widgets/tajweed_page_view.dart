@@ -321,29 +321,55 @@ class _TajweedPageViewState extends State<TajweedPageView> {
     double lineHeight,
     bool isFirstTwoPages,
   ) {
-    // Group unique visual line numbers from the API.
-    final lineNos = data.wordLinesByVisualLine.keys.toList()..sort();
+    // The DB lineId is an absolute surah-level counter, NOT a page-local number.
+    // The API line_number is 1-based per page. They cannot be matched by value.
+    //
+    // Correct mapping: POSITIONAL.
+    // The Nth DB content row (lineId >= 1, insertion order) = Nth sorted API
+    // line number. Both are in visual page order with the same count.
+    //
+    // Heading/bismillah rows (lineId <= 0) are rendered IN-PLACE where they
+    // appear in the DB row order and do NOT consume an API slot. This ensures a
+    // heading that is the LAST DB row (e.g. new surah at bottom of page) is
+    // rendered at the BOTTOM, not hoisted to the top.
+    final sortedApiLines = data.wordLinesByVisualLine.keys.toList()..sort();
+    int apiIdx = 0;
 
-    // We still need to render surah headings and bismillah from local DB lines.
     for (final line in data.lines) {
       if (line.lineId == -1) {
+        // Surah heading — rendered in-place, no API slot consumed.
         final heading = _buildSuraHeading(line, headSize, textColor);
-        if (isFirstTwoPages) {
+        // Only hoist to topWidgets when this heading is the very first row on
+        // pages 1-2 (the Fatiha/Baqarah surah opener at the top).
+        if (isFirstTwoPages && apiIdx == 0) {
           topWidgets.add(heading);
         } else {
           lineWidgets.add(heading);
         }
       } else if (line.lineId == 0) {
+        // Bismillah — rendered in-place, no API slot consumed.
         lineWidgets.add(_buildBismillahLine(line, headSize, textColor));
+      } else {
+        // Content line: consume the next API slot positionally.
+        if (apiIdx < sortedApiLines.length) {
+          final lineNo = sortedApiLines[apiIdx++];
+          final apiWords = data.wordLinesByVisualLine[lineNo];
+          if (apiWords != null && apiWords.isNotEmpty) {
+            lineWidgets.add(
+              _buildApiWordLine(apiWords, fontSize, lineHeight, isDark, textColor),
+            );
+          } else {
+            lineWidgets.add(
+              _buildDbAyaLine(line, fontSize, lineHeight, isDark, textColor),
+            );
+          }
+        } else {
+          // More DB rows than API lines — fall back to DB for the remainder.
+          lineWidgets.add(
+            _buildDbAyaLine(line, fontSize, lineHeight, isDark, textColor),
+          );
+        }
       }
-    }
-
-    // Render each API word-line.
-    for (final lineNo in lineNos) {
-      final words = data.wordLinesByVisualLine[lineNo]!;
-      lineWidgets.add(
-        _buildApiWordLine(words, fontSize, lineHeight, isDark, textColor),
-      );
     }
   }
 

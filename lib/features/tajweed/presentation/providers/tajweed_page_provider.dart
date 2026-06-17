@@ -125,7 +125,7 @@ class TajweedPageProvider {
         '?words=true'
         '&word_fields=$_wordFields'
         '&mushaf=19'
-        '&per_page=50'
+        '&per_page=100'
         '&page=1',
       );
 
@@ -151,7 +151,7 @@ class TajweedPageProvider {
           '?words=true'
           '&word_fields=$_wordFields'
           '&mushaf=19'
-          '&per_page=50'
+          '&per_page=100'
           '&page=$p',
         );
         final nextResponse =
@@ -184,6 +184,18 @@ class TajweedPageProvider {
             wordMap.putIfAbsent(word.lineNumber, () => []).add(word);
           }
         }
+      }
+
+      // Sort words within each line by (ayahId, position).
+      // Words from multiple ayahs share the same visual line (e.g. ayah N ends
+      // mid-line and ayah N+1 starts on the same line). Sorting by position
+      // alone would interleave them (both reset to pos=1). Sorting by ayahId
+      // first keeps all words of the earlier ayah before those of the later one.
+      for (final list in wordMap.values) {
+        list.sort((a, b) {
+          final byAyah = a.ayahId.compareTo(b.ayahId);
+          return byAyah != 0 ? byAyah : a.position.compareTo(b.position);
+        });
       }
 
       log('TajweedPageProvider: page $pageNo loaded ${allVerses.length} verses '
