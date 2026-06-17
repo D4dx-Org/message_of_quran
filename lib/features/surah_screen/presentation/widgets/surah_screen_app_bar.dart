@@ -475,21 +475,19 @@ class SurahInfoStrip extends StatelessWidget {
             : AppTheme.appThemePrimary.withValues(alpha: 0.06))
         : Colors.white.withValues(alpha: 0.08);
 
-    return Visibility(
-      maintainSize: true,
-      maintainAnimation: true,
-      maintainState: true,
-      visible: visible,
+    return Opacity(
+      opacity: visible ? 1.0 : 0.3,
       child: SizedBox(
         width: 32,
         height: 32,
         child: IconButton(
-          onPressed: onPressed,
+          onPressed: visible ? onPressed : null,
           padding: EdgeInsets.zero,
           iconSize: 16,
           color: foregroundColor,
           style: IconButton.styleFrom(
-            shape: CircleBorder(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
               side: BorderSide(
                 color: borderColor,
               ),

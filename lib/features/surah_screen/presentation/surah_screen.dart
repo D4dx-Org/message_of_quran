@@ -1319,12 +1319,21 @@ class _SurahScreenState extends State<SurahScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Header: title + close button
+                    // Header: surah number | title | close button
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 8, 8),
+                      padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+                          Text(
+                            '${isMl ? 'സൂറത്ത്' : 'Surah'} : ${surah.surahNumber}',
+                            style: AppTextTheme.localizedLabel(
+                              isMalayalam: isMl,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: primaryColor,
+                            ),
+                          ),
                           Expanded(
                             child: Text(
                               surahTitle,
@@ -1342,12 +1351,15 @@ class _SurahScreenState extends State<SurahScreen> {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.close_rounded, size: 20),
-                            onPressed: () => Navigator.of(dialogContext).pop(),
-                            padding: EdgeInsets.zero,
-                            visualDensity: VisualDensity.compact,
-                            color: primaryColor,
+                          SizedBox(
+                            width: 36,
+                            child: IconButton(
+                              icon: const Icon(Icons.close_rounded, size: 20),
+                              onPressed: () => Navigator.of(dialogContext).pop(),
+                              padding: EdgeInsets.zero,
+                              visualDensity: VisualDensity.compact,
+                              color: primaryColor,
+                            ),
                           ),
                         ],
                       ),
@@ -1363,13 +1375,11 @@ class _SurahScreenState extends State<SurahScreen> {
                         children: [
                           _infoChip(
                             dialogContext,
-                            isMl ? 'അവതരണം :' : 'Revelation :',
                             localizeSurahPlace(surah.place, isMalayalam: isMl),
                             isMalayalam: isMl,
                           ),
                           _infoChip(
                             dialogContext,
-                            isMl ? 'സൂക്തങ്ങൾ :' : 'Verses :',
                             '${surah.ayathCount}',
                             isMalayalam: isMl,
                           ),
@@ -1473,7 +1483,6 @@ class _SurahScreenState extends State<SurahScreen> {
 
   Widget _infoChip(
     BuildContext context,
-    String label,
     String value, {
     required bool isMalayalam,
   }) {
@@ -1488,31 +1497,16 @@ class _SurahScreenState extends State<SurahScreen> {
             ? Border.all(color: colorScheme.outline.withValues(alpha: 0.6))
             : null,
       ),
-      child: Column(
-        children: [
-          Text(
-            label,
-            style: AppTextTheme.localizedBody(
-              isMalayalam: isMalayalam,
-              fontSize: 12,
-              color: isDark
-                  ? colorScheme.onSurface.withValues(alpha: 0.7)
-                  : Colors.grey.shade600,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            value,
-            style: AppTextTheme.localizedLabel(
-              isMalayalam: isMalayalam,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: isDark
-                  ? colorScheme.onSurface
-                  : AppTheme.appThemePrimary,
-            ),
-          ),
-        ],
+      child: Text(
+        value,
+        style: AppTextTheme.localizedLabel(
+          isMalayalam: isMalayalam,
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
+          color: isDark
+              ? colorScheme.onSurface
+              : AppTheme.appThemePrimary,
+        ),
       ),
     );
   }
