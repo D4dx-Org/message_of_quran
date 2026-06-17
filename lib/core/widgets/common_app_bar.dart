@@ -217,6 +217,7 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
             ),
           ),
         ),
+        const SizedBox(width: 6),
         AppBarLanguageButton(showText: widget.showLabels, iconSize: iconSize),
       ],
     );

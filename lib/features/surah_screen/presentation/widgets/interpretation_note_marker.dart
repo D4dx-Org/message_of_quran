@@ -8,9 +8,11 @@ InlineSpan buildInterpretationNoteMarkerSpan({
   return WidgetSpan(
     alignment: PlaceholderAlignment.aboveBaseline,
     baseline: TextBaseline.alphabetic,
-    child: GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
+    child: MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
       child: Transform.translate(
         offset: const Offset(0, -2),
         child: Padding(
@@ -52,6 +54,7 @@ InlineSpan buildInterpretationNoteMarkerSpan({
           ),
         ),
       ),
+    ),
     ),
   );
 }
