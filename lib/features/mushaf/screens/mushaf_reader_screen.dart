@@ -19,6 +19,8 @@ import '../../surah_screen/provider/surah_provider.dart';
 import '../models/page_meta.dart';
 import '../widgets/mushaf_download_required_dialog.dart';
 import '../widgets/mushaf_page_view.dart';
+import '../../tajweed/presentation/widgets/tajweed_page_view.dart';
+import '../../settings_screen/providers/tajweed_provider.dart';
 
 const _kPrimaryColor = AppTheme.appIconTheme;
 const _kSecondaryDark = AppTheme.appIconTheme;
@@ -634,6 +636,17 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
                 : MushafReaderProvider.previewLimit,
             onPageChanged: _onPageChanged,
             itemBuilder: (context, index) {
+              final tajweed = context.read<TajweedProvider>();
+              if (tajweed.enabled && tajweed.fontsInstalled) {
+                return TajweedPageView(
+                  pageNo: index + 1,
+                  repository: _p.repository,
+                  selectedAyaId: _p.selectedAyaId,
+                  playingAyaId: _p.audioPlayingAyaId,
+                  onAyaTap: _toggleBars,
+                  quranFontSize: fontSize,
+                );
+              }
               return MushafPageView(
                 pageNo: index + 1,
                 repository: _p.repository,
@@ -1183,6 +1196,20 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
             itemCount: visibleItems.length,
             itemBuilder: (ctx, index) {
               final item = visibleItems[index];
+              final tajweed2 = context.read<TajweedProvider>();
+              if (tajweed2.enabled && tajweed2.fontsInstalled) {
+                return SizedBox(
+                  height: pageH,
+                  child: TajweedPageView(
+                    pageNo: (item as MushafListPage).pageNo,
+                    repository: _p.repository,
+                    selectedAyaId: _p.selectedAyaId,
+                    playingAyaId: _p.audioPlayingAyaId,
+                    onAyaTap: _toggleBars,
+                    quranFontSize: _landscapeFontSize(context),
+                  ),
+                );
+              }
               return SizedBox(
                 height: pageH,
                 child: MushafPageView(

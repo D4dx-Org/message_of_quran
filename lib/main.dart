@@ -28,6 +28,7 @@ import 'package:the_message_of_the_quran/features/home_screen/providers/reading_
 import 'package:the_message_of_the_quran/features/home_screen/providers/juz_hizb_provider.dart';
 import 'package:the_message_of_the_quran/core/services/notification/onesignal_service.dart';
 import 'package:the_message_of_the_quran/features/mushaf/services/mushaf_download_manager.dart';
+import 'package:the_message_of_the_quran/features/tajweed/services/tajweed_font_download_service.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/provider/progression_tracker_provider.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/provider/progression_detail_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/reminder_provider.dart';
@@ -191,6 +192,16 @@ Future<void> _initializeDeferredMobileServices() async {
       const Duration(seconds: 5),
       onTimeout: () => throw TimeoutException(
         'Mushaf state sync timed out.',
+      ),
+    ),
+  );
+
+  await _runBestEffortStartupStep(
+    'Tajweed migration',
+    () => TajweedFontDownloadService.runMigrationIfNeeded().timeout(
+      const Duration(seconds: 5),
+      onTimeout: () => throw TimeoutException(
+        'Tajweed migration timed out.',
       ),
     ),
   );
