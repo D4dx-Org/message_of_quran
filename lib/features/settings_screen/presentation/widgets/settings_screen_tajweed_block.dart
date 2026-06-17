@@ -46,6 +46,8 @@ class SettingsScreenTajweedBlock extends StatelessWidget {
                             child: LinearProgressIndicator(
                               value: tajweed.downloadProgress,
                               color: accentColor,
+                              backgroundColor: accentColor.withAlpha(38),
+                              minHeight: 6,
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -108,17 +110,11 @@ class SettingsScreenTajweedBlock extends StatelessWidget {
                       Icon(Icons.check_circle_outline, size: 16, color: accentColor),
                       const SizedBox(width: 6),
                       Text(
-                        'Font-based Tajweed active',
+                        'Tajweed active',
                         style: Theme.of(context)
                             .textTheme
                             .bodySmall
                             ?.copyWith(color: accentColor),
-                      ),
-                      const Spacer(),
-                      TextButton(
-                        onPressed: () => _confirmDelete(context, tajweed),
-                        style: TextButton.styleFrom(foregroundColor: Colors.red),
-                        child: const Text('Remove fonts'),
                       ),
                     ],
                   ),
@@ -129,22 +125,12 @@ class SettingsScreenTajweedBlock extends StatelessWidget {
               if (!tajweed.enabled && tajweed.fontsInstalled && !tajweed.isDownloading) ...[
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                  child: Row(
-                    children: [
-                      Text(
-                        'Fonts installed',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall
-                            ?.copyWith(color: Colors.grey),
-                      ),
-                      const Spacer(),
-                      TextButton(
-                        onPressed: () => _confirmDelete(context, tajweed),
-                        style: TextButton.styleFrom(foregroundColor: Colors.red),
-                        child: const Text('Remove fonts'),
-                      ),
-                    ],
+                  child: Text(
+                    'Fonts installed',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(color: Colors.grey),
                   ),
                 ),
               ],
@@ -200,33 +186,4 @@ class SettingsScreenTajweedBlock extends StatelessWidget {
     }
   }
 
-  Future<void> _confirmDelete(
-    BuildContext context,
-    TajweedProvider tajweed,
-  ) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Remove Tajweed Fonts'),
-        content: const Text(
-          'This will delete all 604 downloaded Tajweed font files and disable '
-          'Tajweed mode.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Keep'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
-    if (confirmed == true) {
-      await tajweed.deleteFontPack();
-    }
-  }
 }
