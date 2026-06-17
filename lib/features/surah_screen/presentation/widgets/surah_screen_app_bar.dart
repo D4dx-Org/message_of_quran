@@ -368,6 +368,7 @@ class SurahInfoStrip extends StatelessWidget {
                 showPrevious,
                 onPrevious,
                 useDesktopWebSurface: useDesktopWebSurface,
+                tooltip: 'Next Surah',
               ),
               const SizedBox(width: 4),
               Expanded(
@@ -440,6 +441,7 @@ class SurahInfoStrip extends StatelessWidget {
                 showNext,
                 onNext,
                 useDesktopWebSurface: useDesktopWebSurface,
+                tooltip: 'Previous Surah',
               ),
             ],
           ),
@@ -458,6 +460,7 @@ class SurahInfoStrip extends StatelessWidget {
     bool visible,
     VoidCallback? onPressed, {
     required bool useDesktopWebSurface,
+    String? tooltip,
   }) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
@@ -477,24 +480,27 @@ class SurahInfoStrip extends StatelessWidget {
 
     return Opacity(
       opacity: visible ? 1.0 : 0.3,
-      child: SizedBox(
-        width: 32,
-        height: 32,
-        child: IconButton(
-          onPressed: visible ? onPressed : null,
-          padding: EdgeInsets.zero,
-          iconSize: 16,
-          color: foregroundColor,
-          style: IconButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(
-                color: borderColor,
+      child: Tooltip(
+        message: tooltip ?? '',
+        child: SizedBox(
+          width: 32,
+          height: 32,
+          child: IconButton(
+            onPressed: visible ? onPressed : null,
+            padding: EdgeInsets.zero,
+            iconSize: 16,
+            color: foregroundColor,
+            style: IconButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(
+                  color: borderColor,
+                ),
               ),
+              backgroundColor: fillColor,
             ),
-            backgroundColor: fillColor,
+            icon: Icon(icon),
           ),
-          icon: Icon(icon),
         ),
       ),
     );
@@ -627,7 +633,7 @@ class SurahBannerActions extends StatelessWidget {
           if (onPlayPressed != null)
             buildActionIcon(
               icon: Icons.play_circle_outline_rounded,
-              tooltip: isMalayalam ? 'പ്ലേ' : 'Play',
+              tooltip: 'Play Surah',
               onPressed: onPlayPressed!,
             ),
           if (onPlayPressed != null && onInfoPressed != null)
@@ -635,7 +641,7 @@ class SurahBannerActions extends StatelessWidget {
           if (onInfoPressed != null)
             buildActionIcon(
               icon: Icons.info_outline_rounded,
-              tooltip: isMalayalam ? 'വിവരം' : 'Info',
+              tooltip: 'Surah Info',
               onPressed: onInfoPressed!,
             ),
         ],
