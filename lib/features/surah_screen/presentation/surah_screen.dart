@@ -1277,171 +1277,197 @@ class _SurahScreenState extends State<SurahScreen> {
       surahNumber: surah.surahNumber,
     );
 
-    final bsMaxWidth = ResponsiveHelper.bottomSheetMaxWidth(context);
-    final sheetTheme = Theme.of(context);
-    showModalBottomSheet(
+    showDialog<void>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: sheetTheme.cardColor,
-      constraints: bsMaxWidth != null
-          ? BoxConstraints(maxWidth: bsMaxWidth)
-          : null,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (sheetContext) => DraggableScrollableSheet(
-        initialChildSize: 0.7,
-        minChildSize: 0.35,
-        maxChildSize: 0.92,
-        expand: false,
-        builder: (_, scrollCtrl) {
-          final isDark = isDarkMode(context: sheetContext);
-          final colorScheme = Theme.of(sheetContext).colorScheme;
-          return Column(
-          children: [
-            // Drag handle
-            Padding(
-              padding: const EdgeInsets.only(top: 10, bottom: 4),
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        final theme = Theme.of(dialogContext);
+        final isDark = theme.brightness == Brightness.dark;
+        final colorScheme = theme.colorScheme;
+        final panelColor = isDark ? theme.cardColor : Colors.white;
+        final borderColor = isDark
+            ? Colors.white.withValues(alpha: 0.12)
+            : (theme.dividerTheme.color ?? colorScheme.outlineVariant);
+        final primaryColor = isDark ? Colors.white : AppTheme.appThemePrimary;
+        final size = MediaQuery.sizeOf(dialogContext);
+        const double maxDialogWidth = 620;
+        final double hInset = size.width < 640
+            ? 12.0
+            : ((size.width - maxDialogWidth) / 2).clamp(24.0, double.infinity);
+        final double maxHeight =
+            (size.height * 0.82).clamp(300.0, 700.0);
+
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          insetPadding: EdgeInsets.symmetric(
+            horizontal: hInset,
+            vertical: 24,
+          ),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: maxDialogWidth,
+                maxHeight: maxHeight,
+              ),
               child: Container(
-                height: 4,
-                width: 40,
                 decoration: BoxDecoration(
-                  color: colorScheme.outline,
-                  borderRadius: BorderRadius.circular(2),
+                  color: panelColor,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: borderColor),
                 ),
-              ),
-            ),
-            // Surah name header (English / Malayalam per language setting)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Text(
-                surahTitle,
-                style: AppTextTheme.localizedTitle(
-                  isMalayalam: isMl,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: isDark
-                      ? colorScheme.onSurface
-                      : AppTheme.appThemePrimary,
-                  height: 1.25,
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            // Metadata chips
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                alignment: WrapAlignment.center,
-                children: [
-                  _infoChip(
-                    sheetContext,
-                    isMl ? 'അവതരണം :' : 'Revelation :',
-                    localizeSurahPlace(
-                      surah.place,
-                      isMalayalam: isMl,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Header: title + close button
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 8, 8),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              surahTitle,
+                              style: AppTextTheme.localizedTitle(
+                                isMalayalam: isMl,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: isDark
+                                    ? colorScheme.onSurface
+                                    : AppTheme.appThemePrimary,
+                                height: 1.25,
+                              ),
+                              textAlign: TextAlign.center,
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close_rounded, size: 20),
+                            onPressed: () => Navigator.of(dialogContext).pop(),
+                            padding: EdgeInsets.zero,
+                            visualDensity: VisualDensity.compact,
+                            color: primaryColor,
+                          ),
+                        ],
+                      ),
                     ),
-                    isMalayalam: isMl,
-                  ),
-                  _infoChip(
-                    sheetContext,
-                    isMl ? 'സൂക്തങ്ങൾ :' : 'Verses :',
-                    '${surah.ayathCount}',
-                    isMalayalam: isMl,
-                  ),
-                ],
-              ),
-            ),
-            const Divider(height: 1),
-            // Preface sections
-            Expanded(
-              child: FutureBuilder(
-                future: PrefaceDbHelper.getPrefaceBySurahId(
-                  surah.surahNumber,
-                  malayalam: isMl,
-                ),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (snapshot.hasError) {
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Text(
-                          'Failed to load surah info.',
-                          style: AppTextTheme.popinsDefault(
-                            fontSize: 14,
-                            color: Colors.grey,
+                    // Metadata chips
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      child: Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        alignment: WrapAlignment.center,
+                        children: [
+                          _infoChip(
+                            dialogContext,
+                            isMl ? 'അവതരണം :' : 'Revelation :',
+                            localizeSurahPlace(surah.place, isMalayalam: isMl),
+                            isMalayalam: isMl,
                           ),
-                        ),
-                      ),
-                    );
-                  }
-                  final prefaceList = snapshot.data ?? [];
-                  if (prefaceList.isEmpty) {
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Text(
-                          'No description available for this surah.',
-                          style: AppTextTheme.popinsDefault(
-                            fontSize: 14,
-                            color: Colors.grey,
+                          _infoChip(
+                            dialogContext,
+                            isMl ? 'സൂക്തങ്ങൾ :' : 'Verses :',
+                            '${surah.ayathCount}',
+                            isMalayalam: isMl,
                           ),
-                        ),
+                        ],
                       ),
-                    );
-                  }
-                  return ListView.builder(
-                    controller: scrollCtrl,
-                    padding: const EdgeInsets.all(16),
-                    itemCount: prefaceList.length,
-                    itemBuilder: (_, i) {
-                      final preface = prefaceList[i];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (preface.prefaceSubTitle.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 8),
+                    ),
+                    const Divider(height: 1),
+                    // Preface sections
+                    Flexible(
+                      child: FutureBuilder(
+                        future: PrefaceDbHelper.getPrefaceBySurahId(
+                          surah.surahNumber,
+                          malayalam: isMl,
+                        ),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                          if (snapshot.hasError) {
+                            return Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(24),
                                 child: Text(
-                                  preface.prefaceSubTitle,
-                                  style: AppTextTheme.localizedLabel(
-                                    isMalayalam: isMl,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: colorScheme.onSurface,
+                                  'Failed to load surah info.',
+                                  style: AppTextTheme.popinsDefault(
+                                    fontSize: 14,
+                                    color: Colors.grey,
                                   ),
                                 ),
                               ),
-                            Text(
-                              preface.prefaceText,
-                              style: AppTextTheme.localizedBody(
-                                isMalayalam: isMl,
-                                fontSize: 14,
-                                height: 1.6,
-                                color: colorScheme.onSurface,
+                            );
+                          }
+                          final prefaceList = snapshot.data ?? [];
+                          if (prefaceList.isEmpty) {
+                            return Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(24),
+                                child: Text(
+                                  'No description available for this surah.',
+                                  style: AppTextTheme.popinsDefault(
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  );
-                },
+                            );
+                          }
+                          return ListView.builder(
+                            padding: const EdgeInsets.all(16),
+                            itemCount: prefaceList.length,
+                            itemBuilder: (_, i) {
+                              final preface = prefaceList[i];
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    if (preface.prefaceSubTitle.isNotEmpty)
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 8),
+                                        child: Text(
+                                          preface.prefaceSubTitle,
+                                          style: AppTextTheme.localizedLabel(
+                                            isMalayalam: isMl,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: colorScheme.onSurface,
+                                          ),
+                                        ),
+                                      ),
+                                    Text(
+                                      preface.prefaceText,
+                                      style: AppTextTheme.localizedBody(
+                                        isMalayalam: isMl,
+                                        fontSize: 14,
+                                        height: 1.6,
+                                        color: colorScheme.onSurface,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ],
+          ),
         );
-        },
-      ),
+      },
     );
   }
 
