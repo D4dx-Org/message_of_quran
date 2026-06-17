@@ -43,6 +43,7 @@ import 'package:the_message_of_the_quran/features/main_screen/presentation/main_
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/audio_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
+import 'package:the_message_of_the_quran/features/tajweed/presentation/widgets/tajweed_ayah_widget.dart';
 
 class _SurahBismillahHeader extends StatelessWidget {
   const _SurahBismillahHeader({required this.glyphText});
@@ -2571,35 +2572,84 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                                 tajweed,
                                                                                 _,
                                                                               ) {
-                                                                                final quranJustify =
+                                                                                final fontProv =
                                                                                     Provider.of<
                                                                                           FontSizeChangerProvider
                                                                                         >(
                                                                                           ctx,
-                                                                                        )
+                                                                                        );
+                                                                                final quranJustify =
+                                                                                    fontProv
                                                                                         .quranJustify;
-                                                                                return Text.rich(
-                                                                                  TextSpan(
-                                                                                    children: _buildArabicSpans(
-                                                                                      arabicText,
-                                                                                      ayaStart,
-                                                                                      effectivePlayingAyahId,
-                                                                                      AppTextTheme.surahArabiStyle(
-                                                                                        context,
+                                                                                final isDark =
+                                                                                    Theme.of(
+                                                                                          ctx,
+                                                                                        ).brightness ==
+                                                                                        Brightness
+                                                                                            .dark;
+
+                                                                                final normalText =
+                                                                                    Text.rich(
+                                                                                      TextSpan(
+                                                                                        children: _buildArabicSpans(
+                                                                                          arabicText,
+                                                                                          ayaStart,
+                                                                                          effectivePlayingAyahId,
+                                                                                          AppTextTheme.surahArabiStyle(
+                                                                                            context,
+                                                                                          ),
+                                                                                          AppTheme.appIconTheme,
+                                                                                          controller,
+                                                                                        ),
                                                                                       ),
-                                                                                      AppTheme.appIconTheme,
-                                                                                      controller,
+                                                                                      textHeightBehavior: const TextHeightBehavior(
+                                                                                        applyHeightToFirstAscent:
+                                                                                            false,
+                                                                                        applyHeightToLastDescent:
+                                                                                            false,
+                                                                                      ),
+                                                                                      textDirection:
+                                                                                          TextDirection
+                                                                                              .rtl,
+                                                                                      textAlign: quranJustify
+                                                                                          ? TextAlign
+                                                                                                .justify
+                                                                                          : TextAlign
+                                                                                                .start,
+                                                                                    );
+
+                                                                                if (tajweed
+                                                                                        .enabled &&
+                                                                                    tajweed
+                                                                                        .fontsInstalled &&
+                                                                                    surahNumber >
+                                                                                        0) {
+                                                                                  return TajweedAyahWidget(
+                                                                                    key: ValueKey(
+                                                                                      '$surahNumber:$ayaStart:$ayaEnd',
                                                                                     ),
-                                                                                  ),
-                                                                                  textHeightBehavior: const TextHeightBehavior(
-                                                                                    applyHeightToFirstAscent: false,
-                                                                                    applyHeightToLastDescent: false,
-                                                                                  ),
-                                                                                  textDirection: TextDirection.rtl,
-                                                                                  textAlign: quranJustify
-                                                                                      ? TextAlign.justify
-                                                                                      : TextAlign.start,
-                                                                                );
+                                                                                    surahId:
+                                                                                        surahNumber,
+                                                                                    verseFrom:
+                                                                                        ayaStart,
+                                                                                    verseTo:
+                                                                                        ayaEnd,
+                                                                                    fallback:
+                                                                                        normalText,
+                                                                                    fontSize: fontProv
+                                                                                        .quranFontSize
+                                                                                        .toDouble(),
+                                                                                    textAlign: quranJustify
+                                                                                        ? TextAlign
+                                                                                              .justify
+                                                                                        : TextAlign
+                                                                                              .start,
+                                                                                    isDark:
+                                                                                        isDark,
+                                                                                  );
+                                                                                }
+
+                                                                                return normalText;
                                                                               },
                                                                         ),
                                                                         const SizedBox(
