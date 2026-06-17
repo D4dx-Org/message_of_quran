@@ -424,11 +424,11 @@ class _DrawerBrandHeader extends StatelessWidget {
                     Center(
                       key: const ValueKey('drawer-brand-logo-box'),
                       child: Image.asset(
-                        'assets/images/splash_logo.png',
-                        height: 50 * scale,
+                        'assets/images/Group-logo.png',
+                        height: 52 * scale,
                         fit: BoxFit.contain,
                         filterQuality: FilterQuality.high,
-                        semanticLabel: 'Quran Asad Malayalam logo',
+                        semanticLabel: 'The Message of the Quran logo',
                       ),
                     ),
                     SizedBox(height: 18 * scale),
