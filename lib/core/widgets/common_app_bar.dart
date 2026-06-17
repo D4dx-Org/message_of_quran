@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/constants/app_constants.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
@@ -50,6 +51,7 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
 
   final Set<int> _hoveredPageIndices = <int>{};
   bool _isSearchHovered = false;
+  bool _isThemeHovered = false;
 
   void _setHoveredPage(int pageIndex, bool hovered) {
     final isTracked = _hoveredPageIndices.contains(pageIndex);
@@ -68,6 +70,13 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
     if (_isSearchHovered == hovered) return;
     setState(() {
       _isSearchHovered = hovered;
+    });
+  }
+
+  void _setThemeHovered(bool hovered) {
+    if (_isThemeHovered == hovered) return;
+    setState(() {
+      _isThemeHovered = hovered;
     });
   }
 
@@ -154,6 +163,8 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
     const accentColor = AppTheme.appBarForegroundColor;
     final compact = widget.compact;
     final iconSize = AppConstants.appBarIconWidth * (compact ? 0.72 : 0.95);
+    final themeProvider = context.watch<ThemeProvider>();
+    final isDark = themeProvider.isDarkMode;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -192,9 +203,20 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
               height: iconSize,
             ),
           ),
-        const SizedBox(width: 8),
-        AppBarThemeToggleButton(iconSize: iconSize),
-        const SizedBox(width: 4),
+        _buildToolbarButton(
+          label: isDark ? 'Light' : 'Dark',
+          isSelected: false,
+          isHovered: _isThemeHovered,
+          onTap: () => themeProvider.toggleTheme(),
+          onHover: _setThemeHovered,
+          icon: Icon(
+            isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+            size: iconSize,
+            color: accentColor.withValues(
+              alpha: _isThemeHovered ? 1.0 : 0.78,
+            ),
+          ),
+        ),
         AppBarLanguageButton(showText: widget.showLabels, iconSize: iconSize),
       ],
     );

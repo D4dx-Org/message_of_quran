@@ -185,20 +185,27 @@ class BaseScreenLayout extends StatelessWidget {
       final width = MediaQuery.sizeOf(context).width;
       final horizontalPadding = width < 640 ? 12.0 : 24.0;
       final verticalPadding = width < 640 ? 16.0 : 24.0;
+      // When a header strip floats between the app bar and the content card,
+      // use a tighter top inset so the strip sits close to the app bar and
+      // avoids a large blank gap on wide monitors.
+      final topPadding =
+          headerContent != null ? (width < 640 ? 8.0 : 8.0) : verticalPadding;
 
       return SafeArea(
         top: false,
         child: ResponsiveContentWrapper(
           maxWidth: 1180,
-          padding: EdgeInsets.symmetric(
-            horizontal: horizontalPadding,
-            vertical: verticalPadding,
+          padding: EdgeInsets.fromLTRB(
+            horizontalPadding,
+            topPadding,
+            horizontalPadding,
+            verticalPadding,
           ),
           child: Column(
             children: [
               if (headerContent != null) ...[
                 headerContent!,
-                SizedBox(height: width < 640 ? 16 : 20),
+                SizedBox(height: width < 640 ? 8 : 12),
               ],
               Expanded(
                 child: Container(
