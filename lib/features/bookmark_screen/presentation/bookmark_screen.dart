@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/ayah_bookmark_model.dart';
+import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
+import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/mushaf/screens/mushaf_reader_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_card.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
@@ -27,16 +30,43 @@ class BookmarkScreen extends StatelessWidget {
     );
   }
 
-  String _bookmarkChipLabel(AyahBookmarkModel bookmark) {
-    return _isMushafBookmark(bookmark) ? 'Mushaf Block' : 'Quran Block';
+  String _bookmarkChipLabel(AyahBookmarkModel bookmark, {required bool isMalayalam}) {
+    if (_isMushafBookmark(bookmark)) {
+      return isMalayalam ? 'മുസ്ഹഫ് ബ്ലോക്ക്' : 'Mushaf Block';
+    }
+    return isMalayalam ? 'ഖുർആൻ ബ്ലോക്ക്' : 'Quran Block';
   }
 
-  String _bookmarkTitle(AyahBookmarkModel bookmark) {
-    return bookmark.surahName ?? 'Surah ${bookmark.surahNumber}';
+  String _bookmarkTitle(
+    AyahBookmarkModel bookmark, {
+    required bool isMalayalam,
+    required List<SurahModel> surahList,
+  }) {
+    SurahModel? surah;
+    try {
+      surah = surahList.firstWhere((s) => s.surahNumber == bookmark.surahNumber);
+    } catch (_) {
+      surah = null;
+    }
+    if (surah != null) {
+      return formatSurahDisplayNameLine(
+        isMalayalam: isMalayalam,
+        surahName: surah.name,
+        surahTranslation: surah.description,
+        malayalamName: surah.malayalamName,
+        surahNumber: surah.surahNumber,
+      );
+    }
+    return bookmark.surahName ??
+        (isMalayalam
+            ? 'സൂറത്ത് ${bookmark.surahNumber}'
+            : 'Surah ${bookmark.surahNumber}');
   }
 
-  String _bookmarkDetails(AyahBookmarkModel bookmark) {
-    return 'Surah: ${bookmark.surahNumber}, Ayah: ${bookmark.ayahId}';
+  String _bookmarkDetails(AyahBookmarkModel bookmark, {required bool isMalayalam}) {
+    return isMalayalam
+        ? 'സൂറത്ത്: ${bookmark.surahNumber}, ആയത്ത്: ${bookmark.ayahId}'
+        : 'Surah: ${bookmark.surahNumber}, Ayah: ${bookmark.ayahId}';
   }
 
   String? _bookmarkBody(AyahBookmarkModel bookmark) {
@@ -118,6 +148,7 @@ class BookmarkScreen extends StatelessWidget {
     final deleteAccentColor = isDark
         ? Colors.white.withValues(alpha: 0.7)
         : AppTheme.appThemePrimary;
+    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
 
     return BaseScreenLayout(
       contentCardBoxShadows: const [],
@@ -125,13 +156,14 @@ class BookmarkScreen extends StatelessWidget {
         slivers: [
           Consumer<SurahProvider>(
             builder: (context, value, child) {
+              final surahList = value.surahList;
               return value.bookmarkedList.isEmpty
                   ? SliverFillRemaining(
                       hasScrollBody: false,
                       child: Center(
                         child: Semantics(
-                          label: 'No bookmarks saved',
-                          child: const Text("No Bookmark Added"),
+                          label: isMalayalam ? 'ബുക്ക്മാർക്കുകൾ ഒന്നും ചേർത്തിട്ടില്ല' : 'No bookmarks saved',
+                          child: Text(isMalayalam ? 'ബുക്ക്മാർക്ക് ഒന്നും ചേർത്തിട്ടില്ല' : 'No Bookmark Added'),
                         ),
                       ),
                     )
@@ -205,6 +237,7 @@ class BookmarkScreen extends StatelessWidget {
                                                     child: Text(
                                                       _bookmarkChipLabel(
                                                         bookmark,
+                                                        isMalayalam: isMalayalam,
                                                       ),
                                                       style: theme
                                                           .textTheme
@@ -270,7 +303,7 @@ class BookmarkScreen extends StatelessWidget {
                                                 ],
                                               ),
                                               Text(
-                                                _bookmarkTitle(bookmark),
+                                                _bookmarkTitle(bookmark, isMalayalam: isMalayalam, surahList: surahList),
                                                 softWrap: true,
                                                 style: theme
                                                     .textTheme
@@ -297,7 +330,7 @@ class BookmarkScreen extends StatelessWidget {
                                               ],
                                               const SizedBox(height: 6),
                                               Text(
-                                                _bookmarkDetails(bookmark),
+                                                _bookmarkDetails(bookmark, isMalayalam: isMalayalam),
                                                 softWrap: true,
                                                 style: theme.textTheme.bodySmall
                                                     ?.copyWith(

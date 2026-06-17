@@ -6,6 +6,7 @@ import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/app_bar_language_button.dart';
+import 'package:the_message_of_the_quran/core/widgets/app_bar_theme_button.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_screen_svg.dart';
 import 'package:the_message_of_the_quran/features/search_screen/presentation/widgets/surah_quick_search.dart';
 
@@ -192,6 +193,8 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
             ),
           ),
         const SizedBox(width: 8),
+        AppBarThemeToggleButton(iconSize: iconSize),
+        const SizedBox(width: 4),
         AppBarLanguageButton(showText: widget.showLabels, iconSize: iconSize),
       ],
     );
@@ -279,6 +282,8 @@ class CommonAppBar {
       actions:
           actions ??
           [
+            const AppBarThemeToggleButton(),
+            const SizedBox(width: 4),
             const AppBarLanguageButton(),
             const SizedBox(width: 8),
           ],
@@ -321,6 +326,8 @@ class CommonAppBar {
                     visualDensity: VisualDensity.compact,
                     onPressed: onSurahInfoTap,
                   ),
+                const AppBarThemeToggleButton(),
+                const SizedBox(width: 4),
                 const AppBarLanguageButton(),
                 const SizedBox(width: 8),
                 if (showSearch)

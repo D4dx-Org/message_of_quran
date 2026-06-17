@@ -17,6 +17,130 @@ import 'package:the_message_of_the_quran/features/settings_screen/presentation/w
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
+/// Shows the settings as a centered, scrollable dialog overlay.
+/// Use this everywhere instead of pushing [SettingsScreen] as a new route.
+Future<void> showSettingsDialog(BuildContext context) async {
+  await showDialog<void>(
+    context: context,
+    barrierDismissible: true,
+    barrierColor: Colors.black.withValues(alpha: 0.45),
+    builder: (_) => const _SettingsDialog(),
+  );
+}
+
+class _SettingsDialog extends StatelessWidget {
+  const _SettingsDialog();
+
+  @override
+  Widget build(BuildContext context) {
+    final isMl = context.watch<LanguageProvider>().isMalayalam;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final panelColor = isDark ? theme.cardColor : Colors.white;
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.12)
+        : (theme.dividerTheme.color ?? theme.colorScheme.outlineVariant);
+    final primaryColor = isDark ? Colors.white : AppTheme.appThemePrimary;
+    final size = MediaQuery.sizeOf(context);
+    const double maxDialogWidth = 620;
+    final double hInset = size.width < 640
+        ? 12.0
+        : ((size.width - maxDialogWidth) / 2).clamp(24.0, double.infinity);
+    final double maxHeight = (size.height * 0.88).clamp(300.0, 800.0);
+    final showGeneralSection =
+        SettingsScreen.shouldShowGeneralSection(isWeb: PlatformHelper.isWeb);
+
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      insetPadding: EdgeInsets.symmetric(horizontal: hInset, vertical: 24),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: maxDialogWidth,
+            maxHeight: maxHeight,
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: panelColor,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: borderColor),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 8, 8),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          isMl ? 'സെറ്റിംഗ്സ്' : 'Settings',
+                          style: AppTextTheme.localizedTitle(
+                            isMalayalam: isMl,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: isDark
+                                ? theme.colorScheme.onSurface
+                                : AppTheme.appThemePrimary,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close_rounded, size: 20),
+                        onPressed: () => Navigator.of(context).pop(),
+                        padding: EdgeInsets.zero,
+                        visualDensity: VisualDensity.compact,
+                        color: primaryColor,
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1),
+                // Scrollable settings content
+                Flexible(
+                  child: ListView(
+                    padding: const EdgeInsets.all(16),
+                    children: [
+                      const _SectionLabel('Theme & Language'),
+                      const SizedBox(height: 8),
+                      const _ThemeLanguageCard(),
+                      const SizedBox(height: 24),
+                      const _SectionLabel('Font'),
+                      const SizedBox(height: 8),
+                      const SettingsScreenFontBlock(),
+                      const SizedBox(height: 24),
+                      const _SectionLabel('Layout'),
+                      const SizedBox(height: 8),
+                      const SettingsScreenLayoutBlock(),
+                      const SizedBox(height: 24),
+                      const _SectionLabel('Tajweed'),
+                      const SizedBox(height: 8),
+                      const SettingsScreenTajweedBlock(),
+                      const SizedBox(height: 24),
+                      const _SectionLabel('Audio'),
+                      const SizedBox(height: 8),
+                      const SettingsScreenAudioBlock(),
+                      if (showGeneralSection) ...[
+                        const SizedBox(height: 24),
+                        const _SectionLabel('General'),
+                        const SizedBox(height: 8),
+                        const SettingsScreenAppBlock(),
+                      ],
+                      const SizedBox(height: 8),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({
     super.key,

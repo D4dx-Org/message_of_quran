@@ -85,6 +85,11 @@ class _MainScreenState extends State<MainScreen> {
   void _onItemTapped(int index) {
     // Mushaf (index 2) is temporarily disabled — coming soon.
     if (index == 2) return;
+    // Settings open as a dialog overlay instead of a separate page.
+    if (index == 3) {
+      showSettingsDialog(context);
+      return;
+    }
     Provider.of<HomeProvider>(context, listen: false).changeIndex(index);
     final screenNames = ['Home', 'Bookmarks', 'Mushaf', 'Settings'];
     // ignore: deprecated_member_use

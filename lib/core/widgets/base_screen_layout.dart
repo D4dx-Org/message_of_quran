@@ -120,13 +120,24 @@ class BaseScreenLayout extends StatelessWidget {
   }
 
   Widget _buildContentCardChild() {
-    if (contentTopInset == 0) return child;
-
-    return Padding(
-      key: _baseScreenLayoutContentInsetPaddingKey,
-      padding: EdgeInsets.only(top: contentTopInset),
-      child: child,
-    );
+    Widget content = contentTopInset == 0
+        ? child
+        : Padding(
+            key: _baseScreenLayoutContentInsetPaddingKey,
+            padding: EdgeInsets.only(top: contentTopInset),
+            child: child,
+          );
+    // On web, suppress the scrollbar inside the rounded content card so the
+    // scroll indicator doesn't appear clipped inside the card boundary.
+    // This matches the home screen (web) where the scrollable spans the full
+    // viewport and the scrollbar appears naturally at the screen edge.
+    if (kIsWeb) {
+      return ScrollConfiguration(
+        behavior: const _NoScrollbarBehavior(),
+        child: content,
+      );
+    }
+    return content;
   }
 
   @override
@@ -248,4 +259,18 @@ class BaseScreenLayout extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Suppresses the automatic scrollbar added by Flutter web's default
+/// [ScrollBehavior]. Used inside [BaseScreenLayout]'s content card so the
+/// scrollbar doesn't appear clipped inside the rounded card boundary.
+class _NoScrollbarBehavior extends ScrollBehavior {
+  const _NoScrollbarBehavior();
+
+  @override
+  Widget buildScrollbar(
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) => child;
 }
