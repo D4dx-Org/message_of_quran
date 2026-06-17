@@ -613,8 +613,16 @@ class _TajweedPageViewState extends State<TajweedPageView> {
   }
 
   Widget _buildBismillahLine(MushafLine line, double headSize, Color textColor) {
-    final segments =
-        MushafTextUtils.parseLine(line.data, isHeadingOrBismillah: true);
+    // The DB stores two different QCF_BSML glyph sequences for the bismillah:
+    //   • 3-byte form 0x21 0x22 0x23 — used by pages 50+  (standard compact)
+    //   • 4-byte form 0x2A 0x2B 0x2C 0x2D — used by page 2 (wider variant)
+    // Normalise to the standard 3-byte form so every surah renders an identical
+    // bismillah header regardless of which variant the DB happens to store.
+    const standardBismillah = '\x21\x22\x23';
+    final segments = MushafTextUtils.parseLine(
+      standardBismillah,
+      isHeadingOrBismillah: true,
+    );
     final displayText = segments.isNotEmpty ? segments.first.text : '';
     return Padding(
       padding: const EdgeInsets.only(top: 8, bottom: 10),
