@@ -178,7 +178,11 @@ class TranslationBlockDbHelper {
   }) async {
     final db = DatabaseHelper.quranAsadDb;
     if (db == null) return [];
-    final pattern = '%$keyword%';
+    // Use lowercase keyword and build word-boundary LIKE patterns.
+    // Common punctuation is replaced with spaces so that words at sentence
+    // endings (e.g. "hell.") are correctly matched by the " hell " pattern.
+    final q = keyword.toLowerCase();
+    final wordPattern = '% $q %';
     try {
       if (isMalayalam) {
         final rows = await db.rawQuery(
@@ -188,10 +192,10 @@ class TranslationBlockDbHelper {
           FROM malayalam_verses mv
           LEFT JOIN quranayas q
             ON q.suraid = mv.surah_id AND q.ayaid = mv.verse_number
-          WHERE mv.malayalam_translation LIKE ?
+          WHERE ' ' || mv.malayalam_translation || ' ' LIKE ?
           LIMIT ?
           ''',
-          [pattern, limit],
+          [wordPattern, limit],
         );
         return rows
             .map(
@@ -212,10 +216,13 @@ class TranslationBlockDbHelper {
           FROM verses v
           LEFT JOIN quranayas q
             ON q.suraid = v.surah_number AND q.ayaid = v.verse_number
-          WHERE LOWER(v.text) LIKE LOWER(?)
+          WHERE ' ' || REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+              LOWER(v.text), '.', ' '), ',', ' '), ';', ' '), ':', ' '),
+              '!', ' '), '?', ' '), ')', ' ') || ' '
+              LIKE ?
           LIMIT ?
           ''',
-          [pattern, limit],
+          [wordPattern, limit],
         );
         return rows
             .map(

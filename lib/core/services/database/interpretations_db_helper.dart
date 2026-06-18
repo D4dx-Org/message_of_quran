@@ -160,17 +160,18 @@ class InterpretationsDbHelper {
   }) async {
     final db = DatabaseHelper.quranAsadDb;
     if (db == null) return [];
-    final pattern = '%$keyword%';
+    final q = keyword.toLowerCase();
+    final wordPattern = '% $q %';
     try {
       if (isMalayalam) {
         final rows = await db.rawQuery(
           '''
           SELECT footnote_number, content
           FROM ${DbConstants.mlFootnotesTable}
-          WHERE content LIKE ?
+          WHERE ' ' || content || ' ' LIKE ?
           LIMIT ?
           ''',
-          [pattern, limit],
+          [wordPattern, limit],
         );
         return rows
             .map(
@@ -196,14 +197,17 @@ class InterpretationsDbHelper {
               SELECT v.verse_number
               FROM verses v
               WHERE v.surah_number = f.surah_number
-                AND v.text LIKE '%(' || f.footnote_number || ')%'
+                AND v.text LIKE '%('' || f.footnote_number || '')%'
               LIMIT 1
             ), -1) AS verse_number
           FROM ${DbConstants.asadFootnotesTable} f
-          WHERE LOWER(f.text) LIKE LOWER(?)
+          WHERE ' ' || REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+              LOWER(f.text), '.', ' '), ',', ' '), ';', ' '), ':', ' '),
+              '!', ' '), '?', ' '), ')', ' ') || ' '
+              LIKE ?
           LIMIT ?
           ''',
-          [pattern, limit],
+          [wordPattern, limit],
         );
         return rows
             .map(

@@ -785,7 +785,11 @@ class SurahProvider extends ChangeNotifier {
           searchList.add(surah);
         }
       } else {
-        if (surah.searchName.contains(queryLower)) {
+        // Single word: split surah name into tokens (space/hyphen) and check
+        // if any token STARTS WITH the query. This prevents "isa" from
+        // matching "An-Nisa" because "nisa" does not start with "isa".
+        final tokens = surah.searchName.split(RegExp(r'[\s\-]+'));
+        if (tokens.any((t) => t.startsWith(queryLower))) {
           searchList.add(surah);
         }
       }
