@@ -12,6 +12,7 @@ import 'package:the_message_of_the_quran/features/home_screen/presentation/home_
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/mushaf/screens/mushaf_landing_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
+import 'package:the_message_of_the_quran/features/search_screen/presentation/widgets/web_full_text_search_dialog.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 import 'package:the_message_of_the_quran/main.dart' as app;
@@ -143,8 +144,9 @@ class _MainScreenState extends State<MainScreen> {
       selectedPageIndex: selectedPageIndex,
       onPageSelected: _onItemTapped,
       compact: true,
-      showSearch: false,
+      showSearch: true,
       showLabels: !isNarrow,
+      onSearchPressed: () => showWebFullTextSearchDialog(context),
     );
 
     return Padding(
