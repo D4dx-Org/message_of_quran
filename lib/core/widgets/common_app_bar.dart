@@ -82,7 +82,7 @@ class CommonAppBar {
         const AppBarLanguageButton(),
         const SizedBox(width: 8),
         IconButton(
-          icon: const Icon(Icons.search, color: Colors.white),
+          icon: const HomeScreenSvg(icon: 'search', color: Colors.white),
           tooltip: 'Search',
           padding: EdgeInsets.zero,
           visualDensity: VisualDensity.compact,
@@ -107,6 +107,8 @@ class CommonAppBar {
     Widget? titleWidget,
     VoidCallback? onSurahInfoTap,
     bool showSearch = true,
+    bool showJump = true,
+    VoidCallback? onSearchTap,
   }) {
     final scale = ResponsiveHelper.scaleFactor(ctx);
     return AppBar(
@@ -158,23 +160,27 @@ class CommonAppBar {
                   visualDensity: VisualDensity.compact,
                   onPressed: onSurahInfoTap,
                 ),
-              IconButton(
-                icon: const HomeScreenSvg(icon: 'jump', color: Colors.white),
-                tooltip: 'Jump to Surah',
-                padding: EdgeInsets.zero,
-                visualDensity: VisualDensity.compact,
-                onPressed: () => AppBarModelSheet.modelSheet(ctx),
-              ),
+              if (showJump)
+                IconButton(
+                  icon: const HomeScreenSvg(icon: 'jump', color: Colors.white),
+                  tooltip: 'Jump to Surah',
+                  padding: EdgeInsets.zero,
+                  visualDensity: VisualDensity.compact,
+                  onPressed: () => AppBarModelSheet.modelSheet(ctx),
+                ),
               if (showSearch)
                 IconButton(
                   icon: const HomeScreenSvg(icon: 'search', color: Colors.white),
                   tooltip: 'Search',
                   padding: EdgeInsets.zero,
                   visualDensity: VisualDensity.compact,
-                  onPressed: () => Navigator.push(
-                    ctx,
-                    MaterialPageRoute(builder: (_) => const SearchScreen()),
-                  ),
+                  onPressed: onSearchTap ??
+                      () => Navigator.push(
+                            ctx,
+                            MaterialPageRoute(
+                              builder: (_) => const SearchScreen(),
+                            ),
+                          ),
                 ),
               const SizedBox(width: 8),
             ]

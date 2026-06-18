@@ -13,6 +13,7 @@ import '../provider/mushaf_landing_provider.dart';
 import '../services/mushaf_download_manager.dart';
 import '../utils/surah_unicode.dart';
 import '../../../core/theme/app_theme.dart';
+import '../data/mushaf_repository.dart';
 import '../widgets/mushaf_download_required_dialog.dart';
 import '../widgets/star_number.dart';
 import 'mushaf_reader_screen.dart';
@@ -333,6 +334,11 @@ class MushafLandingScreen extends StatefulWidget {
 
   final bool embedded;
   final ValueChanged<int>? onSurahSelected;
+
+  /// Returns the first Mus'haf page number for the given [suraNo].
+  /// Used by the search delegate in MainScreen without requiring a full provider.
+  static Future<int> fetchFirstPageForSurah(int suraNo) =>
+      MushafRepository().getFirstPageForSurah(suraNo);
 
   @override
   State<MushafLandingScreen> createState() => _MushafLandingScreenState();

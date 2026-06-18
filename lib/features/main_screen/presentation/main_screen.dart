@@ -9,6 +9,9 @@ import 'package:the_message_of_the_quran/core/widgets/app_bar_language_button.da
 import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
+import 'package:the_message_of_the_quran/core/models/ayah_bookmark_model.dart';
+import 'package:the_message_of_the_quran/features/mushaf/screens/mushaf_reader_screen.dart';
+import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/about_screen/presentation/about_screen.dart';
 import 'package:the_message_of_the_quran/features/bookmark_screen/presentation/bookmark_screen.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/home_screen.dart';
@@ -435,6 +438,18 @@ class _MainScreenState extends State<MainScreen> {
             isActionsNeeded: displayIndex != 4 && displayIndex != 3,
             showLeading: true,
             isMalayalam: displayIndex == 4 && isMalayalam,
+            showJump: displayIndex != 2,
+            onSearchTap: displayIndex == 1
+                ? () => showSearch(
+                      context: context,
+                      delegate: _BookmarkSearchDelegate(),
+                    )
+                : displayIndex == 2
+                    ? () => showSearch(
+                          context: context,
+                          delegate: _MushafSurahSearchDelegate(),
+                        )
+                    : null,
             title: [
               'Home',
               'Bookmarks',
@@ -655,6 +670,257 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
+
+// ─── Bookmark search delegate ─────────────────────────────────────────────────
+
+class _BookmarkSearchDelegate extends SearchDelegate<void> {
+  @override
+  String get searchFieldLabel => 'Search bookmarks…';
+
+  @override
+  ThemeData appBarTheme(BuildContext context) {
+    final base = super.appBarTheme(context);
+    return base.copyWith(
+      scaffoldBackgroundColor: AppTheme.appThemePrimary,
+      appBarTheme: base.appBarTheme.copyWith(
+        backgroundColor: AppTheme.appThemePrimary,
+        foregroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.white),
+        actionsIconTheme: const IconThemeData(color: Colors.white),
+        elevation: 0,
+      ),
+      inputDecorationTheme: base.inputDecorationTheme.copyWith(
+        hintStyle: const TextStyle(color: Colors.white70),
+      ),
+      textSelectionTheme: const TextSelectionThemeData(
+        cursorColor: Colors.white,
+        selectionColor: Colors.white38,
+        selectionHandleColor: Colors.white,
+      ),
+      textTheme: base.textTheme.copyWith(
+        titleLarge: base.textTheme.titleLarge?.copyWith(color: Colors.white),
+      ),
+    );
+  }
+
+  @override
+  List<Widget> buildActions(BuildContext context) => [
+        IconButton(
+          icon: const Icon(Icons.clear),
+          onPressed: () => query = '',
+        ),
+      ];
+
+  @override
+  Widget buildLeading(BuildContext context) => IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () => close(context, null),
+      );
+
+  @override
+  Widget buildResults(BuildContext context) => _buildList(context);
+
+  @override
+  Widget buildSuggestions(BuildContext context) => _buildList(context);
+
+  Widget _buildList(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? const Color(0xff0c2d52) : Colors.white;
+    final bookmarks =
+        Provider.of<SurahProvider>(context, listen: false).bookmarkedList;
+    final q = query.toLowerCase().trim();
+    final filtered = q.isEmpty
+        ? bookmarks
+        : bookmarks.where((b) {
+            final name = (b.surahName ?? '').toLowerCase();
+            final label = (b.label ?? '').toLowerCase();
+            return name.contains(q) ||
+                label.contains(q) ||
+                'surah ${b.surahNumber}'.contains(q);
+          }).toList();
+
+    if (filtered.isEmpty) {
+      return _wrapInCard(cardColor, const Center(child: Text('No bookmarks found')));
+    }
+
+    return _wrapInCard(
+      cardColor,
+      ListView.builder(
+      itemCount: filtered.length,
+      itemBuilder: (ctx, i) {
+        final b = filtered[i];
+        final subtitle = b.navigationTarget ==
+                BookmarkNavigationTarget.mushafPage
+            ? "Mus'haf Page ${b.pageNumber}"
+            : 'Surah: ${b.surahNumber}, Ayah: ${b.ayahId}';
+        return ListTile(
+          leading: const Icon(Icons.bookmark),
+          title: Text(b.surahName ?? 'Surah ${b.surahNumber}'),
+          subtitle: Text(subtitle),
+          onTap: () {
+            close(context, null);
+            _openBookmark(context, b);
+          },
+        );
+      },    ));
+  }
+
+  Widget _wrapInCard(Color cardColor, Widget content) {
+    return Container(
+      color: AppTheme.appThemePrimary,
+      child: ClipRRect(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
+        child: ColoredBox(color: cardColor, child: content),
+      ),    );
+  }
+
+  void _openBookmark(BuildContext context, AyahBookmarkModel bookmark) {
+    final nav = Navigator.of(context);
+    final surahProv = Provider.of<SurahProvider>(context, listen: false);
+
+    if (bookmark.navigationTarget == BookmarkNavigationTarget.mushafPage) {
+      nav.push(MaterialPageRoute(
+        builder: (_) => MushafReaderScreen(
+          initialPage: bookmark.pageNumber,
+          initialSurahNo:
+              bookmark.pageNumber == null ? bookmark.surahNumber : null,
+          initialAyaNo: bookmark.pageNumber == null ? bookmark.ayahId : null,
+        ),
+      ));
+      return;
+    }
+
+    if (bookmark.navigationTarget == BookmarkNavigationTarget.mushaf) {
+      nav.push(MaterialPageRoute(
+        builder: (_) => MushafReaderScreen(
+          initialSurahNo: bookmark.surahNumber,
+          initialAyaNo: bookmark.ayahId,
+        ),
+      ));
+      return;
+    }
+
+    final idx = surahProv.surahList
+        .indexWhere((s) => s.surahNumber == bookmark.surahNumber);
+    if (idx < 0) return;
+    surahProv.assignIndex(idx);
+    nav.push(MaterialPageRoute(
+      builder: (_) => SurahScreen(scrollToAyahId: bookmark.ayahId),
+    ));
+  }
+}
+
+// ─── Mus'haf surah search delegate ───────────────────────────────────────────
+
+class _MushafSurahSearchDelegate extends SearchDelegate<void> {
+  @override
+  String get searchFieldLabel => "Search surahs…";
+
+  @override
+  ThemeData appBarTheme(BuildContext context) {
+    final base = super.appBarTheme(context);
+    return base.copyWith(
+      scaffoldBackgroundColor: AppTheme.appThemePrimary,
+      appBarTheme: base.appBarTheme.copyWith(
+        backgroundColor: AppTheme.appThemePrimary,
+        foregroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.white),
+        actionsIconTheme: const IconThemeData(color: Colors.white),
+        elevation: 0,
+      ),
+      inputDecorationTheme: base.inputDecorationTheme.copyWith(
+        hintStyle: const TextStyle(color: Colors.white70),
+      ),
+      textSelectionTheme: const TextSelectionThemeData(
+        cursorColor: Colors.white,
+        selectionColor: Colors.white38,
+        selectionHandleColor: Colors.white,
+      ),
+      textTheme: base.textTheme.copyWith(
+        titleLarge: base.textTheme.titleLarge?.copyWith(color: Colors.white),
+      ),
+    );
+  }
+
+  @override
+  List<Widget> buildActions(BuildContext context) => [
+        IconButton(
+          icon: const Icon(Icons.clear),
+          onPressed: () => query = '',
+        ),
+      ];
+
+  @override
+  Widget buildLeading(BuildContext context) => IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () => close(context, null),
+      );
+
+  @override
+  Widget buildResults(BuildContext context) => _buildList(context);
+
+  @override
+  Widget buildSuggestions(BuildContext context) => _buildList(context);
+
+  Widget _buildList(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? const Color(0xff0c2d52) : Colors.white;
+    final surahs =
+        Provider.of<SurahProvider>(context, listen: false).surahList;
+    final q = query.toLowerCase().trim();
+    final filtered = q.isEmpty
+        ? surahs
+        : surahs.where((s) {
+            return s.searchName.contains(q) ||
+                s.surahNumber.toString().startsWith(q);
+          }).toList();
+
+    return _wrapInCard(
+      cardColor,
+      ListView.builder(
+        itemCount: filtered.length,
+        itemBuilder: (ctx, i) {
+          final s = filtered[i];
+          return ListTile(
+            leading: CircleAvatar(
+              radius: 18,
+              child: Text(
+                '${s.surahNumber}',
+                style: const TextStyle(fontSize: 11),
+              ),
+            ),
+            title: Text(s.name),
+            subtitle: Text(s.description),
+            onTap: () async {
+              final nav = Navigator.of(context);
+              close(context, null);
+              try {
+                final page = await MushafLandingScreen.fetchFirstPageForSurah(
+                  s.surahNumber,
+                );
+                nav.push(MaterialPageRoute(
+                  builder: (_) => MushafReaderScreen(initialPage: page),
+                ));
+              } catch (_) {}
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _wrapInCard(Color cardColor, Widget content) {
+    return Container(
+      color: AppTheme.appThemePrimary,
+      child: ClipRRect(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
+        child: ColoredBox(color: cardColor, child: content),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 class _NavCornerFillPainter extends CustomPainter {
   const _NavCornerFillPainter({required this.color, required this.radius});
