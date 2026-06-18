@@ -806,7 +806,7 @@ class SurahProvider extends ChangeNotifier {
     }
 
     // ── Full-text DB search (verse + interpretation) ──
-    if (!isNumeric && query.length >= 3) {
+    if (!isNumeric && query.length >= 2) {
       isSearchingContent = true;
       notifyListeners();
 

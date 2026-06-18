@@ -201,9 +201,9 @@ class InterpretationsDbHelper {
               LIMIT 1
             ), -1) AS verse_number
           FROM ${DbConstants.asadFootnotesTable} f
-          WHERE ' ' || REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+          WHERE ' ' || REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
               LOWER(f.text), '.', ' '), ',', ' '), ';', ' '), ':', ' '),
-              '!', ' '), '?', ' '), ')', ' ') || ' '
+              '!', ' '), '?', ' '), ')', ' '), '(', ' ') || ' '
               LIKE ?
           LIMIT ?
           ''',

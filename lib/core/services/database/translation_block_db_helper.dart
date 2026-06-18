@@ -216,9 +216,9 @@ class TranslationBlockDbHelper {
           FROM verses v
           LEFT JOIN quranayas q
             ON q.suraid = v.surah_number AND q.ayaid = v.verse_number
-          WHERE ' ' || REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+          WHERE ' ' || REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
               LOWER(v.text), '.', ' '), ',', ' '), ';', ' '), ':', ' '),
-              '!', ' '), '?', ' '), ')', ' ') || ' '
+              '!', ' '), '?', ' '), ')', ' '), '(', ' ') || ' '
               LIKE ?
           LIMIT ?
           ''',
