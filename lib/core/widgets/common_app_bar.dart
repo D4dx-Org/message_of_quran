@@ -106,6 +106,7 @@ class CommonAppBar {
     bool isMalayalam = false,
     Widget? titleWidget,
     VoidCallback? onSurahInfoTap,
+    bool showSearch = true,
   }) {
     final scale = ResponsiveHelper.scaleFactor(ctx);
     return AppBar(
@@ -164,16 +165,17 @@ class CommonAppBar {
                 visualDensity: VisualDensity.compact,
                 onPressed: () => AppBarModelSheet.modelSheet(ctx),
               ),
-              IconButton(
-                icon: const HomeScreenSvg(icon: 'search', color: Colors.white),
-                tooltip: 'Search',
-                padding: EdgeInsets.zero,
-                visualDensity: VisualDensity.compact,
-                onPressed: () => Navigator.push(
-                  ctx,
-                  MaterialPageRoute(builder: (_) => const SearchScreen()),
+              if (showSearch)
+                IconButton(
+                  icon: const HomeScreenSvg(icon: 'search', color: Colors.white),
+                  tooltip: 'Search',
+                  padding: EdgeInsets.zero,
+                  visualDensity: VisualDensity.compact,
+                  onPressed: () => Navigator.push(
+                    ctx,
+                    MaterialPageRoute(builder: (_) => const SearchScreen()),
+                  ),
                 ),
-              ),
               const SizedBox(width: 8),
             ]
           : null,

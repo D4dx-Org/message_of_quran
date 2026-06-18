@@ -282,10 +282,15 @@ class SurahScreen extends StatefulWidget {
   /// after the scroll animation to [scrollToAyahId] completes.
   final int? openInterpretationNumber;
 
+  /// When false, the search icon in the app bar is hidden.
+  /// Set to false when navigating from SearchScreen to avoid nesting.
+  final bool showSearchIcon;
+
   const SurahScreen({
     super.key,
     this.scrollToAyahId,
     this.openInterpretationNumber,
+    this.showSearchIcon = true,
   });
 
   @override
@@ -2413,6 +2418,7 @@ class _SurahScreenState extends State<SurahScreen> {
         appBar: CommonAppBar.appBar(
           context,
           showBrandLogo: true,
+          showSearch: widget.showSearchIcon,
           onSurahInfoTap: _hasPreface
               ? () => _showSurahInfo(context, controller)
               : null,

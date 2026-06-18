@@ -75,7 +75,7 @@ class _SearchScreenState extends State<SearchScreen> {
     controller.assignIndex(idx);
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const SurahScreen()),
+      MaterialPageRoute(builder: (_) => const SurahScreen(showSearchIcon: false)),
     );
   }
 
@@ -91,7 +91,7 @@ class _SearchScreenState extends State<SearchScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => SurahScreen(scrollToAyahId: result.verseNumber),
+        builder: (_) => SurahScreen(scrollToAyahId: result.verseNumber, showSearchIcon: false),
       ),
     );
   }
@@ -119,9 +119,9 @@ class _SearchScreenState extends State<SearchScreen> {
       MaterialPageRoute(
         builder: (_) => SurahScreen(
           scrollToAyahId: result.verseNumber > 0 ? result.verseNumber : null,
-          // Auto-open the interpretation sheet after scroll lands.
           openInterpretationNumber:
               result.verseNumber > 0 ? result.verseNumber : null,
+          showSearchIcon: false,
         ),
       ),
     );
