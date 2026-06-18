@@ -15,8 +15,25 @@ import 'package:the_message_of_the_quran/features/settings_screen/providers/lang
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
-class SearchScreen extends StatelessWidget {
+class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
+
+  @override
+  State<SearchScreen> createState() => _SearchScreenState();
+}
+
+class _SearchScreenState extends State<SearchScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Clear any stale search state so each fresh open starts clean.
+    // This does NOT run when returning from SurahScreen (same instance resumes).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        Provider.of<SurahProvider>(context, listen: false).clear();
+      }
+    });
+  }
 
   bool _useDesktopWebLayout(BuildContext context) {
     return kIsWeb;
