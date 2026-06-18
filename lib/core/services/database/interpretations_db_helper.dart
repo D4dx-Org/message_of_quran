@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:the_message_of_the_quran/core/constants/db_constants.dart';
 import 'package:the_message_of_the_quran/core/models/interpretation_model.dart';
+import 'package:the_message_of_the_quran/core/models/interpretation_search_result_model.dart';
 import 'package:the_message_of_the_quran/core/services/database/database_helper.dart';
 
 class InterpretationsDbHelper {
@@ -143,5 +144,83 @@ class InterpretationsDbHelper {
     );
     final min = range['min'] ?? -1;
     return min != -1 ? min : 1;
+  }
+
+  /// Full-text search over interpretation / footnote text.
+  ///
+  /// English: queries `footnotes` and uses a correlated subquery to resolve
+  /// the verse that references each footnote via its `(N)` marker.
+  /// Malayalam: queries `malayalam_footnotes`; surahNumber and verseNumber
+  /// will be -1 because that table has no `surah_number` column.
+  static Future<List<InterpretationSearchResultModel>>
+  searchInterpretationsByWord(
+    String keyword, {
+    bool isMalayalam = false,
+    int limit = 50,
+  }) async {
+    final db = DatabaseHelper.quranAsadDb;
+    if (db == null) return [];
+    final pattern = '%$keyword%';
+    try {
+      if (isMalayalam) {
+        final rows = await db.rawQuery(
+          '''
+          SELECT footnote_number, content
+          FROM ${DbConstants.mlFootnotesTable}
+          WHERE content LIKE ?
+          LIMIT ?
+          ''',
+          [pattern, limit],
+        );
+        return rows
+            .map(
+              (row) => InterpretationSearchResultModel(
+                surahNumber: -1,
+                footnoteNumber:
+                    (row[DbConstants.mlFootnoteNumber] as int?) ?? -1,
+                verseNumber: -1,
+                text: (row[DbConstants.mlFootnoteContent] as String?) ?? '',
+              ),
+            )
+            .toList();
+      } else {
+        // For English footnotes, use a correlated subquery to find the verse
+        // that contains the marker `(N)` referencing this footnote number.
+        final rows = await db.rawQuery(
+          '''
+          SELECT
+            f.surah_number,
+            f.footnote_number,
+            f.text,
+            COALESCE((
+              SELECT v.verse_number
+              FROM verses v
+              WHERE v.surah_number = f.surah_number
+                AND v.text LIKE '%(' || f.footnote_number || ')%'
+              LIMIT 1
+            ), -1) AS verse_number
+          FROM ${DbConstants.asadFootnotesTable} f
+          WHERE LOWER(f.text) LIKE LOWER(?)
+          LIMIT ?
+          ''',
+          [pattern, limit],
+        );
+        return rows
+            .map(
+              (row) => InterpretationSearchResultModel(
+                surahNumber:
+                    (row[DbConstants.asadFootnoteSurahNumber] as int?) ?? -1,
+                footnoteNumber:
+                    (row[DbConstants.asadFootnoteNumber] as int?) ?? -1,
+                verseNumber: (row['verse_number'] as int?) ?? -1,
+                text: (row[DbConstants.asadFootnoteText] as String?) ?? '',
+              ),
+            )
+            .toList();
+      }
+    } catch (e) {
+      debugPrint('InterpretationsDB: searchInterpretationsByWord failed — $e');
+      return [];
+    }
   }
 }

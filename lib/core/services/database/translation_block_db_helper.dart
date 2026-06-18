@@ -1,5 +1,6 @@
 import 'package:the_message_of_the_quran/core/constants/db_constants.dart';
 import 'package:the_message_of_the_quran/core/models/translation_block_model.dart';
+import 'package:the_message_of_the_quran/core/models/verse_search_result_model.dart';
 import 'package:the_message_of_the_quran/core/services/database/database_helper.dart';
 
 class TranslationBlockDbHelper {
@@ -160,6 +161,73 @@ class TranslationBlockDbHelper {
           .map((row) => (row[DbConstants.asadVerseNumber] as int?) ?? -1)
           .where((verseNumber) => verseNumber > 0)
           .toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /// Full-text search over verse translation text.
+  ///
+  /// English: queries the `verses` table joined with `quranayas` for Arabic.
+  /// Malayalam: queries `malayalam_verses` joined with `quranayas`.
+  /// Returns up to [limit] results.
+  static Future<List<VerseSearchResultModel>> searchVersesByWord(
+    String keyword, {
+    bool isMalayalam = false,
+    int limit = 100,
+  }) async {
+    final db = DatabaseHelper.quranAsadDb;
+    if (db == null) return [];
+    final pattern = '%$keyword%';
+    try {
+      if (isMalayalam) {
+        final rows = await db.rawQuery(
+          '''
+          SELECT mv.surah_id, mv.verse_number, mv.malayalam_translation,
+                 COALESCE(q.AyaHText, '') AS arabic_text
+          FROM malayalam_verses mv
+          LEFT JOIN quranayas q
+            ON q.suraid = mv.surah_id AND q.ayaid = mv.verse_number
+          WHERE mv.malayalam_translation LIKE ?
+          LIMIT ?
+          ''',
+          [pattern, limit],
+        );
+        return rows
+            .map(
+              (row) => VerseSearchResultModel(
+                surahNumber: (row['surah_id'] as int?) ?? 0,
+                verseNumber: (row['verse_number'] as int?) ?? 0,
+                arabicText: (row['arabic_text'] as String?) ?? '',
+                translationText:
+                    (row['malayalam_translation'] as String?) ?? '',
+              ),
+            )
+            .toList();
+      } else {
+        final rows = await db.rawQuery(
+          '''
+          SELECT v.surah_number, v.verse_number, v.text,
+                 COALESCE(q.AyaHText, '') AS arabic_text
+          FROM verses v
+          LEFT JOIN quranayas q
+            ON q.suraid = v.surah_number AND q.ayaid = v.verse_number
+          WHERE LOWER(v.text) LIKE LOWER(?)
+          LIMIT ?
+          ''',
+          [pattern, limit],
+        );
+        return rows
+            .map(
+              (row) => VerseSearchResultModel(
+                surahNumber: (row['surah_number'] as int?) ?? 0,
+                verseNumber: (row['verse_number'] as int?) ?? 0,
+                arabicText: (row['arabic_text'] as String?) ?? '',
+                translationText: (row['text'] as String?) ?? '',
+              ),
+            )
+            .toList();
+      }
     } catch (e) {
       return [];
     }

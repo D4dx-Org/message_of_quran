@@ -5,8 +5,10 @@ import 'package:the_message_of_the_quran/core/constants/app_constants.dart';
 import 'package:the_message_of_the_quran/core/models/ayah_bookmark_model.dart';
 import 'package:the_message_of_the_quran/core/models/arabic_block_model.dart';
 import 'package:the_message_of_the_quran/core/models/interpretation_model.dart';
+import 'package:the_message_of_the_quran/core/models/interpretation_search_result_model.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:the_message_of_the_quran/core/models/translation_block_model.dart';
+import 'package:the_message_of_the_quran/core/models/verse_search_result_model.dart';
 import 'package:the_message_of_the_quran/core/services/database/arabic_block_db_helper.dart';
 import 'package:the_message_of_the_quran/core/services/database/bookmark_db_helper.dart';
 import 'package:the_message_of_the_quran/core/services/database/interpretations_db_helper.dart';
@@ -44,6 +46,10 @@ class SurahProvider extends ChangeNotifier {
   final List<AyahBookmarkModel> bookmarkedList = [];
   final List<SurahModel> searchList = [];
   bool isSearched = false;
+  List<VerseSearchResultModel> verseSearchResults = [];
+  List<InterpretationSearchResultModel> interpretationSearchResults = [];
+  bool isSearchingContent = false;
+  Timer? _searchDebounce;
   bool isSurahLoading = false;
   List<ArabicBlockModel> arabicBlockList = [];
   List<TranslationBlockModel> translationBlockList = [];
@@ -357,6 +363,7 @@ class SurahProvider extends ChangeNotifier {
   void dispose() {
     _isDisposed = true;
     _singleTapTimer?.cancel();
+    _searchDebounce?.cancel();
     searchController.dispose();
     super.dispose();
   }
@@ -738,38 +745,87 @@ class SurahProvider extends ChangeNotifier {
 
   ///////////////////////////////// search /////////////////////////////////
 
-  void search() {
+  /// Debounces search so DB queries only fire after typing stops (400 ms).
+  void searchWithDebounce() {
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () async {
+      await search();
+    });
+  }
+
+  Future<void> search() async {
     isSearched = true;
     searchList.clear();
-    if (searchController.text.trim().isEmpty) {
+    verseSearchResults.clear();
+    interpretationSearchResults.clear();
+
+    final query = searchController.text.trim();
+    if (query.isEmpty) {
       isSearched = false;
       notifyListeners();
       return;
     }
-    List<String> splittedName = searchController.text
-        .trim()
-        .toLowerCase()
-        .split(" ");
+
+    // ── Surah name / number in-memory filter ──
+    final queryLower = query.toLowerCase();
+    final isNumeric = RegExp(r'^\d+$').hasMatch(query);
 
     for (int i = 0; i < surahList.length; i++) {
-      String surahName = surahList[i].searchName;
-      if (searchController.text.trim().contains(" ")) {
-        if (surahName.contains(splittedName[0]) &&
-            surahName.contains(splittedName[splittedName.length - 1])) {
-          searchList.add(surahList[i]);
+      final surah = surahList[i];
+      if (isNumeric) {
+        // Match surah number as a prefix (e.g. "5" matches 5, 50-59)
+        if (surah.surahNumber.toString().startsWith(query)) {
+          searchList.add(surah);
+        }
+      } else if (query.contains(' ')) {
+        final parts = queryLower.split(' ');
+        final name = surah.searchName;
+        if (name.contains(parts[0]) && name.contains(parts[parts.length - 1])) {
+          searchList.add(surah);
         }
       } else {
-        if (surahName.contains(searchController.text.trim().toLowerCase())) {
-          searchList.add(surahList[i]);
+        if (surah.searchName.contains(queryLower)) {
+          searchList.add(surah);
         }
       }
     }
+
+    // ── Full-text DB search (verse + interpretation) ──
+    if (!isNumeric && query.length >= 3) {
+      isSearchingContent = true;
+      notifyListeners();
+
+      final results = await Future.wait([
+        TranslationBlockDbHelper.searchVersesByWord(
+          query,
+          isMalayalam: _isMalayalam,
+        ),
+        InterpretationsDbHelper.searchInterpretationsByWord(
+          query,
+          isMalayalam: _isMalayalam,
+        ),
+      ]);
+
+      if (_isDisposed) return;
+
+      verseSearchResults =
+          results[0] as List<VerseSearchResultModel>;
+      interpretationSearchResults =
+          results[1] as List<InterpretationSearchResultModel>;
+      isSearchingContent = false;
+    }
+
     notifyListeners();
   }
 
   void clear() {
+    _searchDebounce?.cancel();
     searchController.clear();
-    search();
+    verseSearchResults.clear();
+    interpretationSearchResults.clear();
+    isSearched = false;
+    isSearchingContent = false;
+    notifyListeners();
   }
 
   ///////////////////////////////// interpretations /////////////////////////////////
