@@ -1,5 +1,6 @@
 import 'package:the_message_of_the_quran/core/constants/db_constants.dart';
 import 'package:the_message_of_the_quran/core/models/translation_block_model.dart';
+import 'package:the_message_of_the_quran/core/models/verse_search_result_model.dart';
 import 'package:the_message_of_the_quran/core/services/database/database_helper.dart';
 
 class TranslationBlockDbHelper {
@@ -160,6 +161,78 @@ class TranslationBlockDbHelper {
           .map((row) => (row[DbConstants.asadVerseNumber] as int?) ?? -1)
           .where((verseNumber) => verseNumber > 0)
           .toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /// Full-text keyword search across verse translations.
+  ///
+  /// Uses a space-padded LIKE pattern with a punctuation-stripping REPLACE chain
+  /// so that words adjacent to `.`, `,`, `;`, `:`, `!`, `?`, `(`, `)` still match.
+  /// Requires at least 2 characters in [keyword].
+  static Future<List<VerseSearchResultModel>> searchVersesByWord(
+    String keyword, {
+    bool isMalayalam = false,
+    int limit = 50,
+  }) async {
+    final db = DatabaseHelper.quranAsadDb;
+    if (db == null) return [];
+    final q = keyword.toLowerCase();
+    final wordPattern = '% $q %';
+    try {
+      if (isMalayalam) {
+        final rows = await db.rawQuery(
+          '''
+          SELECT mv.${DbConstants.mlVersesSurahId},
+                 mv.${DbConstants.mlVersesVerseNumber},
+                 mv.${DbConstants.mlVersesMalayalamTranslation}
+          FROM ${DbConstants.mlVersesTable} mv
+          WHERE ' ' || mv.${DbConstants.mlVersesMalayalamTranslation} || ' ' LIKE ?
+          LIMIT ?
+          ''',
+          [wordPattern, limit],
+        );
+        return rows
+            .map(
+              (row) => VerseSearchResultModel(
+                surahNumber: (row[DbConstants.mlVersesSurahId] as int?) ?? 0,
+                verseNumber:
+                    (row[DbConstants.mlVersesVerseNumber] as int?) ?? 0,
+                translationText:
+                    (row[DbConstants.mlVersesMalayalamTranslation] as String?) ??
+                    '',
+              ),
+            )
+            .toList();
+      } else {
+        final rows = await db.rawQuery(
+          '''
+          SELECT v.${DbConstants.asadVerseSurahNumber},
+                 v.${DbConstants.asadVerseNumber},
+                 v.${DbConstants.asadVerseText}
+          FROM ${DbConstants.asadVersesTable} v
+          WHERE ' ' || REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+                  LOWER(v.${DbConstants.asadVerseText}),
+                  '.', ' '), ',', ' '), ';', ' '), ':', ' '),
+                  '!', ' '), '?', ' '), ')', ' '), '(', ' ') || ' '
+                LIKE ?
+          LIMIT ?
+          ''',
+          [wordPattern, limit],
+        );
+        return rows
+            .map(
+              (row) => VerseSearchResultModel(
+                surahNumber:
+                    (row[DbConstants.asadVerseSurahNumber] as int?) ?? 0,
+                verseNumber: (row[DbConstants.asadVerseNumber] as int?) ?? 0,
+                translationText:
+                    (row[DbConstants.asadVerseText] as String?) ?? '',
+              ),
+            )
+            .toList();
+      }
     } catch (e) {
       return [];
     }

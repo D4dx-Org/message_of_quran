@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:the_message_of_the_quran/core/constants/db_constants.dart';
 import 'package:the_message_of_the_quran/core/models/interpretation_model.dart';
+import 'package:the_message_of_the_quran/core/models/interpretation_search_result_model.dart';
 import 'package:the_message_of_the_quran/core/services/database/database_helper.dart';
 
 class InterpretationsDbHelper {
@@ -143,5 +144,105 @@ class InterpretationsDbHelper {
     );
     final min = range['min'] ?? -1;
     return min != -1 ? min : 1;
+  }
+
+  /// Full-text keyword search across interpretation/footnote content.
+  ///
+  /// For English, uses a correlated sub-query to resolve the verse number for
+  /// each footnote via the `%(N)%` marker pattern in the `verses` table.
+  /// Malayalam footnotes have no `surah_number` column, so [surahNumber] is -1
+  /// and [verseNumber] is -1 for those results.
+  static Future<List<InterpretationSearchResultModel>> searchInterpretationsByWord(
+    String keyword, {
+    bool isMalayalam = false,
+    int limit = 30,
+  }) async {
+    final db = DatabaseHelper.quranAsadDb;
+    if (db == null) return [];
+    final q = keyword.toLowerCase();
+    final wordPattern = '% $q %';
+    try {
+      if (isMalayalam) {
+        // Correlated sub-queries resolve which surah/verse each footnote
+        // belongs to by scanning for [^N] or [N] markers in malayalam_verses.
+        final rows = await db.rawQuery(
+          '''
+          SELECT mf.${DbConstants.mlFootnoteNumber},
+                 mf.${DbConstants.mlFootnoteContent},
+                 COALESCE((
+                   SELECT mv.${DbConstants.mlVersesSurahId}
+                   FROM ${DbConstants.mlVersesTable} mv
+                   WHERE mv.${DbConstants.mlVersesMalayalamTranslation}
+                         LIKE '%[^' || mf.${DbConstants.mlFootnoteNumber} || ']%'
+                      OR mv.${DbConstants.mlVersesMalayalamTranslation}
+                         LIKE '%[' || mf.${DbConstants.mlFootnoteNumber} || ']%'
+                   LIMIT 1
+                 ), -1) AS ref_surah_id,
+                 COALESCE((
+                   SELECT mv.${DbConstants.mlVersesVerseNumber}
+                   FROM ${DbConstants.mlVersesTable} mv
+                   WHERE mv.${DbConstants.mlVersesMalayalamTranslation}
+                         LIKE '%[^' || mf.${DbConstants.mlFootnoteNumber} || ']%'
+                      OR mv.${DbConstants.mlVersesMalayalamTranslation}
+                         LIKE '%[' || mf.${DbConstants.mlFootnoteNumber} || ']%'
+                   LIMIT 1
+                 ), -1) AS ref_verse_number
+          FROM ${DbConstants.mlFootnotesTable} mf
+          WHERE ' ' || mf.${DbConstants.mlFootnoteContent} || ' ' LIKE ?
+          LIMIT ?
+          ''',
+          [wordPattern, limit],
+        );
+        return rows
+            .map(
+              (row) => InterpretationSearchResultModel(
+                surahNumber: (row['ref_surah_id'] as int?) ?? -1,
+                footnoteNumber:
+                    (row[DbConstants.mlFootnoteNumber] as int?) ?? 0,
+                verseNumber: (row['ref_verse_number'] as int?) ?? -1,
+                text: (row[DbConstants.mlFootnoteContent] as String?) ?? '',
+              ),
+            )
+            .toList();
+      } else {
+        final rows = await db.rawQuery(
+          '''
+          SELECT f.${DbConstants.asadFootnoteSurahNumber},
+                 f.${DbConstants.asadFootnoteNumber},
+                 f.${DbConstants.asadFootnoteText},
+                 COALESCE((
+                   SELECT v.${DbConstants.asadVerseNumber}
+                   FROM ${DbConstants.asadVersesTable} v
+                   WHERE v.${DbConstants.asadVerseSurahNumber} = f.${DbConstants.asadFootnoteSurahNumber}
+                     AND v.${DbConstants.asadVerseText} LIKE '%(' || f.${DbConstants.asadFootnoteNumber} || ')%'
+                   LIMIT 1
+                 ), -1) AS verse_number
+          FROM ${DbConstants.asadFootnotesTable} f
+          WHERE ' ' || REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+                  LOWER(f.${DbConstants.asadFootnoteText}),
+                  '.', ' '), ',', ' '), ';', ' '), ':', ' '),
+                  '!', ' '), '?', ' '), ')', ' '), '(', ' ') || ' '
+                LIKE ?
+          LIMIT ?
+          ''',
+          [wordPattern, limit],
+        );
+        return rows
+            .map(
+              (row) => InterpretationSearchResultModel(
+                surahNumber:
+                    (row[DbConstants.asadFootnoteSurahNumber] as int?) ?? -1,
+                footnoteNumber:
+                    (row[DbConstants.asadFootnoteNumber] as int?) ?? 0,
+                verseNumber: (row['verse_number'] as int?) ?? -1,
+                text: (row[DbConstants.asadFootnoteText] as String?) ?? '',
+              ),
+            )
+            .toList();
+      }
+    } catch (e) {
+      debugPrint('InterpretationsDbHelper.searchInterpretationsByWord — $e');
+      return [];
+    }
   }
 }

@@ -26,6 +26,7 @@ import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
 import 'package:the_message_of_the_quran/core/utils/translation_alignment.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
+import 'package:the_message_of_the_quran/features/search_screen/presentation/widgets/web_full_text_search_dialog.dart';
 import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/core/widgets/scroll_to_top_button.dart';
@@ -290,10 +291,13 @@ class _JumpToAyahSheetState extends State<_JumpToAyahSheet> {
 
 class SurahScreen extends StatefulWidget {
   /// When set, the screen scrolls to the ayah block with this ayaStart after
-  /// the content loads (used from BookmarkScreen).
+  /// the content loads (used from BookmarkScreen and full-text search).
   final int? scrollToAyahId;
 
-  const SurahScreen({super.key, this.scrollToAyahId});
+  const SurahScreen({
+    super.key,
+    this.scrollToAyahId,
+  });
 
   @override
   State<SurahScreen> createState() => _SurahScreenState();
@@ -517,8 +521,9 @@ class _SurahScreenState extends State<SurahScreen> {
         unawaited(_navigateToMainTab(index));
       },
       compact: true,
-      showSearch: false,
+      showSearch: true,
       showLabels: !isNarrow,
+      onSearchPressed: () => showWebFullTextSearchDialog(context),
     );
     return Padding(
       padding: const EdgeInsets.only(right: 8),
