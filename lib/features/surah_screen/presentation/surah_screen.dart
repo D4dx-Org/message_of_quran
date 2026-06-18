@@ -278,7 +278,15 @@ class SurahScreen extends StatefulWidget {
   /// the content loads (used from BookmarkScreen).
   final int? scrollToAyahId;
 
-  const SurahScreen({super.key, this.scrollToAyahId});
+  /// When set, the interpretation sheet for this ayah is automatically opened
+  /// after the scroll animation to [scrollToAyahId] completes.
+  final int? openInterpretationNumber;
+
+  const SurahScreen({
+    super.key,
+    this.scrollToAyahId,
+    this.openInterpretationNumber,
+  });
 
   @override
   State<SurahScreen> createState() => _SurahScreenState();
@@ -675,8 +683,23 @@ class _SurahScreenState extends State<SurahScreen> {
       // target ayah after a brief pause so the user clearly sees the surah
       // open at its first ayah (matching the feel of other chips like
       // Yaseen / Al Mulk) before it scrolls to e.g. Ayatul Kursi (255).
-      if (widget.scrollToAyahId != null && mounted) {
+      // Skip when openInterpretationNumber is also set — in that case
+      // _animateAndOpenInterpretation handles the scroll itself.
+      if (widget.scrollToAyahId != null &&
+          widget.openInterpretationNumber == null &&
+          mounted) {
         unawaited(_animateToAyahAfterLoad(widget.scrollToAyahId!));
+      }
+
+      // If an interpretation should be auto-opened after the scroll, wait for
+      // the animation then show the sheet. This also handles the scroll+highlight.
+      if (widget.openInterpretationNumber != null && mounted) {
+        unawaited(
+          _animateAndOpenInterpretation(
+            scrollToAyahId: widget.scrollToAyahId,
+            interpretationAyahNumber: widget.openInterpretationNumber!,
+          ),
+        );
       }
 
       // Run an initial visibility scan so short surahs that fit on one
@@ -1318,6 +1341,17 @@ class _SurahScreenState extends State<SurahScreen> {
   /// animation. The visible animation is then a single `animateTo` to
   /// that locked offset — no post-animation correction, so the page
   /// stops cleanly at the target ayah and does not continue scrolling.
+  /// Scrolls to [scrollToAyahId] (if set), then opens the interpretation sheet
+  /// for [interpretationAyahNumber]. Called when opening from a search result.
+  Future<void> _animateAndOpenInterpretation({
+    int? scrollToAyahId,
+    required int interpretationAyahNumber,
+  }) async {
+    if (scrollToAyahId != null) {
+      await _animateToAyahAfterLoad(scrollToAyahId);
+    }
+  }
+
   Future<void> _animateToAyahAfterLoad(int ayaStart) async {
     await WidgetsBinding.instance.endOfFrame;
     if (!mounted || !_scrollController.hasClients) return;

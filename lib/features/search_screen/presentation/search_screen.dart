@@ -102,6 +102,9 @@ class SearchScreen extends StatelessWidget {
       MaterialPageRoute(
         builder: (_) => SurahScreen(
           scrollToAyahId: result.verseNumber > 0 ? result.verseNumber : null,
+          // Auto-open the interpretation sheet after scroll lands.
+          openInterpretationNumber:
+              result.verseNumber > 0 ? result.verseNumber : null,
         ),
       ),
     );

@@ -197,7 +197,7 @@ class InterpretationsDbHelper {
               SELECT v.verse_number
               FROM verses v
               WHERE v.surah_number = f.surah_number
-                AND v.text LIKE '%('' || f.footnote_number || '')%'
+                AND v.text LIKE '%(' || f.footnote_number || ')%'
               LIMIT 1
             ), -1) AS verse_number
           FROM ${DbConstants.asadFootnotesTable} f
