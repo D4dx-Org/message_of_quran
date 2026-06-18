@@ -773,8 +773,9 @@ class SurahProvider extends ChangeNotifier {
     for (int i = 0; i < surahList.length; i++) {
       final surah = surahList[i];
       if (isNumeric) {
-        // Match surah number as a prefix (e.g. "5" matches 5, 50-59)
-        if (surah.surahNumber.toString().startsWith(query)) {
+        // Exact match OR prefix match (e.g. "2" matches 2, 20-29)
+        if (surah.surahNumber.toString() == query ||
+            surah.surahNumber.toString().startsWith(query)) {
           searchList.add(surah);
         }
       } else if (query.contains(' ')) {
@@ -788,6 +789,16 @@ class SurahProvider extends ChangeNotifier {
           searchList.add(surah);
         }
       }
+    }
+
+    // ── For numeric queries: exact match first, then ascending order ──
+    if (isNumeric) {
+      searchList.sort((a, b) {
+        final aExact = a.surahNumber.toString() == query ? 0 : 1;
+        final bExact = b.surahNumber.toString() == query ? 0 : 1;
+        if (aExact != bExact) return aExact - bExact;
+        return a.surahNumber.compareTo(b.surahNumber);
+      });
     }
 
     // ── Full-text DB search (verse + interpretation) ──

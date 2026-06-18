@@ -203,6 +203,28 @@ class SearchScreen extends StatelessWidget {
                     child: SettingsScreenCard(
                       child: ListTile(
                         tileColor: Colors.transparent,
+                        leading: Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withValues(alpha: 0.12),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              '${value.searchList[i].surahNumber}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color:
+                                    Theme.of(context).colorScheme.primary,
+                              ),
+                            ),
+                          ),
+                        ),
                         title: Text(
                           isMalayalam &&
                                   value.searchList[i].malayalamName.isNotEmpty
@@ -365,6 +387,30 @@ class SearchScreen extends StatelessWidget {
                         ),
                         child: Row(
                           children: [
+                            // Surah number badge
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withValues(alpha: 0.12),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  '${value.searchList[i].surahNumber}',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 14),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
