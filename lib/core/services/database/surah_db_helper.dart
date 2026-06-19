@@ -90,10 +90,13 @@ class SurahDbHelper {
         }
       }
 
-      final rows = await mlDb.query(
-        DbConstants.mlSurahsTable,
-        orderBy: '${DbConstants.mlSurahChapterNumber} ASC',
-      );
+      final rows = await mlDb.rawQuery('''
+        SELECT ml.*, s.arabic_name AS script_arabic_name
+        FROM ${DbConstants.mlSurahsTable} ml
+        LEFT JOIN ${DbConstants.asadSurahsTable} s
+          ON ml.${DbConstants.mlSurahChapterNumber} = s.${DbConstants.asadSurahNumber}
+        ORDER BY ml.${DbConstants.mlSurahChapterNumber} ASC
+      ''');
 
       return rows.map((row) {
         final chapterNumber =
@@ -106,7 +109,10 @@ class SurahDbHelper {
               .toString()
               .trim()
               .toLowerCase(),
-          arabicName: (row[DbConstants.mlSurahArabicName] ?? '').toString(),
+          arabicName: (row['script_arabic_name'] ??
+                  row[DbConstants.mlSurahArabicName] ??
+                  '')
+              .toString(),
           malayalamName:
               (row[DbConstants.mlSurahMalayalamName] ?? '').toString(),
           description:
