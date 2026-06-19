@@ -6,12 +6,14 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:the_message_of_the_quran/core/services/audio_handler.dart';
 import '../data/mushaf_repository.dart';
 import '../db/local_database.dart';
 import '../models/page_meta.dart';
 import '../services/mushaf_install_state.dart';
+import '../../tajweed/services/tajweed_font_download_service.dart';
 
 /// Holds all mutable state for the Mushaf reader screen.
 class MushafReaderProvider extends ChangeNotifier {
@@ -41,6 +43,11 @@ class MushafReaderProvider extends ChangeNotifier {
   final int? _initialAyaNo;
 
   bool fontsInstalled = false;
+  bool tajweedUnlocked = false;
+
+  /// True when either QCF font pack OR tajweed fonts are installed.
+  bool get canAccessFullMushaf => fontsInstalled || tajweedUnlocked;
+
   bool initialised = false;
   int currentPage = 1;
 
@@ -89,6 +96,11 @@ class MushafReaderProvider extends ChangeNotifier {
     await MushafInstallState.instance.recoverFromInterrupted();
 
     final installed = await MushafInstallState.instance.isFullFontsInstalled;
+    final prefs = await SharedPreferences.getInstance();
+    final tajweedEnabled = prefs.getBool('isTajweedEnabled') ?? false;
+    final tajweedFontsInstalled = tajweedEnabled
+        ? await TajweedFontDownloadService.instance.isInstalled
+        : false;
     int startPage =
         _requestedPage ?? await MushafInstallState.instance.lastOpenPage;
 
@@ -97,18 +109,22 @@ class MushafReaderProvider extends ChangeNotifier {
           await repository.getContinuesAyaId(_initialSurahNo, _initialAyaNo);
       if (ayaId > 0) {
         final page = await repository.getPageForAya(ayaId);
-        if (page > 0 && (installed || page <= previewLimit)) {
+        if (page > 0 &&
+            (installed || tajweedFontsInstalled || page <= previewLimit)) {
           startPage = page;
         }
       }
     }
 
-    if (!installed && startPage > previewLimit) startPage = previewLimit;
+    if (!installed && !tajweedFontsInstalled && startPage > previewLimit) {
+      startPage = previewLimit;
+    }
     startPage = startPage.clamp(1, totalPages);
 
     await MushafInstallState.instance.saveLastOpenPage(startPage);
 
     fontsInstalled = installed;
+    tajweedUnlocked = tajweedFontsInstalled;
     currentPage = startPage;
     pageController = PageController(initialPage: startPage - 1);
     initialised = true;
@@ -138,7 +154,7 @@ class MushafReaderProvider extends ChangeNotifier {
   }
 
   List<MushafListItem> getVisibleListItems() {
-    if (fontsInstalled) return listItems;
+    if (canAccessFullMushaf) return listItems;
     final result = <MushafListItem>[];
     for (final item in listItems) {
       if (item is MushafListPage && item.pageNo > previewLimit) break;
@@ -263,7 +279,7 @@ class MushafReaderProvider extends ChangeNotifier {
 
   void tryNavigateTo(int page) {
     final clamped = page.clamp(1, totalPages);
-    if (fontsInstalled || clamped <= previewLimit) {
+    if (canAccessFullMushaf || clamped <= previewLimit) {
       if (isListView) {
         _pendingScrollPage = clamped;
         notifyListeners();
@@ -279,6 +295,12 @@ class MushafReaderProvider extends ChangeNotifier {
 
   void setFontsInstalled() {
     fontsInstalled = true;
+    notifyListeners();
+  }
+
+  void setTajweedUnlocked(bool value) {
+    if (tajweedUnlocked == value) return;
+    tajweedUnlocked = value;
     notifyListeners();
   }
 

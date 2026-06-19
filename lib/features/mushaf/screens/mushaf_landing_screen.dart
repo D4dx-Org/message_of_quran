@@ -17,6 +17,7 @@ import '../data/mushaf_repository.dart';
 import '../widgets/mushaf_download_required_dialog.dart';
 import '../widgets/star_number.dart';
 import 'mushaf_reader_screen.dart';
+import '../../settings_screen/providers/tajweed_provider.dart';
 
 // ─── Surah metadata ──────────────────────────────────────────────────────────
 
@@ -524,7 +525,9 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
     }
     final page = await _p.getFirstPageForSurah(suraNo);
     if (!context.mounted) return;
-    if (!_p.fontsInstalled && page > MushafLandingProvider.previewPageLimit) {
+    if (!_p.fontsInstalled &&
+        !(context.read<TajweedProvider>().fontsInstalled && context.read<TajweedProvider>().enabled) &&
+        page > MushafLandingProvider.previewPageLimit) {
       _handleUndownloadedPage(context);
       return;
     }
@@ -541,7 +544,9 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
   Future<void> _openRevelationSurah(BuildContext context, int suraNo) async {
     final page = await _p.getFirstPageForSurah(suraNo);
     if (!context.mounted) return;
-    if (!_p.fontsInstalled && page > MushafLandingProvider.previewPageLimit) {
+    if (!_p.fontsInstalled &&
+        !(context.read<TajweedProvider>().fontsInstalled && context.read<TajweedProvider>().enabled) &&
+        page > MushafLandingProvider.previewPageLimit) {
       _handleUndownloadedPage(context);
       return;
     }
@@ -557,6 +562,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
 
   void _openJuz(BuildContext context, int juzNo, int firstPage) {
     if (!_p.fontsInstalled &&
+        !(context.read<TajweedProvider>().fontsInstalled && context.read<TajweedProvider>().enabled) &&
         firstPage > MushafLandingProvider.previewPageLimit) {
       _handleUndownloadedPage(context);
       return;
@@ -582,7 +588,9 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
   }
 
   void _openPage(BuildContext context, int page) {
-    if (!_p.fontsInstalled && page > MushafLandingProvider.previewPageLimit) {
+    if (!_p.fontsInstalled &&
+        !(context.read<TajweedProvider>().fontsInstalled && context.read<TajweedProvider>().enabled) &&
+        page > MushafLandingProvider.previewPageLimit) {
       _handleUndownloadedPage(context);
       return;
     }

@@ -60,6 +60,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
     with TickerProviderStateMixin {
   late final MushafReaderProvider _p;
   final MushafDownloadManager _downloadManager = MushafDownloadManager.instance;
+  TajweedProvider? _tajweedProvider;
 
   late final AnimationController _barsAnimController;
   late final Animation<Offset> _appBarSlideAnim;
@@ -95,10 +96,17 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
     _p.onManualScrollWhilePlaying = _showAutoScrollPrompt;
     _p.init();
     _downloadManager.addListener(_onDownloadStateChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _tajweedProvider = context.read<TajweedProvider>();
+      _tajweedProvider!.addListener(_onTajweedStateChanged);
+      _onTajweedStateChanged();
+    });
   }
 
   @override
   void dispose() {
+    _tajweedProvider?.removeListener(_onTajweedStateChanged);
     _downloadManager.removeListener(_onDownloadStateChanged);
     _jumpClearTimer?.cancel();
     _barsAnimController.dispose();
@@ -111,6 +119,14 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
     if (_downloadManager.isDone && mounted) {
       _p.setFontsInstalled();
     }
+  }
+
+  void _onTajweedStateChanged() {
+    if (!mounted) return;
+    final tajweed = _tajweedProvider;
+    _p.setTajweedUnlocked(
+      (tajweed?.fontsInstalled ?? false) && (tajweed?.enabled ?? false),
+    );
   }
 
   void _onProviderChanged() {
@@ -169,10 +185,10 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
       }
     }
 
-    if (!_p.fontsInstalled && page >= MushafReaderProvider.previewLimit) {
+    if (!_p.canAccessFullMushaf && page >= MushafReaderProvider.previewLimit) {
       Future.delayed(const Duration(milliseconds: 350), () {
         if (mounted &&
-            !_p.fontsInstalled &&
+            !_p.canAccessFullMushaf &&
             _p.currentPage >= MushafReaderProvider.previewLimit) {
           _showDownloadPrompt(
             targetPage: MushafReaderProvider.previewLimit + 1,
@@ -580,7 +596,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
   }
 
   int _lastReadablePage() {
-    return _p.fontsInstalled
+    return _p.canAccessFullMushaf
         ? MushafReaderProvider.totalPages
         : MushafReaderProvider.previewLimit;
   }
@@ -631,7 +647,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
         : PageView.builder(
             controller: _p.pageController!,
             reverse: true,
-            itemCount: _p.fontsInstalled
+            itemCount: _p.canAccessFullMushaf
                 ? MushafReaderProvider.totalPages
                 : MushafReaderProvider.previewLimit,
             onPageChanged: _onPageChanged,
@@ -919,7 +935,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
   Widget _buildScaffold(BuildContext context) {
     final fontSize = _landscapeFontSize(context);
     final floatingActionButton =
-        (!_p.fontsInstalled &&
+        (!_p.canAccessFullMushaf &&
             _p.currentPage == MushafReaderProvider.previewLimit)
         ? FloatingActionButton.extended(
             onPressed: () => _showDownloadPrompt(
