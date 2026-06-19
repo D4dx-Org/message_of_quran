@@ -38,15 +38,33 @@ class InterpretationSearchResultCard extends StatelessWidget {
     final secondaryColor = isDark ? Colors.white70 : Colors.grey[600]!;
     final disabledColor = isDark ? Colors.white38 : Colors.grey[400]!;
 
-    // Build the header label
-    final footnoteLabel = isMalayalam
-        ? 'Footnote #${result.footnoteNumber}'
-        : 'Footnote #${result.footnoteNumber}';
-
-    final headerLabel = surah != null
-        ? '${isMalayalam && surah!.malayalamName.isNotEmpty ? _mlBaseName(surah!.malayalamName, surah!.name) : surah!.name}'
-            ' ($footnoteLabel)'
-        : footnoteLabel;
+    // Build the header label — same format for both languages:
+    //   "SurahName (S:V • #N)"
+    // The section header already says "Interpretations" / "വ്യാഖ്യാനം",
+    // so neither "Footnote" nor "വ്യാഖ്യാനം" is repeated inside the card.
+    final String headerLabel;
+    {
+      final surahName = surah != null
+          ? (isMalayalam
+              ? _mlBaseName(
+                  surah!.malayalamName.isNotEmpty
+                      ? surah!.malayalamName
+                      : surah!.name,
+                  surah!.name)
+              : surah!.name)
+          : '';
+      final locationPart = (result.surahNumber > 0 && result.verseNumber > 0)
+          ? '${result.surahNumber}:${result.verseNumber}'
+          : '';
+      final notePart =
+          result.footnoteNumber > 0 ? '#${result.footnoteNumber}' : '';
+      final details = [locationPart, notePart]
+          .where((s) => s.isNotEmpty)
+          .join(' • ');
+      headerLabel = surahName.isNotEmpty
+          ? '$surahName${details.isNotEmpty ? ' ($details)' : ''}'
+          : details;
+    }
 
     final canNavigate = onTap != null;
 

@@ -301,7 +301,7 @@ class _SearchScreenState extends State<SearchScreen> {
               if (hasInterps) ...[
                 _buildSectionHeader(
                   context,
-                  isMalayalam ? 'ഫുട്ട്നോട്ടുകൾ' : 'Interpretations',
+                  isMalayalam ? 'വ്യാഖ്യാനം' : 'Interpretations',
                   '(${value.interpretationSearchResults.length})',
                   isMalayalam,
                 ),
@@ -515,7 +515,7 @@ class _SearchScreenState extends State<SearchScreen> {
             if (hasInterps) ...[
               _buildSectionHeader(
                 context,
-                isMalayalam ? 'ഫുട്ട്നോട്ടുകൾ' : 'Interpretations',
+                isMalayalam ? 'വ്യാഖ്യാനം' : 'Interpretations',
                 '(${value.interpretationSearchResults.length})',
                 isMalayalam,
               ),
