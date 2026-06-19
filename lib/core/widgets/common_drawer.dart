@@ -20,6 +20,7 @@ import 'package:the_message_of_the_quran/features/main_screen/providers/home_pro
 import 'package:the_message_of_the_quran/features/common_email/presentation/feedback_screen.dart';
 import 'package:the_message_of_the_quran/features/prostration_verses/presentation/prostration_verses_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
+import 'package:the_message_of_the_quran/core/utils/platform_helper.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -287,6 +288,7 @@ class CommonDrawer extends StatelessWidget {
                           );
                         },
                       ),
+                      if (!PlatformHelper.isWeb)
                       _DrawerTile(
                         title: 'Share App',
                         icon: Icons.share_outlined,
