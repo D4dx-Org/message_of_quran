@@ -4,6 +4,12 @@ import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_card.dart';
 
+String _mlBaseName(String mlName, String fallback) {
+  final idx = mlName.indexOf('(');
+  if (idx > 0) return mlName.substring(0, idx).trim();
+  return mlName.isNotEmpty ? mlName : fallback;
+}
+
 class InterpretationSearchResultCard extends StatelessWidget {
   final InterpretationSearchResultModel result;
 
@@ -38,7 +44,7 @@ class InterpretationSearchResultCard extends StatelessWidget {
         : 'Footnote #${result.footnoteNumber}';
 
     final headerLabel = surah != null
-        ? '${isMalayalam && surah!.malayalamName.isNotEmpty ? surah!.malayalamName : surah!.name}'
+        ? '${isMalayalam && surah!.malayalamName.isNotEmpty ? _mlBaseName(surah!.malayalamName, surah!.name) : surah!.name}'
             ' ($footnoteLabel)'
         : footnoteLabel;
 

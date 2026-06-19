@@ -4,6 +4,12 @@ import 'package:the_message_of_the_quran/core/models/verse_search_result_model.d
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_card.dart';
 
+String _mlBaseName(String mlName, String fallback) {
+  final idx = mlName.indexOf('(');
+  if (idx > 0) return mlName.substring(0, idx).trim();
+  return mlName.isNotEmpty ? mlName : fallback;
+}
+
 class VerseSearchResultCard extends StatelessWidget {
   final VerseSearchResultModel result;
   final SurahModel surah;
@@ -28,7 +34,7 @@ class VerseSearchResultCard extends StatelessWidget {
         isDark ? Colors.white70 : Colors.grey[600]!;
 
     final headerLabel = isMalayalam
-        ? '${surah.malayalamName.isNotEmpty ? surah.malayalamName : surah.name}'
+        ? '${_mlBaseName(surah.malayalamName, surah.name)}'
             ' (${result.surahNumber}:${result.verseNumber})'
         : '${surah.name} (${result.surahNumber}:${result.verseNumber})';
 

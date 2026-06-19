@@ -47,9 +47,17 @@ class InterpretationsDbHelper {
     final db = DatabaseHelper.quranAsadMalayalamDb;
     if (db == null) return [];
     try {
+      // malayalam_footnotes has two overlapping numbering groups:
+      //   Global (surahs 1–6):  id = footnote_number
+      //   Local  (surahs 7–114): id > footnote_number
+      // Use surahNumber to restrict to the correct group so the same
+      // footnote_number value doesn't return the wrong surah's footnote.
+      final isGlobal = surahNumber <= 6;
       final rows = await db.query(
         DbConstants.mlFootnotesTable,
-        where: '${DbConstants.mlFootnoteNumber} = ?',
+        where: isGlobal
+            ? '${DbConstants.mlFootnoteNumber} = ? AND ${DbConstants.mlFootnoteId} = ${DbConstants.mlFootnoteNumber}'
+            : '${DbConstants.mlFootnoteNumber} = ? AND ${DbConstants.mlFootnoteId} != ${DbConstants.mlFootnoteNumber}',
         whereArgs: [ayahNumber],
         orderBy: '${DbConstants.mlFootnoteId} ASC',
         limit: 1,
@@ -164,26 +172,96 @@ class InterpretationsDbHelper {
     final wordPattern = '% $q %';
     try {
       if (isMalayalam) {
+        // The malayalam_footnotes table has two numbering groups:
+        //   Global group  (id=footnote_number, id ≤ 929): surahs 1–6,
+        //                 global markers [^N] unique across those surahs.
+        //   Local  group  (id > footnote_number, id > 929): surahs 7–114,
+        //                 markers [^N] restart within this pool and are
+        //                 unique only across surahs 7–114.
+        //
+        // Because the same footnote_number (e.g. 6, 298) can exist in both
+        // groups, the correlated subquery must restrict surah_id to the
+        // correct group to avoid matching the wrong surah's verse.
         final rows = await db.rawQuery(
           '''
-          SELECT footnote_number, content
-          FROM ${DbConstants.mlFootnotesTable}
-          WHERE ' ' || content || ' ' LIKE ?
+          SELECT
+            f.${DbConstants.mlFootnoteNumber},
+            f.content,
+            COALESCE((
+              SELECT v.surah_id FROM ${DbConstants.mlVersesTable} v
+              WHERE v.${DbConstants.mlVersesMalayalamTranslation}
+                LIKE '%[^' || f.${DbConstants.mlFootnoteNumber} || ']%'
+                AND (
+                  (f.${DbConstants.mlFootnoteId} = f.${DbConstants.mlFootnoteNumber}
+                   AND v.surah_id <= 6)
+                  OR
+                  (f.${DbConstants.mlFootnoteId} != f.${DbConstants.mlFootnoteNumber}
+                   AND v.surah_id >= 7)
+                )
+              ORDER BY v.surah_id, v.${DbConstants.mlVersesVerseNumber}
+              LIMIT 1
+            ), -1) AS surah_number,
+            COALESCE((
+              SELECT v.${DbConstants.mlVersesVerseNumber} FROM ${DbConstants.mlVersesTable} v
+              WHERE v.${DbConstants.mlVersesMalayalamTranslation}
+                LIKE '%[^' || f.${DbConstants.mlFootnoteNumber} || ']%'
+                AND (
+                  (f.${DbConstants.mlFootnoteId} = f.${DbConstants.mlFootnoteNumber}
+                   AND v.surah_id <= 6)
+                  OR
+                  (f.${DbConstants.mlFootnoteId} != f.${DbConstants.mlFootnoteNumber}
+                   AND v.surah_id >= 7)
+                )
+              ORDER BY v.surah_id, v.${DbConstants.mlVersesVerseNumber}
+              LIMIT 1
+            ), -1) AS verse_number
+          FROM ${DbConstants.mlFootnotesTable} f
+          WHERE ' ' || REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+                  f.content,
+                  ',', ' '), '.', ' '), ')', ' '), '(', ' '), ';', ' '),
+                  char(10), ' ') || ' '
+                LIKE ?
           LIMIT ?
           ''',
           [wordPattern, limit],
         );
-        return rows
+        // Build raw models first, then remap footnoteNumber to the
+        // per-surah display ordinal using the same formula the surah screen
+        // uses: displayNum = globalNum - surahMinNum + 1.
+        final rawResults = rows
             .map(
               (row) => InterpretationSearchResultModel(
-                surahNumber: -1,
+                surahNumber: (row['surah_number'] as int?) ?? -1,
                 footnoteNumber:
                     (row[DbConstants.mlFootnoteNumber] as int?) ?? -1,
-                verseNumber: -1,
+                verseNumber: (row['verse_number'] as int?) ?? -1,
                 text: (row[DbConstants.mlFootnoteContent] as String?) ?? '',
               ),
             )
             .toList();
+
+        final surahMinCache = <int, int>{};
+        final remapped = <InterpretationSearchResultModel>[];
+        for (final r in rawResults) {
+          if (r.surahNumber > 0 && r.footnoteNumber > 0) {
+            if (!surahMinCache.containsKey(r.surahNumber)) {
+              final range = await getInterpretationRange(
+                surahNumber: r.surahNumber, malayalam: true);
+              surahMinCache[r.surahNumber] = range['min'] ?? r.footnoteNumber;
+            }
+            final minNum = surahMinCache[r.surahNumber]!;
+            final displayNum = r.footnoteNumber - minNum + 1;
+            remapped.add(InterpretationSearchResultModel(
+              surahNumber: r.surahNumber,
+              footnoteNumber: displayNum > 0 ? displayNum : r.footnoteNumber,
+              verseNumber: r.verseNumber,
+              text: r.text,
+            ));
+          } else {
+            remapped.add(r);
+          }
+        }
+        return remapped;
       } else {
         // For English footnotes, use a correlated subquery to find the verse
         // that contains the marker `(N)` referencing this footnote number.
