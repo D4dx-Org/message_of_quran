@@ -14,7 +14,6 @@ import 'package:the_message_of_the_quran/core/services/database/translation_bloc
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/cross_reference_parser.dart';
-import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/core/utils/translation_alignment.dart';
 import 'package:the_message_of_the_quran/features/library/presentation/appendix_screen.dart';
@@ -133,8 +132,8 @@ const _kInterpretationSheetDragHandlePadding = EdgeInsets.only(
   top: 8,
   bottom: 2,
 );
-const _kInterpretationSheetHeaderPadding = EdgeInsets.fromLTRB(20, 0, 12, 8);
-const _kInterpretationSheetActionOffset = Offset(0, -10);
+const _kInterpretationSheetHeaderPadding = EdgeInsets.fromLTRB(20, 12, 12, 8);
+const _kInterpretationSheetActionOffset = Offset.zero;
 const _kInterpretationSheetActionConstraints = BoxConstraints.tightFor(
   width: 24,
   height: 24,
@@ -308,55 +307,107 @@ class CrossReferenceSheet extends StatefulWidget {
     this.noteNumber,
   });
 
-  /// Convenience method to show the sheet as a modal bottom sheet.
+  /// Builds the dialog shell that matches the primary interpretation sheet:
+  /// centered on screen with insets on all four sides, rounded corners,
+  /// correct panel color, and a subtle border.
+  static Widget _wrapInDialogShell({
+    required BuildContext context,
+    required double maxHeight,
+    required Widget child,
+  }) {
+    const double maxDialogWidth = 620;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final panelColor = isDark ? theme.cardColor : Colors.white;
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.12)
+        : (theme.dividerTheme.color ?? theme.colorScheme.outlineVariant);
+    return Center(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: maxDialogWidth,
+          maxHeight: maxHeight,
+        ),
+        child: Container(
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            color: panelColor,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: borderColor),
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
+
+  /// Shows the cross-reference sheet as a centered dialog, matching the
+  /// primary interpretation sheet's UI (space on all four sides).
   static void show(
     BuildContext context, {
     required int surahNumber,
     required int ayahNumber,
     int? noteNumber,
   }) {
-    final bsMaxWidth = ResponsiveHelper.bottomSheetMaxWidth(context);
-    showModalBottomSheet(
+    final size = MediaQuery.sizeOf(context);
+    const double maxDialogWidth = 620;
+    final double hInset = size.width < 640
+        ? 12.0
+        : ((size.width - maxDialogWidth) / 2).clamp(24.0, double.infinity);
+    final double maxHeight = (size.height * 0.85).clamp(300.0, 760.0);
+
+    showDialog<void>(
       context: context,
-      isScrollControlled: true,
+      barrierDismissible: true,
       barrierColor: kInterpretationSheetBarrierColor,
-      constraints: bsMaxWidth != null
-          ? BoxConstraints(maxWidth: bsMaxWidth)
-          : null,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => CrossReferenceSheet(
-        surahNumber: surahNumber,
-        ayahNumber: ayahNumber,
-        noteNumber: noteNumber,
+      builder: (dialogCtx) => Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        insetPadding: EdgeInsets.symmetric(horizontal: hInset, vertical: 24),
+        child: _wrapInDialogShell(
+          context: dialogCtx,
+          maxHeight: maxHeight,
+          child: CrossReferenceSheet(
+            surahNumber: surahNumber,
+            ayahNumber: ayahNumber,
+            noteNumber: noteNumber,
+          ),
+        ),
       ),
     );
   }
 
-  /// Shows a note-only interpretation sheet for the referenced surah.
+  /// Shows the nested interpretation sheet as a centered dialog.
   static void showInterpretationNote(
     BuildContext context, {
     required int surahNumber,
     required int noteNumber,
   }) {
     final isMl = context.read<LanguageProvider>().isMalayalam;
-    final bsMaxWidth = ResponsiveHelper.bottomSheetMaxWidth(context);
+    final size = MediaQuery.sizeOf(context);
+    const double maxDialogWidth = 620;
+    final double hInset = size.width < 640
+        ? 12.0
+        : ((size.width - maxDialogWidth) / 2).clamp(24.0, double.infinity);
+    final double maxHeight = (size.height * 0.85).clamp(300.0, 760.0);
 
-    showModalBottomSheet(
+    showDialog<void>(
       context: context,
-      isScrollControlled: true,
+      barrierDismissible: true,
       barrierColor: kInterpretationSheetBarrierColor,
-      constraints: bsMaxWidth != null
-          ? BoxConstraints(maxWidth: bsMaxWidth)
-          : null,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => _NestedInterpretationSheet(
-        surahNumber: surahNumber,
-        footnoteNumber: noteNumber,
-        isMalayalam: isMl,
+      builder: (dialogCtx) => Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        insetPadding: EdgeInsets.symmetric(horizontal: hInset, vertical: 24),
+        child: _wrapInDialogShell(
+          context: dialogCtx,
+          maxHeight: maxHeight,
+          child: _NestedInterpretationSheet(
+            surahNumber: surahNumber,
+            footnoteNumber: noteNumber,
+            isMalayalam: isMl,
+          ),
+        ),
       ),
     );
   }
@@ -406,9 +457,7 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
   bool _loading = true;
   ArabicBlockModel? _arabic;
   TranslationBlockModel? _translation;
-  List<InterpretationModel> _interpretation = [];
   SurahModel? _surah;
-  int _mlFootnoteMinNumber = 0;
 
   @override
   void initState() {
@@ -436,33 +485,11 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
     final translation = results[1] as TranslationBlockModel?;
     final surah = results[2] as SurahModel?;
 
-    // If a note number was provided, also fetch interpretation
-    List<InterpretationModel> interp = [];
-    if (widget.noteNumber != null) {
-      interp = await InterpretationsDbHelper.getinterpretations(
-        surahNumber: widget.surahNumber,
-        interpretationNumber: widget.noteNumber!,
-        malayalam: isMl,
-      );
-    }
-
-    int mlMin = 0;
-    if (isMl) {
-      final range = await InterpretationsDbHelper.getInterpretationRange(
-        surahNumber: widget.surahNumber,
-        malayalam: true,
-      );
-      mlMin = range['min'] ?? 0;
-      if (mlMin < 0) mlMin = 0;
-    }
-
     if (!mounted) return;
     setState(() {
       _arabic = arabic;
       _translation = translation;
-      _interpretation = interp;
       _surah = surah;
-      _mlFootnoteMinNumber = mlMin;
       _loading = false;
     });
   }
@@ -492,10 +519,6 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
       buf.writeln();
       buf.writeln(_translation!.translationText);
     }
-    for (final item in _interpretation) {
-      buf.writeln();
-      buf.writeln(item.interpretationText);
-    }
     return buf.toString().trim();
   }
 
@@ -507,27 +530,9 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
     final sheetForegroundColor = isDark ? Colors.white : Colors.black;
     final surahTitle = _surahTitle(isMl);
 
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.85,
-      ),
-      child: Column(
+    return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Drag handle
-          Padding(
-            padding: _kInterpretationSheetDragHandlePadding,
-            child: Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey[400],
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-          ),
           // Header actions
           Padding(
             padding: _kInterpretationSheetHeaderPadding,
@@ -595,12 +600,7 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
                     child: Center(child: Text('Verse not found')),
                   )
                 : SingleChildScrollView(
-                    padding: EdgeInsets.fromLTRB(
-                      20,
-                      12,
-                      20,
-                      16 + MediaQuery.viewPaddingOf(context).bottom,
-                    ),
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -644,7 +644,7 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
                           ),
                         if (_arabic?.arabicText != null)
                           const SizedBox(height: 16),
-                        // Translation text with tappable footnotes
+                        // Translation text (footnote markers stripped for clean display)
                         ShowTranslationGate(
                           hasTranslation: _translation?.translationText != null,
                           builder: (context) => _buildTranslationRichText(
@@ -654,30 +654,17 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
                             isMl,
                           ),
                         ),
-                        // Interpretation (if noteNumber was provided)
-                        if (_interpretation.isNotEmpty) ...[
-                          const Divider(height: 24),
-                          for (final item in _interpretation)
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: _buildInterpretationWithCrossRefs(
-                                context,
-                                item.interpretationText,
-                                widget.surahNumber,
-                              ),
-                            ),
-                        ],
+
                       ],
                     ),
                   ),
           ),
         ],
-      ),
     );
   }
 
-  /// Builds translation text with tappable footnote markers.
-  /// Malayalam uses `[^N]` pattern; English uses `(N)` pattern.
+  /// Builds translation text, stripping footnote markers so no further
+  /// nested navigation is offered from within the cross-reference sheet.
   Widget _buildTranslationRichText(
     BuildContext context,
     String text,
@@ -689,76 +676,14 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
         .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n')
         .trim();
     // Strip verse-number prefix (e.g. "51 ")
-    final displayText = cleaned.replaceFirst(RegExp(r'^\d+[\s.]*'), '');
+    final withoutPrefix = cleaned.replaceFirst(RegExp(r'^\d+[\s.]*'), '');
+    // Strip footnote markers – show only the plain translation
+    final markerPattern = isMl ? RegExp(r'\[\^?\d+\]') : RegExp(r'\(\d+\)');
+    final displayText = withoutPrefix.replaceAll(markerPattern, '');
 
-    final spans = <InlineSpan>[];
-    final pattern = isMl ? RegExp(r'\[\^?(\d+)\]') : RegExp(r'\((\d+)\)');
-    int lastEnd = 0;
-    bool found = false;
-
-    for (final match in pattern.allMatches(displayText)) {
-      found = true;
-      // Plain text before match
-      if (match.start > lastEnd) {
-        spans.add(
-          TextSpan(
-            text: displayText.substring(lastEnd, match.start),
-            style: AppTextTheme.surahTranslationStyle(
-              context,
-              isMalayalam: isMl,
-            ),
-          ),
-        );
-      }
-      // Tappable footnote marker
-      final num = int.tryParse(match.group(1)!);
-      if (num == null) {
-        spans.add(
-          TextSpan(
-            text: match.group(0),
-            style: AppTextTheme.surahTranslationStyle(
-              context,
-              isMalayalam: isMl,
-            ),
-          ),
-        );
-      } else {
-        final displayNum = isMl ? num - _mlFootnoteMinNumber + 1 : num;
-        spans.add(
-          buildInterpretationNoteMarkerSpan(
-            number: displayNum,
-            onTap: () => _showNestedInterpretation(context, num),
-          ),
-        );
-      }
-      lastEnd = match.end;
-    }
-
-    if (!found) {
-      // No footnotes found, just display as-is
-      spans.add(
-        TextSpan(
-          text: displayText,
-          style: AppTextTheme.surahTranslationStyle(
-            context,
-            isMalayalam: isMl,
-          ),
-        ),
-      );
-    } else if (lastEnd < displayText.length) {
-      spans.add(
-        TextSpan(
-          text: displayText.substring(lastEnd),
-          style: AppTextTheme.surahTranslationStyle(
-            context,
-            isMalayalam: isMl,
-          ),
-        ),
-      );
-    }
-
-    return Text.rich(
-      TextSpan(children: spans),
+    return Text(
+      displayText,
+      style: AppTextTheme.surahTranslationStyle(context, isMalayalam: isMl),
       textAlign: resolveTranslationTextAlign(
         isMalayalam: isMl,
         justifyTranslation: fontSettings.translationJustify,
@@ -766,81 +691,6 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
     );
   }
 
-  /// Shows a nested interpretation bottom sheet for a footnote in the
-  /// referenced surah.
-  void _showNestedInterpretation(BuildContext context, int footnoteNumber) {
-    CrossReferenceSheet.showInterpretationNote(
-      context,
-      surahNumber: widget.surahNumber,
-      noteNumber: footnoteNumber,
-    );
-  }
-
-  /// Builds interpretation text with tappable cross-references.
-  Widget _buildInterpretationWithCrossRefs(
-    BuildContext context,
-    String text,
-    int currentSurahNumber,
-  ) {
-    final isMl = context.read<LanguageProvider>().isMalayalam;
-    final justifyInterpretation =
-        context.watch<FontSizeChangerProvider>().interpretationJustify;
-    final segments = parseForCrossReferences(text, currentSurahNumber);
-    if (segments.length == 1 && !segments.first.isCrossReference) {
-      return Text(
-        text,
-        style: AppTextTheme.surahInterpretationStyle(
-          context,
-          isMalayalam: isMl,
-        ),
-        textAlign: resolveInterpretationTextAlign(
-          isMalayalam: isMl,
-          justifyInterpretation: justifyInterpretation,
-        ),
-      );
-    }
-
-    final baseStyle = AppTextTheme.surahInterpretationStyle(
-      context,
-      isMalayalam: isMl,
-    );
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final linkColor = isDark ? const Color(0xff5B9BD5) : AppTheme.appIconTheme;
-    final spans = <InlineSpan>[];
-    for (final seg in segments) {
-      if (seg.isCrossReference) {
-        final ref = seg.crossReference!;
-        spans.add(
-          TextSpan(
-            text: seg.text,
-            style: baseStyle.copyWith(
-              color: linkColor,
-              decoration: TextDecoration.underline,
-              decorationColor: linkColor,
-            ),
-            recognizer: TapGestureRecognizer()
-              ..onTap = () =>
-                  CrossReferenceSheet.handleReferenceTap(context, ref),
-          ),
-        );
-      } else {
-        spans.add(
-          TextSpan(
-            text: seg.text,
-            style: baseStyle,
-          ),
-        );
-      }
-    }
-
-    return Text.rich(
-      TextSpan(children: spans),
-      textAlign: resolveInterpretationTextAlign(
-        isMalayalam: isMl,
-        justifyInterpretation: justifyInterpretation,
-      ),
-    );
-  }
 }
 
 /// A simple nested bottom sheet that shows interpretation text for a given
@@ -914,27 +764,9 @@ class _NestedInterpretationSheetState
       interpretationNumber: widget.footnoteNumber,
       ayahNumbers: _referencedAyahNumbers,
     );
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.75,
-      ),
-      child: Column(
+    return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Drag handle
-          Padding(
-            padding: _kInterpretationSheetDragHandlePadding,
-            child: Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey[400],
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-          ),
           // Header
           InterpretationSheetHeader(
             surahHeader: surahHeader,
@@ -958,12 +790,7 @@ class _NestedInterpretationSheetState
                     child: Center(child: Text('No explanation found')),
                   )
                 : SingleChildScrollView(
-                    padding: EdgeInsets.fromLTRB(
-                      20,
-                      12,
-                      20,
-                      16 + MediaQuery.viewPaddingOf(context).bottom,
-                    ),
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: _items.map((item) {
@@ -980,7 +807,6 @@ class _NestedInterpretationSheetState
                   ),
           ),
         ],
-      ),
     );
   }
 
