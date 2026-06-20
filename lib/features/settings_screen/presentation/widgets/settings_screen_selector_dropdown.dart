@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
+import 'package:the_message_of_the_quran/core/utils/platform_helper.dart';
 
 const double kSettingsSelectorItemHeight = 30;
 const double kSettingsSelectorTextHeight = 1.0;
@@ -166,6 +167,11 @@ class _SettingsScreenSelectorDropdownState<T>
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: LayoutBuilder(
         builder: (context, constraints) {
+          // Match the 640px breakpoint used by the settings dialog itself:
+          // below 640 it renders as a near-full-width mobile sheet, so keep
+          // the scrollable 4-item popup there; above 640 use the full list.
+          final isDesktopLayout =
+              PlatformHelper.isWeb && MediaQuery.sizeOf(context).width >= 640;
           final popupWidth = settingsSelectorPopupWidth(
             labels: labels,
             textStyle: popupMeasurementTextStyle,
@@ -176,11 +182,13 @@ class _SettingsScreenSelectorDropdownState<T>
               constraints.maxWidth - kSettingsSelectorSelectedValueRightPadding,
             ),
           );
-          final popupConstraints = BoxConstraints(
-            minWidth: popupWidth,
-            maxWidth: popupWidth,
-            maxHeight: settingsSelectorPopupMaxHeight(clampedVisibleCount),
-          );
+          final popupConstraints = isDesktopLayout
+              ? BoxConstraints(minWidth: popupWidth, maxWidth: popupWidth)
+              : BoxConstraints(
+                  minWidth: popupWidth,
+                  maxWidth: popupWidth,
+                  maxHeight: settingsSelectorPopupMaxHeight(clampedVisibleCount),
+                );
 
           return SizedBox(
             width: constraints.maxWidth,
@@ -212,10 +220,18 @@ class _SettingsScreenSelectorDropdownState<T>
                       flex: kSettingsSelectorValueFlex,
                       child: LayoutBuilder(
                         builder: (ctx, valueConstraints) {
-                          // Anchor the popup to the value area's right edge
+                          // Anchor the popup to the value area's right edge.
+                          // On desktop/web: open upward so the popup stays
+                          // within the settings dialog instead of overflowing
+                          // below it. On mobile: open downward with a small gap.
+                          final desktopPopupHeight =
+                              widget.items.length * kSettingsSelectorItemHeight;
                           final vOffset = Offset(
                             math.max(0, valueConstraints.maxWidth - popupWidth),
-                            8,
+                            isDesktopLayout
+                                ? -(kSettingsSelectorItemHeight +
+                                    desktopPopupHeight)
+                                : 8.0,
                           );
                           return PopupMenuButton<T>(
                             key: _menuKey,
