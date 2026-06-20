@@ -64,7 +64,7 @@ class _NavTarget {
 // Search type enum
 // ─────────────────────────────────────────────────────────────────────────────
 
-enum _SearchType { translation, interpretation }
+enum _SearchType { translation, interpretation, arabic }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Dialog widget
@@ -85,6 +85,7 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
   bool _isLoading = false;
   List<VerseSearchResultModel> _verseResults = [];
   List<InterpretationSearchResultModel> _interpretationResults = [];
+  List<VerseSearchResultModel> _arabicResults = [];
 
   @override
   void dispose() {
@@ -102,6 +103,7 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
       setState(() {
         _verseResults = [];
         _interpretationResults = [];
+        _arabicResults = [];
         _isLoading = false;
       });
       return;
@@ -125,7 +127,7 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
         _verseResults = results;
         _isLoading = false;
       });
-    } else {
+    } else if (_searchType == _SearchType.interpretation) {
       final results = await InterpretationsDbHelper.searchInterpretationsByWord(
         q,
         isMalayalam: isMalayalam,
@@ -133,6 +135,17 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
       if (!mounted) return;
       setState(() {
         _interpretationResults = results;
+        _isLoading = false;
+      });
+    } else {
+      // Arabic text search — normalisation handled inside searchArabicVerses.
+      final results = await TranslationBlockDbHelper.searchArabicVerses(
+        q,
+        isMalayalam: isMalayalam,
+      );
+      if (!mounted) return;
+      setState(() {
+        _arabicResults = results;
         _isLoading = false;
       });
     }
@@ -252,7 +265,9 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
   ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 6,
         children: [
           _typeChip(
             label: isMalayalam ? 'പരിഭാഷ' : 'Translation',
@@ -261,10 +276,16 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
             isDark: isDark,
             isMalayalam: isMalayalam,
           ),
-          const SizedBox(width: 8),
           _typeChip(
             label: isMalayalam ? 'വ്യാഖ്യാനം' : 'Interpretation',
             type: _SearchType.interpretation,
+            primaryColor: primaryColor,
+            isDark: isDark,
+            isMalayalam: isMalayalam,
+          ),
+          _typeChip(
+            label: isMalayalam ? 'അറബിക്' : 'Arabic',
+            type: _SearchType.arabic,
             primaryColor: primaryColor,
             isDark: isDark,
             isMalayalam: isMalayalam,
@@ -289,6 +310,7 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
           _searchType = type;
           _verseResults = [];
           _interpretationResults = [];
+          _arabicResults = [];
         });
         if (_controller.text.trim().length >= 2) {
           _onQueryChanged(_controller.text, isMalayalam);
@@ -331,7 +353,9 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
   ) {
     final hint = _searchType == _SearchType.translation
         ? (isMalayalam ? 'പരിഭാഷ തിരയുക...' : 'Search in translation...')
-        : (isMalayalam ? 'വ്യാഖ്യാനം തിരയുക...' : 'Search in interpretation...');
+        : _searchType == _SearchType.interpretation
+            ? (isMalayalam ? 'വ്യാഖ്യാനം തിരയുക...' : 'Search in interpretation...')
+            : (isMalayalam ? 'അറബിക് ആയത്ത് തിരയുക...' : 'Search Arabic text...');
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -357,6 +381,7 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
                     setState(() {
                       _verseResults = [];
                       _interpretationResults = [];
+                      _arabicResults = [];
                       _isLoading = false;
                     });
                   },
@@ -434,9 +459,11 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
 
     if (_searchType == _SearchType.translation) {
       return _buildVerseResultList(isMalayalam, primaryColor, isDark, theme);
-    } else {
+    } else if (_searchType == _SearchType.interpretation) {
       return _buildInterpretationResultList(
           isMalayalam, primaryColor, isDark, theme);
+    } else {
+      return _buildArabicResultList(isMalayalam, primaryColor, isDark, theme);
     }
   }
 
@@ -474,7 +501,7 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
           child: ListView.separated(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
             itemCount: _verseResults.length,
-            separatorBuilder: (_, _i) => const Divider(height: 1),
+            separatorBuilder: (_, _) => const Divider(height: 1),
             itemBuilder: (ctx, i) {
               final r = _verseResults[i];
               final surahName = _surahName(ctx, r.surahNumber);
@@ -511,7 +538,7 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
           child: ListView.separated(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
             itemCount: _interpretationResults.length,
-            separatorBuilder: (_, _i) => const Divider(height: 1),
+            separatorBuilder: (_, _) => const Divider(height: 1),
             itemBuilder: (ctx, i) {
               final r = _interpretationResults[i];
               final hasRef = r.surahNumber > 0 && r.verseNumber > 0;
@@ -539,6 +566,92 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
                           ),
                         )
                     : null,
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildArabicResultList(
+    bool isMalayalam,
+    Color primaryColor,
+    bool isDark,
+    ThemeData theme,
+  ) {
+    if (_arabicResults.isEmpty) {
+      return _emptyState(isMalayalam, theme);
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildCountBanner(_arabicResults.length, isMalayalam, primaryColor),
+        Expanded(
+          child: ListView.separated(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+            itemCount: _arabicResults.length,
+            separatorBuilder: (_, _) => const Divider(height: 1),
+            itemBuilder: (ctx, i) {
+              final r = _arabicResults[i];
+              final surahName = _surahName(ctx, r.surahNumber);
+              return InkWell(
+                onTap: () => _navigateTo(
+                  _NavTarget(
+                    surahNumber: r.surahNumber,
+                    verseNumber: r.verseNumber,
+                  ),
+                ),
+                borderRadius: BorderRadius.circular(8),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '$surahName (${r.surahNumber}:${r.verseNumber})',
+                        style: TextStyle(
+                          color: primaryColor,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Directionality(
+                        textDirection: TextDirection.rtl,
+                        child: Text(
+                          r.arabicText,
+                          textAlign: TextAlign.right,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontFamily: 'Amiri',
+                            fontSize: 17,
+                            height: 1.7,
+                            color: isDark ? Colors.white : Colors.black87,
+                          ),
+                        ),
+                      ),
+                      if (r.translationText.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          r.translationText.length > 160
+                              ? '${r.translationText.substring(0, 160)}…'
+                              : r.translationText,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.6)
+                                : Colors.black54,
+                            fontSize: 12,
+                            height: 1.4,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
               );
             },
           ),

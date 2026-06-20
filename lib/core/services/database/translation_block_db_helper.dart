@@ -237,4 +237,129 @@ class TranslationBlockDbHelper {
       return [];
     }
   }
+
+  /// Strips Arabic diacritics (harakat / tashkeel) and normalises Alef
+  /// variants so that bare-letter queries match fully-vowelled Quranic text.
+  ///
+  /// Removes: fathatan ً, dammatan ٌ, kasratan ٍ, fatha َ, damma ُ, kasra ِ,
+  ///          shadda ّ, sukun ْ, maddah-above ٓ, hamza-above ٔ, hamza-below ٕ,
+  ///          superscript-alef ٰ, tatweel ـ.
+  /// Normalises: آ أ إ ٱ → ا.
+  static String _normalizeArabic(String text) {
+    return text
+        .replaceAll('\u064B', '') // fathatan
+        .replaceAll('\u064C', '') // dammatan
+        .replaceAll('\u064D', '') // kasratan
+        .replaceAll('\u064E', '') // fatha
+        .replaceAll('\u064F', '') // damma
+        .replaceAll('\u0650', '') // kasra
+        .replaceAll('\u0651', '') // shadda
+        .replaceAll('\u0652', '') // sukun
+        .replaceAll('\u0653', '') // maddah above
+        .replaceAll('\u0654', '') // hamza above
+        .replaceAll('\u0655', '') // hamza below
+        .replaceAll('\u0670', '') // superscript alef
+        .replaceAll('\u0640', '') // tatweel
+        .replaceAll('\u0622', '\u0627') // آ → ا
+        .replaceAll('\u0623', '\u0627') // أ → ا
+        .replaceAll('\u0625', '\u0627') // إ → ا
+        .replaceAll('\u0671', '\u0627'); // ٱ → ا
+  }
+
+  /// Searches Arabic Quranic text in the `quranayas` table.
+  ///
+  /// The stored text is normalised at query-time by stripping diacritics and
+  /// collapsing Alef variants, matching the same normalisation applied to
+  /// [keyword] via [_normalizeArabic].  Returns up to [limit] results with
+  /// the original Arabic (with diacritics, for display) and the
+  /// current-language translation as context.
+  static Future<List<VerseSearchResultModel>> searchArabicVerses(
+    String keyword, {
+    bool isMalayalam = false,
+    int limit = 100,
+  }) async {
+    final db = DatabaseHelper.quranAsadDb;
+    if (db == null) return [];
+
+    final q = _normalizeArabic(keyword.trim());
+    if (q.isEmpty) return [];
+    final wordPattern = '% $q %';
+
+    // SQL REPLACE chain mirrors _normalizeArabic():
+    //   13 removals (diacritics → ''):  char codes 1611–1621, 1648, 1600
+    //   4  normalisations (Alef → ا):   char codes 1570, 1571, 1573, 1649 → 1575
+    const normalisedAyah = '''
+      REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+        q.${DbConstants.quranAyasAyahText},
+        char(1611), ''), char(1612), ''), char(1613), ''),
+        char(1614), ''), char(1615), ''), char(1616), ''),
+        char(1617), ''), char(1618), ''), char(1619), ''),
+        char(1620), ''), char(1621), ''),
+        char(1648), ''), char(1600), ''),
+        char(1570), char(1575)), char(1571), char(1575)),
+        char(1573), char(1575)), char(1649), char(1575))
+    ''';
+
+    try {
+      if (isMalayalam) {
+        final rows = await db.rawQuery(
+          '''
+          SELECT q.${DbConstants.quranAyasSurahId},
+                 q.${DbConstants.quranAyasAyahId},
+                 q.${DbConstants.quranAyasAyahText} AS arabic_text,
+                 COALESCE(mv.${DbConstants.mlVersesMalayalamTranslation}, '') AS translation_text
+          FROM ${DbConstants.quranAyasTable} q
+          LEFT JOIN ${DbConstants.mlVersesTable} mv
+            ON mv.${DbConstants.mlVersesSurahId} = q.${DbConstants.quranAyasSurahId}
+           AND mv.${DbConstants.mlVersesVerseNumber} = q.${DbConstants.quranAyasAyahId}
+          WHERE ' ' || $normalisedAyah || ' ' LIKE ?
+          LIMIT ?
+          ''',
+          [wordPattern, limit],
+        );
+        return rows
+            .map(
+              (row) => VerseSearchResultModel(
+                surahNumber:
+                    (row[DbConstants.quranAyasSurahId] as int?) ?? 0,
+                verseNumber:
+                    (row[DbConstants.quranAyasAyahId] as int?) ?? 0,
+                arabicText: (row['arabic_text'] as String?) ?? '',
+                translationText: (row['translation_text'] as String?) ?? '',
+              ),
+            )
+            .toList();
+      } else {
+        final rows = await db.rawQuery(
+          '''
+          SELECT q.${DbConstants.quranAyasSurahId},
+                 q.${DbConstants.quranAyasAyahId},
+                 q.${DbConstants.quranAyasAyahText} AS arabic_text,
+                 COALESCE(v.${DbConstants.asadVerseText}, '') AS translation_text
+          FROM ${DbConstants.quranAyasTable} q
+          LEFT JOIN ${DbConstants.asadVersesTable} v
+            ON v.${DbConstants.asadVerseSurahNumber} = q.${DbConstants.quranAyasSurahId}
+           AND v.${DbConstants.asadVerseNumber} = q.${DbConstants.quranAyasAyahId}
+          WHERE ' ' || $normalisedAyah || ' ' LIKE ?
+          LIMIT ?
+          ''',
+          [wordPattern, limit],
+        );
+        return rows
+            .map(
+              (row) => VerseSearchResultModel(
+                surahNumber:
+                    (row[DbConstants.quranAyasSurahId] as int?) ?? 0,
+                verseNumber:
+                    (row[DbConstants.quranAyasAyahId] as int?) ?? 0,
+                arabicText: (row['arabic_text'] as String?) ?? '',
+                translationText: (row['translation_text'] as String?) ?? '',
+              ),
+            )
+            .toList();
+      }
+    } catch (e) {
+      return [];
+    }
+  }
 }
