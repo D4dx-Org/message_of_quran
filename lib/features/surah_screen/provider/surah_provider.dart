@@ -48,6 +48,7 @@ class SurahProvider extends ChangeNotifier {
   bool isSearched = false;
   List<VerseSearchResultModel> verseSearchResults = [];
   List<InterpretationSearchResultModel> interpretationSearchResults = [];
+  List<VerseSearchResultModel> arabicVerseSearchResults = [];
   bool isSearchingContent = false;
   Timer? _searchDebounce;
   bool isSurahLoading = false;
@@ -758,6 +759,7 @@ class SurahProvider extends ChangeNotifier {
     searchList.clear();
     verseSearchResults.clear();
     interpretationSearchResults.clear();
+    arabicVerseSearchResults.clear();
 
     final query = searchController.text.trim();
     if (query.isEmpty) {
@@ -805,29 +807,45 @@ class SurahProvider extends ChangeNotifier {
       });
     }
 
-    // ── Full-text DB search (verse + interpretation) ──
-    if (!isNumeric && query.length >= 2) {
-      isSearchingContent = true;
-      notifyListeners();
+    // ── Full-text DB search (verse + interpretation / Arabic) ──
+    if (query.length >= 2) {
+      // Detect Arabic characters (Unicode block U+0600–U+06FF).
+      final hasArabic = RegExp(r'[\u0600-\u06FF]').hasMatch(query);
 
-      final results = await Future.wait([
-        TranslationBlockDbHelper.searchVersesByWord(
+      if (hasArabic) {
+        isSearchingContent = true;
+        notifyListeners();
+
+        arabicVerseSearchResults =
+            await TranslationBlockDbHelper.searchArabicVerses(
           query,
           isMalayalam: _isMalayalam,
-        ),
-        InterpretationsDbHelper.searchInterpretationsByWord(
-          query,
-          isMalayalam: _isMalayalam,
-        ),
-      ]);
+        );
 
-      if (_isDisposed) return;
+        if (_isDisposed) return;
+        isSearchingContent = false;
+      } else if (!isNumeric) {
+        isSearchingContent = true;
+        notifyListeners();
 
-      verseSearchResults =
-          results[0] as List<VerseSearchResultModel>;
-      interpretationSearchResults =
-          results[1] as List<InterpretationSearchResultModel>;
-      isSearchingContent = false;
+        final results = await Future.wait([
+          TranslationBlockDbHelper.searchVersesByWord(
+            query,
+            isMalayalam: _isMalayalam,
+          ),
+          InterpretationsDbHelper.searchInterpretationsByWord(
+            query,
+            isMalayalam: _isMalayalam,
+          ),
+        ]);
+
+        if (_isDisposed) return;
+
+        verseSearchResults = results[0] as List<VerseSearchResultModel>;
+        interpretationSearchResults =
+            results[1] as List<InterpretationSearchResultModel>;
+        isSearchingContent = false;
+      }
     }
 
     notifyListeners();
@@ -838,6 +856,7 @@ class SurahProvider extends ChangeNotifier {
     searchController.clear();
     verseSearchResults.clear();
     interpretationSearchResults.clear();
+    arabicVerseSearchResults.clear();
     isSearched = false;
     isSearchingContent = false;
     notifyListeners();

@@ -168,7 +168,19 @@ class InterpretationsDbHelper {
   }) async {
     final db = DatabaseHelper.quranAsadDb;
     if (db == null) return [];
-    final q = keyword.toLowerCase();
+    // Normalize keyword: lowercase + strip the same punctuation that the SQL
+    // REPLACE chain removes from stored text, so punctuated queries still match.
+    final q = keyword
+        .toLowerCase()
+        .replaceAll('[', ' ')
+        .replaceAll(']', ' ')
+        .replaceAll("'", ' ') // ASCII apostrophe
+        .replaceAll('\u2019', ' ') // right single quote / curly apostrophe
+        .replaceAll('\u2014', ' ') // em dash
+        .replaceAll('-', ' ')
+        .replaceAll(RegExp(r' +'), ' ')
+        .trim();
+    if (q.isEmpty) return [];
     final wordPattern = '% $q %';
     try {
       if (isMalayalam) {
@@ -216,10 +228,10 @@ class InterpretationsDbHelper {
               LIMIT 1
             ), -1) AS verse_number
           FROM ${DbConstants.mlFootnotesTable} f
-          WHERE ' ' || REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+          WHERE ' ' || REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
                   f.content,
                   ',', ' '), '.', ' '), ')', ' '), '(', ' '), ';', ' '),
-                  char(10), ' ') || ' '
+                  char(10), ' '), '[', ' '), ']', ' ') || ' '
                 LIKE ?
           LIMIT ?
           ''',
@@ -279,9 +291,12 @@ class InterpretationsDbHelper {
               LIMIT 1
             ), -1) AS verse_number
           FROM ${DbConstants.asadFootnotesTable} f
-          WHERE ' ' || REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
-              LOWER(f.text), '.', ' '), ',', ' '), ';', ' '), ':', ' '),
-              '!', ' '), '?', ' '), ')', ' '), '(', ' ') || ' '
+          WHERE ' ' || REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+              LOWER(f.text),
+              '.', ' '), ',', ' '), ';', ' '), ':', ' '),
+              '!', ' '), '?', ' '), ')', ' '), '(', ' '),
+              '[', ' '), ']', ' '), char(39), ' '), char(8217), ' '),
+              char(8212), ' '), '-', ' ') || ' '
               LIKE ?
           LIMIT ?
           ''',

@@ -176,7 +176,8 @@ class _SearchScreenState extends State<SearchScreen> {
         final hasSurahs = value.searchList.isNotEmpty;
         final hasVerses = value.verseSearchResults.isNotEmpty;
         final hasInterps = value.interpretationSearchResults.isNotEmpty;
-        final hasAny = hasSurahs || hasVerses || hasInterps;
+        final hasArabicVerses = value.arabicVerseSearchResults.isNotEmpty;
+        final hasAny = hasSurahs || hasVerses || hasInterps || hasArabicVerses;
 
         if (!value.isSearched && !value.isSearchingContent) {
           return Expanded(
@@ -328,6 +329,33 @@ class _SearchScreenState extends State<SearchScreen> {
                   const SizedBox(height: 8),
                 ],
               ],
+              // ── Arabic verse results ──
+              if (hasArabicVerses) ...[
+                _buildSectionHeader(
+                  context,
+                  isMalayalam ? 'അറബിക്' : 'Arabic',
+                  '(${value.arabicVerseSearchResults.length})',
+                  isMalayalam,
+                ),
+                for (final result in value.arabicVerseSearchResults) ...[
+                  Builder(
+                    builder: (ctx) {
+                      final surah = value.surahList.firstWhere(
+                        (s) => s.surahNumber == result.surahNumber,
+                        orElse: () => value.surahList.first,
+                      );
+                      return VerseSearchResultCard(
+                        result: result,
+                        surah: surah,
+                        isMalayalam: isMalayalam,
+                        onTap: () =>
+                            _openVerseResult(ctx, controller, result),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ],
             ],
           ),
         );
@@ -349,7 +377,8 @@ class _SearchScreenState extends State<SearchScreen> {
         final hasSurahs = value.searchList.isNotEmpty;
         final hasVerses = value.verseSearchResults.isNotEmpty;
         final hasInterps = value.interpretationSearchResults.isNotEmpty;
-        final hasAny = hasSurahs || hasVerses || hasInterps;
+        final hasArabicVerses = value.arabicVerseSearchResults.isNotEmpty;
+        final hasAny = hasSurahs || hasVerses || hasInterps || hasArabicVerses;
 
         if (!value.isSearched && !value.isSearchingContent) {
           return Center(
@@ -542,6 +571,33 @@ class _SearchScreenState extends State<SearchScreen> {
                 const SizedBox(height: 12),
               ],
             ],
+            // ── Arabic verse results ──
+            if (hasArabicVerses) ...[
+              _buildSectionHeader(
+                context,
+                isMalayalam ? 'അറബിക്' : 'Arabic',
+                '(${value.arabicVerseSearchResults.length})',
+                isMalayalam,
+              ),
+              for (final result in value.arabicVerseSearchResults) ...[
+                Builder(
+                  builder: (ctx) {
+                    final surah = value.surahList.firstWhere(
+                      (s) => s.surahNumber == result.surahNumber,
+                      orElse: () => value.surahList.first,
+                    );
+                    return VerseSearchResultCard(
+                      result: result,
+                      surah: surah,
+                      isMalayalam: isMalayalam,
+                      onTap: () =>
+                          _openVerseResult(ctx, controller, result),
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+              ],
+            ],
           ],
         );
       },
@@ -606,7 +662,8 @@ class _SearchScreenState extends State<SearchScreen> {
                 builder: (context, value, child) {
                   final totalCount = value.searchList.length +
                       value.verseSearchResults.length +
-                      value.interpretationSearchResults.length;
+                      value.interpretationSearchResults.length +
+                      value.arabicVerseSearchResults.length;
                   return Row(
                     children: [
                       Text(
