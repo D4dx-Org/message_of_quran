@@ -1123,7 +1123,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                 child: Container(
                   padding: const EdgeInsets.only(bottom: 6),
                   child: Text(
-                    "Juz'e",
+                    "Juz'",
                     style: AppTextTheme.popinsDefault(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,

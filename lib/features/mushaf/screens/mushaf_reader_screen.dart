@@ -652,17 +652,19 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
                 : MushafReaderProvider.previewLimit,
             onPageChanged: _onPageChanged,
             itemBuilder: (context, index) {
-              final tajweed = context.read<TajweedProvider>();
-              if (tajweed.enabled && tajweed.fontsInstalled) {
-                return TajweedPageView(
-                  pageNo: index + 1,
-                  repository: _p.repository,
-                  selectedAyaId: _p.selectedAyaId,
-                  playingAyaId: _p.audioPlayingAyaId,
-                  onAyaTap: _toggleBars,
-                  quranFontSize: fontSize,
-                );
-              }
+              // TODO(tajweed): Re-enable TajweedPageView here when Mushaf tajweed
+              // rendering is needed again.
+              // final tajweed = context.read<TajweedProvider>();
+              // if (tajweed.enabled && tajweed.fontsInstalled) {
+              //   return TajweedPageView(
+              //     pageNo: index + 1,
+              //     repository: _p.repository,
+              //     selectedAyaId: _p.selectedAyaId,
+              //     playingAyaId: _p.audioPlayingAyaId,
+              //     onAyaTap: _toggleBars,
+              //     quranFontSize: fontSize,
+              //   );
+              // }
               return MushafPageView(
                 pageNo: index + 1,
                 repository: _p.repository,
@@ -1212,20 +1214,22 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
             itemCount: visibleItems.length,
             itemBuilder: (ctx, index) {
               final item = visibleItems[index];
-              final tajweed2 = context.read<TajweedProvider>();
-              if (tajweed2.enabled && tajweed2.fontsInstalled) {
-                return SizedBox(
-                  height: pageH,
-                  child: TajweedPageView(
-                    pageNo: (item as MushafListPage).pageNo,
-                    repository: _p.repository,
-                    selectedAyaId: _p.selectedAyaId,
-                    playingAyaId: _p.audioPlayingAyaId,
-                    onAyaTap: _toggleBars,
-                    quranFontSize: _landscapeFontSize(context),
-                  ),
-                );
-              }
+              // TODO(tajweed): Re-enable TajweedPageView here when Mushaf tajweed
+              // rendering is needed again.
+              // final tajweed2 = context.read<TajweedProvider>();
+              // if (tajweed2.enabled && tajweed2.fontsInstalled) {
+              //   return SizedBox(
+              //     height: pageH,
+              //     child: TajweedPageView(
+              //       pageNo: (item as MushafListPage).pageNo,
+              //       repository: _p.repository,
+              //       selectedAyaId: _p.selectedAyaId,
+              //       playingAyaId: _p.audioPlayingAyaId,
+              //       onAyaTap: _toggleBars,
+              //       quranFontSize: _landscapeFontSize(context),
+              //     ),
+              //   );
+              // }
               return SizedBox(
                 height: pageH,
                 child: MushafPageView(

@@ -175,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen>
         ? Colors.grey[400]!
         : AppTheme.appThemePrimary;
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
-    final tabs = isMalayalam ? ['സൂറത്ത്', 'ജുസ്'] : ['Surah', "Juz'e"];
+    final tabs = isMalayalam ? ['സൂറത്ത്', 'ജുസ്അ്'] : ['Surah', "Juz'"];
     final tabBarMaxWidth = _webHomeTabBarMaxWidth(context);
 
     final tabBar = Padding(
@@ -519,7 +519,7 @@ class _HomeScreenState extends State<HomeScreen>
         : Colors.white;
     final isCompactWebHome = _useCompactWebHome(context);
     final sectionLabels = isMalayalam
-        ? const ['സൂറത്ത്', 'ജുസ്']
+        ? const ['സൂറത്ത്', 'ജുസ്അ്']
         : const ['Surah', 'Juz'];
 
     Widget buildTabStrip() {
@@ -699,7 +699,7 @@ class _HomeScreenState extends State<HomeScreen>
                     surahNumber: surah.surahNumber,
                   );
             final subtitle = displayText.subtitle.trim().isEmpty
-                ? (isMalayalam ? 'ജുസ് ${juz.number}' : 'Juz ${juz.number}')
+                ? (isMalayalam ? 'ജുസ്അ് ${juz.number}' : 'Juz ${juz.number}')
                 : displayText.subtitle;
             return _WebCompactJuzCard(
               isMalayalam: isMalayalam,

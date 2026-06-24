@@ -40,7 +40,7 @@ class JuzColumn extends StatelessWidget {
         if (provider.juzList.isEmpty) {
           return Center(
             child: Text(
-              isMalayalam ? 'ജുസ് ലഭ്യമല്ല' : 'No Juz available',
+              isMalayalam ? 'ജുസ്അ് ലഭ്യമല്ല' : 'No Juz available',
               style: AppTextTheme.localizedBody(
                 isMalayalam: isMalayalam,
                 fontSize: 14,

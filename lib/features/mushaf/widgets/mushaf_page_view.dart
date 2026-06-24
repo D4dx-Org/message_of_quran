@@ -67,14 +67,27 @@ class _MushafPageViewState extends State<MushafPageView> {
   @override
   void initState() {
     super.initState();
+    MushafDownloadManager.instance.addListener(_onDownloadChanged);
     _loadData();
   }
 
   @override
   void dispose() {
+    MushafDownloadManager.instance.removeListener(_onDownloadChanged);
     _removeTooltipOverlay();
     _rebuild.dispose();
     super.dispose();
+  }
+
+  void _onDownloadChanged() {
+    if (!mounted) return;
+    final dm = MushafDownloadManager.instance;
+    // When download completes, retry loading the font.
+    if (dm.isDone && _error != null) {
+      _loadData();
+    } else {
+      _rebuild.value++;
+    }
   }
 
   @override
@@ -183,6 +196,16 @@ class _MushafPageViewState extends State<MushafPageView> {
                   _error!,
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton.icon(
+                  onPressed: () => MushafDownloadManager.instance.startDownload(),
+                  icon: const Icon(Icons.download_rounded),
+                  label: const Text("Download Mus'haf"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _kSecondaryDarkColor,
+                    foregroundColor: Colors.white,
+                  ),
                 ),
               ],
             ],
