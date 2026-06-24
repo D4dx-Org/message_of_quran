@@ -231,16 +231,26 @@ class CommonAppBar {
     BuildContext context, {
     Alignment alignment = Alignment.centerLeft,
     double? height,
+    VoidCallback? onTap,
   }) {
     final scale = ResponsiveHelper.scaleFactor(context);
+    final image = Image.asset(
+      'assets/images/Group-logo.png',
+      height: height ?? 37 * scale,
+      fit: BoxFit.contain,
+      semanticLabel: 'Quran Asad Malayalam logo',
+    );
     return Align(
       alignment: alignment,
-      child: Image.asset(
-        'assets/images/Group-logo.png',
-        height: height ?? 37 * scale,
-        fit: BoxFit.contain,
-        semanticLabel: 'Quran Asad Malayalam logo',
-      ),
+      child: onTap != null
+          ? MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: onTap,
+                child: image,
+              ),
+            )
+          : image,
     );
   }
 

@@ -449,8 +449,8 @@ class _SurahQuickSearchState extends State<SurahQuickSearch> {
           decoration: InputDecoration(
             border: InputBorder.none,
             hintText: widget.isMalayalam
-                ? 'സൂറത്തിന്റെ പേര് തിരയുക'
-                : 'Search surah names',
+                ? 'പേര് / നമ്പർ തിരയുക'
+                : 'Search by name or number',
             hintStyle: AppTextTheme.localizedBody(
               isMalayalam: widget.isMalayalam,
               fontSize: widget.isMalayalam ? 13 : 14,
