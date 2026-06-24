@@ -464,7 +464,7 @@ class _SurahScreenState extends State<SurahScreen> {
 
   Widget _buildSurahAppBarTitleControls(SurahProvider controller) {
     if (controller.surahList.isEmpty || controller.index >= controller.surahList.length) {
-      return CommonAppBar.brandLogo(context);
+      return CommonAppBar.brandLogo(context, onTap: () => _navigateToMainTab(0));
     }
 
     final scale = ResponsiveHelper.scaleFactor(context);
@@ -499,6 +499,7 @@ class _SurahScreenState extends State<SurahScreen> {
               width: logoWidth,
               child: CommonAppBar.brandLogo(
                 context,
+                onTap: () => _navigateToMainTab(0),
               ),
             ),
             SizedBox(width: maxWidth < 300 ? 4 : 8),
@@ -2470,7 +2471,9 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                                       AppTextTheme.surahArabiStyle(
                                                                                         context,
                                                                                       ),
-                                                                                      AppTheme.appIconTheme,
+                                                                                      Theme.of(context).brightness == Brightness.dark
+                                                                                          ? const Color(0xFFFFD966)
+                                                                                          : AppTheme.appIconTheme,
                                                                                       controller,
                                                                                     ),
                                                                                   ),
@@ -2724,14 +2727,18 @@ class _SurahScreenState extends State<SurahScreen> {
                     translationIdx != null &&
                     translationIdx < surahProv.arabicBlockList.length - 1;
 
+                final isMiniPlayerDark =
+                    Theme.of(context).brightness == Brightness.dark;
+                final miniPlayerIconColor =
+                    isMiniPlayerDark ? Colors.white : AppTheme.appIconTheme;
                 return Semantics(
                   liveRegion: true,
                   label:
                       'Audio player: $surahName, $ayahLabel, ${audio.isPlaying ? 'playing' : 'paused'}',
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.grey.shade900
+                      color: isMiniPlayerDark
+                          ? AppTheme.appThemePrimary
                           : Colors.grey.shade100,
                       boxShadow: const [
                         BoxShadow(
@@ -2756,17 +2763,18 @@ class _SurahScreenState extends State<SurahScreen> {
                               children: [
                                 Text(
                                   surahName,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 13,
+                                    color: isMiniPlayerDark ? Colors.white : null,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
                                   ayahLabel,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 11,
-                                    color: Colors.grey,
+                                    color: isMiniPlayerDark ? Colors.white60 : Colors.grey,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
@@ -2801,9 +2809,9 @@ class _SurahScreenState extends State<SurahScreen> {
                                     );
                                   }
                                 : null,
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.skip_previous,
-                              color: AppTheme.appIconTheme,
+                              color: miniPlayerIconColor,
                             ),
                           ),
                           // Play / Pause
@@ -2812,16 +2820,16 @@ class _SurahScreenState extends State<SurahScreen> {
                             onPressed: () => audio.togglePlayPause(),
                             icon: Icon(
                               audio.isPlaying ? Icons.pause : Icons.play_arrow,
-                              color: AppTheme.appIconTheme,
+                              color: miniPlayerIconColor,
                             ),
                           ),
                           // Stop
                           IconButton(
                             tooltip: 'Stop',
                             onPressed: () => audio.stopAudio(),
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.stop,
-                              color: AppTheme.appIconTheme,
+                              color: miniPlayerIconColor,
                             ),
                           ),
                           // Next
@@ -2851,9 +2859,9 @@ class _SurahScreenState extends State<SurahScreen> {
                                     );
                                   }
                                 : null,
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.skip_next,
-                              color: AppTheme.appIconTheme,
+                              color: miniPlayerIconColor,
                             ),
                           ),
                           // Speed
@@ -2871,9 +2879,10 @@ class _SurahScreenState extends State<SurahScreen> {
                               },
                               child: Text(
                                 '${speedPS.playbackSpeed}x',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
+                                  color: miniPlayerIconColor,
                                 ),
                               ),
                             ),
@@ -2882,9 +2891,9 @@ class _SurahScreenState extends State<SurahScreen> {
                           IconButton(
                             tooltip: 'Close player',
                             onPressed: () => audio.stopAudio(),
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.close,
-                              color: AppTheme.appIconTheme,
+                              color: miniPlayerIconColor,
                             ),
                           ),
                         ],
