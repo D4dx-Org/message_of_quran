@@ -19,8 +19,6 @@ import '../../surah_screen/provider/surah_provider.dart';
 import '../models/page_meta.dart';
 import '../widgets/mushaf_download_required_dialog.dart';
 import '../widgets/mushaf_page_view.dart';
-import '../../tajweed/presentation/widgets/tajweed_page_view.dart';
-import '../../settings_screen/providers/tajweed_provider.dart';
 
 const _kPrimaryColor = AppTheme.appIconTheme;
 const _kSecondaryDark = AppTheme.appIconTheme;
@@ -60,7 +58,6 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
     with TickerProviderStateMixin {
   late final MushafReaderProvider _p;
   final MushafDownloadManager _downloadManager = MushafDownloadManager.instance;
-  TajweedProvider? _tajweedProvider;
 
   late final AnimationController _barsAnimController;
   late final Animation<Offset> _appBarSlideAnim;
@@ -96,17 +93,10 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
     _p.onManualScrollWhilePlaying = _showAutoScrollPrompt;
     _p.init();
     _downloadManager.addListener(_onDownloadStateChanged);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      _tajweedProvider = context.read<TajweedProvider>();
-      _tajweedProvider!.addListener(_onTajweedStateChanged);
-      _onTajweedStateChanged();
-    });
   }
 
   @override
   void dispose() {
-    _tajweedProvider?.removeListener(_onTajweedStateChanged);
     _downloadManager.removeListener(_onDownloadStateChanged);
     _jumpClearTimer?.cancel();
     _barsAnimController.dispose();
@@ -119,14 +109,6 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
     if (_downloadManager.isDone && mounted) {
       _p.setFontsInstalled();
     }
-  }
-
-  void _onTajweedStateChanged() {
-    if (!mounted) return;
-    final tajweed = _tajweedProvider;
-    _p.setTajweedUnlocked(
-      (tajweed?.fontsInstalled ?? false) && (tajweed?.enabled ?? false),
-    );
   }
 
   void _onProviderChanged() {
