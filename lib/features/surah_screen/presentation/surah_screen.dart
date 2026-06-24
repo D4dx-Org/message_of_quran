@@ -2419,6 +2419,7 @@ class _SurahScreenState extends State<SurahScreen> {
           context,
           showBrandLogo: true,
           showSearch: widget.showSearchIcon,
+          onLogoTap: () => _navigateToMainTab(0),
           onSurahInfoTap: _hasPreface
               ? () => _showSurahInfo(context, controller)
               : null,

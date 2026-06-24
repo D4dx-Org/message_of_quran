@@ -13,15 +13,21 @@ import 'package:the_message_of_the_quran/features/search_screen/presentation/sea
 class CommonAppBar {
   CommonAppBar._();
 
-  static Widget _brandLogo(double scale) {
-    return Align(
+  static Widget _brandLogo(double scale, {VoidCallback? onTap}) {
+    final image = Align(
       alignment: Alignment.centerLeft,
       child: Image.asset(
         'assets/images/Group-logo.png',
         height: 37 * scale,
         fit: BoxFit.contain,
+        filterQuality: FilterQuality.high,
         semanticLabel: 'Quran Asad Malayalam logo',
       ),
+    );
+    if (onTap == null) return image;
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(onTap: onTap, child: image),
     );
   }
 
@@ -109,6 +115,7 @@ class CommonAppBar {
     bool showSearch = true,
     bool showJump = true,
     VoidCallback? onSearchTap,
+    VoidCallback? onLogoTap,
   }) {
     final scale = ResponsiveHelper.scaleFactor(ctx);
     return AppBar(
@@ -121,7 +128,7 @@ class CommonAppBar {
       title:
           titleWidget ??
           (showBrandLogo
-              ? _brandLogo(scale)
+              ? _brandLogo(scale, onTap: onLogoTap)
               : (title != null
                     ? Text(
                         title,
