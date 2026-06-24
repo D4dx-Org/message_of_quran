@@ -1233,7 +1233,7 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
             child: Row(
               children: [
                 _TabButton(
-                  label: isMl ? 'അദ്ധ്യായം' : 'Surah',
+                  label: isMl ? 'സൂറത്ത്' : 'Surah',
                   isSelected: _selectedTab == 0,
                   isMalayalam: isMl,
                   onTap: () {
@@ -1295,11 +1295,21 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
                   _ayahSearchQuery = v;
                 }
               }),
+              style: AppTextTheme.localizedLabel(
+                isMalayalam: isMl,
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+              ),
               decoration: InputDecoration(
                 hintText: _selectedTab == 0
-                    ? (isMl ? 'സൂറ തിരയുക' : 'Search Surah')
+                    ? (isMl ? 'സൂറത്ത് തിരയുക' : 'Search Surah')
                     : (isMl ? 'ആയത്ത് തിരയുക' : 'Search Ayah'),
-                prefixIcon: const Icon(Icons.search, size: 20),
+                hintStyle: AppTextTheme.localizedLabel(
+                  isMalayalam: isMl,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                ),
+                prefixIcon: const Icon(Icons.search, size: 18),
                 suffixIcon: (_selectedTab == 0 ? _searchQuery : _ayahSearchQuery).isEmpty
                     ? null
                     : IconButton(
@@ -1575,7 +1585,7 @@ class _TabButton extends StatelessWidget {
           label,
           style: AppTextTheme.localizedLabel(
             isMalayalam: isMalayalam,
-            fontSize: 13,
+            fontSize: 15,
             fontWeight: FontWeight.w600,
             color: isSelected ? Colors.white : cs.onSurface,
           ),
