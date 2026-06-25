@@ -6,12 +6,12 @@ class FontSizeChangerProvider extends ChangeNotifier {
   static const _translationJustifyKey = 'translation_justify';
   static const _interpretationJustifyKey = 'interpretation_justify';
   static const _quranJustifyKey = 'quran_justify';
-  static const String defaultFont = 'Scheherazade';
+  static const String defaultFont = 'Amiri';
   static const String removedFont = 'Uthmani';
 
   static const List<String> availableFonts = [
-    'Scheherazade',
     'Amiri',
+    'Scheherazade',
     'Lateef',
     'AmiriQuran',
     'QuranTaha',
