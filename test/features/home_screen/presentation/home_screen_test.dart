@@ -173,7 +173,7 @@ void main() {
       final padding = listView.padding! as EdgeInsets;
 
       expect(find.text('Surah'), findsOneWidget);
-      expect(find.text("Juz'e"), findsOneWidget);
+      expect(find.text("Juz'"), findsOneWidget);
       expect(find.text('Al-Fatihah'), findsOneWidget);
       expect(find.text('Hizb'), findsNothing);
       expect(find.text('ഹിസ്ബ്'), findsNothing);
@@ -222,7 +222,7 @@ void main() {
 
       expect(find.text('Juz 1'), findsNothing);
 
-      await tester.tap(find.text("Juz'e"));
+      await tester.tap(find.text("Juz'"));
       await tester.pumpAndSettle();
 
       expect(find.text('Al-Fatihah'), findsOneWidget);
@@ -245,7 +245,7 @@ void main() {
       expect(expectedAyahStyle, isNotNull);
 
       await pumpHomeScreen(tester);
-      await tester.tap(find.text("Juz'e"));
+      await tester.tap(find.text("Juz'"));
       await tester.pumpAndSettle();
 
       final juzAyahText = tester.widget<Text>(find.text('Ayah 1'));
@@ -271,7 +271,7 @@ void main() {
       final homeSubtitleText = tester.widget<Text>(find.text('The Opening'));
 
       await pumpHomeScreen(tester);
-      await tester.tap(find.text("Juz'e"));
+      await tester.tap(find.text("Juz'"));
       await tester.pumpAndSettle();
 
       final juzTitleText = tester.widget<Text>(find.text('Al-Fatihah'));
@@ -294,7 +294,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text("Juz'e"));
+      await tester.tap(find.text("Juz'"));
       await tester.pumpAndSettle();
 
       final juzListView = tester.widget<ListView>(find.byType(ListView).last);
@@ -315,7 +315,7 @@ void main() {
       final homeSubtitleText = tester.widget<Text>(find.text('The Opening'));
 
       await pumpHomeScreen(tester);
-      await tester.tap(find.text("Juz'e"));
+      await tester.tap(find.text("Juz'"));
       await tester.pumpAndSettle();
 
       final juzTitleText = tester.widget<Text>(find.text('Al-Fatihah'));
@@ -334,7 +334,7 @@ void main() {
       initialPreferences: const {'selected_juz_number': 2},
     );
 
-    await tester.tap(find.text("Juz'e"));
+    await tester.tap(find.text("Juz'"));
     await tester.pumpAndSettle();
 
     expect(findJuzStar(1), findsOneWidget);
@@ -348,7 +348,7 @@ void main() {
     (tester) async {
       await pumpHomeScreen(tester, languageCode: LanguageProvider.malayalam);
 
-      await tester.tap(find.text('ജുസ്'));
+      await tester.tap(find.text('ജുസ്അ്'));
       await tester.pumpAndSettle();
 
       expect(find.text('അല്\u200d-ഫാതിഹ'), findsOneWidget);
