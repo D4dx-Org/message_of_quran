@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
@@ -66,11 +68,23 @@ class _MainScreenState extends State<MainScreen> {
       final isMalayalam = (prefs.getString('app_language') ?? 'en') == 'ml';
       // ignore: use_build_context_synchronously
       final surahProvider = Provider.of<SurahProvider>(context, listen: false);
-      await surahProvider.setMalayalam(isMalayalam);
-      await surahProvider.getAllSurah();
-      if (!mounted) return;
-
       final pendingRoute = app.pendingNotificationRoute;
+      final requiresSurahPreloadForRoute =
+          pendingRoute == app.surahAlKahfNotificationRoute;
+
+      if (surahProvider.isMalayalam != isMalayalam) {
+        if (requiresSurahPreloadForRoute) {
+          await surahProvider.setMalayalam(isMalayalam);
+        } else {
+          unawaited(surahProvider.setMalayalam(isMalayalam));
+        }
+      } else if (requiresSurahPreloadForRoute) {
+        await surahProvider.getAllSurah();
+      } else {
+        unawaited(surahProvider.getAllSurah());
+      }
+
+      if (!mounted) return;
       if (pendingRoute == null) {
         return;
       }
