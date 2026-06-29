@@ -47,8 +47,9 @@ class _SettingsDialog extends StatelessWidget {
         ? 12.0
         : ((size.width - maxDialogWidth) / 2).clamp(24.0, double.infinity);
     final double maxHeight = (size.height * 0.88).clamp(300.0, 800.0);
-    final showGeneralSection =
-        SettingsScreen.shouldShowGeneralSection(isWeb: PlatformHelper.isWeb);
+    final showGeneralSection = SettingsScreen.shouldShowGeneralSection(
+      isWeb: PlatformHelper.isWeb,
+    );
 
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -144,10 +145,7 @@ class _SettingsDialog extends StatelessWidget {
 }
 
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({
-    super.key,
-    this.showStandaloneBackAppBar = false,
-  });
+  const SettingsScreen({super.key, this.showStandaloneBackAppBar = false});
 
   final bool showStandaloneBackAppBar;
 
@@ -193,11 +191,7 @@ class SettingsScreen extends StatelessWidget {
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _SectionLabel(label),
-        const SizedBox(height: 8),
-        child,
-      ],
+      children: [_SectionLabel(label), const SizedBox(height: 8), child],
     );
   }
 
