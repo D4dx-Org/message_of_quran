@@ -360,8 +360,8 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildWebBrandingHero(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
-    final emblemWidth = (width * 0.105).clamp(95.0, 148.0).toDouble();
-    final titleWidth = (width * 0.122).clamp(108.0, 202.0).toDouble();
+    final emblemWidth = (width * 0.0945).clamp(85.5, 133.2).toDouble();
+    final titleWidth = (width * 0.1098).clamp(97.2, 181.8).toDouble();
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
