@@ -430,8 +430,9 @@ class _SurahScreenState extends State<SurahScreen> {
 
   Widget _buildDesktopReaderHeader(
     BuildContext context,
-    SurahProvider controller,
-  ) {
+    SurahProvider controller, {
+    required double horizontalMargin,
+  }) {
     if (controller.surahList.isEmpty || controller.index >= controller.surahList.length) {
       return const SizedBox.shrink();
     }
@@ -451,6 +452,7 @@ class _SurahScreenState extends State<SurahScreen> {
           showNext: controller.index > 0,
           onPrevious: () => controller.onSwipe(false),
           onNext: () => controller.onSwipe(true),
+          horizontalMargin: horizontalMargin,
           trailingActions: SurahBannerActions(
             isMalayalam: isMalayalam,
             onPlayPressed: _restartSurahPlayback,
@@ -2229,7 +2231,11 @@ class _SurahScreenState extends State<SurahScreen> {
               : null,
         ),
         headerContent: useDesktopWebReaderLayout
-            ? _buildDesktopReaderHeader(context, controller)
+          ? _buildDesktopReaderHeader(
+            context,
+            controller,
+            horizontalMargin: 24,
+            )
             : null,
         drawer: const CommonDrawer(),
         floatingActionButton: Column(
@@ -2282,18 +2288,23 @@ class _SurahScreenState extends State<SurahScreen> {
                                           .surahList[controller.index]
                                           .name
                                     : 'Surah';
-                                // On web, BaseScreenLayout already constrains
-                                // the layout to maxWidth:1180 with 24dp
-                                // horizontal padding. Using the screen-width
-                                // formula here would over-pad on large monitors
-                                // (e.g. 154dp each side on a 1920px display).
-                                // A small fixed value lets ResponsiveContentWrapper
-                                // below handle centering via contentMaxWidth.
+                                // Match Home web browse panel side gap:
+                                // width < 640 => 12, else 24.
+                                final webWidth = MediaQuery.sizeOf(context).width;
+                                final useFixedDesktopReaderInsets =
+                                    kIsWeb ||
+                                    ResponsiveHelper.isDesktop(context);
                                 final hPad = kIsWeb
-                                    ? 4.0
-                                    : ResponsiveHelper.horizontalPadding(
-                                        context,
-                                      );
+                                    ? (webWidth < 640 ? 12.0 : 24.0)
+                                    : (useFixedDesktopReaderInsets
+                                        ? 4.0
+                                        : ResponsiveHelper.horizontalPadding(
+                                            context,
+                                          ));
+                                final readerMaxWidth =
+                                    useFixedDesktopReaderInsets
+                                    ? double.infinity
+                                    : null;
                                 final content = Padding(
                                   padding: EdgeInsets.fromLTRB(
                                     hPad,
@@ -2322,6 +2333,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                       onHorizontalDragEnd:
                                           _handleContinuousModeSwipe,
                                       child: ResponsiveContentWrapper(
+                                        maxWidth: readerMaxWidth,
                                         child: PinchZoomView(
                                           child: CustomScrollView(
                                               controller: _scrollController,
@@ -2334,6 +2346,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                                       child: _buildDesktopReaderHeader(
                                                         context,
                                                         controller,
+                                                        horizontalMargin: 0,
                                                       ),
                                                     ),
                                                   )

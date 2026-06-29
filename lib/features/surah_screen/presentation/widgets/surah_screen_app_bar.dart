@@ -271,6 +271,7 @@ class SurahInfoStrip extends StatelessWidget {
   final VoidCallback? onNext;
   final bool showPrevious;
   final bool showNext;
+  final double horizontalMargin;
   final Widget? footer;
   final Widget? trailingActions;
 
@@ -287,6 +288,7 @@ class SurahInfoStrip extends StatelessWidget {
     this.onNext,
     this.showPrevious = true,
     this.showNext = true,
+    this.horizontalMargin = 12,
     this.footer,
     this.trailingActions,
   });
@@ -354,7 +356,7 @@ class SurahInfoStrip extends StatelessWidget {
           );
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      margin: EdgeInsets.symmetric(horizontal: horizontalMargin, vertical: 6),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       decoration: stripDecoration,
       child: Column(
