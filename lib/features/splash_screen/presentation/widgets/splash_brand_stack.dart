@@ -51,7 +51,7 @@ class SplashBrandStack extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Image.asset(
-              'assets/images/splash_logo.png',
+              'assets/images/symbol-logo.png',
               width: fittedEmblemWidth,
               fit: BoxFit.contain,
               filterQuality: FilterQuality.high,
@@ -60,7 +60,7 @@ class SplashBrandStack extends StatelessWidget {
             Transform.translate(
               offset: Offset(0, -fittedTitleLift),
               child: Image.asset(
-                'assets/images/splash_text_logo.png',
+                'assets/images/symbol-logo-text.png',
                 width: fittedTitleWidth,
                 fit: BoxFit.contain,
                 filterQuality: FilterQuality.high,

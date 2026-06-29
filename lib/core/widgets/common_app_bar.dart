@@ -234,11 +234,27 @@ class CommonAppBar {
     VoidCallback? onTap,
   }) {
     final scale = ResponsiveHelper.scaleFactor(context);
-    final image = Image.asset(
-      'assets/images/Group-logo.png',
-      height: height ?? 37 * scale,
-      fit: BoxFit.contain,
-      semanticLabel: 'Quran Asad Malayalam logo',
+    final logoHeight = height ?? 40 * scale;
+    final image = Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Image.asset(
+          'assets/images/symbol-logo.png',
+          height: logoHeight,
+          fit: BoxFit.contain,
+          filterQuality: FilterQuality.medium,
+          semanticLabel: 'Quran Asad Malayalam logo symbol',
+        ),
+        SizedBox(width: 2 * scale),
+        Image.asset(
+          'assets/images/symbol-logo-text.png',
+          height: logoHeight,
+          fit: BoxFit.contain,
+          filterQuality: FilterQuality.medium,
+          semanticLabel: 'Quran Asad Malayalam logo text',
+        ),
+      ],
     );
     return Align(
       alignment: alignment,
@@ -308,7 +324,8 @@ class CommonAppBar {
               ],
             )
           : null,
-      titleSpacing: 4 * scale,
+      leadingWidth: 46 * scale,
+      titleSpacing: 0,
       title: brandLogo(ctx),
       centerTitle: false,
       leading: Builder(builder: (context) => _drawerMenuButton(context)),
@@ -379,9 +396,8 @@ class CommonAppBar {
       automaticallyImplyLeading: false,
       backgroundColor: AppTheme.appThemePrimary,
       elevation: 0,
-      titleSpacing: showBrandLogo
-          ? 4 * scale
-          : NavigationToolbar.kMiddleSpacing,
+      leadingWidth: showLeading ? 46 * scale : null,
+      titleSpacing: showBrandLogo ? 0 : NavigationToolbar.kMiddleSpacing,
       title:
           titleWidget ??
           (showBrandLogo

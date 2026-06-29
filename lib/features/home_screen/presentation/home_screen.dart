@@ -360,8 +360,8 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildWebBrandingHero(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
-    final emblemWidth = (width * 0.15).clamp(130.0, 200.0).toDouble();
-    final titleWidth = (width * 0.17).clamp(145.0, 290.0).toDouble();
+    final emblemWidth = (width * 0.105).clamp(95.0, 148.0).toDouble();
+    final titleWidth = (width * 0.122).clamp(108.0, 202.0).toDouble();
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
@@ -370,14 +370,14 @@ class _HomeScreenState extends State<HomeScreen>
           mainAxisSize: MainAxisSize.min,
           children: [
             Image.asset(
-              'assets/images/splash_logo.png',
+              'assets/images/symbol-logo.png',
               width: emblemWidth,
               fit: BoxFit.contain,
               filterQuality: FilterQuality.high,
             ),
             // const SizedBox(height: 8),
             Image.asset(
-              'assets/images/splash_text_logo.png',
+              'assets/images/symbol-logo-text.png',
               width: titleWidth,
               fit: BoxFit.contain,
               filterQuality: FilterQuality.high,

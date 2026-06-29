@@ -38,8 +38,8 @@ void main() {
 
     expect(tester.takeException(), isNull);
 
-    final emblemFinder = assetImage('assets/images/splash_logo.png');
-    final titleFinder = assetImage('assets/images/splash_text_logo.png');
+    final emblemFinder = assetImage('assets/images/symbol-logo.png');
+    final titleFinder = assetImage('assets/images/symbol-logo-text.png');
     final emblemSize = tester.getSize(emblemFinder);
     final titleSize = tester.getSize(titleFinder);
     final authorBottom = tester.getBottomLeft(find.text('Leopold Weiss')).dy;
@@ -55,8 +55,8 @@ void main() {
 
     expect(tester.takeException(), isNull);
 
-    final emblemFinder = assetImage('assets/images/splash_logo.png');
-    final titleFinder = assetImage('assets/images/splash_text_logo.png');
+    final emblemFinder = assetImage('assets/images/symbol-logo.png');
+    final titleFinder = assetImage('assets/images/symbol-logo-text.png');
     final emblemTop = tester.getTopLeft(emblemFinder).dy;
     final titleBottom = tester.getBottomLeft(titleFinder).dy;
 
@@ -71,8 +71,8 @@ void main() {
 
     expect(tester.takeException(), isNull);
 
-    final emblemFinder = assetImage('assets/images/splash_logo.png');
-    final titleFinder = assetImage('assets/images/splash_text_logo.png');
+    final emblemFinder = assetImage('assets/images/symbol-logo.png');
+    final titleFinder = assetImage('assets/images/symbol-logo-text.png');
     final emblemSize = tester.getSize(emblemFinder);
     final titleSize = tester.getSize(titleFinder);
     final authorBottom = tester.getBottomLeft(find.text('Leopold Weiss')).dy;
