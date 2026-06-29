@@ -194,7 +194,7 @@ class SearchScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Image.asset(
-                'assets/images/splash_logo.png',
+                'assets/images/symbol-logo.png',
                 height: 84,
                 fit: BoxFit.contain,
                 filterQuality: FilterQuality.high,

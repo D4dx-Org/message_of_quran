@@ -234,12 +234,27 @@ class CommonAppBar {
     VoidCallback? onTap,
   }) {
     final scale = ResponsiveHelper.scaleFactor(context);
-    final image = Image.asset(
-      'assets/images/combined-logo.png',
-      height: height ?? 37 * scale,
-      fit: BoxFit.contain,
-      filterQuality: FilterQuality.high,
-      semanticLabel: 'Quran Asad Malayalam logo',
+    final logoHeight = height ?? 40 * scale;
+    final image = Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Image.asset(
+          'assets/images/symbol-logo.png',
+          height: logoHeight,
+          fit: BoxFit.contain,
+          filterQuality: FilterQuality.medium,
+          semanticLabel: 'Quran Asad Malayalam logo symbol',
+        ),
+        SizedBox(width: 2 * scale),
+        Image.asset(
+          'assets/images/symbol-logo-text.png',
+          height: logoHeight,
+          fit: BoxFit.contain,
+          filterQuality: FilterQuality.medium,
+          semanticLabel: 'Quran Asad Malayalam logo text',
+        ),
+      ],
     );
     return Align(
       alignment: alignment,

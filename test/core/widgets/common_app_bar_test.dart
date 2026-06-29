@@ -104,14 +104,22 @@ void main() {
       expect(imageWidget.color, const Color.fromRGBO(124, 58, 40, 1));
       expect(imageWidget.colorBlendMode, BlendMode.srcIn);
 
-      final logoFinder = find.byWidgetPredicate((widget) {
+      final symbolFinder = find.byWidgetPredicate((widget) {
         return widget is Image &&
             widget.image is AssetImage &&
             (widget.image as AssetImage).assetName ==
-                'assets/images/combined-logo.png';
+                'assets/images/symbol-logo.png';
       });
 
-      expect(logoFinder, findsOneWidget);
+      final symbolTextFinder = find.byWidgetPredicate((widget) {
+        return widget is Image &&
+            widget.image is AssetImage &&
+            (widget.image as AssetImage).assetName ==
+                'assets/images/symbol-logo-text.png';
+      });
+
+      expect(symbolFinder, findsOneWidget);
+      expect(symbolTextFinder, findsOneWidget);
       expect(find.text('The Message of the Quran'), findsNothing);
       expect(find.text('EN'), findsOneWidget);
 
@@ -176,14 +184,22 @@ void main() {
     await tester.pumpAndSettle();
 
     final appBar = tester.widget<AppBar>(find.byType(AppBar));
-    final logoFinder = find.byWidgetPredicate((widget) {
+    final symbolFinder = find.byWidgetPredicate((widget) {
       return widget is Image &&
           widget.image is AssetImage &&
           (widget.image as AssetImage).assetName ==
-              'assets/images/combined-logo.png';
+              'assets/images/symbol-logo.png';
     });
 
-    expect(logoFinder, findsOneWidget);
+    final symbolTextFinder = find.byWidgetPredicate((widget) {
+      return widget is Image &&
+          widget.image is AssetImage &&
+          (widget.image as AssetImage).assetName ==
+              'assets/images/symbol-logo-text.png';
+    });
+
+    expect(symbolFinder, findsOneWidget);
+    expect(symbolTextFinder, findsOneWidget);
     expect(appBar.centerTitle, isFalse);
     expect(find.text('The Message of the Quran'), findsNothing);
   });
