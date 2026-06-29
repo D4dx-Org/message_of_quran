@@ -518,6 +518,7 @@ class SurahScreenAppBar extends StatelessWidget {
     required this.onAyahSelected,
     this.onPlayPressed,
     this.onInfoPressed,
+    this.showStopIcon = false,
   });
 
   final List<ArabicBlockModel> arabicBlockList;
@@ -525,6 +526,7 @@ class SurahScreenAppBar extends StatelessWidget {
   final ValueChanged<int> onAyahSelected;
   final VoidCallback? onPlayPressed;
   final VoidCallback? onInfoPressed;
+  final bool showStopIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -555,6 +557,7 @@ class SurahScreenAppBar extends StatelessWidget {
                     isMalayalam: isMalayalam,
                     onPlayPressed: onPlayPressed,
                     onInfoPressed: onInfoPressed,
+                    showStopIcon: showStopIcon,
                     compact: true,
                   ),
           );
@@ -570,12 +573,14 @@ class SurahBannerActions extends StatelessWidget {
     required this.isMalayalam,
     this.onPlayPressed,
     this.onInfoPressed,
+    this.showStopIcon = false,
     this.compact = false,
   });
 
   final bool isMalayalam;
   final VoidCallback? onPlayPressed;
   final VoidCallback? onInfoPressed;
+  final bool showStopIcon;
   final bool compact;
 
   @override
@@ -634,8 +639,10 @@ class SurahBannerActions extends StatelessWidget {
         children: [
           if (onPlayPressed != null)
             buildActionIcon(
-              icon: Icons.play_circle_outline_rounded,
-              tooltip: 'Play Surah',
+              icon: showStopIcon
+                  ? Icons.stop_circle_outlined
+                  : Icons.play_circle_outline_rounded,
+              tooltip: showStopIcon ? 'Stop Surah' : 'Play Surah',
               onPressed: onPlayPressed!,
             ),
           if (onPlayPressed != null && onInfoPressed != null)
@@ -663,6 +670,7 @@ class SurahHeaderControls extends StatelessWidget {
     required this.onAyahSelected,
     this.onPlayPressed,
     this.onInfoPressed,
+    this.showStopIcon = false,
     this.compact = false,
     this.showActions = true,
   });
@@ -675,6 +683,7 @@ class SurahHeaderControls extends StatelessWidget {
   final ValueChanged<int> onAyahSelected;
   final VoidCallback? onPlayPressed;
   final VoidCallback? onInfoPressed;
+  final bool showStopIcon;
   final bool compact;
   final bool showActions;
 
@@ -908,8 +917,12 @@ class SurahHeaderControls extends StatelessWidget {
     final actionButtons = <Widget>[
       if (showActions && onPlayPressed != null)
         buildActionIcon(
-          icon: Icons.play_circle_outline_rounded,
-          tooltip: isMalayalam ? 'പ്ലേ' : 'Play',
+          icon: showStopIcon
+              ? Icons.stop_circle_outlined
+              : Icons.play_circle_outline_rounded,
+          tooltip: showStopIcon
+              ? (isMalayalam ? 'സ്റ്റോപ്പ്' : 'Stop')
+              : (isMalayalam ? 'പ്ലേ' : 'Play'),
           onPressed: onPlayPressed!,
         ),
       if (showActions && onInfoPressed != null) ...[

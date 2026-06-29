@@ -438,7 +438,22 @@ class _SurahScreenState extends State<SurahScreen> {
     }
 
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
+    final audio = context.watch<AudioProvider>();
     final surah = controller.surahList[controller.index];
+    final isCurrentSurahSession =
+        audio.currentSurahNumber == surah.surahNumber &&
+        (audio.isPlaying || audio.isPaused || audio.isLoading);
+    final showStopIcon =
+        audio.currentSurahNumber == surah.surahNumber &&
+      (audio.isPlaying || audio.isPaused || audio.isLoading);
+
+    Future<void> handleBannerPlayOrStopTap() async {
+      if (isCurrentSurahSession) {
+      await audio.stopAudio();
+        return;
+      }
+      await _restartSurahPlayback();
+    }
 
     return SurahInfoStrip(
           surahName: surah.name,
@@ -455,10 +470,13 @@ class _SurahScreenState extends State<SurahScreen> {
           horizontalMargin: horizontalMargin,
           trailingActions: SurahBannerActions(
             isMalayalam: isMalayalam,
-            onPlayPressed: _restartSurahPlayback,
+            onPlayPressed: () {
+              unawaited(handleBannerPlayOrStopTap());
+            },
             onInfoPressed: _hasPreface
                 ? () => _showSurahInfo(context, controller)
                 : null,
+            showStopIcon: showStopIcon,
             compact: true,
           ),
         );
@@ -2272,6 +2290,7 @@ class _SurahScreenState extends State<SurahScreen> {
                           ? const Center(child: CircularProgressIndicator())
                           : Builder(
                               builder: (_) {
+                                final audio = context.watch<AudioProvider>();
                                 final surahNumber =
                                     controller.surahList.isNotEmpty
                                     ? controller
@@ -2359,8 +2378,28 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                 ?.verseFrom ??
                                                             1),
                                                     onAyahSelected: _jumpToAyah,
-                                                    onPlayPressed:
-                                                        _restartSurahPlayback,
+                                                    onPlayPressed: () {
+                                                      final isCurrentSurahSession =
+                                                          audio.currentSurahNumber ==
+                                                              surahNumber &&
+                                                          (audio.isPlaying ||
+                                                              audio.isPaused ||
+                                                              audio.isLoading);
+                                                      if (isCurrentSurahSession) {
+                                                        unawaited(
+                                                          audio.stopAudio(),
+                                                        );
+                                                      } else {
+                                                        unawaited(
+                                                          _restartSurahPlayback(),
+                                                        );
+                                                      }
+                                                    },
+                                                    showStopIcon:
+                                                        audio.currentSurahNumber == surahNumber &&
+                                                        (audio.isPlaying ||
+                                                            audio.isPaused ||
+                                                            audio.isLoading),
                                                     onInfoPressed: _hasPreface
                                                         ? () => _showSurahInfo(
                                                               context,
