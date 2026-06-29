@@ -61,8 +61,7 @@ String _toArabicNumerals(int value) {
 class _SurahBismillahHeader extends StatelessWidget {
   const _SurahBismillahHeader({required this.glyphText});
 
-  static const String _fallbackText =
-      'بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ';
+  static const String _fallbackText = 'بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ';
 
   final String glyphText;
 
@@ -98,7 +97,10 @@ class _SurahMainScreenRedirect extends StatelessWidget {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!context.mounted) return;
-      Provider.of<HomeProvider>(context, listen: false).changeIndex(targetIndex);
+      Provider.of<HomeProvider>(
+        context,
+        listen: false,
+      ).changeIndex(targetIndex);
     });
     return const MainScreen();
   }
@@ -193,10 +195,7 @@ class _JumpToAyahSheetState extends State<_JumpToAyahSheet> {
             keyboardType: TextInputType.number,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             onChanged: (_) => setState(() {}),
-            style: AppTextTheme.localizedLabel(
-              isMalayalam: isMl,
-              fontSize: 14,
-            ),
+            style: AppTextTheme.localizedLabel(isMalayalam: isMl, fontSize: 14),
             decoration: InputDecoration(
               isDense: true,
               hintText: isMl ? 'ആയത്ത് തിരയുക' : 'Search ayah',
@@ -294,10 +293,7 @@ class SurahScreen extends StatefulWidget {
   /// the content loads (used from BookmarkScreen and full-text search).
   final int? scrollToAyahId;
 
-  const SurahScreen({
-    super.key,
-    this.scrollToAyahId,
-  });
+  const SurahScreen({super.key, this.scrollToAyahId});
 
   @override
   State<SurahScreen> createState() => _SurahScreenState();
@@ -433,7 +429,8 @@ class _SurahScreenState extends State<SurahScreen> {
     SurahProvider controller, {
     required double horizontalMargin,
   }) {
-    if (controller.surahList.isEmpty || controller.index >= controller.surahList.length) {
+    if (controller.surahList.isEmpty ||
+        controller.index >= controller.surahList.length) {
       return const SizedBox.shrink();
     }
 
@@ -445,62 +442,66 @@ class _SurahScreenState extends State<SurahScreen> {
         (audio.isPlaying || audio.isPaused || audio.isLoading);
     final showStopIcon =
         audio.currentSurahNumber == surah.surahNumber &&
-      (audio.isPlaying || audio.isPaused || audio.isLoading);
+        (audio.isPlaying || audio.isPaused || audio.isLoading);
 
     Future<void> handleBannerPlayOrStopTap() async {
       if (isCurrentSurahSession) {
-      await audio.stopAudio();
+        await audio.stopAudio();
         return;
       }
       await _restartSurahPlayback();
     }
 
     return SurahInfoStrip(
-          surahName: surah.name,
-          surahTranslation: surah.description,
-          malayalamName: surah.malayalamName,
-          place: surah.place,
-          ordinalLabel: surah.ordinalLabel,
-          surahNumber: surah.surahNumber,
-          isMalayalam: isMalayalam,
-          showPrevious: controller.index < controller.surahList.length - 1,
-          showNext: controller.index > 0,
-          onPrevious: () => controller.onSwipe(false),
-          onNext: () => controller.onSwipe(true),
-          horizontalMargin: horizontalMargin,
-          trailingActions: SurahBannerActions(
-            isMalayalam: isMalayalam,
-            onPlayPressed: () {
-              unawaited(handleBannerPlayOrStopTap());
-            },
-            onInfoPressed: _hasPreface
-                ? () => _showSurahInfo(context, controller)
-                : null,
-            showStopIcon: showStopIcon,
-            compact: true,
-          ),
-        );
+      surahName: surah.name,
+      surahTranslation: surah.description,
+      malayalamName: surah.malayalamName,
+      place: surah.place,
+      ordinalLabel: surah.ordinalLabel,
+      surahNumber: surah.surahNumber,
+      isMalayalam: isMalayalam,
+      showPrevious: controller.index < controller.surahList.length - 1,
+      showNext: controller.index > 0,
+      onPrevious: () => controller.onSwipe(false),
+      onNext: () => controller.onSwipe(true),
+      horizontalMargin: horizontalMargin,
+      trailingActions: SurahBannerActions(
+        isMalayalam: isMalayalam,
+        onPlayPressed: () {
+          unawaited(handleBannerPlayOrStopTap());
+        },
+        onInfoPressed: _hasPreface
+            ? () => _showSurahInfo(context, controller)
+            : null,
+        showStopIcon: showStopIcon,
+        compact: true,
+      ),
+    );
   }
 
   Widget _buildSurahAppBarTitleControls(SurahProvider controller) {
-    if (controller.surahList.isEmpty || controller.index >= controller.surahList.length) {
-      return CommonAppBar.brandLogo(context, onTap: () => _navigateToMainTab(0));
+    if (controller.surahList.isEmpty ||
+        controller.index >= controller.surahList.length) {
+      return CommonAppBar.brandLogo(
+        context,
+        onTap: () => _navigateToMainTab(0),
+      );
     }
 
     final scale = ResponsiveHelper.scaleFactor(context);
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     final surah = controller.surahList[controller.index];
     final currentAyahNumber =
-        _lastKnownAyahStart ?? (controller.arabicBlockList.firstOrNull?.verseFrom ?? 1);
+        _lastKnownAyahStart ??
+        (controller.arabicBlockList.firstOrNull?.verseFrom ?? 1);
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final maxWidth = constraints.maxWidth;
-        final logoWidth = maxWidth < 250
-            ? 64.0 * scale
-            : maxWidth < 340
-                ? 80.0 * scale
-                : 108.0 * scale;
+        final isNarrowTitleArea = maxWidth < 220;
+        // Keep branding size identical to Home app bar.
+        final logoHeight = 40.0 * scale;
+        final interItemGap = isNarrowTitleArea ? 3.0 : 6.0;
 
         final chip = SurahHeaderControls(
           isMalayalam: isMalayalam,
@@ -513,19 +514,50 @@ class _SurahScreenState extends State<SurahScreen> {
           showActions: false,
         );
 
+        if (!isNarrowTitleArea) {
+          // Desktop/tablet: keep controls at the start (near logo), not centered.
+          return Align(
+            alignment: Alignment.centerLeft,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CommonAppBar.brandLogo(
+                  context,
+                  height: logoHeight,
+                  onTap: () => _navigateToMainTab(0),
+                ),
+                SizedBox(width: interItemGap),
+                chip,
+              ],
+            ),
+          );
+        }
+
+        // Very narrow title area: scale the cluster down to avoid overflow.
         return Row(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(
-              width: logoWidth,
-              child: CommonAppBar.brandLogo(
-                context,
-                onTap: () => _navigateToMainTab(0),
+            Flexible(
+              fit: FlexFit.tight,
+              child: SizedBox(
+                height: logoHeight,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: CommonAppBar.brandLogo(
+                    context,
+                    height: logoHeight,
+                    onTap: () => _navigateToMainTab(0),
+                  ),
+                ),
               ),
             ),
-            SizedBox(width: maxWidth < 300 ? 4 : 8),
+            SizedBox(width: interItemGap),
             Flexible(
               fit: FlexFit.loose,
-              child: chip,
+              child: Align(alignment: Alignment.centerLeft, child: chip),
             ),
           ],
         );
@@ -546,10 +578,7 @@ class _SurahScreenState extends State<SurahScreen> {
       showLabels: !isNarrow,
       onSearchPressed: () => showWebFullTextSearchDialog(context),
     );
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: actions,
-    );
+    return Padding(padding: const EdgeInsets.only(right: 8), child: actions);
   }
 
   Future<void> _navigateToMainTab(int tabIndex) async {
@@ -1315,187 +1344,218 @@ class _SurahScreenState extends State<SurahScreen> {
         final double hInset = size.width < 640
             ? 12.0
             : ((size.width - maxDialogWidth) / 2).clamp(24.0, double.infinity);
-        final double maxHeight =
-            (size.height * 0.82).clamp(300.0, 700.0);
+        final double maxHeight = (size.height * 0.82).clamp(300.0, 700.0);
 
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          insetPadding: EdgeInsets.symmetric(
-            horizontal: hInset,
-            vertical: 24,
-          ),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: maxDialogWidth,
-                maxHeight: maxHeight,
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: panelColor,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: borderColor),
+        return Material(
+          type: MaterialType.transparency,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => Navigator.of(dialogContext).pop(),
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Header: surah number | title | close button
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            '${isMl ? 'സൂറത്ത്' : 'Surah'} : ${surah.surahNumber}',
-                            style: AppTextTheme.localizedLabel(
-                              isMalayalam: isMl,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: primaryColor,
-                            ),
-                          ),
-                          Expanded(
-                            child: Text(
-                              surahTitle,
-                              style: AppTextTheme.localizedTitle(
-                                isMalayalam: isMl,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: isDark
-                                    ? colorScheme.onSurface
-                                    : AppTheme.appThemePrimary,
-                                height: 1.25,
-                              ),
-                              textAlign: TextAlign.center,
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 36,
-                            child: IconButton(
-                              icon: const Icon(Icons.close_rounded, size: 20),
-                              onPressed: () => Navigator.of(dialogContext).pop(),
-                              padding: EdgeInsets.zero,
-                              visualDensity: VisualDensity.compact,
-                              color: primaryColor,
-                            ),
-                          ),
-                        ],
+              ),
+              Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: hInset,
+                    vertical: 24,
+                  ),
+                  child: GestureDetector(
+                    onTap: () {},
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: maxDialogWidth,
+                        maxHeight: maxHeight,
                       ),
-                    ),
-                    // Metadata chips
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      child: Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        alignment: WrapAlignment.center,
-                        children: [
-                          _infoChip(
-                            dialogContext,
-                            localizeSurahPlace(surah.place, isMalayalam: isMl),
-                            isMalayalam: isMl,
-                          ),
-                          _infoChip(
-                            dialogContext,
-                            '${surah.ayathCount}',
-                            isMalayalam: isMl,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Divider(height: 1),
-                    // Preface sections
-                    Flexible(
-                      child: FutureBuilder(
-                        future: PrefaceDbHelper.getPrefaceBySurahId(
-                          surah.surahNumber,
-                          malayalam: isMl,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: panelColor,
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(color: borderColor),
                         ),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          }
-                          if (snapshot.hasError) {
-                            return Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(24),
-                                child: Text(
-                                  'Failed to load surah info.',
-                                  style: AppTextTheme.popinsDefault(
-                                    fontSize: 14,
-                                    color: Colors.grey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Header: surah number | title | close button
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    '${isMl ? 'സൂറത്ത്' : 'Surah'} : ${surah.surahNumber}',
+                                    style: AppTextTheme.localizedLabel(
+                                      isMalayalam: isMl,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: primaryColor,
+                                    ),
                                   ),
-                                ),
-                              ),
-                            );
-                          }
-                          final prefaceList = snapshot.data ?? [];
-                          if (prefaceList.isEmpty) {
-                            return Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(24),
-                                child: Text(
-                                  'No description available for this surah.',
-                                  style: AppTextTheme.popinsDefault(
-                                    fontSize: 14,
-                                    color: Colors.grey,
+                                  Expanded(
+                                    child: Text(
+                                      surahTitle,
+                                      style: AppTextTheme.localizedTitle(
+                                        isMalayalam: isMl,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: isDark
+                                            ? colorScheme.onSurface
+                                            : AppTheme.appThemePrimary,
+                                        height: 1.25,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      maxLines: 3,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
-                                ),
+                                  SizedBox(
+                                    width: 36,
+                                    child: IconButton(
+                                      icon: const Icon(
+                                        Icons.close_rounded,
+                                        size: 20,
+                                      ),
+                                      onPressed: () =>
+                                          Navigator.of(dialogContext).pop(),
+                                      padding: EdgeInsets.zero,
+                                      visualDensity: VisualDensity.compact,
+                                      color: primaryColor,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            );
-                          }
-                          return ListView.builder(
-                            padding: const EdgeInsets.all(16),
-                            itemCount: prefaceList.length,
-                            itemBuilder: (_, i) {
-                              final preface = prefaceList[i];
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 16),
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: [
-                                    if (preface.prefaceSubTitle.isNotEmpty)
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 8),
+                            ),
+                            // Metadata chips
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              child: Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                alignment: WrapAlignment.center,
+                                children: [
+                                  _infoChip(
+                                    dialogContext,
+                                    localizeSurahPlace(
+                                      surah.place,
+                                      isMalayalam: isMl,
+                                    ),
+                                    isMalayalam: isMl,
+                                  ),
+                                  _infoChip(
+                                    dialogContext,
+                                    '${surah.ayathCount}',
+                                    isMalayalam: isMl,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Divider(height: 1),
+                            // Preface sections
+                            Flexible(
+                              child: FutureBuilder(
+                                future: PrefaceDbHelper.getPrefaceBySurahId(
+                                  surah.surahNumber,
+                                  malayalam: isMl,
+                                ),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                  if (snapshot.hasError) {
+                                    return Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(24),
                                         child: Text(
-                                          preface.prefaceSubTitle,
-                                          style: AppTextTheme.localizedLabel(
-                                            isMalayalam: isMl,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            color: colorScheme.onSurface,
+                                          'Failed to load surah info.',
+                                          style: AppTextTheme.popinsDefault(
+                                            fontSize: 14,
+                                            color: Colors.grey,
                                           ),
                                         ),
                                       ),
-                                    Text(
-                                      preface.prefaceText,
-                                      style: AppTextTheme.localizedBody(
-                                        isMalayalam: isMl,
-                                        fontSize: 14,
-                                        height: 1.6,
-                                        color: colorScheme.onSurface,
+                                    );
+                                  }
+                                  final prefaceList = snapshot.data ?? [];
+                                  if (prefaceList.isEmpty) {
+                                    return Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(24),
+                                        child: Text(
+                                          'No description available for this surah.',
+                                          style: AppTextTheme.popinsDefault(
+                                            fontSize: 14,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          );
-                        },
+                                    );
+                                  }
+                                  return ListView.builder(
+                                    padding: const EdgeInsets.all(16),
+                                    itemCount: prefaceList.length,
+                                    itemBuilder: (_, i) {
+                                      final preface = prefaceList[i];
+                                      return Padding(
+                                        padding: const EdgeInsets.only(
+                                          bottom: 16,
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            if (preface
+                                                .prefaceSubTitle
+                                                .isNotEmpty)
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                  bottom: 8,
+                                                ),
+                                                child: Text(
+                                                  preface.prefaceSubTitle,
+                                                  style:
+                                                      AppTextTheme.localizedLabel(
+                                                        isMalayalam: isMl,
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: colorScheme
+                                                            .onSurface,
+                                                      ),
+                                                ),
+                                              ),
+                                            Text(
+                                              preface.prefaceText,
+                                              style: AppTextTheme.localizedBody(
+                                                isMalayalam: isMl,
+                                                fontSize: 14,
+                                                height: 1.6,
+                                                color: colorScheme.onSurface,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
         );
       },
@@ -1524,9 +1584,7 @@ class _SurahScreenState extends State<SurahScreen> {
           isMalayalam: isMalayalam,
           fontSize: 14,
           fontWeight: FontWeight.bold,
-          color: isDark
-              ? colorScheme.onSurface
-              : AppTheme.appThemePrimary,
+          color: isDark ? colorScheme.onSurface : AppTheme.appThemePrimary,
         ),
       ),
     );
@@ -1884,7 +1942,9 @@ class _SurahScreenState extends State<SurahScreen> {
       isMalayalam: isMalayalam,
     );
     final isDarkLink = Theme.of(context).brightness == Brightness.dark;
-    final linkColor = isDarkLink ? const Color(0xff5B9BD5) : AppTheme.appIconTheme;
+    final linkColor = isDarkLink
+        ? const Color(0xff5B9BD5)
+        : AppTheme.appIconTheme;
     final linkStyle = baseStyle.copyWith(
       color: linkColor,
       decoration: TextDecoration.underline,
@@ -1933,7 +1993,9 @@ class _SurahScreenState extends State<SurahScreen> {
     }
 
     final isDarkRef = Theme.of(context).brightness == Brightness.dark;
-    final refLinkColor = isDarkRef ? const Color(0xff5B9BD5) : AppTheme.appIconTheme;
+    final refLinkColor = isDarkRef
+        ? const Color(0xff5B9BD5)
+        : AppTheme.appIconTheme;
     final linkStyle = style.copyWith(
       color: refLinkColor,
       decoration: TextDecoration.underline,
@@ -1977,241 +2039,313 @@ class _SurahScreenState extends State<SurahScreen> {
       context: context,
       barrierDismissible: true,
       barrierColor: kInterpretationSheetBarrierColor,
-      builder: (dialogCtx) => Dialog(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        insetPadding: EdgeInsets.symmetric(horizontal: hInset, vertical: 24),
-        child: Consumer<SurahProvider>(
-          builder: (ctx, ctrl, _) {
-            final theme = Theme.of(ctx);
-            final isDark = theme.brightness == Brightness.dark;
-            final panelColor = isDark ? theme.cardColor : Colors.white;
-            final borderColor = isDark
-                ? Colors.white.withValues(alpha: 0.12)
-                : (theme.dividerTheme.color ?? theme.colorScheme.outlineVariant);
-            final fontSettings = Provider.of<FontSizeChangerProvider>(ctx);
-            final isMalayalam = ctx.watch<LanguageProvider>().isMalayalam;
-            final isLoading = ctrl.currentInterpretationNumber == -1;
-            final hasBounds =
-                ctrl.minInterpretationNumber != -1 &&
-                ctrl.maxInterpretationNumber != -1;
-            final canPrev =
-                hasBounds &&
-                ctrl.currentInterpretationNumber > ctrl.minInterpretationNumber;
-            final canNext =
-                hasBounds &&
-                ctrl.currentInterpretationNumber < ctrl.maxInterpretationNumber;
-            final hasSurah =
-                ctrl.surahList.isNotEmpty &&
-                ctrl.index >= 0 &&
-                ctrl.index < ctrl.surahList.length;
-            final surah = hasSurah ? ctrl.surahList[ctrl.index] : null;
-            final headerSurahNumber = surah?.surahNumber ?? (ctrl.index + 1);
-            final headerInterpretationNumber =
-                ctrl.currentInterpretationNumber > 0
-                ? ctrl.currentInterpretationNumber
-                : (pageNumber ?? -1);
-            final displayInterpretationNumber = isMalayalam
-                ? headerInterpretationNumber - ctrl.mlFootnoteMinNumber + 1
-                : headerInterpretationNumber;
-            final surahHeader = formatInterpretationSheetSurahHeader(
-              isMalayalam: isMalayalam,
-              surah: surah,
-            );
-            final metadataLabel = headerInterpretationNumber > 0
-                ? formatInterpretationMetadataLabel(
-                    isMalayalam: isMalayalam,
-                    surahNumber: headerSurahNumber,
-                    interpretationNumber: displayInterpretationNumber,
-                    ayahNumbers: ctrl.currentInterpretationAyahNumbers,
-                  )
-                : (isMalayalam
-                      ? 'സൂറത്ത് $headerSurahNumber'
-                      : 'Surah $headerSurahNumber');
+      builder: (dialogCtx) => Material(
+        type: MaterialType.transparency,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => Navigator.of(dialogCtx).pop(),
+              ),
+            ),
+            Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: hInset, vertical: 24),
+                child: GestureDetector(
+                  onTap: () {},
+                  child: Consumer<SurahProvider>(
+                    builder: (ctx, ctrl, _) {
+                      final theme = Theme.of(ctx);
+                      final isDark = theme.brightness == Brightness.dark;
+                      final panelColor = isDark
+                          ? theme.cardColor
+                          : Colors.white;
+                      final borderColor = isDark
+                          ? Colors.white.withValues(alpha: 0.12)
+                          : (theme.dividerTheme.color ??
+                                theme.colorScheme.outlineVariant);
+                      final fontSettings = Provider.of<FontSizeChangerProvider>(
+                        ctx,
+                      );
+                      final isMalayalam = ctx
+                          .watch<LanguageProvider>()
+                          .isMalayalam;
+                      final isLoading = ctrl.currentInterpretationNumber == -1;
+                      final hasBounds =
+                          ctrl.minInterpretationNumber != -1 &&
+                          ctrl.maxInterpretationNumber != -1;
+                      final canPrev =
+                          hasBounds &&
+                          ctrl.currentInterpretationNumber >
+                              ctrl.minInterpretationNumber;
+                      final canNext =
+                          hasBounds &&
+                          ctrl.currentInterpretationNumber <
+                              ctrl.maxInterpretationNumber;
+                      final hasSurah =
+                          ctrl.surahList.isNotEmpty &&
+                          ctrl.index >= 0 &&
+                          ctrl.index < ctrl.surahList.length;
+                      final surah = hasSurah
+                          ? ctrl.surahList[ctrl.index]
+                          : null;
+                      final headerSurahNumber =
+                          surah?.surahNumber ?? (ctrl.index + 1);
+                      final headerInterpretationNumber =
+                          ctrl.currentInterpretationNumber > 0
+                          ? ctrl.currentInterpretationNumber
+                          : (pageNumber ?? -1);
+                      final displayInterpretationNumber = isMalayalam
+                          ? headerInterpretationNumber -
+                                ctrl.mlFootnoteMinNumber +
+                                1
+                          : headerInterpretationNumber;
+                      final surahHeader = formatInterpretationSheetSurahHeader(
+                        isMalayalam: isMalayalam,
+                        surah: surah,
+                      );
+                      final metadataLabel = headerInterpretationNumber > 0
+                          ? formatInterpretationMetadataLabel(
+                              isMalayalam: isMalayalam,
+                              surahNumber: headerSurahNumber,
+                              interpretationNumber: displayInterpretationNumber,
+                              ayahNumbers:
+                                  ctrl.currentInterpretationAyahNumbers,
+                            )
+                          : (isMalayalam
+                                ? 'സൂറത്ത് $headerSurahNumber'
+                                : 'Surah $headerSurahNumber');
 
-            String combinedText() {
-              final body = ctrl.interpretationList
-                  .map((e) => e.interpretationText)
-                  .join('\n\n');
-              final headerLines = <String>[
-                ...surahHeader.toLines(),
-                if (metadataLabel.trim().isNotEmpty) metadataLabel,
-              ];
-              final headerText = headerLines.join('\n').trim();
-              if (headerText.isEmpty) return body;
-              return body.trim().isEmpty ? headerText : '$headerText\n\n$body';
-            }
+                      String combinedText() {
+                        final body = ctrl.interpretationList
+                            .map((e) => e.interpretationText)
+                            .join('\n\n');
+                        final headerLines = <String>[
+                          ...surahHeader.toLines(),
+                          if (metadataLabel.trim().isNotEmpty) metadataLabel,
+                        ];
+                        final headerText = headerLines.join('\n').trim();
+                        if (headerText.isEmpty) return body;
+                        return body.trim().isEmpty
+                            ? headerText
+                            : '$headerText\n\n$body';
+                      }
 
-            return Center(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxWidth: maxDialogWidth,
-                  maxHeight: maxHeight,
-                ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: panelColor,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: borderColor),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Header
-                      InterpretationSheetHeader(
-                        surahHeader: surahHeader,
-                        metadataLabel: metadataLabel,
-                        onClose: () => Navigator.of(ctx).pop(),
-                        padding: const EdgeInsets.fromLTRB(20, 12, 12, 8),
-                        closeButtonOffset: Offset.zero,
-                        titleSpacing: 0,
-                        compactCloseButton: true,
-                      ),
-                      const Divider(height: 1),
-                      // Content
-                      Flexible(
-                        child: isLoading
-                            ? const Padding(
-                                padding: EdgeInsets.symmetric(vertical: 32),
-                                child: Center(child: CircularProgressIndicator()),
-                              )
-                            : AnimatedSwitcher(
-                                duration: const Duration(milliseconds: 300),
-                                child: SingleChildScrollView(
-                                  key: ValueKey(ctrl.currentInterpretationNumber),
-                                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: ctrl.interpretationList.map((item) {
-                                      return Padding(
-                                        padding: const EdgeInsets.only(bottom: 16),
-                                        child: _buildInterpretationCrossRefText(
-                                          ctx,
-                                          item.interpretationText,
-                                          ctrl.surahList.isNotEmpty
-                                              ? ctrl.surahList[ctrl.index].surahNumber
-                                              : 0,
-                                          fontSettings.interpretationJustify,
+                      return ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: maxDialogWidth,
+                          maxHeight: maxHeight,
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: panelColor,
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(color: borderColor),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Header
+                              InterpretationSheetHeader(
+                                surahHeader: surahHeader,
+                                metadataLabel: metadataLabel,
+                                onClose: () => Navigator.of(ctx).pop(),
+                                padding: const EdgeInsets.fromLTRB(
+                                  20,
+                                  12,
+                                  12,
+                                  8,
+                                ),
+                                closeButtonOffset: Offset.zero,
+                                titleSpacing: 0,
+                                compactCloseButton: true,
+                              ),
+                              const Divider(height: 1),
+                              // Content
+                              Flexible(
+                                child: isLoading
+                                    ? const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 32,
                                         ),
-                                      );
-                                    }).toList(),
-                                  ),
+                                        child: Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                      )
+                                    : AnimatedSwitcher(
+                                        duration: const Duration(
+                                          milliseconds: 300,
+                                        ),
+                                        child: SingleChildScrollView(
+                                          key: ValueKey(
+                                            ctrl.currentInterpretationNumber,
+                                          ),
+                                          padding: const EdgeInsets.fromLTRB(
+                                            20,
+                                            12,
+                                            20,
+                                            16,
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: ctrl.interpretationList.map((
+                                              item,
+                                            ) {
+                                              return Padding(
+                                                padding: const EdgeInsets.only(
+                                                  bottom: 16,
+                                                ),
+                                                child:
+                                                    _buildInterpretationCrossRefText(
+                                                      ctx,
+                                                      item.interpretationText,
+                                                      ctrl.surahList.isNotEmpty
+                                                          ? ctrl
+                                                                .surahList[ctrl
+                                                                    .index]
+                                                                .surahNumber
+                                                          : 0,
+                                                      fontSettings
+                                                          .interpretationJustify,
+                                                    ),
+                                              );
+                                            }).toList(),
+                                          ),
+                                        ),
+                                      ),
+                              ),
+                              // Bottom bar: prev | page counter | next | copy | share
+                              const Divider(height: 1),
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
+                                child: Builder(
+                                  builder: (barCtx) {
+                                    final isDarkBar =
+                                        Theme.of(barCtx).brightness ==
+                                        Brightness.dark;
+                                    final activeColor = isDarkBar
+                                        ? Colors.white
+                                        : Colors.black;
+                                    return Row(
+                                      children: [
+                                        IconButton(
+                                          tooltip: 'Previous',
+                                          onPressed: canPrev
+                                              ? () =>
+                                                    ctrl.navigateInterpretation(
+                                                      false,
+                                                    )
+                                              : null,
+                                          icon: Icon(
+                                            Icons.chevron_left,
+                                            color: canPrev
+                                                ? activeColor
+                                                : Colors.grey[400],
+                                          ),
+                                        ),
+                                        if (!isLoading && hasBounds)
+                                          Text(
+                                            isMalayalam
+                                                ? '${ctrl.currentInterpretationNumber - ctrl.mlFootnoteMinNumber + 1} / ${ctrl.maxInterpretationNumber - ctrl.mlFootnoteMinNumber + 1}'
+                                                : '${ctrl.currentInterpretationNumber} / ${ctrl.maxInterpretationNumber}',
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              color: activeColor,
+                                            ),
+                                          ),
+                                        IconButton(
+                                          tooltip: 'Next',
+                                          onPressed: canNext
+                                              ? () =>
+                                                    ctrl.navigateInterpretation(
+                                                      true,
+                                                    )
+                                              : null,
+                                          icon: Icon(
+                                            Icons.chevron_right,
+                                            color: canNext
+                                                ? activeColor
+                                                : Colors.grey[400],
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        IconButton(
+                                          tooltip: 'Copy',
+                                          onPressed: isLoading
+                                              ? null
+                                              : () async {
+                                                  final text = combinedText();
+                                                  if (text.trim().isNotEmpty) {
+                                                    await Clipboard.setData(
+                                                      ClipboardData(text: text),
+                                                    );
+                                                    if (ctx.mounted) {
+                                                      ScaffoldMessenger.of(
+                                                        ctx,
+                                                      ).showSnackBar(
+                                                        const SnackBar(
+                                                          content: Text(
+                                                            'Copied to clipboard',
+                                                          ),
+                                                          duration: Duration(
+                                                            seconds: 2,
+                                                          ),
+                                                        ),
+                                                      );
+                                                    }
+                                                  }
+                                                },
+                                          icon: Icon(
+                                            Icons.copy_outlined,
+                                            color: isLoading
+                                                ? Colors.grey[400]
+                                                : activeColor,
+                                          ),
+                                        ),
+                                        Builder(
+                                          builder: (shareButtonContext) => IconButton(
+                                            tooltip: 'Share',
+                                            onPressed: isLoading
+                                                ? null
+                                                : () async {
+                                                    final text = combinedText();
+                                                    if (text
+                                                        .trim()
+                                                        .isNotEmpty) {
+                                                      await Share.share(
+                                                        text,
+                                                        sharePositionOrigin:
+                                                            _sharePositionOriginFor(
+                                                              shareButtonContext,
+                                                            ),
+                                                      );
+                                                    }
+                                                  },
+                                            icon: Icon(
+                                              Icons.share_outlined,
+                                              color: isLoading
+                                                  ? Colors.grey[400]
+                                                  : activeColor,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
                                 ),
                               ),
-                      ),
-                      // Bottom bar: prev | page counter | next | copy | share
-                      const Divider(height: 1),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
-                        child: Builder(
-                          builder: (barCtx) {
-                            final isDarkBar =
-                                Theme.of(barCtx).brightness == Brightness.dark;
-                            final activeColor =
-                                isDarkBar ? Colors.white : Colors.black;
-                            return Row(
-                              children: [
-                                IconButton(
-                                  tooltip: 'Previous',
-                                  onPressed: canPrev
-                                      ? () => ctrl.navigateInterpretation(false)
-                                      : null,
-                                  icon: Icon(
-                                    Icons.chevron_left,
-                                    color: canPrev
-                                        ? activeColor
-                                        : Colors.grey[400],
-                                  ),
-                                ),
-                                if (!isLoading && hasBounds)
-                                  Text(
-                                    isMalayalam
-                                        ? '${ctrl.currentInterpretationNumber - ctrl.mlFootnoteMinNumber + 1} / ${ctrl.maxInterpretationNumber - ctrl.mlFootnoteMinNumber + 1}'
-                                        : '${ctrl.currentInterpretationNumber} / ${ctrl.maxInterpretationNumber}',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: activeColor,
-                                    ),
-                                  ),
-                                IconButton(
-                                  tooltip: 'Next',
-                                  onPressed: canNext
-                                      ? () => ctrl.navigateInterpretation(true)
-                                      : null,
-                                  icon: Icon(
-                                    Icons.chevron_right,
-                                    color: canNext
-                                        ? activeColor
-                                        : Colors.grey[400],
-                                  ),
-                                ),
-                                const Spacer(),
-                                IconButton(
-                                  tooltip: 'Copy',
-                                  onPressed: isLoading
-                                      ? null
-                                      : () async {
-                                          final text = combinedText();
-                                          if (text.trim().isNotEmpty) {
-                                            await Clipboard.setData(
-                                              ClipboardData(text: text),
-                                            );
-                                            if (ctx.mounted) {
-                                              ScaffoldMessenger.of(ctx)
-                                                  .showSnackBar(
-                                                const SnackBar(
-                                                  content: Text(
-                                                      'Copied to clipboard'),
-                                                  duration:
-                                                      Duration(seconds: 2),
-                                                ),
-                                              );
-                                            }
-                                          }
-                                        },
-                                  icon: Icon(
-                                    Icons.copy_outlined,
-                                    color: isLoading
-                                        ? Colors.grey[400]
-                                        : activeColor,
-                                  ),
-                                ),
-                                Builder(
-                                  builder: (shareButtonContext) => IconButton(
-                                    tooltip: 'Share',
-                                    onPressed: isLoading
-                                        ? null
-                                        : () async {
-                                            final text = combinedText();
-                                            if (text.trim().isNotEmpty) {
-                                              await Share.share(
-                                                text,
-                                                sharePositionOrigin:
-                                                    _sharePositionOriginFor(
-                                                  shareButtonContext,
-                                                ),
-                                              );
-                                            }
-                                          },
-                                    icon: Icon(
-                                      Icons.share_outlined,
-                                      color: isLoading
-                                          ? Colors.grey[400]
-                                          : activeColor,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      );
+                    },
                   ),
                 ),
               ),
-            );
-          },
+            ),
+          ],
         ),
       ),
     );
@@ -2233,27 +2367,21 @@ class _SurahScreenState extends State<SurahScreen> {
         }
       },
       child: BaseScreenLayout(
-        topBorderRadius: kIsWeb
-            ? AppTheme.desktopContentCardRadius
-            : 40,
-        bottomBorderRadius: kIsWeb
-            ? AppTheme.desktopContentCardRadius
-            : 0,
+        topBorderRadius: kIsWeb ? AppTheme.desktopContentCardRadius : 40,
+        bottomBorderRadius: kIsWeb ? AppTheme.desktopContentCardRadius : 0,
         appBar: CommonAppBar.appBar(
           context,
           showBrandLogo: true,
           showSearch: false,
           titleWidget: _buildSurahAppBarTitleControls(controller),
-          actions: kIsWeb
-              ? [_buildSurahWebActions(context)]
-              : null,
+          actions: kIsWeb ? [_buildSurahWebActions(context)] : null,
         ),
         headerContent: useDesktopWebReaderLayout
-          ? _buildDesktopReaderHeader(
-            context,
-            controller,
-            horizontalMargin: 24,
-            )
+            ? _buildDesktopReaderHeader(
+                context,
+                controller,
+                horizontalMargin: 24,
+              )
             : null,
         drawer: const CommonDrawer(),
         floatingActionButton: Column(
@@ -2298,9 +2426,9 @@ class _SurahScreenState extends State<SurahScreen> {
                                           .surahNumber
                                     : 0;
                                 final showDecorativeBismillah =
-                                  surahNumber > 0 &&
-                                  surahNumber != 1 &&
-                                  surahNumber != 9;
+                                    surahNumber > 0 &&
+                                    surahNumber != 1 &&
+                                    surahNumber != 9;
                                 final surahName =
                                     controller.surahList.isNotEmpty
                                     ? controller
@@ -2309,17 +2437,19 @@ class _SurahScreenState extends State<SurahScreen> {
                                     : 'Surah';
                                 // Match Home web browse panel side gap:
                                 // width < 640 => 12, else 24.
-                                final webWidth = MediaQuery.sizeOf(context).width;
+                                final webWidth = MediaQuery.sizeOf(
+                                  context,
+                                ).width;
                                 final useFixedDesktopReaderInsets =
                                     kIsWeb ||
                                     ResponsiveHelper.isDesktop(context);
                                 final hPad = kIsWeb
                                     ? (webWidth < 640 ? 12.0 : 24.0)
                                     : (useFixedDesktopReaderInsets
-                                        ? 4.0
-                                        : ResponsiveHelper.horizontalPadding(
-                                            context,
-                                          ));
+                                          ? 4.0
+                                          : ResponsiveHelper.horizontalPadding(
+                                              context,
+                                            ));
                                 final readerMaxWidth =
                                     useFixedDesktopReaderInsets
                                     ? double.infinity
@@ -2355,69 +2485,77 @@ class _SurahScreenState extends State<SurahScreen> {
                                         maxWidth: readerMaxWidth,
                                         child: PinchZoomView(
                                           child: CustomScrollView(
-                                              controller: _scrollController,
-                                              cacheExtent: _deepLinkCacheExtent,
-                                              slivers: [
-                                                if (useCompactWebReaderLayout)
-                                                  SliverToBoxAdapter(
-                                                    child: Padding(
-                                                      padding: const EdgeInsets.only(bottom: 12),
-                                                      child: _buildDesktopReaderHeader(
-                                                        context,
-                                                        controller,
-                                                        horizontalMargin: 0,
-                                                      ),
-                                                    ),
-                                                  )
-                                                else if (!useDesktopWebReaderLayout)
-                                                  SurahScreenAppBar(
-                                                    arabicBlockList: controller.arabicBlockList,
-                                                    currentAyahNumber:
-                                                        _lastKnownAyahStart ??
-                                                        (controller.arabicBlockList.firstOrNull
-                                                                ?.verseFrom ??
-                                                            1),
-                                                    onAyahSelected: _jumpToAyah,
-                                                    onPlayPressed: () {
-                                                      final isCurrentSurahSession =
-                                                          audio.currentSurahNumber ==
-                                                              surahNumber &&
-                                                          (audio.isPlaying ||
-                                                              audio.isPaused ||
-                                                              audio.isLoading);
-                                                      if (isCurrentSurahSession) {
-                                                        unawaited(
-                                                          audio.stopAudio(),
-                                                        );
-                                                      } else {
-                                                        unawaited(
-                                                          _restartSurahPlayback(),
-                                                        );
-                                                      }
-                                                    },
-                                                    showStopIcon:
-                                                        audio.currentSurahNumber == surahNumber &&
+                                            controller: _scrollController,
+                                            cacheExtent: _deepLinkCacheExtent,
+                                            slivers: [
+                                              if (useCompactWebReaderLayout)
+                                                SliverToBoxAdapter(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                          bottom: 12,
+                                                        ),
+                                                    child:
+                                                        _buildDesktopReaderHeader(
+                                                          context,
+                                                          controller,
+                                                          horizontalMargin: 0,
+                                                        ),
+                                                  ),
+                                                )
+                                              else if (!useDesktopWebReaderLayout)
+                                                SurahScreenAppBar(
+                                                  arabicBlockList: controller
+                                                      .arabicBlockList,
+                                                  currentAyahNumber:
+                                                      _lastKnownAyahStart ??
+                                                      (controller
+                                                              .arabicBlockList
+                                                              .firstOrNull
+                                                              ?.verseFrom ??
+                                                          1),
+                                                  onAyahSelected: _jumpToAyah,
+                                                  onPlayPressed: () {
+                                                    final isCurrentSurahSession =
+                                                        audio.currentSurahNumber ==
+                                                            surahNumber &&
                                                         (audio.isPlaying ||
                                                             audio.isPaused ||
-                                                            audio.isLoading),
-                                                    onInfoPressed: _hasPreface
-                                                        ? () => _showSurahInfo(
-                                                              context,
-                                                              controller,
-                                                            )
-                                                        : null,
-                                                  )
-                                                else
-                                                  const SliverToBoxAdapter(
-                                                    child: SizedBox(height: 12),
+                                                            audio.isLoading);
+                                                    if (isCurrentSurahSession) {
+                                                      unawaited(
+                                                        audio.stopAudio(),
+                                                      );
+                                                    } else {
+                                                      unawaited(
+                                                        _restartSurahPlayback(),
+                                                      );
+                                                    }
+                                                  },
+                                                  showStopIcon:
+                                                      audio.currentSurahNumber ==
+                                                          surahNumber &&
+                                                      (audio.isPlaying ||
+                                                          audio.isPaused ||
+                                                          audio.isLoading),
+                                                  onInfoPressed: _hasPreface
+                                                      ? () => _showSurahInfo(
+                                                          context,
+                                                          controller,
+                                                        )
+                                                      : null,
+                                                )
+                                              else
+                                                const SliverToBoxAdapter(
+                                                  child: SizedBox(height: 12),
+                                                ),
+                                              if (showDecorativeBismillah)
+                                                SliverToBoxAdapter(
+                                                  child: _SurahBismillahHeader(
+                                                    glyphText: controller
+                                                        .currentBismillahGlyph,
                                                   ),
-                                                if (showDecorativeBismillah)
-                                                  SliverToBoxAdapter(
-                                                    child: _SurahBismillahHeader(
-                                                      glyphText: controller
-                                                          .currentBismillahGlyph,
-                                                    ),
-                                                  ),
+                                                ),
                                               SliverList(
                                                 delegate: SliverChildBuilderDelegate(
                                                   (context, index) {
@@ -2523,8 +2661,13 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                                       AppTextTheme.surahArabiStyle(
                                                                                         context,
                                                                                       ),
-                                                                                      Theme.of(context).brightness == Brightness.dark
-                                                                                          ? const Color(0xFFFFD966)
+                                                                                      Theme.of(
+                                                                                                context,
+                                                                                              ).brightness ==
+                                                                                              Brightness.dark
+                                                                                          ? const Color(
+                                                                                              0xFFFFD966,
+                                                                                            )
                                                                                           : AppTheme.appIconTheme,
                                                                                       controller,
                                                                                     ),
@@ -2552,16 +2695,15 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                       controller
                                                                           .translationBlockList
                                                                           .isNotEmpty,
-                                                                  builder:
-                                                                      (context) =>
-                                                                          _buildTranslationBlocks(
-                                                                            context,
-                                                                            controller.translationBlockList,
-                                                                            ayaStart,
-                                                                            ayaEnd,
-                                                                            surahNumber,
-                                                                            controller,
-                                                                          ),
+                                                                  builder: (context) => _buildTranslationBlocks(
+                                                                    context,
+                                                                    controller
+                                                                        .translationBlockList,
+                                                                    ayaStart,
+                                                                    ayaEnd,
+                                                                    surahNumber,
+                                                                    controller,
+                                                                  ),
                                                                 ),
                                                                 Builder(
                                                                   builder: (context) {
@@ -2570,10 +2712,20 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                           surahNumber,
                                                                           ayaStart,
                                                                         );
-                                                                    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-                                                                    final actionIconColor = isDarkMode
-                                                                        ? Colors.white.withValues(alpha: 0.7)
-                                                                        : AppTheme.appIconTheme;
+                                                                    final isDarkMode =
+                                                                        Theme.of(
+                                                                          context,
+                                                                        ).brightness ==
+                                                                        Brightness
+                                                                            .dark;
+                                                                    final actionIconColor =
+                                                                        isDarkMode
+                                                                        ? Colors.white.withValues(
+                                                                            alpha:
+                                                                                0.7,
+                                                                          )
+                                                                        : AppTheme
+                                                                              .appIconTheme;
                                                                     return Row(
                                                                       children: [
                                                                         Consumer<
@@ -2660,7 +2812,8 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                             isBookmarked
                                                                                 ? Icons.bookmark
                                                                                 : Icons.bookmark_border,
-                                                                            color: isBookmarked
+                                                                            color:
+                                                                                isBookmarked
                                                                                 ? actionIconColor
                                                                                 : actionIconColor,
                                                                           ),
@@ -2669,31 +2822,26 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                           builder:
                                                                               (
                                                                                 shareButtonContext,
-                                                                              ) =>
-                                                                                  IconButton(
-                                                                                    tooltip:
-                                                                                        'Share',
-                                                                                    onPressed: () async {
-                                                                                      final shareText =
-                                                                                          controller.getAyahText(
-                                                                                            ayaStart,
-                                                                                          );
-                                                                                      if (shareText.trim().isNotEmpty) {
-                                                                                        await Share.share(
-                                                                                          shareText,
-                                                                                          sharePositionOrigin:
-                                                                                              _sharePositionOriginFor(
-                                                                                                shareButtonContext,
-                                                                                              ),
-                                                                                        );
-                                                                                      }
-                                                                                    },
-                                                                                    icon: Icon(
-                                                                                      Icons.share_outlined,
-                                                                                      color:
-                                                                                          actionIconColor,
-                                                                                    ),
-                                                                                  ),
+                                                                              ) => IconButton(
+                                                                                tooltip: 'Share',
+                                                                                onPressed: () async {
+                                                                                  final shareText = controller.getAyahText(
+                                                                                    ayaStart,
+                                                                                  );
+                                                                                  if (shareText.trim().isNotEmpty) {
+                                                                                    await Share.share(
+                                                                                      shareText,
+                                                                                      sharePositionOrigin: _sharePositionOriginFor(
+                                                                                        shareButtonContext,
+                                                                                      ),
+                                                                                    );
+                                                                                  }
+                                                                                },
+                                                                                icon: Icon(
+                                                                                  Icons.share_outlined,
+                                                                                  color: actionIconColor,
+                                                                                ),
+                                                                              ),
                                                                         ),
                                                                       ],
                                                                     );
@@ -2781,8 +2929,9 @@ class _SurahScreenState extends State<SurahScreen> {
 
                 final isMiniPlayerDark =
                     Theme.of(context).brightness == Brightness.dark;
-                final miniPlayerIconColor =
-                    isMiniPlayerDark ? Colors.white : AppTheme.appIconTheme;
+                final miniPlayerIconColor = isMiniPlayerDark
+                    ? Colors.white
+                    : AppTheme.appIconTheme;
                 return Semantics(
                   liveRegion: true,
                   label:
@@ -2818,7 +2967,9 @@ class _SurahScreenState extends State<SurahScreen> {
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 13,
-                                    color: isMiniPlayerDark ? Colors.white : null,
+                                    color: isMiniPlayerDark
+                                        ? Colors.white
+                                        : null,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -2826,7 +2977,9 @@ class _SurahScreenState extends State<SurahScreen> {
                                   ayahLabel,
                                   style: TextStyle(
                                     fontSize: 11,
-                                    color: isMiniPlayerDark ? Colors.white60 : Colors.grey,
+                                    color: isMiniPlayerDark
+                                        ? Colors.white60
+                                        : Colors.grey,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
@@ -2879,10 +3032,7 @@ class _SurahScreenState extends State<SurahScreen> {
                           IconButton(
                             tooltip: 'Stop',
                             onPressed: () => audio.stopAudio(),
-                            icon: Icon(
-                              Icons.stop,
-                              color: miniPlayerIconColor,
-                            ),
+                            icon: Icon(Icons.stop, color: miniPlayerIconColor),
                           ),
                           // Next
                           IconButton(
@@ -3104,7 +3254,9 @@ class _TajweedHtmlTextState extends State<_TajweedHtmlText> {
       if (html == null) continue;
       final isPlaying = widget.playingAyahId == ayah;
       final ayahStyle = isPlaying
-          ? baseStyle.copyWith(backgroundColor: AppTheme.appIconTheme.withValues(alpha: 0.15))
+          ? baseStyle.copyWith(
+              backgroundColor: AppTheme.appIconTheme.withValues(alpha: 0.15),
+            )
           : baseStyle;
       spans.addAll(parseTajweedHtml(html, ayahStyle));
       // Ayah-end marker, matching the Arabic ornamental parentheses used in the

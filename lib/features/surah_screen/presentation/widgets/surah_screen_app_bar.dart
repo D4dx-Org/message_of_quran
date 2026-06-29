@@ -1133,10 +1133,10 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
       child: GestureDetector(
         onTap: () => _openSheet(context),
         child: Container(
-          constraints: BoxConstraints(maxWidth: narrowChip ? 60 : 180),
+          constraints: BoxConstraints(maxWidth: narrowChip ? 44 : 180),
           padding: EdgeInsets.symmetric(
-            horizontal: 8 * scale,
-            vertical: 6 * scale,
+            horizontal: (narrowChip ? 5 : 8) * scale,
+            vertical: (narrowChip ? 4 : 6) * scale,
           ),
           decoration: BoxDecoration(
             color: fill,
@@ -1151,7 +1151,7 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
                   chipLabel,
                   style: TextStyle(
                     color: white,
-                    fontSize: 10.5 * scale,
+                    fontSize: (narrowChip ? 10 : 10.5) * scale,
                     fontWeight: FontWeight.w600,
                     height: 1.2,
                   ),
@@ -1163,7 +1163,7 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
               Icon(
                 Icons.keyboard_arrow_down_rounded,
                 color: white.withValues(alpha: 0.80),
-                size: 16 * scale,
+                size: (narrowChip ? 13 : 16) * scale,
               ),
             ],
           ),
