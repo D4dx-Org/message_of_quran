@@ -426,7 +426,7 @@ class _DrawerBrandHeader extends StatelessWidget {
                     Center(
                       key: const ValueKey('drawer-brand-logo-box'),
                       child: Image.asset(
-                        'assets/images/Group-logo.png',
+                        'assets/images/combined-logo.png',
                         height: 52 * scale,
                         fit: BoxFit.contain,
                         filterQuality: FilterQuality.high,

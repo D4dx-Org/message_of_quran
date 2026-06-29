@@ -235,9 +235,10 @@ class CommonAppBar {
   }) {
     final scale = ResponsiveHelper.scaleFactor(context);
     final image = Image.asset(
-      'assets/images/Group-logo.png',
+      'assets/images/combined-logo.png',
       height: height ?? 37 * scale,
       fit: BoxFit.contain,
+      filterQuality: FilterQuality.high,
       semanticLabel: 'Quran Asad Malayalam logo',
     );
     return Align(
@@ -308,7 +309,8 @@ class CommonAppBar {
               ],
             )
           : null,
-      titleSpacing: 4 * scale,
+      leadingWidth: 46 * scale,
+      titleSpacing: 0,
       title: brandLogo(ctx),
       centerTitle: false,
       leading: Builder(builder: (context) => _drawerMenuButton(context)),
@@ -379,9 +381,8 @@ class CommonAppBar {
       automaticallyImplyLeading: false,
       backgroundColor: AppTheme.appThemePrimary,
       elevation: 0,
-      titleSpacing: showBrandLogo
-          ? 4 * scale
-          : NavigationToolbar.kMiddleSpacing,
+      leadingWidth: showLeading ? 46 * scale : null,
+      titleSpacing: showBrandLogo ? 0 : NavigationToolbar.kMiddleSpacing,
       title:
           titleWidget ??
           (showBrandLogo

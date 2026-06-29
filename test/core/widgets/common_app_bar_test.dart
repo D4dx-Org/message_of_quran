@@ -108,7 +108,7 @@ void main() {
         return widget is Image &&
             widget.image is AssetImage &&
             (widget.image as AssetImage).assetName ==
-                'assets/images/Group-logo.png';
+                'assets/images/combined-logo.png';
       });
 
       expect(logoFinder, findsOneWidget);
@@ -180,7 +180,7 @@ void main() {
       return widget is Image &&
           widget.image is AssetImage &&
           (widget.image as AssetImage).assetName ==
-              'assets/images/Group-logo.png';
+              'assets/images/combined-logo.png';
     });
 
     expect(logoFinder, findsOneWidget);
