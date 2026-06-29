@@ -242,10 +242,7 @@ String _surahDisplayNameLine({
   );
 }
 
-String _surahPlaceLine(
-  String place, {
-  required bool isMalayalam,
-}) {
+String _surahPlaceLine(String place, {required bool isMalayalam}) {
   if (!isMalayalam) {
     return localizeSurahPeriodLabel(place, isMalayalam: false);
   }
@@ -310,10 +307,7 @@ class SurahInfoStrip extends StatelessWidget {
       malayalamName: malayalamName,
       surahNumber: surahNumber,
     );
-    final placeLine = _surahPlaceLine(
-      place,
-      isMalayalam: isMalayalam,
-    );
+    final placeLine = _surahPlaceLine(place, isMalayalam: isMalayalam);
     final primaryTextColor = useDesktopWebSurface
         ? (isDarkMode ? Colors.white : AppTheme.appThemePrimary)
         : Colors.white;
@@ -329,7 +323,8 @@ class SurahInfoStrip extends StatelessWidget {
             border: Border.all(
               color: isDarkMode
                   ? Colors.white.withValues(alpha: 0.10)
-                  : (theme.dividerTheme.color ?? theme.colorScheme.outlineVariant),
+                  : (theme.dividerTheme.color ??
+                        theme.colorScheme.outlineVariant),
             ),
             boxShadow: [
               BoxShadow(
@@ -447,10 +442,7 @@ class SurahInfoStrip extends StatelessWidget {
               ),
             ],
           ),
-          if (footer != null) ...[
-            const SizedBox(height: 14),
-            footer!,
-          ],
+          if (footer != null) ...[const SizedBox(height: 14), footer!],
         ],
       ),
     );
@@ -471,13 +463,13 @@ class SurahInfoStrip extends StatelessWidget {
         : Colors.white.withValues(alpha: 0.9);
     final borderColor = useDesktopWebSurface
         ? (isDarkMode
-            ? Colors.white.withValues(alpha: 0.16)
-            : AppTheme.appThemePrimary.withValues(alpha: 0.16))
+              ? Colors.white.withValues(alpha: 0.16)
+              : AppTheme.appThemePrimary.withValues(alpha: 0.16))
         : AppTheme.appIconTheme.withValues(alpha: 0.4);
     final fillColor = useDesktopWebSurface
         ? (isDarkMode
-            ? Colors.white.withValues(alpha: 0.06)
-            : AppTheme.appThemePrimary.withValues(alpha: 0.06))
+              ? Colors.white.withValues(alpha: 0.06)
+              : AppTheme.appThemePrimary.withValues(alpha: 0.06))
         : Colors.white.withValues(alpha: 0.08);
 
     return Opacity(
@@ -495,9 +487,7 @@ class SurahInfoStrip extends StatelessWidget {
             style: IconButton.styleFrom(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(
-                  color: borderColor,
-                ),
+                side: BorderSide(color: borderColor),
               ),
               backgroundColor: fillColor,
             ),
@@ -734,70 +724,82 @@ class SurahHeaderControls extends StatelessWidget {
       );
     }
 
-    final surahItems = surahList.map<DropdownMenuItem<int>>((surah) {
-      final displayText = formatSurahListDisplayText(
-        isMalayalam: isMalayalam,
-        surahName: surah.name,
-        surahTranslation: surah.description,
-        malayalamName: surah.malayalamName,
-        surahNumber: surah.surahNumber,
-      );
-      return DropdownMenuItem<int>(
-        value: surah.surahNumber,
-        child: popupItemChild(
-          '${surah.surahNumber}. ${displayText.title}',
-          selected: surah.surahNumber == currentSurahNumber,
-        ),
-      );
-    }).toList(growable: false);
+    final surahItems = surahList
+        .map<DropdownMenuItem<int>>((surah) {
+          final displayText = formatSurahListDisplayText(
+            isMalayalam: isMalayalam,
+            surahName: surah.name,
+            surahTranslation: surah.description,
+            malayalamName: surah.malayalamName,
+            surahNumber: surah.surahNumber,
+          );
+          return DropdownMenuItem<int>(
+            value: surah.surahNumber,
+            child: popupItemChild(
+              '${surah.surahNumber}. ${displayText.title}',
+              selected: surah.surahNumber == currentSurahNumber,
+            ),
+          );
+        })
+        .toList(growable: false);
 
     // Parallel list of label-only widgets used by selectedItemBuilder so that
     // the closed-button label always renders in white (labelColor / itemTextStyle)
     // regardless of the black popup item style.
-    final surahSelectedLabels = surahList.map<Widget>((surah) {
-      final displayText = formatSurahListDisplayText(
-        isMalayalam: isMalayalam,
-        surahName: surah.name,
-        surahTranslation: surah.description,
-        malayalamName: surah.malayalamName,
-        surahNumber: surah.surahNumber,
-      );
-      return Text(
-        '${surah.surahNumber}. ${displayText.title}',
-        overflow: TextOverflow.ellipsis,
-        style: itemTextStyle,
-      );
-    }).toList(growable: false);
+    final surahSelectedLabels = surahList
+        .map<Widget>((surah) {
+          final displayText = formatSurahListDisplayText(
+            isMalayalam: isMalayalam,
+            surahName: surah.name,
+            surahTranslation: surah.description,
+            malayalamName: surah.malayalamName,
+            surahNumber: surah.surahNumber,
+          );
+          return Text(
+            '${surah.surahNumber}. ${displayText.title}',
+            overflow: TextOverflow.ellipsis,
+            style: itemTextStyle,
+          );
+        })
+        .toList(growable: false);
 
-    final ayahItems = arabicBlockList.asMap().entries.map((entry) {
-      final index = entry.key;
-      final block = entry.value;
-      final start = block.verseFrom ?? index + 1;
-      final end = block.verseTo ?? index + 1;
-      return DropdownMenuItem<int>(
-        value: start,
-        child: popupItemChild(
-          start == end
-              ? formatAyahReferenceLabel(start, isMalayalam: isMalayalam)
-              : formatAyahRangeLabel(start, end, isMalayalam: isMalayalam),
-          selected: start == currentAyahNumber,
-        ),
-      );
-    }).toList(growable: false);
+    final ayahItems = arabicBlockList
+        .asMap()
+        .entries
+        .map((entry) {
+          final index = entry.key;
+          final block = entry.value;
+          final start = block.verseFrom ?? index + 1;
+          final end = block.verseTo ?? index + 1;
+          return DropdownMenuItem<int>(
+            value: start,
+            child: popupItemChild(
+              start == end
+                  ? formatAyahReferenceLabel(start, isMalayalam: isMalayalam)
+                  : formatAyahRangeLabel(start, end, isMalayalam: isMalayalam),
+              selected: start == currentAyahNumber,
+            ),
+          );
+        })
+        .toList(growable: false);
 
-    final ayahSelectedLabels = arabicBlockList.asMap().entries.map<Widget>((entry) {
-      final index = entry.key;
-      final block = entry.value;
-      final start = block.verseFrom ?? index + 1;
-      final end = block.verseTo ?? index + 1;
-      return Text(
-        start == end
-            ? formatAyahReferenceLabel(start, isMalayalam: isMalayalam)
-            : formatAyahRangeLabel(start, end, isMalayalam: isMalayalam),
-        overflow: TextOverflow.ellipsis,
-        style: itemTextStyle,
-      );
-    }).toList(growable: false);
+    final ayahSelectedLabels = arabicBlockList
+        .asMap()
+        .entries
+        .map<Widget>((entry) {
+          final index = entry.key;
+          final block = entry.value;
+          final start = block.verseFrom ?? index + 1;
+          final end = block.verseTo ?? index + 1;
+          return Text(
+            start == end
+                ? formatAyahReferenceLabel(start, isMalayalam: isMalayalam)
+                : formatAyahRangeLabel(start, end, isMalayalam: isMalayalam),
+            overflow: TextOverflow.ellipsis,
+            style: itemTextStyle,
+          );
+        })
+        .toList(growable: false);
 
     Widget buildDropdown({
       required String label,
@@ -808,7 +810,8 @@ class SurahHeaderControls extends StatelessWidget {
     }) {
       // DropdownButton asserts that value must be present in items when non-null.
       // Guard against empty lists or stale values during initial load.
-      final safeValue = (value != null && items.any((item) => item.value == value))
+      final safeValue =
+          (value != null && items.any((item) => item.value == value))
           ? value
           : null;
       final dropdown = DecoratedBox(
@@ -907,7 +910,9 @@ class SurahHeaderControls extends StatelessWidget {
       label: isMalayalam ? 'ജം ടു സൂറ' : 'Jump to Surah',
       value: currentSurahNumber,
       items: surahItems,
-      selectedLabels: surahSelectedLabels.isNotEmpty ? surahSelectedLabels : null,
+      selectedLabels: surahSelectedLabels.isNotEmpty
+          ? surahSelectedLabels
+          : null,
       onChanged: (value) async {
         if (value == null) return;
         await context.read<SurahProvider>().selectSurahByNumber(value);
@@ -948,7 +953,10 @@ class SurahHeaderControls extends StatelessWidget {
               currentAyahNumber: currentAyahNumber,
               onAyahSelected: onAyahSelected,
             ),
-            if (actionButtons.isNotEmpty) ...[const SizedBox(width: 6), ...actionButtons],
+            if (actionButtons.isNotEmpty) ...[
+              const SizedBox(width: 6),
+              ...actionButtons,
+            ],
           ],
         );
       }
@@ -1075,26 +1083,29 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         clipBehavior: Clip.antiAlias,
         child: _SurahNavigatorSheet(
-        isMalayalam: widget.isMalayalam,
-        surahList: widget.surahList,
-        currentSurahNumber: widget.currentSurahNumber,
-        arabicBlockList: widget.arabicBlockList,
-        // Use the last explicitly-selected ayah, not the scroll-position one.
-        currentAyahNumber: _selectedAyah,
-        onSurahSelected: (surahNumber) async {
-          Navigator.of(sheetCtx).pop();
-          // Reset jumped ayah for the new surah.
-          setState(() => _lastJumpedAyah = null);
-          await sheetCtx.read<SurahProvider>().selectSurahByNumber(surahNumber);
-        },
-        onAyahSelected: (ayahStart) {
-          Navigator.of(sheetCtx).pop();
-          // Remember this as the last explicitly-selected ayah.
-          setState(() => _lastJumpedAyah = ayahStart);
-          widget.onAyahSelected(ayahStart);
-        },
+          isMalayalam: widget.isMalayalam,
+          surahList: widget.surahList,
+          currentSurahNumber: widget.currentSurahNumber,
+          arabicBlockList: widget.arabicBlockList,
+          // Use the last explicitly-selected ayah, not the scroll-position one.
+          currentAyahNumber: _selectedAyah,
+          onSurahSelected: (surahNumber) async {
+            Navigator.of(sheetCtx).pop();
+            // Reset jumped ayah for the new surah.
+            setState(() => _lastJumpedAyah = null);
+            await sheetCtx.read<SurahProvider>().selectSurahByNumber(
+              surahNumber,
+            );
+          },
+          onAyahSelected: (ayahStart) {
+            Navigator.of(sheetCtx).pop();
+            // Remember this as the last explicitly-selected ayah.
+            setState(() => _lastJumpedAyah = ayahStart);
+            widget.onAyahSelected(ayahStart);
+          },
+        ),
       ),
-    ));
+    );
   }
 
   @override
@@ -1299,7 +1310,9 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
             padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
             child: TextField(
               controller: _selectedTab == 0 ? _searchCtrl : _ayahSearchCtrl,
-              keyboardType: _selectedTab == 1 ? TextInputType.number : TextInputType.text,
+              keyboardType: _selectedTab == 1
+                  ? TextInputType.number
+                  : TextInputType.text,
               inputFormatters: _selectedTab == 1
                   ? [FilteringTextInputFormatter.digitsOnly]
                   : null,
@@ -1325,7 +1338,9 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
                   fontWeight: FontWeight.w400,
                 ),
                 prefixIcon: const Icon(Icons.search, size: 18),
-                suffixIcon: (_selectedTab == 0 ? _searchQuery : _ayahSearchQuery).isEmpty
+                suffixIcon:
+                    (_selectedTab == 0 ? _searchQuery : _ayahSearchQuery)
+                        .isEmpty
                     ? null
                     : IconButton(
                         icon: const Icon(Icons.clear, size: 18),
@@ -1366,11 +1381,7 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
     );
   }
 
-  Widget _buildSurahList(
-    bool isDark,
-    bool isMl,
-    ColorScheme cs,
-  ) {
+  Widget _buildSurahList(bool isDark, bool isMl, ColorScheme cs) {
     final surahs = _filteredSurahs;
     if (surahs.isEmpty) {
       return Center(
@@ -1400,14 +1411,16 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
           surahNumber: surah.surahNumber,
         );
         final placeKind = resolveSurahPlaceKind(surah.place);
-        final placeIcon =
-            placeKind == SurahPlaceKind.makkah ? _kMakkahIcon : _kMadinahIcon;
-        final activeColor =
-            isDark ? Colors.white : AppTheme.appThemePrimary;
+        final placeIcon = placeKind == SurahPlaceKind.makkah
+            ? _kMakkahIcon
+            : _kMadinahIcon;
+        final activeColor = isDark ? Colors.white : AppTheme.appThemePrimary;
 
         return ListTile(
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 2,
+          ),
           leading: Container(
             width: 36,
             height: 36,
@@ -1473,12 +1486,7 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
     );
   }
 
-  Widget _buildAyahList(
-    bool isDark,
-    bool isMl,
-    ColorScheme cs,
-    String query,
-  ) {
+  Widget _buildAyahList(bool isDark, bool isMl, ColorScheme cs, String query) {
     final typed = int.tryParse(query);
     final allBlocks = widget.arabicBlockList;
     final blocks = query.isEmpty
@@ -1487,9 +1495,11 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
             final i = allBlocks.indexOf(block);
             final start = block.verseFrom ?? i + 1;
             final end = block.verseTo ?? i + 1;
-            final matchesRange = typed != null && typed >= start && typed <= end;
+            final matchesRange =
+                typed != null && typed >= start && typed <= end;
             final matchesText =
-                start.toString().contains(query) || end.toString().contains(query);
+                start.toString().contains(query) ||
+                end.toString().contains(query);
             return matchesRange || matchesText;
           }).toList();
     if (allBlocks.isEmpty) {
@@ -1504,8 +1514,7 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
       );
     }
 
-    final activeColor =
-        isDark ? Colors.white : AppTheme.appThemePrimary;
+    final activeColor = isDark ? Colors.white : AppTheme.appThemePrimary;
 
     return ListView.separated(
       controller: _ayahScrollCtrl,
@@ -1516,7 +1525,8 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
         final block = blocks[index];
         final start = block.verseFrom ?? index + 1;
         final end = block.verseTo ?? index + 1;
-        final isSelected = start == widget.currentAyahNumber ||
+        final isSelected =
+            start == widget.currentAyahNumber ||
             (widget.currentAyahNumber >= start &&
                 widget.currentAyahNumber <= end);
         final label = start == end
@@ -1524,8 +1534,10 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
             : formatAyahRangeLabel(start, end, isMalayalam: isMl);
 
         return ListTile(
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 2,
+          ),
           leading: Container(
             width: 36,
             height: 36,
@@ -1590,8 +1602,7 @@ class _TabButton extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 160),
-        padding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
         decoration: BoxDecoration(
           color: isSelected ? AppTheme.appThemePrimary : Colors.transparent,
           borderRadius: BorderRadius.circular(20),

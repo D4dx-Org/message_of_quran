@@ -34,7 +34,11 @@ class SearchScreen extends StatelessWidget {
     );
   }
 
-  void _openSearchResult(BuildContext context, SurahProvider controller, int index) {
+  void _openSearchResult(
+    BuildContext context,
+    SurahProvider controller,
+    int index,
+  ) {
     final surah = controller.searchList[index];
     final idx = controller.surahList.indexWhere(
       (s) => s.surahNumber == surah.surahNumber,
@@ -43,9 +47,7 @@ class SearchScreen extends StatelessWidget {
     controller.assignIndex(idx);
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const SurahScreen(),
-      ),
+      MaterialPageRoute(builder: (context) => const SurahScreen()),
     );
   }
 
@@ -65,9 +67,7 @@ class SearchScreen extends StatelessWidget {
                     child: SettingsScreenCard(
                       child: ListTile(
                         tileColor: Colors.transparent,
-                        title: Text(
-                          controller.searchList[index].name,
-                        ),
+                        title: Text(controller.searchList[index].name),
                       ),
                     ),
                   ),
@@ -304,9 +304,7 @@ class SearchScreen extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Expanded(
-                        child: _buildSearchField(context, controller),
-                      ),
+                      Expanded(child: _buildSearchField(context, controller)),
                     ],
                   ),
                   const SizedBox(height: 10),

@@ -33,8 +33,9 @@ Future<void> showWebFullTextSearchDialog(BuildContext context) async {
   if (surahProv.surahList.isEmpty) await surahProv.getAllSurah();
   if (!context.mounted) return;
 
-  final idx = surahProv.surahList
-      .indexWhere((s) => s.surahNumber == target.surahNumber);
+  final idx = surahProv.surahList.indexWhere(
+    (s) => s.surahNumber == target.surahNumber,
+  );
   if (idx < 0) return;
 
   surahProv.assignIndex(idx);
@@ -52,10 +53,7 @@ Future<void> showWebFullTextSearchDialog(BuildContext context) async {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _NavTarget {
-  const _NavTarget({
-    required this.surahNumber,
-    required this.verseNumber,
-  });
+  const _NavTarget({required this.surahNumber, required this.verseNumber});
   final int surahNumber;
   final int verseNumber;
 }
@@ -159,23 +157,24 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final isMalayalam =
-        context.watch<LanguageProvider>().isMalayalam;
+    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final panelColor = isDark ? theme.cardColor : Colors.white;
-    final borderColor =
-        isDark ? Colors.white.withValues(alpha: 0.12) : Colors.black12;
-    final primaryColor =
-        isDark ? Colors.white : AppTheme.appThemePrimary;
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.12)
+        : Colors.black12;
+    final primaryColor = isDark ? Colors.white : AppTheme.appThemePrimary;
 
     final screenSize = MediaQuery.sizeOf(context);
-    final dialogHeight =
-        (screenSize.height * 0.82).clamp(300.0, 700.0);
+    final dialogHeight = (screenSize.height * 0.82).clamp(300.0, 700.0);
     const maxDialogWidth = 640.0;
     final hInset = screenSize.width < 640
         ? 12.0
-        : ((screenSize.width - maxDialogWidth) / 2).clamp(24.0, double.infinity);
+        : ((screenSize.width - maxDialogWidth) / 2).clamp(
+            24.0,
+            double.infinity,
+          );
 
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -354,8 +353,8 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
     final hint = _searchType == _SearchType.translation
         ? (isMalayalam ? 'പരിഭാഷ തിരയുക...' : 'Search in translation...')
         : _searchType == _SearchType.interpretation
-            ? (isMalayalam ? 'വ്യാഖ്യാനം തിരയുക...' : 'Search in interpretation...')
-            : (isMalayalam ? 'അറബിക് ആയത്ത് തിരയുക...' : 'Search Arabic text...');
+        ? (isMalayalam ? 'വ്യാഖ്യാനം തിരയുക...' : 'Search in interpretation...')
+        : (isMalayalam ? 'അറബിക് ആയത്ത് തിരയുക...' : 'Search Arabic text...');
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -371,11 +370,14 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
             color: theme.colorScheme.onSurfaceVariant,
             fontSize: 14,
           ),
-          prefixIcon: Icon(Icons.search, color: primaryColor.withValues(alpha: 0.55)),
+          prefixIcon: Icon(
+            Icons.search,
+            color: primaryColor.withValues(alpha: 0.55),
+          ),
           suffixIcon: _controller.text.isNotEmpty
               ? IconButton(
-                  icon: const Icon(Icons.close, size: 18),
-                  color: primaryColor.withValues(alpha: 0.55),
+                    icon: const Icon(Icons.close, size: 18),
+                    color: primaryColor.withValues(alpha: 0.55),
                   onPressed: () {
                     _controller.clear();
                     setState(() {
@@ -391,8 +393,10 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
           fillColor: isDark
               ? Colors.white.withValues(alpha: 0.06)
               : AppTheme.appThemePrimary.withValues(alpha: 0.05),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(color: borderColor),
@@ -461,7 +465,11 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
       return _buildVerseResultList(isMalayalam, primaryColor, isDark, theme);
     } else if (_searchType == _SearchType.interpretation) {
       return _buildInterpretationResultList(
-          isMalayalam, primaryColor, isDark, theme);
+        isMalayalam,
+        primaryColor,
+        isDark,
+        theme,
+      );
     } else {
       return _buildArabicResultList(isMalayalam, primaryColor, isDark, theme);
     }
@@ -470,7 +478,9 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
   // ── count banner ──────────────────────────────────────────────────────────
 
   Widget _buildCountBanner(int count, bool isMalayalam, Color primaryColor) {
-    final label = isMalayalam ? '$count ഫലങ്ങൾ' : '$count result${count == 1 ? '' : 's'}';
+    final label = isMalayalam
+        ? '$count ഫലങ്ങൾ'
+        : '$count result${count == 1 ? '' : 's'}';
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 4),
       child: Text(
@@ -511,7 +521,10 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
                 primaryColor: primaryColor,
                 isDark: isDark,
                 onTap: () => _navigateTo(
-                  _NavTarget(surahNumber: r.surahNumber, verseNumber: r.verseNumber),
+                  _NavTarget(
+                    surahNumber: r.surahNumber,
+                    verseNumber: r.verseNumber,
+                  ),
                 ),
               );
             },
@@ -533,7 +546,11 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildCountBanner(_interpretationResults.length, isMalayalam, primaryColor),
+        _buildCountBanner(
+          _interpretationResults.length,
+          isMalayalam,
+          primaryColor,
+        ),
         Expanded(
           child: ListView.separated(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
@@ -542,17 +559,19 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
             itemBuilder: (ctx, i) {
               final r = _interpretationResults[i];
               final hasRef = r.surahNumber > 0 && r.verseNumber > 0;
-              final surahName = r.surahNumber > 0 ? _surahName(ctx, r.surahNumber) : '';
+              final surahName = r.surahNumber > 0
+                  ? _surahName(ctx, r.surahNumber)
+                  : '';
               final interpSuffix = isMalayalam
                   ? ' · വ്യാഖ്യാനം #${r.footnoteNumber}'
                   : ' · Interpretation #${r.footnoteNumber}';
               final label = hasRef
                   ? '$surahName (${r.surahNumber}:${r.verseNumber})$interpSuffix'
                   : r.surahNumber > 0
-                      ? '$surahName$interpSuffix'
-                      : (isMalayalam
-                          ? 'വ്യാഖ്യാനം #${r.footnoteNumber}'
-                          : 'Interpretation #${r.footnoteNumber}');
+                  ? '$surahName$interpSuffix'
+                  : (isMalayalam
+                        ? 'വ്യാഖ്യാനം #${r.footnoteNumber}'
+                        : 'Interpretation #${r.footnoteNumber}');
               return _ResultTile(
                 label: label,
                 snippet: r.text,
@@ -560,11 +579,11 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
                 isDark: isDark,
                 onTap: hasRef
                     ? () => _navigateTo(
-                          _NavTarget(
-                            surahNumber: r.surahNumber,
-                            verseNumber: r.verseNumber,
-                          ),
-                        )
+                        _NavTarget(
+                          surahNumber: r.surahNumber,
+                          verseNumber: r.verseNumber,
+                        ),
+                      )
                     : null,
               );
             },

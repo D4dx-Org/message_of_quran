@@ -32,10 +32,7 @@ class InterpretationSheetSurahHeaderText {
   bool get hasSubtitle => subtitle != null && subtitle!.trim().isNotEmpty;
 
   List<String> toLines() {
-    return [
-      if (hasTitle) title!.trim(),
-      if (hasSubtitle) subtitle!.trim(),
-    ];
+    return [if (hasTitle) title!.trim(), if (hasSubtitle) subtitle!.trim()];
   }
 }
 
@@ -156,11 +153,7 @@ Widget _buildCompactSheetActionButton({
       constraints: _kInterpretationSheetActionConstraints,
       visualDensity: VisualDensity.compact,
       splashRadius: _kInterpretationSheetActionSplashRadius,
-      icon: Icon(
-        icon,
-        size: _kInterpretationSheetActionIconSize,
-        color: color,
-      ),
+      icon: Icon(icon, size: _kInterpretationSheetActionIconSize, color: color),
     ),
   );
 }
@@ -200,9 +193,11 @@ class InterpretationSheetHeader extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final malayalamRegExp = RegExp(r'[\u0D00-\u0D7F]');
     final titleIsMalayalam =
-      surahHeader.title != null && malayalamRegExp.hasMatch(surahHeader.title!);
-    final subtitleIsMalayalam = surahHeader.subtitle != null &&
-      malayalamRegExp.hasMatch(surahHeader.subtitle!);
+        surahHeader.title != null &&
+        malayalamRegExp.hasMatch(surahHeader.title!);
+    final subtitleIsMalayalam =
+        surahHeader.subtitle != null &&
+        malayalamRegExp.hasMatch(surahHeader.subtitle!);
     final metadataIsMalayalam = malayalamRegExp.hasMatch(metadataLabel);
     final resolvedSubtitleColor =
         subtitleColor ?? (isDark ? Colors.white70 : Colors.grey[700]);
@@ -439,9 +434,8 @@ class CrossReferenceSheet extends StatefulWidget {
     if (ref.appendixNumber != null) {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => AppendixScreen(
-            initialAppendixNumber: ref.appendixNumber,
-          ),
+          builder: (_) =>
+              AppendixScreen(initialAppendixNumber: ref.appendixNumber),
         ),
       );
       return;
@@ -531,135 +525,134 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
     final surahTitle = _surahTitle(isMl);
 
     return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Header actions
-          Padding(
-            padding: _kInterpretationSheetHeaderPadding,
-            child: Row(
-              children: [
-                // Copy
-                _buildCompactSheetActionButton(
-                  tooltip: 'Copy',
-                  onPressed: _loading
-                      ? null
-                      : () async {
-                          final text = _combinedText();
-                          if (text.trim().isNotEmpty) {
-                            await Clipboard.setData(ClipboardData(text: text));
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Copied to clipboard'),
-                                  duration: Duration(seconds: 2),
-                                ),
-                              );
-                            }
-                          }
-                        },
-                  icon: Icons.copy_outlined,
-                  color: _loading ? Colors.grey[400] : sheetForegroundColor,
-                ),
-                const SizedBox(width: 8),
-                // Share
-                _buildCompactSheetActionButton(
-                  tooltip: 'Share',
-                  onPressed: _loading
-                      ? null
-                      : () async {
-                          final text = _combinedText();
-                          if (text.trim().isNotEmpty) {
-                            await Share.share(text);
-                          }
-                        },
-                  icon: Icons.share_outlined,
-                  color: _loading ? Colors.grey[400] : sheetForegroundColor,
-                ),
-                const Spacer(),
-                // Close
-                _buildCompactSheetActionButton(
-                  tooltip: 'Close',
-                  onPressed: () => Navigator.of(context).pop(),
-                  icon: Icons.close,
-                  color: sheetForegroundColor,
-                ),
-              ],
-            ),
-          ),
-          const Divider(height: 1),
-          // Content
-          Flexible(
-            child: _loading
-                ? const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 32),
-                    child: Center(child: CircularProgressIndicator()),
-                  )
-                : _arabic == null && _translation == null
-                ? const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 32),
-                    child: Center(child: Text('Verse not found')),
-                  )
-                : SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        if (surahTitle != null) ...[
-                          Center(
-                            child: Text(
-                              surahTitle,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.center,
-                              style: AppTextTheme.localizedLabel(
-                                isMalayalam: isMl,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 15,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Header actions
+        Padding(
+          padding: _kInterpretationSheetHeaderPadding,
+          child: Row(
+            children: [
+              // Copy
+              _buildCompactSheetActionButton(
+                tooltip: 'Copy',
+                onPressed: _loading
+                    ? null
+                    : () async {
+                        final text = _combinedText();
+                        if (text.trim().isNotEmpty) {
+                          await Clipboard.setData(ClipboardData(text: text));
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Copied to clipboard'),
+                                duration: Duration(seconds: 2),
                               ),
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                        ],
-                        // Verse range label
+                            );
+                          }
+                        }
+                      },
+                icon: Icons.copy_outlined,
+                color: _loading ? Colors.grey[400] : sheetForegroundColor,
+              ),
+              const SizedBox(width: 8),
+              // Share
+              _buildCompactSheetActionButton(
+                tooltip: 'Share',
+                onPressed: _loading
+                    ? null
+                    : () async {
+                        final text = _combinedText();
+                        if (text.trim().isNotEmpty) {
+                          await Share.share(text);
+                        }
+                      },
+                icon: Icons.share_outlined,
+                color: _loading ? Colors.grey[400] : sheetForegroundColor,
+              ),
+              const Spacer(),
+              // Close
+              _buildCompactSheetActionButton(
+                tooltip: 'Close',
+                onPressed: () => Navigator.of(context).pop(),
+                icon: Icons.close,
+                  color: sheetForegroundColor,
+              ),
+            ],
+          ),
+        ),
+        const Divider(height: 1),
+        // Content
+        Flexible(
+          child: _loading
+              ? const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 32),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              : _arabic == null && _translation == null
+              ? const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 32),
+                  child: Center(child: Text('Verse not found')),
+                )
+              : SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (surahTitle != null) ...[
                         Center(
                           child: Text(
-                            'Verse Range ${widget.ayahNumber}',
-                            style: AppTextTheme.popinsDefault(
+                            surahTitle,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            style: AppTextTheme.localizedLabel(
+                              isMalayalam: isMl,
                               fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                              color: sheetForegroundColor,
+                              fontSize: 15,
                             ),
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        // Arabic text
-                        if (_arabic?.arabicText != null)
-                          Directionality(
-                            textDirection: TextDirection.rtl,
-                            child: Text(
-                              _arabic!.arabicText!,
-                              style: AppTextTheme.surahArabiStyle(context),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        if (_arabic?.arabicText != null)
-                          const SizedBox(height: 16),
-                        // Translation text (footnote markers stripped for clean display)
-                        ShowTranslationGate(
-                          hasTranslation: _translation?.translationText != null,
-                          builder: (context) => _buildTranslationRichText(
-                            context,
-                            _translation!.translationText!,
-                            fontSettings,
-                            isMl,
-                          ),
-                        ),
-
+                        const SizedBox(height: 4),
                       ],
-                    ),
+                      // Verse range label
+                      Center(
+                        child: Text(
+                          'Verse Range ${widget.ayahNumber}',
+                          style: AppTextTheme.popinsDefault(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                            color: sheetForegroundColor,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      // Arabic text
+                      if (_arabic?.arabicText != null)
+                        Directionality(
+                          textDirection: TextDirection.rtl,
+                          child: Text(
+                            _arabic!.arabicText!,
+                            style: AppTextTheme.surahArabiStyle(context),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      if (_arabic?.arabicText != null)
+                        const SizedBox(height: 16),
+                      // Translation text (footnote markers stripped for clean display)
+                      ShowTranslationGate(
+                        hasTranslation: _translation?.translationText != null,
+                        builder: (context) => _buildTranslationRichText(
+                          context,
+                          _translation!.translationText!,
+                          fontSettings,
+                          isMl,
+                        ),
+                      ),
+                    ],
                   ),
-          ),
-        ],
+                ),
+        ),
+      ],
     );
   }
 
@@ -690,7 +683,6 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
       ),
     );
   }
-
 }
 
 /// A simple nested bottom sheet that shows interpretation text for a given
@@ -765,48 +757,48 @@ class _NestedInterpretationSheetState
       ayahNumbers: _referencedAyahNumbers,
     );
     return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Header
-          InterpretationSheetHeader(
-            surahHeader: surahHeader,
-            metadataLabel: metadataLabel,
-            onClose: () => Navigator.of(context).pop(),
-            padding: _kInterpretationSheetHeaderPadding,
-            closeButtonOffset: _kInterpretationSheetActionOffset,
-            titleSpacing: 0,
-            compactCloseButton: true,
-          ),
-          const Divider(height: 1),
-          Flexible(
-            child: _loading
-                ? const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 32),
-                    child: Center(child: CircularProgressIndicator()),
-                  )
-                : _items.isEmpty
-                ? const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 32),
-                    child: Center(child: Text('No explanation found')),
-                  )
-                : SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: _items.map((item) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: _buildInterpretationWithCrossRefs(
-                            context,
-                            item.interpretationText,
-                            widget.surahNumber,
-                          ),
-                        );
-                      }).toList(),
-                    ),
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Header
+        InterpretationSheetHeader(
+          surahHeader: surahHeader,
+          metadataLabel: metadataLabel,
+          onClose: () => Navigator.of(context).pop(),
+          padding: _kInterpretationSheetHeaderPadding,
+          closeButtonOffset: _kInterpretationSheetActionOffset,
+          titleSpacing: 0,
+          compactCloseButton: true,
+        ),
+        const Divider(height: 1),
+        Flexible(
+          child: _loading
+              ? const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 32),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              : _items.isEmpty
+              ? const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 32),
+                  child: Center(child: Text('No explanation found')),
+                )
+              : SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: _items.map((item) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: _buildInterpretationWithCrossRefs(
+                          context,
+                          item.interpretationText,
+                          widget.surahNumber,
+                        ),
+                      );
+                    }).toList(),
                   ),
-          ),
-        ],
+                ),
+        ),
+      ],
     );
   }
 
@@ -816,8 +808,9 @@ class _NestedInterpretationSheetState
     String text,
     int currentSurahNumber,
   ) {
-    final justifyInterpretation =
-        context.watch<FontSizeChangerProvider>().interpretationJustify;
+    final justifyInterpretation = context
+        .watch<FontSizeChangerProvider>()
+        .interpretationJustify;
     final segments = parseForCrossReferences(text, currentSurahNumber);
     if (segments.length == 1 && !segments.first.isCrossReference) {
       return Text(
@@ -857,12 +850,7 @@ class _NestedInterpretationSheetState
           ),
         );
       } else {
-        spans.add(
-          TextSpan(
-            text: seg.text,
-            style: baseStyle,
-          ),
-        );
+        spans.add(TextSpan(text: seg.text, style: baseStyle));
       }
     }
 

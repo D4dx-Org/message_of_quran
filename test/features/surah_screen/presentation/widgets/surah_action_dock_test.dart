@@ -64,33 +64,25 @@ void main() {
       resolveSurahActionDockBottomPadding(rootBottomInset: 0),
       surahActionDockDefaultBottomGap,
     );
-    expect(
-      resolveSurahActionDockBottomPadding(rootBottomInset: 8),
-      8,
-    );
+    expect(resolveSurahActionDockBottomPadding(rootBottomInset: 8), 8);
     expect(
       resolveSurahActionDockBottomPadding(rootBottomInset: 24),
       surahActionDockMinimumBottomGap,
     );
   });
 
-  testWidgets('keeps the dock close to the bottom inset area on larger devices', (
-    WidgetTester tester,
-  ) async {
-    await pumpActionDockHost(tester, bottomInset: 0);
-    final noInsetDistance = distanceFromScreenBottom(tester);
+  testWidgets(
+    'keeps the dock close to the bottom inset area on larger devices',
+    (WidgetTester tester) async {
+      await pumpActionDockHost(tester, bottomInset: 0);
+      final noInsetDistance = distanceFromScreenBottom(tester);
 
-    await pumpActionDockHost(tester, bottomInset: 24);
-    final insetDistance = distanceFromScreenBottom(tester);
+      await pumpActionDockHost(tester, bottomInset: 24);
+      final insetDistance = distanceFromScreenBottom(tester);
 
-    expect(
-      noInsetDistance,
-      closeTo(surahActionDockDefaultBottomGap, 0.1),
-    );
-    expect(
-      insetDistance - 24,
-      closeTo(surahActionDockMinimumBottomGap, 0.1),
-    );
-    expect(insetDistance, lessThan(40));
-  });
+      expect(noInsetDistance, closeTo(surahActionDockDefaultBottomGap, 0.1));
+      expect(insetDistance - 24, closeTo(surahActionDockMinimumBottomGap, 0.1));
+      expect(insetDistance, lessThan(40));
+    },
+  );
 }
