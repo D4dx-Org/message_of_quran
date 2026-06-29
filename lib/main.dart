@@ -222,14 +222,23 @@ Future<void> _initializeDeferredMobileServices() async {
 }
 
 Future<void> _initializeAppServices() async {
-  await _runStartupStep(
-    'initializing database services',
-    () => DatabaseHelper.initializeServices().timeout(
+  final databaseInitialization = () {
+    // Web first launch can take longer because sqlite wasm + bundled DB bytes
+    // are fetched and persisted before openDatabase succeeds.
+    if (kIsWeb) {
+      return DatabaseHelper.initializeServices();
+    }
+    return DatabaseHelper.initializeServices().timeout(
       const Duration(seconds: 20),
       onTimeout: () => throw TimeoutException(
         'Database initialization timed out.',
       ),
-    ),
+    );
+  };
+
+  await _runStartupStep(
+    'initializing database services',
+    databaseInitialization,
   );
 
   if (kIsWeb) {
