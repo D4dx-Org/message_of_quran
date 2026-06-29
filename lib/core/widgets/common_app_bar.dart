@@ -227,6 +227,10 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
 class CommonAppBar {
   CommonAppBar._();
 
+  // Temporary A/B switch for app bar logo clarity testing.
+  // Change this constant to compare both rendering modes.
+  static const _appBarLogoClarityMode = _AppBarLogoClarityMode.highQuality;
+
   static Widget brandLogo(
     BuildContext context, {
     Alignment alignment = Alignment.centerLeft,
@@ -235,6 +239,14 @@ class CommonAppBar {
   }) {
     final scale = ResponsiveHelper.scaleFactor(context);
     final logoHeight = height ?? 40 * scale;
+    final isHighQualityMode =
+        _appBarLogoClarityMode == _AppBarLogoClarityMode.highQuality;
+    final appBarLogoFilterQuality = isHighQualityMode
+        ? FilterQuality.high
+        : FilterQuality.medium;
+    final cacheHeight = isHighQualityMode
+      ? null
+      : (logoHeight * MediaQuery.devicePixelRatioOf(context)).round();
     final image = Row(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -243,7 +255,8 @@ class CommonAppBar {
           'assets/images/symbol-logo.png',
           height: logoHeight,
           fit: BoxFit.contain,
-          filterQuality: FilterQuality.medium,
+          filterQuality: appBarLogoFilterQuality,
+          cacheHeight: cacheHeight,
           semanticLabel: 'Quran Asad Malayalam logo symbol',
         ),
         SizedBox(width: 2 * scale),
@@ -251,7 +264,8 @@ class CommonAppBar {
           'assets/images/symbol-logo-text.png',
           height: logoHeight,
           fit: BoxFit.contain,
-          filterQuality: FilterQuality.medium,
+          filterQuality: appBarLogoFilterQuality,
+          cacheHeight: cacheHeight,
           semanticLabel: 'Quran Asad Malayalam logo text',
         ),
       ],
@@ -324,7 +338,7 @@ class CommonAppBar {
               ],
             )
           : null,
-      leadingWidth: 46 * scale,
+      leadingWidth: (46 * scale).roundToDouble(),
       titleSpacing: 0,
       title: brandLogo(ctx),
       centerTitle: false,
@@ -396,7 +410,7 @@ class CommonAppBar {
       automaticallyImplyLeading: false,
       backgroundColor: AppTheme.appThemePrimary,
       elevation: 0,
-      leadingWidth: showLeading ? 46 * scale : null,
+      leadingWidth: showLeading ? (46 * scale).roundToDouble() : null,
       titleSpacing: showBrandLogo ? 0 : NavigationToolbar.kMiddleSpacing,
       title:
           titleWidget ??
@@ -423,3 +437,5 @@ class CommonAppBar {
     );
   }
 }
+
+enum _AppBarLogoClarityMode { mediumWithCache, highQuality }
