@@ -38,7 +38,7 @@ class CommonAppBar {
       label: 'Open navigation menu',
       child: IconButton(
         icon: Image.asset(
-          'assets/images/menu-icon-new.png',
+          'assets/icons/menu-icon-new.png',
           height: AppConstants.appBarIconHeight * scale,
           width: AppConstants.appBarIconWidth * scale,
           fit: BoxFit.contain,
