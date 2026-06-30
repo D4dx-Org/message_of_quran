@@ -22,7 +22,7 @@ class ForceUpdateScreen extends StatelessWidget {
               child: Column(
                 spacing: 10,
                 children: [
-                  Image.asset("assets/images/app-logo-nw.png", height: 100),
+                  Image.asset("assets/images/logo_force_update.png", height: 100),
                   Text("Update Available", style: AppTextTheme.titleRegular),
                   Text(
                     "New Version",

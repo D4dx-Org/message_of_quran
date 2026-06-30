@@ -97,18 +97,6 @@ class _SplashScreenState extends State<SplashScreen> {
       canPop: false,
       child: Scaffold(
         backgroundColor: AppTheme.appThemeSplash,
-        // Legacy full-image splash kept for future reference.
-        /*
-        body: SizedBox(
-          width: double.infinity,
-          height: double.infinity,
-          child: Image(
-            image: AssetImage('assets/images/splash-nw.png'),
-            fit: BoxFit.cover,
-            alignment: Alignment.center,
-          ),
-        ),
-        */
         body: SplashScreenLayout(),
       ),
     );
