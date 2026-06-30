@@ -241,8 +241,8 @@ class AppTextTheme {
   /// Arabic style used for the coloured Tajweed renderer. Always uses the
   /// bundled Uthmani Hafs font ('QuranTaha') so the letterforms and combining
   /// marks match the quran.com tajweed presentation, regardless of the user's
-  /// selected reading font. Per-rule colours are applied on top via
-  /// `parseTajweedHtml`, so the base [color] here is only the default text colour.
+  /// selected reading font. The base [color] here is only the default text
+  /// colour used by the current Tajweed renderer.
   static TextStyle tajweedArabiStyle(BuildContext ctx) {
     final controller = Provider.of<FontSizeChangerProvider>(ctx);
     final fontSize = controller.quranFontSize.toDouble();
