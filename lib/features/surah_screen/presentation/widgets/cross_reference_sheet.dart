@@ -383,9 +383,6 @@ class CrossReferenceSheet extends StatefulWidget {
     }
 
     if (ref.noteNumber != null) {
-      if (!includeReferencedInterpretation) {
-        return;
-      }
       showInterpretationNote(
         context,
         surahNumber: ref.surahNumber,
