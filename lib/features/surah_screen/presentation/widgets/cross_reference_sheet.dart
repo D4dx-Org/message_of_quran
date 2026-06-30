@@ -33,10 +33,7 @@ class InterpretationSheetSurahHeaderText {
   bool get hasSubtitle => subtitle != null && subtitle!.trim().isNotEmpty;
 
   List<String> toLines() {
-    return [
-      if (hasTitle) title!.trim(),
-      if (hasSubtitle) subtitle!.trim(),
-    ];
+    return [if (hasTitle) title!.trim(), if (hasSubtitle) subtitle!.trim()];
   }
 }
 
@@ -157,11 +154,7 @@ Widget _buildCompactSheetActionButton({
       constraints: _kInterpretationSheetActionConstraints,
       visualDensity: VisualDensity.compact,
       splashRadius: _kInterpretationSheetActionSplashRadius,
-      icon: Icon(
-        icon,
-        size: _kInterpretationSheetActionIconSize,
-        color: color,
-      ),
+      icon: Icon(icon, size: _kInterpretationSheetActionIconSize, color: color),
     ),
   );
 }
@@ -201,9 +194,11 @@ class InterpretationSheetHeader extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final malayalamRegExp = RegExp(r'[\u0D00-\u0D7F]');
     final titleIsMalayalam =
-      surahHeader.title != null && malayalamRegExp.hasMatch(surahHeader.title!);
-    final subtitleIsMalayalam = surahHeader.subtitle != null &&
-      malayalamRegExp.hasMatch(surahHeader.subtitle!);
+        surahHeader.title != null &&
+        malayalamRegExp.hasMatch(surahHeader.title!);
+    final subtitleIsMalayalam =
+        surahHeader.subtitle != null &&
+        malayalamRegExp.hasMatch(surahHeader.subtitle!);
     final metadataIsMalayalam = malayalamRegExp.hasMatch(metadataLabel);
     final resolvedSubtitleColor =
         subtitleColor ?? (isDark ? Colors.white70 : Colors.grey[700]);
@@ -270,7 +265,9 @@ class InterpretationSheetHeader extends StatelessWidget {
                   constraints: compactCloseButton
                       ? _kInterpretationSheetActionConstraints
                       : null,
-                  visualDensity: compactCloseButton ? VisualDensity.compact : null,
+                  visualDensity: compactCloseButton
+                      ? VisualDensity.compact
+                      : null,
                   splashRadius: compactCloseButton
                       ? _kInterpretationSheetActionSplashRadius
                       : null,
@@ -301,11 +298,15 @@ class CrossReferenceSheet extends StatefulWidget {
   /// If non-null, also show the interpretation for this footnote/note number.
   final int? noteNumber;
 
+  /// Hides inline interpretation markers from translation text.
+  final bool suppressTranslationFootnoteMarkers;
+
   const CrossReferenceSheet({
     super.key,
     required this.surahNumber,
     required this.ayahNumber,
     this.noteNumber,
+    this.suppressTranslationFootnoteMarkers = false,
   });
 
   /// Convenience method to show the sheet as a modal bottom sheet.
@@ -314,6 +315,7 @@ class CrossReferenceSheet extends StatefulWidget {
     required int surahNumber,
     required int ayahNumber,
     int? noteNumber,
+    bool suppressTranslationFootnoteMarkers = false,
   }) {
     final bsMaxWidth = ResponsiveHelper.bottomSheetMaxWidth(context);
     showModalBottomSheet(
@@ -330,6 +332,7 @@ class CrossReferenceSheet extends StatefulWidget {
         surahNumber: surahNumber,
         ayahNumber: ayahNumber,
         noteNumber: noteNumber,
+        suppressTranslationFootnoteMarkers: suppressTranslationFootnoteMarkers,
       ),
     );
   }
@@ -362,18 +365,27 @@ class CrossReferenceSheet extends StatefulWidget {
   }
 
   /// Routes a parsed cross-reference to the matching sheet.
-  static void showParsedReference(BuildContext context, CrossReference ref) {
+  static void showParsedReference(
+    BuildContext context,
+    CrossReference ref, {
+    bool includeReferencedInterpretation = true,
+    bool suppressTranslationFootnoteMarkers = false,
+  }) {
     if (ref.ayahNumber != null) {
       show(
         context,
         surahNumber: ref.surahNumber,
         ayahNumber: ref.ayahNumber!,
-        noteNumber: ref.noteNumber,
+        noteNumber: includeReferencedInterpretation ? ref.noteNumber : null,
+        suppressTranslationFootnoteMarkers: suppressTranslationFootnoteMarkers,
       );
       return;
     }
 
     if (ref.noteNumber != null) {
+      if (!includeReferencedInterpretation) {
+        return;
+      }
       showInterpretationNote(
         context,
         surahNumber: ref.surahNumber,
@@ -384,18 +396,27 @@ class CrossReferenceSheet extends StatefulWidget {
 
   /// Handles a tap on a parsed cross-reference. Appendix references navigate
   /// to the Appendix screen; all other references open the relevant sheet.
-  static void handleReferenceTap(BuildContext context, CrossReference ref) {
+  static void handleReferenceTap(
+    BuildContext context,
+    CrossReference ref, {
+    bool includeReferencedInterpretation = true,
+    bool suppressTranslationFootnoteMarkers = false,
+  }) {
     if (ref.appendixNumber != null) {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => AppendixScreen(
-            initialAppendixNumber: ref.appendixNumber,
-          ),
+          builder: (_) =>
+              AppendixScreen(initialAppendixNumber: ref.appendixNumber),
         ),
       );
       return;
     }
-    showParsedReference(context, ref);
+    showParsedReference(
+      context,
+      ref,
+      includeReferencedInterpretation: includeReferencedInterpretation,
+      suppressTranslationFootnoteMarkers: suppressTranslationFootnoteMarkers,
+    );
   }
 
   @override
@@ -483,6 +504,7 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
 
   String _combinedText() {
     final buf = StringBuffer();
+    final isMl = context.read<LanguageProvider>().isMalayalam;
     buf.writeln('${widget.surahNumber}:${widget.ayahNumber}');
     if (_arabic?.arabicText != null) {
       buf.writeln();
@@ -490,7 +512,10 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
     }
     if (_translation?.translationText != null) {
       buf.writeln();
-      buf.writeln(_translation!.translationText);
+      final translationText = widget.suppressTranslationFootnoteMarkers
+          ? _stripInterpretationMarkers(_translation!.translationText!, isMl)
+          : _translation!.translationText!;
+      buf.writeln(translationText);
     }
     for (final item in _interpretation) {
       buf.writeln();
@@ -691,6 +716,17 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
     // Strip verse-number prefix (e.g. "51 ")
     final displayText = cleaned.replaceFirst(RegExp(r'^\d+[\s.]*'), '');
 
+    if (widget.suppressTranslationFootnoteMarkers) {
+      return Text(
+        _stripInterpretationMarkers(displayText, isMl),
+        style: AppTextTheme.surahTranslationStyle(context, isMalayalam: isMl),
+        textAlign: resolveTranslationTextAlign(
+          isMalayalam: isMl,
+          justifyTranslation: fontSettings.translationJustify,
+        ),
+      );
+    }
+
     final spans = <InlineSpan>[];
     final pattern = isMl ? RegExp(r'\[\^?(\d+)\]') : RegExp(r'\((\d+)\)');
     int lastEnd = 0;
@@ -739,20 +775,14 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
       spans.add(
         TextSpan(
           text: displayText,
-          style: AppTextTheme.surahTranslationStyle(
-            context,
-            isMalayalam: isMl,
-          ),
+          style: AppTextTheme.surahTranslationStyle(context, isMalayalam: isMl),
         ),
       );
     } else if (lastEnd < displayText.length) {
       spans.add(
         TextSpan(
           text: displayText.substring(lastEnd),
-          style: AppTextTheme.surahTranslationStyle(
-            context,
-            isMalayalam: isMl,
-          ),
+          style: AppTextTheme.surahTranslationStyle(context, isMalayalam: isMl),
         ),
       );
     }
@@ -764,6 +794,13 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
         justifyTranslation: fontSettings.translationJustify,
       ),
     );
+  }
+
+  String _stripInterpretationMarkers(String text, bool isMl) {
+    if (isMl) {
+      return text.replaceAll(RegExp(r'\[\^?\d+\]'), '');
+    }
+    return text.replaceAll(RegExp(r'\(\d+\)'), '');
   }
 
   /// Shows a nested interpretation bottom sheet for a footnote in the
@@ -783,8 +820,9 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
     int currentSurahNumber,
   ) {
     final isMl = context.read<LanguageProvider>().isMalayalam;
-    final justifyInterpretation =
-        context.watch<FontSizeChangerProvider>().interpretationJustify;
+    final justifyInterpretation = context
+        .watch<FontSizeChangerProvider>()
+        .interpretationJustify;
     final segments = parseForCrossReferences(text, currentSurahNumber);
     if (segments.length == 1 && !segments.first.isCrossReference) {
       return Text(
@@ -819,17 +857,16 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
               decorationColor: linkColor,
             ),
             recognizer: TapGestureRecognizer()
-              ..onTap = () =>
-                  CrossReferenceSheet.handleReferenceTap(context, ref),
+              ..onTap = () => CrossReferenceSheet.handleReferenceTap(
+                context,
+                ref,
+                includeReferencedInterpretation: false,
+                suppressTranslationFootnoteMarkers: true,
+              ),
           ),
         );
       } else {
-        spans.add(
-          TextSpan(
-            text: seg.text,
-            style: baseStyle,
-          ),
-        );
+        spans.add(TextSpan(text: seg.text, style: baseStyle));
       }
     }
 
@@ -990,8 +1027,9 @@ class _NestedInterpretationSheetState
     String text,
     int currentSurahNumber,
   ) {
-    final justifyInterpretation =
-        context.watch<FontSizeChangerProvider>().interpretationJustify;
+    final justifyInterpretation = context
+        .watch<FontSizeChangerProvider>()
+        .interpretationJustify;
     final segments = parseForCrossReferences(text, currentSurahNumber);
     if (segments.length == 1 && !segments.first.isCrossReference) {
       return Text(
@@ -1026,17 +1064,16 @@ class _NestedInterpretationSheetState
               decorationColor: linkColor,
             ),
             recognizer: TapGestureRecognizer()
-              ..onTap = () =>
-                  CrossReferenceSheet.handleReferenceTap(context, ref),
+              ..onTap = () => CrossReferenceSheet.handleReferenceTap(
+                context,
+                ref,
+                includeReferencedInterpretation: false,
+                suppressTranslationFootnoteMarkers: true,
+              ),
           ),
         );
       } else {
-        spans.add(
-          TextSpan(
-            text: seg.text,
-            style: baseStyle,
-          ),
-        );
+        spans.add(TextSpan(text: seg.text, style: baseStyle));
       }
     }
 
