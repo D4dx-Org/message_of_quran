@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/interpretation_search_result_model.dart';
 import 'package:the_message_of_the_quran/core/models/verse_search_result_model.dart';
@@ -8,7 +9,6 @@ import 'package:the_message_of_the_quran/core/services/database/interpretations_
 import 'package:the_message_of_the_quran/core/services/database/translation_block_db_helper.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
-import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -33,18 +33,14 @@ Future<void> showWebFullTextSearchDialog(BuildContext context) async {
   if (surahProv.surahList.isEmpty) await surahProv.getAllSurah();
   if (!context.mounted) return;
 
-  final idx = surahProv.surahList.indexWhere(
+  final hasSurah = surahProv.surahList.any(
     (s) => s.surahNumber == target.surahNumber,
   );
-  if (idx < 0) return;
+  if (!hasSurah) return;
 
-  surahProv.assignIndex(idx);
-  await Navigator.of(context).push(
-    MaterialPageRoute(
-      builder: (_) => SurahScreen(
-        scrollToAyahId: target.verseNumber > 0 ? target.verseNumber : null,
-      ),
-    ),
+  final scrollToAyahId = target.verseNumber > 0 ? target.verseNumber : null;
+  context.push(
+    '/surah/${target.surahNumber}${scrollToAyahId != null ? '?scrollToAyahId=$scrollToAyahId' : ''}',
   );
 }
 

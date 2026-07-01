@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/juz_hizb_model.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
@@ -20,7 +21,6 @@ import 'package:the_message_of_the_quran/features/search_screen/presentation/wid
     // hide Expanded, AppTextTheme, InputDecoration;
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
-import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -127,15 +127,8 @@ class _HomeScreenState extends State<HomeScreen>
     bool saveTabSelection = true,
   }) async {
     final surahProvider = context.read<SurahProvider>();
-    final index = surahProvider.surahList.indexWhere(
-      (surah) => surah.surahNumber == surahNumber,
-    );
-    if (index < 0) return;
-
-    surahProvider.assignIndex(index);
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => SurahScreen(scrollToAyahId: ayahId)),
+    await context.push(
+      '/surah/$surahNumber${ayahId != null ? '?scrollToAyahId=$ayahId' : ''}',
     );
     if (!context.mounted) return;
     if (saveTabSelection) {
@@ -185,6 +178,13 @@ class _HomeScreenState extends State<HomeScreen>
     if (width < 1100) return null;
 
     return (width * 0.84).clamp(920.0, 1080.0).toDouble();
+  }
+
+  double? _webBrowsePanelMaxWidth(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    if (width < 1100) return null;
+
+    return (width * 0.8).clamp(960.0, 1400.0).toDouble();
   }
 
   double? _webHomeTabBarMaxWidth(BuildContext context) {
@@ -870,41 +870,48 @@ class _HomeScreenState extends State<HomeScreen>
                       surahList: surahProvider.surahList,
                       isLoading: surahProvider.isSurahLoading,
                     ),
-                    if (!hasActiveWebSearch) ...[
+                    if (!hasActiveWebSearch)
                       _buildWebPopularSection(
                         context,
                         isMalayalam: isMalayalam,
                         surahList: surahProvider.surahList,
                       ),
-                      const SizedBox(height: _webPopularToBrowseGap),
-                      DecoratedBox(
-                        decoration: _webPanelDecoration(context),
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildWebSectionHeader(
-                                context,
-                                isMalayalam: isMalayalam,
-                                surahList: surahProvider.surahList,
-                                juzList: juzHizbProvider.juzList,
-                              ),
-                              const SizedBox(height: 8),
-                              _buildWebSectionBody(
-                                context,
-                                isMalayalam: isMalayalam,
-                                surahProvider: surahProvider,
-                                juzHizbProvider: juzHizbProvider,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
                   ],
                 ),
               ),
+              if (!hasActiveWebSearch) ...[
+                const SizedBox(height: _webPopularToBrowseGap),
+                ResponsiveContentWrapper(
+                  maxWidth: _webBrowsePanelMaxWidth(context),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: horizontalPadding,
+                  ),
+                  child: DecoratedBox(
+                    decoration: _webPanelDecoration(context),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildWebSectionHeader(
+                            context,
+                            isMalayalam: isMalayalam,
+                            surahList: surahProvider.surahList,
+                            juzList: juzHizbProvider.juzList,
+                          ),
+                          const SizedBox(height: 8),
+                          _buildWebSectionBody(
+                            context,
+                            isMalayalam: isMalayalam,
+                            surahProvider: surahProvider,
+                            juzHizbProvider: juzHizbProvider,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
           PositionedDirectional(

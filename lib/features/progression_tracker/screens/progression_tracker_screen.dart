@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/provider/progression_tracker_provider.dart';
-import 'package:the_message_of_the_quran/features/progression_tracker/screens/add_progression_screen.dart';
-import 'package:the_message_of_the_quran/features/progression_tracker/screens/progression_detail_screen.dart';
 
 class ProgressionTrackerScreen extends StatelessWidget {
   const ProgressionTrackerScreen({super.key});
@@ -20,7 +19,7 @@ class ProgressionTrackerScreen extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.chevron_left, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop(),
         ),
         title: Text(
           'Progression Tracker',
@@ -36,10 +35,7 @@ class ProgressionTrackerScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const AddProgressionScreen()),
-          ).then((_) {
+          context.push('/progression/add').then((_) {
             if (!context.mounted) return;
             context.read<ProgressionTrackerProvider>().loadProgressions();
           });
@@ -79,13 +75,9 @@ class ProgressionTrackerScreen extends StatelessWidget {
 
               return GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          ProgressionDetailScreen(progressionId: p.id!),
-                    ),
-                  ).then((_) => provider.loadProgressions());
+                  context
+                      .push('/progression/${p.id}')
+                      .then((_) => provider.loadProgressions());
                 },
                 child: Container(
                   margin: const EdgeInsets.only(bottom: 10),

@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
+import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
+import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/features/prostration_verses/data/prostration_verse_model.dart';
 import 'package:the_message_of_the_quran/features/prostration_verses/services/prostration_verses_service.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
-import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
 class ProstrationVersesScreen extends StatefulWidget {
@@ -79,11 +81,8 @@ class _ProstrationVersesScreenState extends State<ProstrationVersesScreen> {
       return;
     }
 
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => SurahScreen(scrollToAyahId: verse.ayahNumber),
-      ),
+    context.push(
+      '/surah/${verse.surahNumber}?scrollToAyahId=${verse.ayahNumber}',
     );
   }
 
@@ -92,16 +91,12 @@ class _ProstrationVersesScreenState extends State<ProstrationVersesScreen> {
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
 
     return BaseScreenLayout(
-      appBar: AppBar(
-        title: Semantics(
-          header: true,
-          child: Text(
-            isMalayalam ? 'സുജൂദിന്റെ ആയത്തുകൾ' : 'Prostration Verses',
-            style: AppTextTheme.localizedTitle(isMalayalam: isMalayalam),
-          ),
-        ),
-        centerTitle: false,
+      appBar: CommonAppBar.homeAppBar(
+        context,
+        showOrnament: false,
+        title: isMalayalam ? 'സുജൂദിന്റെ ആയത്തുകൾ' : 'Prostration Verses',
       ),
+      drawer: const CommonDrawer(),
       child: _buildBody(context, isMalayalam),
     );
   }
@@ -109,7 +104,6 @@ class _ProstrationVersesScreenState extends State<ProstrationVersesScreen> {
   Widget _buildBody(BuildContext context, bool isMalayalam) {
     final scale = ResponsiveHelper.scaleFactor(context);
     final horizontalPadding = ResponsiveHelper.horizontalPadding(context);
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     if (_isLoading) {
       return const Center(
@@ -185,26 +179,23 @@ class _ProstrationVersesScreenState extends State<ProstrationVersesScreen> {
       );
     }
 
-    return ColoredBox(
-      color: isDarkMode ? const Color(0xff0c2d52) : const Color(0xFFF3F4F6),
-      child: ListView.separated(
-        padding: EdgeInsets.fromLTRB(
-          horizontalPadding,
-          0,
-          horizontalPadding,
-          24 * scale,
-        ),
-        itemCount: _verses.length,
-        separatorBuilder: (_, _) => SizedBox(height: 12 * scale),
-        itemBuilder: (context, index) {
-          final verse = _verses[index];
-          return _ProstrationVerseTile(
-            verse: verse,
-            isMalayalam: isMalayalam,
-            onTap: () => _openSurah(verse),
-          );
-        },
+    return ListView.separated(
+      padding: EdgeInsets.fromLTRB(
+        horizontalPadding,
+        0,
+        horizontalPadding,
+        24 * scale,
       ),
+      itemCount: _verses.length,
+      separatorBuilder: (_, _) => SizedBox(height: 12 * scale),
+      itemBuilder: (context, index) {
+        final verse = _verses[index];
+        return _ProstrationVerseTile(
+          verse: verse,
+          isMalayalam: isMalayalam,
+          onTap: () => _openSurah(verse),
+        );
+      },
     );
   }
 }
@@ -226,11 +217,9 @@ class _ProstrationVerseTile extends StatelessWidget {
     final accentColor = appBarAccentColor(context);
     final scale = ResponsiveHelper.scaleFactor(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    final cardColor = isDarkMode ? theme.cardColor : Colors.white;
     final badgeColor = isDarkMode
         ? appBarAccentFillColor(context, alpha: 0.22)
         : appBarAccentFillColor(context, alpha: 0.10);
-    final shadowColor = accentColor.withValues(alpha: isDarkMode ? 0.0 : 0.08);
     final title = verse.displaySurahName(isMalayalam: isMalayalam);
     final subtitle = isMalayalam
         ? 'സൂറത്ത് ${verse.surahNumber} - ആയത്ത് ${verse.ayahNumber}'
@@ -250,16 +239,8 @@ class _ProstrationVerseTile extends StatelessWidget {
           onTap: onTap,
           child: Ink(
             decoration: BoxDecoration(
-              color: cardColor,
               borderRadius: BorderRadius.circular(22),
               border: Border.all(color: theme.colorScheme.outlineVariant),
-              boxShadow: [
-                BoxShadow(
-                  color: shadowColor,
-                  blurRadius: 18,
-                  offset: const Offset(0, 6),
-                ),
-              ],
             ),
             child: Padding(
               padding: EdgeInsets.symmetric(
@@ -290,15 +271,19 @@ class _ProstrationVerseTile extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTextTheme.localizedLabel(
-                            isMalayalam: isMalayalam,
-                            color: accentColor,
-                            fontSize: 15 * scale,
-                            fontWeight: FontWeight.w700,
+                        FractionallySizedBox(
+                          widthFactor: 0.8,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTextTheme.localizedLabel(
+                              isMalayalam: isMalayalam,
+                              color: accentColor,
+                              fontSize: 15 * scale,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                         SizedBox(height: 6 * scale),

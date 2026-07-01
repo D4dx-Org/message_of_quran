@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
+import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
+import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/features/author_screen/provider/english_translator_provider.dart';
 
 class EnglishTranslatorScreen extends StatefulWidget {
@@ -27,9 +29,12 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen> {
     final bodyColor = isDark ? Colors.white70 : Colors.black87;
 
     return BaseScreenLayout(
-      appBar: AppBar(
-        title: Text('Translator', style: AppTextTheme.titleRegular),
+      appBar: CommonAppBar.homeAppBar(
+        context,
+        showOrnament: false,
+        title: 'Translator',
       ),
+      drawer: const CommonDrawer(),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
         child: Consumer<EnglishTranslatorProvider>(
@@ -39,7 +44,7 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen> {
             }
             if (provider.translatorList.isEmpty) {
               return Center(
-                child: Text(
+                child: SelectableText(
                   'No translator information available.',
                   style: AppTextTheme.popinsDefault(
                       fontSize: 14, color: Colors.grey),
@@ -55,7 +60,7 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen> {
                     Center(
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 16),
-                        child: Text(
+                        child: SelectableText(
                           translator.name!,
                           textAlign: TextAlign.center,
                           style: AppTextTheme.popinsDefault(
@@ -85,7 +90,7 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen> {
                         .split('\n')
                         .where((p) => p.trim().isNotEmpty)
                         .expand((paragraph) => [
-                              Text(
+                              SelectableText(
                                 paragraph.trim(),
                                 style: AppTextTheme.popinsDefault(
                                     fontSize: 14, color: bodyColor),
@@ -95,7 +100,7 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen> {
                   const SizedBox(height: 16),
                   if (translator.address != null &&
                       translator.address!.isNotEmpty)
-                    Text(
+                    SelectableText(
                       'Address: ${translator.address!}',
                       style: AppTextTheme.popinsDefault(
                           fontSize: 14,
@@ -105,7 +110,7 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen> {
                   if (translator.email != null && translator.email!.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
-                      child: Text(
+                      child: SelectableText(
                         'Email: ${translator.email!}',
                         style: AppTextTheme.popinsDefault(
                             fontSize: 14,

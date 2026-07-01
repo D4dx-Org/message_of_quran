@@ -53,8 +53,8 @@ class _AboutScreenState extends State<AboutScreen> {
         showOrnament: false,
         title: isMalayalam ? 'ഞങ്ങളെക്കുറിച്ച്' : 'About',
       ),
-      drawer: const CommonDrawer()
-          ,
+      expandContentCard: false,
+      drawer: const CommonDrawer(),
       child: Consumer<AboutProvider>(
         builder: (context, provider, _) {
           if (provider.isAboutLoading) {
@@ -62,7 +62,7 @@ class _AboutScreenState extends State<AboutScreen> {
           }
           if (provider.aboutList.isEmpty) {
             return Center(
-              child: Text(
+              child: SelectableText(
                 'No Data',
                 textAlign: TextAlign.center,
                 style: AppTextTheme.popinsDefault(
@@ -84,7 +84,7 @@ class _AboutScreenState extends State<AboutScreen> {
                     children: [
                       if (about.description != null &&
                           about.description!.isNotEmpty)
-                        Text(
+                        SelectableText(
                           about.description!,
                           textAlign: TextAlign.left,
                           style: AppTextTheme.localizedBody(

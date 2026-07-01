@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/reading_progress_provider.dart';
-import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
-import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
 class HomeScreenBanner extends StatelessWidget {
   const HomeScreenBanner({super.key, this.isLandscape = false});
@@ -16,20 +15,9 @@ class HomeScreenBanner extends StatelessWidget {
     final lastRead = context.read<LastReadProvider>();
     if (!lastRead.hasLastRead) return;
 
-    final surahProv = context.read<SurahProvider>();
     final surahNum = lastRead.surahNumber;
     if (surahNum == null) return;
-    final idx = surahProv.surahList.indexWhere(
-      (s) => s.surahNumber == surahNum,
-    );
-    if (idx < 0) return;
-    surahProv.assignIndex(idx);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => SurahScreen(scrollToAyahId: lastRead.ayahId),
-      ),
-    );
+    context.push('/surah/$surahNum?scrollToAyahId=${lastRead.ayahId}');
   }
 
   @override

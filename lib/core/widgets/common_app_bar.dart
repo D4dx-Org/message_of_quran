@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/constants/app_constants.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
@@ -9,8 +10,6 @@ import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/app_bar_language_button.dart';
 import 'package:the_message_of_the_quran/core/widgets/app_bar_theme_button.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_screen_svg.dart';
-import 'package:the_message_of_the_quran/features/main_screen/presentation/main_screen.dart';
-import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/search_screen/presentation/widgets/surah_quick_search.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
 
@@ -243,9 +242,8 @@ class CommonAppBar {
   // Change this constant to compare both rendering modes.
   static const _appBarLogoClarityMode = _AppBarLogoClarityMode.highQuality;
 
-  static Widget brandLogo(
+  static Widget _brandLogoTapTarget(
     BuildContext context, {
-    Alignment alignment = Alignment.centerLeft,
     double? height,
     VoidCallback? onTap,
   }) {
@@ -282,33 +280,24 @@ class CommonAppBar {
         ),
       ],
     );
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: onTap ?? () => context.go('/'),
+        child: image,
+      ),
+    );
+  }
+
+  static Widget brandLogo(
+    BuildContext context, {
+    Alignment alignment = Alignment.centerLeft,
+    double? height,
+    VoidCallback? onTap,
+  }) {
     return Align(
       alignment: alignment,
-      child: MouseRegion(
-        cursor: SystemMouseCursors.click,
-        child: GestureDetector(
-          onTap:
-              onTap ??
-              () {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(
-                    builder: (_) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (!context.mounted) return;
-                        Provider.of<HomeProvider>(
-                          context,
-                          listen: false,
-                        ).changeIndex(0);
-                      });
-                      return const MainScreen();
-                    },
-                  ),
-                  (route) => false,
-                );
-              },
-          child: image,
-        ),
-      ),
+      child: _brandLogoTapTarget(context, height: height, onTap: onTap),
     );
   }
 
@@ -343,42 +332,66 @@ class CommonAppBar {
     final ornamentOverflow = 75.0 * scale;
     final ornamentWidth = 137.0 * scale;
     final ornamentHeight = 146.0 * scale;
+    const edgePadding = 5.0;
+    final leadingWidth = (46 * scale).roundToDouble() + edgePadding;
+    final hasTitleText = title.isNotEmpty;
+    final resolvedActions = <Widget>[
+      ...actions ?? [_buildAppendixWebActions(ctx)],
+      const SizedBox(width: edgePadding),
+    ];
+
+    final flexibleSpaceChildren = <Widget>[
+      if (showOrnament)
+        PositionedDirectional(
+          top: ornamentTop,
+          end: -ornamentOverflow,
+          child: Image.asset(
+            'assets/images/home_side_image.png',
+            width: ornamentWidth,
+            height: ornamentHeight,
+            fit: BoxFit.contain,
+            color: AppTheme.appThemeRawChips,
+            colorBlendMode: BlendMode.srcIn,
+          ),
+        ),
+      // Positioned outside the title slot so it can't rob centerTitle of the
+      // slack it needs to truly center the title text.
+      if (hasTitleText)
+        PositionedDirectional(
+          start: leadingWidth + NavigationToolbar.kMiddleSpacing,
+          top: 0,
+          bottom: 0,
+          child: Center(child: _brandLogoTapTarget(ctx)),
+        ),
+    ];
+
     return AppBar(
       automaticallyImplyLeading: false,
       backgroundColor: AppTheme.appThemePrimary,
       elevation: 0,
       clipBehavior: Clip.none,
-      flexibleSpace: showOrnament
-          ? Stack(
-              clipBehavior: Clip.none,
+      flexibleSpace: flexibleSpaceChildren.isEmpty
+          ? null
+          : Stack(clipBehavior: Clip.none, children: flexibleSpaceChildren),
+      leadingWidth: leadingWidth,
+      title: hasTitleText
+          ? Text(title, style: AppTextTheme.titleRegular)
+          : Stack(
+              alignment: AlignmentGeometry.center,
               children: [
-                PositionedDirectional(
-                  top: ornamentTop,
-                  end: -ornamentOverflow,
-                  child: Image.asset(
-                    'assets/images/home_side_image.png',
-                    width: ornamentWidth,
-                    height: ornamentHeight,
-                    fit: BoxFit.contain,
-                    color: AppTheme.appThemeRawChips,
-                    colorBlendMode: BlendMode.srcIn,
-                  ),
-                ),
+                brandLogo(ctx),
+                const SizedBox(width: 8),
+                Text(title, style: AppTextTheme.titleRegular),
               ],
-            )
-          : null,
-      leadingWidth: (46 * scale).roundToDouble(),
-      title: Stack(
-        alignment: AlignmentGeometry.center,
-        children: [
-          brandLogo(ctx),
-          const SizedBox(width: 8),
-          Text(title, style: AppTextTheme.titleRegular),
-        ],
-      ),
+            ),
       centerTitle: true,
-      leading: Builder(builder: (context) => _drawerMenuButton(context)),
-      actions: actions ?? [_buildAppendixWebActions(ctx)],
+      leading: Builder(
+        builder: (context) => Padding(
+          padding: const EdgeInsetsDirectional.only(start: edgePadding),
+          child: _drawerMenuButton(context),
+        ),
+      ),
+      actions: resolvedActions,
       bottom: bottom,
     );
   }
@@ -386,27 +399,12 @@ class CommonAppBar {
   static Widget _buildAppendixWebActions(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
     final isNarrow = screenWidth < 640;
-    final navigator = Navigator.of(context);
     final actions = CommonWebAppBarActions(
       isBookmarkNeeded: false,
       selectedPageIndex: null,
-      onPageSelected: (index) async {
+      onPageSelected: (index) {
         if (index == 3) showSettingsDialog(context);
-        await navigator.pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (_) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (!context.mounted) return;
-                Provider.of<HomeProvider>(
-                  context,
-                  listen: false,
-                ).changeIndex(0);
-              });
-              return const MainScreen();
-            },
-          ),
-          (route) => false,
-        );
+        context.go('/');
       },
       compact: true,
       showSearch: false,

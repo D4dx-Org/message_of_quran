@@ -4,14 +4,15 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/core/routing/app_router.dart';
 import 'package:the_message_of_the_quran/core/services/audio_handler.dart';
 import 'package:the_message_of_the_quran/core/services/database/database_helper.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
-import 'package:the_message_of_the_quran/features/main_screen/presentation/main_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
-import 'package:the_message_of_the_quran/features/splash_screen/presentation/splash_screen.dart';
 import 'package:the_message_of_the_quran/features/splash_screen/presentation/widgets/splash_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/splash_screen/providers/version_check_provider.dart';
 import 'package:the_message_of_the_quran/features/about_screen/provider/about_providers.dart';
@@ -36,11 +37,6 @@ import 'package:the_message_of_the_quran/features/settings_screen/providers/wake
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/ayah_of_the_day/provider/ayah_of_the_day_provider.dart';
 import 'package:the_message_of_the_quran/core/services/notification/notification_services.dart';
-import 'package:the_message_of_the_quran/features/ayah_of_the_day/presentation/ayah_of_the_day_screen.dart';
-import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
-
-/// Global navigator key used to navigate from notification taps.
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 /// Stores a pending route when a notification is tapped before the navigator
 /// is ready (e.g. app cold-started from notification).
@@ -51,6 +47,9 @@ const String surahAlKahfNotificationRoute = 'surah_18';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  if (kIsWeb) {
+    usePathUrlStrategy();
+  }
 
   // Keep release errors visible so startup failures do not collapse into a
   // blank white screen.
@@ -370,17 +369,15 @@ class _BootstrapLoadingApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (kIsWeb) {
-      return const MaterialApp(
+      // A plain (non-router) MaterialApp always reports its resolved route
+      // back to the browser on web, which would overwrite a deep URL like
+      // /surah/18 with "/" before MaterialApp.router ever mounts. Using
+      // MaterialApp.router here with an empty route table (always falls
+      // through to errorBuilder) shows the same spinner for any path
+      // without ever touching the browser's URL.
+      return MaterialApp.router(
         debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          body: Center(
-            child: SizedBox(
-              width: 28,
-              height: 28,
-              child: CircularProgressIndicator(),
-            ),
-          ),
-        ),
+        routerConfig: _bootstrapRouter,
       );
     }
 
@@ -391,54 +388,78 @@ class _BootstrapLoadingApp extends StatelessWidget {
   }
 }
 
+final GoRouter _bootstrapRouter = GoRouter(
+  routes: const [],
+  errorBuilder: (context, state) => const Scaffold(
+    body: Center(
+      child: SizedBox(
+        width: 28,
+        height: 28,
+        child: CircularProgressIndicator(),
+      ),
+    ),
+  ),
+);
+
 class _BootstrapErrorApp extends StatelessWidget {
   const _BootstrapErrorApp({required this.error, required this.onRetry});
 
   final Object? error;
   final VoidCallback onRetry;
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _content(BuildContext context) {
     final details = error?.toString() ?? 'Unknown startup error';
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: SafeArea(
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.error_outline, size: 48),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'The app could not finish starting.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                      ),
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.error_outline, size: 48),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'The app could not finish starting.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
                     ),
-                    const SizedBox(height: 12),
-                    Text(
-                      details,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    FilledButton(
-                      onPressed: onRetry,
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(details, textAlign: TextAlign.center),
+                  const SizedBox(height: 20),
+                  FilledButton(
+                    onPressed: onRetry,
+                    child: const Text('Retry'),
+                  ),
+                ],
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (kIsWeb) {
+      // See _BootstrapLoadingApp for why this avoids a plain MaterialApp.
+      return MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        routerConfig: GoRouter(
+          routes: const [],
+          errorBuilder: (context, state) => _content(context),
+        ),
+      );
+    }
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: _content(context),
     );
   }
 }
@@ -461,29 +482,25 @@ Future<void> _onNotificationTap(ReceivedAction receivedAction) async {
 }
 
 Future<bool> handleNotificationRoute(String route) async {
-  final nav = navigatorKey.currentState;
-  final context = navigatorKey.currentContext;
-  if (nav == null || context == null) {
+  final context = rootNavigatorKey.currentContext;
+  if (context == null) {
     return false;
   }
 
   if (route == ayahOfTheDayNotificationRoute) {
-    nav.push(MaterialPageRoute(builder: (_) => const AyahOfTheDayScreen()));
+    context.push('/ayah-of-the-day');
     return true;
   }
 
   if (route == surahAlKahfNotificationRoute) {
-    final surahProv = Provider.of<SurahProvider>(context, listen: false);
-    if (surahProv.surahList.isEmpty) await surahProv.getAllSurah();
-    final idx = surahProv.surahList.indexWhere((s) => s.surahNumber == 18);
-    if (idx < 0) return false;
-    surahProv.assignIndex(idx);
-    nav.push(MaterialPageRoute(builder: (_) => const SurahScreen()));
+    context.push('/surah/18');
     return true;
   }
 
   return false;
 }
+
+final GoRouter _appRouter = buildAppRouter();
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -531,15 +548,14 @@ class MyApp extends StatelessWidget {
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, value, child) {
-          return MaterialApp(
-            navigatorKey: navigatorKey,
+          return MaterialApp.router(
+            routerConfig: _appRouter,
             title: 'Quran Asad Malayalam',
             showPerformanceOverlay: false,
             debugShowCheckedModeBanner: false,
             theme: value.lightTheme,
             darkTheme: value.darkTheme,
             themeMode: value.themeMode,
-            home: kIsWeb ? const MainScreen() : const SplashScreen(),
             builder: (context, child) {
               var data = MediaQuery.of(context);
               final view = View.of(context);

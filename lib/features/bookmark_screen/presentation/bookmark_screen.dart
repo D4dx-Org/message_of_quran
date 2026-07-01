@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/ayah_bookmark_model.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
+import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
-import 'package:the_message_of_the_quran/features/mushaf/screens/mushaf_reader_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_card.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
-import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
 class BookmarkScreen extends StatelessWidget {
@@ -84,31 +84,14 @@ class BookmarkScreen extends StatelessWidget {
   }
 
   void _openBookmark(BuildContext context, AyahBookmarkModel bookmark) {
-    final nav = Navigator.of(context);
-    final surahProv = Provider.of<SurahProvider>(context, listen: false);
-
     if (_isMushafBookmark(bookmark)) {
-      nav.push(
-        MaterialPageRoute(
-          builder: (_) => MushafReaderScreen(
-            initialSurahNo: bookmark.surahNumber,
-            initialAyaNo: bookmark.ayahId,
-          ),
-        ),
+      context.push(
+        '/mushaf-reader?surahNo=${bookmark.surahNumber}&ayaNo=${bookmark.ayahId}',
       );
       return;
     }
 
-    final idx = surahProv.surahList.indexWhere(
-      (s) => s.surahNumber == bookmark.surahNumber,
-    );
-    if (idx < 0) return;
-    surahProv.assignIndex(idx);
-    nav.push(
-      MaterialPageRoute(
-        builder: (_) => SurahScreen(scrollToAyahId: bookmark.ayahId),
-      ),
-    );
+    context.push('/surah/${bookmark.surahNumber}?scrollToAyahId=${bookmark.ayahId}');
   }
 
   Future<void> _showEditLabelDialog(
@@ -150,213 +133,221 @@ class BookmarkScreen extends StatelessWidget {
         : AppTheme.appThemePrimary;
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
 
-    return BaseScreenLayout(
-      contentCardBoxShadows: const [],
-      child: CustomScrollView(
-        slivers: [
-          Consumer<SurahProvider>(
-            builder: (context, value, child) {
-              final surahList = value.surahList;
-              return value.bookmarkedList.isEmpty
-                  ? SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Center(
-                        child: Semantics(
-                          label: isMalayalam ? 'ബുക്ക്മാർക്കുകൾ ഒന്നും ചേർത്തിട്ടില്ല' : 'No bookmarks saved',
-                          child: Text(isMalayalam ? 'ബുക്ക്മാർക്ക് ഒന്നും ചേർത്തിട്ടില്ല' : 'No Bookmark Added'),
-                        ),
-                      ),
-                    )
-                  : SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-                      sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate(childCount: value.bookmarkedList.length, (
-                          context,
-                          index,
-                        ) {
-                          final bookmark = value.bookmarkedList[index];
-                          final bodyText = _bookmarkBody(bookmark);
-                          return Padding(
-                            key: ValueKey('bookmark_${bookmark.surahNumber}_${bookmark.ayahId}'),
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: Semantics(
-                              button: true,
-                              label:
-                                  '${bookmark.surahName ?? 'Surah ${bookmark.surahNumber}'}, Ayah ${bookmark.ayahId}${bookmark.label != null && bookmark.label!.isNotEmpty ? ', ${bookmark.label}' : ''}',
-                              hint:
-                                  'Double tap to open. Use the action buttons to edit or delete.',
-                              child: SettingsScreenCard(
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(16),
-                                  onTap: () => _openBookmark(context, bookmark),
-                                  child: Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                      16,
-                                      14,
-                                      8,
-                                      14,
-                                    ),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                            top: 34,
-                                            right: 14,
+    return Column(
+      children: [
+       const SizedBox(height: 10,)
+,         Text(isMalayalam?"ബുക്ക്മാർക്ക്":"Bookmarks", style: AppTextTheme.popinsDefault(fontSize: 16,fontWeight: FontWeight.w600),),
+        Expanded(
+          child: BaseScreenLayout(
+            contentCardBoxShadows: const [],
+            child: CustomScrollView(
+              slivers: [
+                Consumer<SurahProvider>(
+                  builder: (context, value, child) {
+                    final surahList = value.surahList;
+                    return value.bookmarkedList.isEmpty
+                        ? SliverFillRemaining(
+                            hasScrollBody: false,
+                            child: Center(
+                              child: Semantics(
+                                label: isMalayalam ? 'ബുക്ക്മാർക്കുകൾ ഒന്നും ചേർത്തിട്ടില്ല' : 'No bookmarks saved',
+                                child: Text(isMalayalam ? 'ബുക്ക്മാർക്ക് ഒന്നും ചേർത്തിട്ടില്ല' : 'No Bookmark Added'),
+                              ),
+                            ),
+                          )
+                        : SliverPadding(
+                            padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                            sliver: SliverList(
+                              delegate: SliverChildBuilderDelegate(childCount: value.bookmarkedList.length, (
+                                context,
+                                index,
+                              ) {
+                                final bookmark = value.bookmarkedList[index];
+                                final bodyText = _bookmarkBody(bookmark);
+                                return Padding(
+                                  key: ValueKey('bookmark_${bookmark.surahNumber}_${bookmark.ayahId}'),
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: Semantics(
+                                    button: true,
+                                    label:
+                                        '${bookmark.surahName ?? 'Surah ${bookmark.surahNumber}'}, Ayah ${bookmark.ayahId}${bookmark.label != null && bookmark.label!.isNotEmpty ? ', ${bookmark.label}' : ''}',
+                                    hint:
+                                        'Double tap to open. Use the action buttons to edit or delete.',
+                                    child: SettingsScreenCard(
+                                      child: InkWell(
+                                        borderRadius: BorderRadius.circular(16),
+                                        onTap: () => _openBookmark(context, bookmark),
+                                        child: Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                            16,
+                                            14,
+                                            8,
+                                            14,
                                           ),
-                                          child: _buildBookmarkIcon(
-                                            iconColor,
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Column(
+                                          child: Row(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Container(
-                                                    padding:
-                                                        const EdgeInsets.symmetric(
-                                                          horizontal: 10,
-                                                          vertical: 4,
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                  top: 34,
+                                                  right: 14,
+                                                ),
+                                                child: _buildBookmarkIcon(
+                                                  iconColor,
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment.start,
+                                                      children: [
+                                                        Container(
+                                                          padding:
+                                                              const EdgeInsets.symmetric(
+                                                                horizontal: 10,
+                                                                vertical: 4,
+                                                              ),
+                                                          decoration: BoxDecoration(
+                                                            color:
+                                                                appBarAccentFillColor(
+                                                                  context,
+                                                                ),
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  999,
+                                                                ),
+                                                          ),
+                                                          child: Text(
+                                                            _bookmarkChipLabel(
+                                                              bookmark,
+                                                              isMalayalam: isMalayalam,
+                                                            ),
+                                                            style: theme
+                                                                .textTheme
+                                                                .labelSmall
+                                                                ?.copyWith(
+                                                                  color: accentColor,
+                                                                  fontWeight:
+                                                                      FontWeight.w700,
+                                                                  letterSpacing: 0.2,
+                                                                ),
+                                                          ),
                                                         ),
-                                                    decoration: BoxDecoration(
-                                                      color:
-                                                          appBarAccentFillColor(
-                                                            context,
-                                                          ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            999,
-                                                          ),
+                                                        const Spacer(),
+                                                        Row(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            Semantics(
+                                                              button: true,
+                                                              label:
+                                                                  'Edit label for Ayah ${bookmark.ayahId}',
+                                                              child: IconButton(
+                                                                tooltip: 'Edit label',
+                                                                onPressed: () =>
+                                                                    _showEditLabelDialog(
+                                                                      context,
+                                                                      bookmark,
+                                                                    ),
+                                                                icon: Icon(
+                                                                  Icons.edit_outlined,
+                                                                  color: iconColor,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            Semantics(
+                                                              button: true,
+                                                              label:
+                                                                  'Remove bookmark for Ayah ${bookmark.ayahId}',
+                                                              child: IconButton(
+                                                                tooltip:
+                                                                    'Delete bookmark',
+                                                                onPressed: () {
+                                                                  Provider.of<
+                                                                        SurahProvider
+                                                                      >(
+                                                                        context,
+                                                                        listen: false,
+                                                                      )
+                                                                      .onBookMarkRemoveByIndex(
+                                                                        index,
+                                                                      );
+                                                                },
+                                                                icon: Icon(
+                                                                  Icons
+                                                                      .delete_outline,
+                                                                  color:
+                                                                      deleteAccentColor,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
                                                     ),
-                                                    child: Text(
-                                                      _bookmarkChipLabel(
-                                                        bookmark,
-                                                        isMalayalam: isMalayalam,
-                                                      ),
+                                                    Text(
+                                                      _bookmarkTitle(bookmark, isMalayalam: isMalayalam, surahList: surahList),
+                                                      softWrap: true,
                                                       style: theme
                                                           .textTheme
-                                                          .labelSmall
+                                                          .titleMedium
                                                           ?.copyWith(
-                                                            color: accentColor,
                                                             fontWeight:
                                                                 FontWeight.w700,
-                                                            letterSpacing: 0.2,
                                                           ),
                                                     ),
-                                                  ),
-                                                  const Spacer(),
-                                                  Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      Semantics(
-                                                        button: true,
-                                                        label:
-                                                            'Edit label for Ayah ${bookmark.ayahId}',
-                                                        child: IconButton(
-                                                          tooltip: 'Edit label',
-                                                          onPressed: () =>
-                                                              _showEditLabelDialog(
-                                                                context,
-                                                                bookmark,
-                                                              ),
-                                                          icon: Icon(
-                                                            Icons.edit_outlined,
-                                                            color: iconColor,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Semantics(
-                                                        button: true,
-                                                        label:
-                                                            'Remove bookmark for Ayah ${bookmark.ayahId}',
-                                                        child: IconButton(
-                                                          tooltip:
-                                                              'Delete bookmark',
-                                                          onPressed: () {
-                                                            Provider.of<
-                                                                  SurahProvider
-                                                                >(
-                                                                  context,
-                                                                  listen: false,
-                                                                )
-                                                                .onBookMarkRemoveByIndex(
-                                                                  index,
-                                                                );
-                                                          },
-                                                          icon: Icon(
-                                                            Icons
-                                                                .delete_outline,
-                                                            color:
-                                                                deleteAccentColor,
-                                                          ),
-                                                        ),
+                                                    if (bodyText != null) ...[
+                                                      const SizedBox(height: 4),
+                                                      Text(
+                                                        bodyText,
+                                                        softWrap: true,
+                                                        style: theme
+                                                            .textTheme
+                                                            .bodyMedium
+                                                            ?.copyWith(
+                                                              color: theme
+                                                                  .colorScheme
+                                                                  .onSurface,
+                                                            ),
                                                       ),
                                                     ],
-                                                  ),
-                                                ],
-                                              ),
-                                              Text(
-                                                _bookmarkTitle(bookmark, isMalayalam: isMalayalam, surahList: surahList),
-                                                softWrap: true,
-                                                style: theme
-                                                    .textTheme
-                                                    .titleMedium
-                                                    ?.copyWith(
-                                                      fontWeight:
-                                                          FontWeight.w700,
+                                                    const SizedBox(height: 6),
+                                                    Text(
+                                                      _bookmarkDetails(bookmark, isMalayalam: isMalayalam),
+                                                      softWrap: true,
+                                                      style: theme.textTheme.bodySmall
+                                                          ?.copyWith(
+                                                            fontSize: 12,
+                                                            color: theme
+                                                                .colorScheme
+                                                                .onSurfaceVariant,
+                                                          ),
                                                     ),
-                                              ),
-                                              if (bodyText != null) ...[
-                                                const SizedBox(height: 4),
-                                                Text(
-                                                  bodyText,
-                                                  softWrap: true,
-                                                  style: theme
-                                                      .textTheme
-                                                      .bodyMedium
-                                                      ?.copyWith(
-                                                        color: theme
-                                                            .colorScheme
-                                                            .onSurface,
-                                                      ),
+                                                  ],
                                                 ),
-                                              ],
-                                              const SizedBox(height: 6),
-                                              Text(
-                                                _bookmarkDetails(bookmark, isMalayalam: isMalayalam),
-                                                softWrap: true,
-                                                style: theme.textTheme.bodySmall
-                                                    ?.copyWith(
-                                                      fontSize: 12,
-                                                      color: theme
-                                                          .colorScheme
-                                                          .onSurfaceVariant,
-                                                    ),
                                               ),
                                             ],
                                           ),
                                         ),
-                                      ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ),
+                                );
+                              }),
                             ),
                           );
-                        }),
-                      ),
-                    );
-            },
+                  },
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

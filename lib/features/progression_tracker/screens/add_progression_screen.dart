@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
@@ -89,7 +90,7 @@ class _AddProgressionScreenState extends State<AddProgressionScreen> {
       reminderDays: _selectedReminderDays,
     );
 
-    if (mounted) Navigator.pop(context);
+    if (mounted) context.pop();
   }
 
   @override
@@ -106,7 +107,7 @@ class _AddProgressionScreenState extends State<AddProgressionScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.chevron_left, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop(),
         ),
         title: Text(
           'Progression Tracker',

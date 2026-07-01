@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:the_message_of_the_quran/core/services/api/common_email_api.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
+import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
+import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/features/common_email/models/common_email_requests.dart';
 import 'package:the_message_of_the_quran/features/common_email/presentation/widgets/common_email_form_widgets.dart';
 
@@ -101,7 +103,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   @override
   Widget build(BuildContext context) {
     return BaseScreenLayout(
-      appBar: AppBar(title: const Text('Feedback')),
+      appBar: CommonAppBar.homeAppBar(
+        context,
+        showOrnament: false,
+        title: 'Feedback',
+      ),
+      drawer: const CommonDrawer(),
       resizeToAvoidBottomInset: true,
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 28),
@@ -197,7 +204,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 onPressed: _submit,
               ),
               const SizedBox(height: 12),
-              Text(
+              SelectableText(
                 'We review all feedback and may reach out if we need more details.',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodySmall,
