@@ -77,9 +77,9 @@ class _SettingsDialog extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          isMl ? 'സെറ്റിംഗ്സ്' : 'Settings',
+                          'Settings',
                           style: AppTextTheme.localizedTitle(
-                            isMalayalam: isMl,
+                            isMalayalam: false,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: isDark

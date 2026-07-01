@@ -677,13 +677,13 @@ class _HomeScreenState extends State<HomeScreen>
             children: [
               Expanded(child: buildTabStrip()),
               const SizedBox(width: 16),
-              buildSectionDropdown(
-                width: dropdownWidth,
-                fieldKey: dropdownFieldKey,
-                hintText: dropdownHintText,
-                items: dropdownItems,
-                onChanged: handleDropdownChanged,
-              ),
+              // buildSectionDropdown(
+              //   width: dropdownWidth,
+              //   fieldKey: dropdownFieldKey,
+              //   hintText: dropdownHintText,
+              //   items: dropdownItems,
+              //   onChanged: handleDropdownChanged,
+              // ),
             ],
           );
         }

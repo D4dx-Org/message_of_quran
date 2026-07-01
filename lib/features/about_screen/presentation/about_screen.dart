@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
+import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
+import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/features/about_screen/provider/about_providers.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -46,30 +48,13 @@ class _AboutScreenState extends State<AboutScreen> {
   Widget build(BuildContext context) {
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     return BaseScreenLayout(
-      appBar: widget.showStandaloneBackAppBar
-          ? AppBar(
-              automaticallyImplyLeading: false,
-              backgroundColor: const Color(0xFF234C7C),
-              elevation: 0,
-              centerTitle: true,
-              leading: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  color: Colors.white,
-                ),
-                onPressed: () => Navigator.of(context).maybePop(),
-              ),
-              title: Text(
-                isMalayalam ? 'ഞങ്ങളെക്കുറിച്ച്' : 'About',
-                style: AppTextTheme.localizedTitle(
-                  isMalayalam: isMalayalam,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              ),
-            )
-          : null,
+      appBar: CommonAppBar.homeAppBar(
+        context,
+        showOrnament: false,
+        title: isMalayalam ? 'ഞങ്ങളെക്കുറിച്ച്' : 'About',
+      ),
+      drawer: const CommonDrawer()
+          ,
       child: Consumer<AboutProvider>(
         builder: (context, provider, _) {
           if (provider.isAboutLoading) {

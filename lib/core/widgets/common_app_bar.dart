@@ -9,7 +9,10 @@ import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/app_bar_language_button.dart';
 import 'package:the_message_of_the_quran/core/widgets/app_bar_theme_button.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_screen_svg.dart';
+import 'package:the_message_of_the_quran/features/main_screen/presentation/main_screen.dart';
+import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/search_screen/presentation/widgets/surah_quick_search.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
 
 class CommonWebAppBarActions extends StatefulWidget {
   const CommonWebAppBarActions({
@@ -20,6 +23,7 @@ class CommonWebAppBarActions extends StatefulWidget {
     this.compact = true,
     this.showSearch = true,
     this.showLabels = true,
+    this.isBookmarkNeeded = true,
   });
 
   final int? selectedPageIndex;
@@ -28,20 +32,26 @@ class CommonWebAppBarActions extends StatefulWidget {
   final bool compact;
   final bool showSearch;
   final bool showLabels;
+  final bool isBookmarkNeeded;
 
   @override
   State<CommonWebAppBarActions> createState() => _CommonWebAppBarActionsState();
 }
 
 class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
-  static const List<({String label, int pageIndex, String assetPath})>
-  _navItems = [
+  bool get isBookmarkNeed => widget.isBookmarkNeeded;
+
+  List<({String label, int pageIndex, String assetPath})> get _navItems => [
     (label: 'Home', pageIndex: 0, assetPath: 'assets/icons/home-img.png'),
-    (
-      label: 'Bookmarks',
-      pageIndex: 1,
-      assetPath: 'assets/icons/bookmark-img.png',
-    ),
+
+    // Clean, direct Collection-If implementation
+    if (isBookmarkNeed)
+      (
+        label: 'Bookmarks',
+        pageIndex: 1,
+        assetPath: 'assets/icons/bookmark-img.png',
+      ),
+
     (
       label: 'Settings',
       pageIndex: 3,
@@ -181,7 +191,8 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
               width: iconSize,
               height: iconSize,
               color: accentColor.withValues(
-                alpha: widget.selectedPageIndex == item.pageIndex ||
+                alpha:
+                    widget.selectedPageIndex == item.pageIndex ||
                         _hoveredPageIndices.contains(item.pageIndex)
                     ? 1.0
                     : 0.78,
@@ -194,11 +205,14 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
             isSelected: false,
             isHovered: _isSearchHovered,
             onTap:
-                widget.onSearchPressed ?? () => showSurahQuickSearchDialog(context),
+                widget.onSearchPressed ??
+                () => showSurahQuickSearchDialog(context),
             onHover: _setSearchHovered,
             icon: HomeScreenSvg(
               icon: 'search',
-              color: accentColor.withValues(alpha: _isSearchHovered ? 1.0 : 0.78),
+              color: accentColor.withValues(
+                alpha: _isSearchHovered ? 1.0 : 0.78,
+              ),
               width: iconSize,
               height: iconSize,
             ),
@@ -212,9 +226,7 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
           icon: Icon(
             isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
             size: iconSize,
-            color: accentColor.withValues(
-              alpha: _isThemeHovered ? 1.0 : 0.78,
-            ),
+            color: accentColor.withValues(alpha: _isThemeHovered ? 1.0 : 0.78),
           ),
         ),
         const SizedBox(width: 6),
@@ -239,14 +251,14 @@ class CommonAppBar {
   }) {
     final scale = ResponsiveHelper.scaleFactor(context);
     final logoHeight = height ?? 40 * scale;
-    final isHighQualityMode =
+    const isHighQualityMode =
         _appBarLogoClarityMode == _AppBarLogoClarityMode.highQuality;
-    final appBarLogoFilterQuality = isHighQualityMode
+    const appBarLogoFilterQuality = isHighQualityMode
         ? FilterQuality.high
         : FilterQuality.medium;
     final cacheHeight = isHighQualityMode
-      ? null
-      : (logoHeight * MediaQuery.devicePixelRatioOf(context)).round();
+        ? null
+        : (logoHeight * MediaQuery.devicePixelRatioOf(context)).round();
     final image = Row(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -272,15 +284,31 @@ class CommonAppBar {
     );
     return Align(
       alignment: alignment,
-      child: onTap != null
-          ? MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: GestureDetector(
-                onTap: onTap,
-                child: image,
-              ),
-            )
-          : image,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap:
+              onTap ??
+              () {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (_) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (!context.mounted) return;
+                        Provider.of<HomeProvider>(
+                          context,
+                          listen: false,
+                        ).changeIndex(0);
+                      });
+                      return const MainScreen();
+                    },
+                  ),
+                  (route) => false,
+                );
+              },
+          child: image,
+        ),
+      ),
     );
   }
 
@@ -306,6 +334,7 @@ class CommonAppBar {
   static PreferredSizeWidget homeAppBar(
     BuildContext ctx, {
     bool showOrnament = true,
+    String title = "",
     List<Widget>? actions,
     PreferredSizeWidget? bottom,
   }) {
@@ -339,20 +368,52 @@ class CommonAppBar {
             )
           : null,
       leadingWidth: (46 * scale).roundToDouble(),
-      titleSpacing: 0,
-      title: brandLogo(ctx),
-      centerTitle: false,
+      title: Stack(
+        alignment: AlignmentGeometry.center,
+        children: [
+          brandLogo(ctx),
+          const SizedBox(width: 8),
+          Text(title, style: AppTextTheme.titleRegular),
+        ],
+      ),
+      centerTitle: true,
       leading: Builder(builder: (context) => _drawerMenuButton(context)),
-      actions:
-          actions ??
-          [
-            const AppBarThemeToggleButton(),
-            const SizedBox(width: 4),
-            const AppBarLanguageButton(),
-            const SizedBox(width: 8),
-          ],
+      actions: actions ?? [_buildAppendixWebActions(ctx)],
       bottom: bottom,
     );
+  }
+
+  static Widget _buildAppendixWebActions(BuildContext context) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final isNarrow = screenWidth < 640;
+    final navigator = Navigator.of(context);
+    final actions = CommonWebAppBarActions(
+      isBookmarkNeeded: false,
+      selectedPageIndex: null,
+      onPageSelected: (index) async {
+        if (index == 3) showSettingsDialog(context);
+        await navigator.pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (_) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!context.mounted) return;
+                Provider.of<HomeProvider>(
+                  context,
+                  listen: false,
+                ).changeIndex(0);
+              });
+              return const MainScreen();
+            },
+          ),
+          (route) => false,
+        );
+      },
+      compact: true,
+      showSearch: false,
+      showLabels: !isNarrow,
+      onSearchPressed: () {},
+    );
+    return Padding(padding: const EdgeInsets.only(right: 8), child: actions);
   }
 
   static PreferredSizeWidget appBar(
@@ -396,7 +457,10 @@ class CommonAppBar {
                 const SizedBox(width: 8),
                 if (showSearch)
                   IconButton(
-                    icon: const HomeScreenSvg(icon: 'search', color: Colors.white),
+                    icon: const HomeScreenSvg(
+                      icon: 'search',
+                      color: Colors.white,
+                    ),
                     tooltip: 'Search',
                     padding: EdgeInsets.zero,
                     visualDensity: VisualDensity.compact,
