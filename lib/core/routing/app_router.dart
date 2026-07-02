@@ -36,6 +36,12 @@ int? _intParam(Map<String, String> params, String key) =>
     int.tryParse(params[key] ?? '');
 
 GoRouter buildAppRouter() {
+  // go_router 8.0+ stopped syncing the browser URL on push()/pushReplacement()
+  // by default (only go() does) — every context.push() call site in this app
+  // was written expecting the pre-8.0 behavior (URL reflects the current
+  // screen so refresh/deep-link work), so opt back into it here.
+  GoRouter.optionURLReflectsImperativeAPIs = true;
+
   return GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: kIsWeb ? '/' : '/splash',
