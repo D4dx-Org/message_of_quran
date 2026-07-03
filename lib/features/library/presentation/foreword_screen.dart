@@ -8,6 +8,8 @@ import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/foreword_parser.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
+import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
+import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/features/mushaf/data/mushaf_repository.dart';
 import 'package:the_message_of_the_quran/features/mushaf/utils/mushaf_text_utils.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
@@ -39,12 +41,12 @@ class ForewordScreen extends StatelessWidget {
     }
 
     return BaseScreenLayout(
-      appBar: AppBar(
-        title: Text(
-          'Foreword',
-          style: AppTextTheme.titleRegular,
+         appBar:  CommonAppBar.homeAppBar(
+          context,
+          showOrnament: false,
+          title:  "Foreword"
         ),
-      ),
+        drawer: const CommonDrawer(),
       child: FutureBuilder<({ForewordModel? foreword, String bismillahGlyph})>(
         future: _loadData(),
         builder: (context, snapshot) {
@@ -84,12 +86,15 @@ class _MalayalamPrefaceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseScreenLayout(
-      appBar: AppBar(
-        title: Text(
-          'മുഖവുര',
-          style: AppTextTheme.localizedTitle(isMalayalam: true),
+ 
+      
+          appBar:  CommonAppBar.homeAppBar(
+          context,
+          showOrnament: false,
+          title:  "മുഖവുര"
         ),
-      ),
+        drawer: const CommonDrawer(),
+      
       child: FutureBuilder<MlPrefaceModel?>(
         future: MlPrefaceDbHelper.getPreface(),
         builder: (context, snapshot) {

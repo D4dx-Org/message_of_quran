@@ -4,6 +4,8 @@ import 'package:the_message_of_the_quran/core/models/authors_model.dart';
 import 'package:the_message_of_the_quran/core/services/database/works_of_reference_db_helper.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
+import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
+import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class WorksOfReferenceScreen extends StatelessWidget {
@@ -40,12 +42,12 @@ class WorksOfReferenceScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bodyColor = isDark ? Colors.white70 : Colors.black87;
     return BaseScreenLayout(
-      appBar: AppBar(
-        title: Text(
-          'Works of Reference',
-          style: AppTextTheme.titleRegular,
-        ),
+      appBar: CommonAppBar.homeAppBar(
+        context,
+        showOrnament: false,
+        title: 'Works of Reference',
       ),
+      drawer: const CommonDrawer(),
       child: FutureBuilder<List<AuthorsModel>>(
         future: WorksOfReferenceDbHelper.getWorksOfReference(),
         builder: (context, snapshot) {
@@ -54,7 +56,7 @@ class WorksOfReferenceScreen extends StatelessWidget {
           }
           if (snapshot.hasError) {
             return Center(
-              child: Text(
+              child: SelectableText(
                 'Failed to load works of reference.',
                 style: AppTextTheme.popinsDefault(
                   fontSize: 14,
@@ -67,7 +69,7 @@ class WorksOfReferenceScreen extends StatelessWidget {
           final worksList = snapshot.data ?? [];
           if (worksList.isEmpty) {
             return Center(
-              child: Text(
+              child: SelectableText(
                 'No works of reference available',
                 style: AppTextTheme.popinsDefault(
                   fontSize: 14,
@@ -103,7 +105,7 @@ class WorksOfReferenceScreen extends StatelessWidget {
                             ..._htmlStyles(bodyColor: bodyColor),
                           },
                         )
-                      : Text(
+                      : SelectableText(
                           'No Content available',
                           style: AppTextTheme.popinsDefault(
                             fontSize: 15,

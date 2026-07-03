@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:the_message_of_the_quran/core/models/arabic_block_model.dart';
@@ -16,7 +17,6 @@ import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/cross_reference_parser.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/core/utils/translation_alignment.dart';
-import 'package:the_message_of_the_quran/features/library/presentation/appendix_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/interpretation_note_marker.dart';
@@ -432,12 +432,7 @@ class CrossReferenceSheet extends StatefulWidget {
   /// to the Appendix screen; all other references open the relevant sheet.
   static void handleReferenceTap(BuildContext context, CrossReference ref) {
     if (ref.appendixNumber != null) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) =>
-              AppendixScreen(initialAppendixNumber: ref.appendixNumber),
-        ),
-      );
+      context.push('/appendix?appendixNumber=${ref.appendixNumber}');
       return;
     }
     showParsedReference(context, ref);

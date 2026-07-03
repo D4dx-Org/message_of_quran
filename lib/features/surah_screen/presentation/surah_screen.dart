@@ -6,6 +6,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:the_message_of_the_quran/core/models/ayah_bookmark_model.dart';
@@ -32,8 +33,6 @@ import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/core/widgets/scroll_to_top_button.dart';
 import 'package:the_message_of_the_quran/core/widgets/pinch_zoom_view.dart';
 import 'package:the_message_of_the_quran/features/bookmark_screen/presentation/bookmark_conflict_dialog.dart';
-import 'package:the_message_of_the_quran/features/main_screen/presentation/main_screen.dart';
-import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/surah_screen_app_bar.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/cross_reference_sheet.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/show_translation_gate.dart';
@@ -85,24 +84,6 @@ class _SurahBismillahHeader extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class _SurahMainScreenRedirect extends StatelessWidget {
-  const _SurahMainScreenRedirect({required this.targetIndex});
-
-  final int targetIndex;
-
-  @override
-  Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!context.mounted) return;
-      Provider.of<HomeProvider>(
-        context,
-        listen: false,
-      ).changeIndex(targetIndex);
-    });
-    return const MainScreen();
   }
 }
 
@@ -482,9 +463,12 @@ class _SurahScreenState extends State<SurahScreen> {
   Widget _buildSurahAppBarTitleControls(SurahProvider controller) {
     if (controller.surahList.isEmpty ||
         controller.index >= controller.surahList.length) {
-      return CommonAppBar.brandLogo(
-        context,
-        onTap: () => _navigateToMainTab(0),
+      return Padding(
+        padding: const EdgeInsets.only(left: 10),
+        child: CommonAppBar.brandLogo(
+          context,
+          onTap: () => _navigateToMainTab(0),
+        ),
       );
     }
 
@@ -495,73 +479,76 @@ class _SurahScreenState extends State<SurahScreen> {
         _lastKnownAyahStart ??
         (controller.arabicBlockList.firstOrNull?.verseFrom ?? 1);
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final maxWidth = constraints.maxWidth;
-        final isNarrowTitleArea = maxWidth < 220;
-        // Keep branding size identical to Home app bar.
-        final logoHeight = 40.0 * scale;
-        final interItemGap = isNarrowTitleArea ? 3.0 : 6.0;
+    return Padding(
+      padding: const EdgeInsets.only(left: 10),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final maxWidth = constraints.maxWidth;
+          final isNarrowTitleArea = maxWidth < 220;
+          // Keep branding size identical to Home app bar.
+          final logoHeight = 40.0 * scale;
+          final interItemGap = isNarrowTitleArea ? 3.0 : 6.0;
 
-        final chip = SurahHeaderControls(
-          isMalayalam: isMalayalam,
-          surahList: controller.surahList,
-          currentSurahNumber: surah.surahNumber,
-          arabicBlockList: controller.arabicBlockList,
-          currentAyahNumber: currentAyahNumber,
-          onAyahSelected: _jumpToAyah,
-          compact: true,
-          showActions: false,
-        );
-
-        if (!isNarrowTitleArea) {
-          // Desktop/tablet: keep controls at the start (near logo), not centered.
-          return Align(
-            alignment: Alignment.centerLeft,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CommonAppBar.brandLogo(
-                  context,
-                  height: logoHeight,
-                  onTap: () => _navigateToMainTab(0),
-                ),
-                SizedBox(width: interItemGap),
-                chip,
-              ],
-            ),
+          final chip = SurahHeaderControls(
+            isMalayalam: isMalayalam,
+            surahList: controller.surahList,
+            currentSurahNumber: surah.surahNumber,
+            arabicBlockList: controller.arabicBlockList,
+            currentAyahNumber: currentAyahNumber,
+            onAyahSelected: _jumpToAyah,
+            compact: true,
+            showActions: false,
           );
-        }
 
-        // Very narrow title area: scale the cluster down to avoid overflow.
-        return Row(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Flexible(
-              fit: FlexFit.tight,
-              child: SizedBox(
-                height: logoHeight,
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: CommonAppBar.brandLogo(
+          if (!isNarrowTitleArea) {
+            // Desktop/tablet: keep controls at the start (near logo), not centered.
+            return Align(
+              alignment: Alignment.centerLeft,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  CommonAppBar.brandLogo(
                     context,
                     height: logoHeight,
                     onTap: () => _navigateToMainTab(0),
                   ),
+                  SizedBox(width: interItemGap),
+                  chip,
+                ],
+              ),
+            );
+          }
+
+          // Very narrow title area: scale the cluster down to avoid overflow.
+          return Row(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Flexible(
+                fit: FlexFit.tight,
+                child: SizedBox(
+                  height: logoHeight,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: CommonAppBar.brandLogo(
+                      context,
+                      height: logoHeight,
+                      onTap: () => _navigateToMainTab(0),
+                    ),
+                  ),
                 ),
               ),
-            ),
-            SizedBox(width: interItemGap),
-            Flexible(
-              fit: FlexFit.loose,
-              child: Align(alignment: Alignment.centerLeft, child: chip),
-            ),
-          ],
-        );
-      },
+              SizedBox(width: interItemGap),
+              Flexible(
+                fit: FlexFit.loose,
+                child: Align(alignment: Alignment.centerLeft, child: chip),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -583,7 +570,6 @@ class _SurahScreenState extends State<SurahScreen> {
 
   Future<void> _navigateToMainTab(int tabIndex) async {
     if (!mounted) return;
-    final navigator = Navigator.of(context);
 
     // Settings: open as a dialog overlay so audio and scroll position are preserved.
     if (tabIndex == 3) {
@@ -597,12 +583,8 @@ class _SurahScreenState extends State<SurahScreen> {
     await context.read<AudioProvider>().stopAudio();
     if (!mounted) return;
 
-    await navigator.pushAndRemoveUntil(
-      MaterialPageRoute(
-        builder: (_) => _SurahMainScreenRedirect(targetIndex: tabIndex),
-      ),
-      (route) => false,
-    );
+    const tabPaths = ['/', '/bookmarks', '/mushaf'];
+    context.go(tabPaths[tabIndex]);
   }
 
   Future<void> _toggleSurahBookmark({
@@ -1384,7 +1366,7 @@ class _SurahScreenState extends State<SurahScreen> {
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Text(
+                                  SelectableText(
                                     '${isMl ? 'സൂറത്ത്' : 'Surah'} : ${surah.surahNumber}',
                                     style: AppTextTheme.localizedLabel(
                                       isMalayalam: isMl,
@@ -1473,7 +1455,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                     return Center(
                                       child: Padding(
                                         padding: const EdgeInsets.all(24),
-                                        child: Text(
+                                        child: SelectableText(
                                           'Failed to load surah info.',
                                           style: AppTextTheme.popinsDefault(
                                             fontSize: 14,
@@ -1488,7 +1470,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                     return Center(
                                       child: Padding(
                                         padding: const EdgeInsets.all(24),
-                                        child: Text(
+                                        child: SelectableText(
                                           'No description available for this surah.',
                                           style: AppTextTheme.popinsDefault(
                                             fontSize: 14,
@@ -1499,6 +1481,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                     );
                                   }
                                   return ListView.builder(
+                                    shrinkWrap: true,
                                     padding: const EdgeInsets.all(16),
                                     itemCount: prefaceList.length,
                                     itemBuilder: (_, i) {
@@ -1518,7 +1501,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                                 padding: const EdgeInsets.only(
                                                   bottom: 8,
                                                 ),
-                                                child: Text(
+                                                child: SelectableText(
                                                   preface.prefaceSubTitle,
                                                   style:
                                                       AppTextTheme.localizedLabel(
@@ -1531,7 +1514,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                                       ),
                                                 ),
                                               ),
-                                            Text(
+                                            SelectableText(
                                               preface.prefaceText,
                                               style: AppTextTheme.localizedBody(
                                                 isMalayalam: isMl,
@@ -1539,6 +1522,9 @@ class _SurahScreenState extends State<SurahScreen> {
                                                 height: 1.6,
                                                 color: colorScheme.onSurface,
                                               ),
+                                              textAlign: isMl
+                                                  ? TextAlign.start
+                                                  : TextAlign.justify,
                                             ),
                                           ],
                                         ),
@@ -1578,7 +1564,7 @@ class _SurahScreenState extends State<SurahScreen> {
             ? Border.all(color: colorScheme.outline.withValues(alpha: 0.6))
             : null,
       ),
-      child: Text(
+      child: SelectableText(
         value,
         style: AppTextTheme.localizedLabel(
           isMalayalam: isMalayalam,
@@ -1900,7 +1886,7 @@ class _SurahScreenState extends State<SurahScreen> {
           }
           return Padding(
             padding: const EdgeInsets.only(bottom: 8),
-            child: Text.rich(
+            child: SelectableText.rich(
               TextSpan(children: spans),
               textAlign: resolveTranslationTextAlign(
                 isMalayalam: isMl,
@@ -1924,7 +1910,7 @@ class _SurahScreenState extends State<SurahScreen> {
     final segments = parseForCrossReferences(text, currentSurahNumber);
     // Fast path: no cross-references found
     if (segments.length == 1 && !segments.first.isCrossReference) {
-      return Text(
+      return SelectableText(
         text,
         style: AppTextTheme.surahInterpretationStyle(
           context,
@@ -1969,7 +1955,7 @@ class _SurahScreenState extends State<SurahScreen> {
       }
     }
 
-    return Text.rich(
+    return SelectableText.rich(
       TextSpan(children: spans),
       textAlign: resolveInterpretationTextAlign(
         isMalayalam: isMalayalam,
@@ -2367,6 +2353,7 @@ class _SurahScreenState extends State<SurahScreen> {
         }
       },
       child: BaseScreenLayout(
+        contentBottomInset: BaseScreenLayout.defaultContentTopInset,
         topBorderRadius: kIsWeb ? AppTheme.desktopContentCardRadius : 40,
         bottomBorderRadius: kIsWeb ? AppTheme.desktopContentCardRadius : 0,
         appBar: CommonAppBar.appBar(
@@ -2380,7 +2367,7 @@ class _SurahScreenState extends State<SurahScreen> {
             ? _buildDesktopReaderHeader(
                 context,
                 controller,
-                horizontalMargin: 24,
+                horizontalMargin: 0,
               )
             : null,
         drawer: const CommonDrawer(),
@@ -2652,7 +2639,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                                     playingAyahId: effectivePlayingAyahId,
                                                                                   );
                                                                                 }
-                                                                                return Text.rich(
+                                                                                return SelectableText.rich(
                                                                                   TextSpan(
                                                                                     children: _buildArabicSpans(
                                                                                       arabicText,
@@ -3271,7 +3258,7 @@ class _TajweedHtmlTextState extends State<_TajweedHtmlText> {
 
     if (spans.isEmpty) return const SizedBox.shrink();
 
-    return Text.rich(
+    return SelectableText.rich(
       TextSpan(children: spans),
       textDirection: TextDirection.rtl,
       textAlign: quranJustify ? TextAlign.justify : TextAlign.start,

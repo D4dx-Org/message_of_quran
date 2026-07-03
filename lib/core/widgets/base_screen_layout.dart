@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/widgets/app_footer.dart';
 import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
 
 const _baseScreenLayoutBottomSafeAreaFillKey = Key(
@@ -32,6 +33,8 @@ class BaseScreenLayout extends StatelessWidget {
     this.endDrawer,
     this.resizeToAvoidBottomInset,
     this.contentTopInset = defaultContentTopInset,
+    this.contentBottomInset = 0,
+    this.expandContentCard = true,
   });
 
   /// The main content displayed inside the rounded card area.
@@ -74,6 +77,13 @@ class BaseScreenLayout extends StatelessWidget {
   /// The top inset applied inside the rounded content card before [child].
   final double contentTopInset;
 
+  /// The bottom inset applied inside the rounded content card after [child].
+  final double contentBottomInset;
+
+  /// Whether the content card fills all remaining vertical space.
+  /// Set `false` to let the card shrink-wrap [child]'s height instead.
+  final bool expandContentCard;
+
   static const _lightContentSurfaceBottomColor = Color.fromRGBO(
     255,
     250,
@@ -113,6 +123,24 @@ class BaseScreenLayout extends StatelessWidget {
     );
   }
 
+  Widget _wrapContentCard(Widget card) {
+    return expandContentCard ? Expanded(child: card) : card;
+  }
+
+  /// With [expandContentCard] false the card shrink-wraps its content, so
+  /// nothing inside it can scroll — the page itself must scroll when the
+  /// card grows taller than the viewport. Align pins the shrink-wrapped
+  /// body to the top, since ResponsiveContentWrapper otherwise centers it
+  /// vertically.
+  Widget _wrapBodyColumn(Widget column) {
+    return expandContentCard
+        ? column
+        : Align(
+            alignment: Alignment.topCenter,
+            child: SingleChildScrollView(child: column),
+          );
+  }
+
   Color _contentSurfaceColor({required bool isDarkMode}) {
     return isDarkMode
         ? _darkContentSurfaceColor
@@ -120,11 +148,14 @@ class BaseScreenLayout extends StatelessWidget {
   }
 
   Widget _buildContentCardChild() {
-    Widget content = contentTopInset == 0
+    Widget content = contentTopInset == 0 && contentBottomInset == 0
         ? child
         : Padding(
             key: _baseScreenLayoutContentInsetPaddingKey,
-            padding: EdgeInsets.only(top: contentTopInset),
+            padding: EdgeInsets.only(
+              top: contentTopInset,
+              bottom: contentBottomInset,
+            ),
             child: child,
           );
     // On web, suppress the scrollbar inside the rounded content card so the
@@ -157,6 +188,7 @@ class BaseScreenLayout extends StatelessWidget {
       floatingActionButton: floatingActionButton,
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       body: body,
+      bottomNavigationBar: const AppFooter(),
     );
   }
 
@@ -201,24 +233,26 @@ class BaseScreenLayout extends StatelessWidget {
             horizontalPadding,
             verticalPadding,
           ),
-          child: Column(
-            children: [
-              if (headerContent != null) ...[
-                headerContent!,
-                SizedBox(height: width < 640 ? 8 : 12),
-              ],
-              Expanded(
-                child: Container(
-                  decoration: _buildContentCardDecoration(
-                    isDarkMode: isDarkMode,
-                    borderRadius: contentCardBorderRadius,
-                    borderColor: webCardBorderColor,
+          child: _wrapBodyColumn(
+            Column(
+              children: [
+                if (headerContent != null) ...[
+                  headerContent!,
+                  SizedBox(height: width < 640 ? 8 : 12),
+                ],
+                _wrapContentCard(
+                  Container(
+                    decoration: _buildContentCardDecoration(
+                      isDarkMode: isDarkMode,
+                      borderRadius: contentCardBorderRadius,
+                      borderColor: webCardBorderColor,
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: _buildContentCardChild(),
                   ),
-                  clipBehavior: Clip.antiAlias,
-                  child: _buildContentCardChild(),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       );
@@ -227,20 +261,22 @@ class BaseScreenLayout extends StatelessWidget {
     final mobileBody = SafeArea(
       top: false,
       child: ResponsiveContentWrapper(
-        child: Column(
-          children: [
-            if (headerContent != null) headerContent!,
-            Expanded(
-              child: Container(
-                decoration: _buildContentCardDecoration(
-                  isDarkMode: isDarkMode,
-                  borderRadius: contentCardBorderRadius,
+        child: _wrapBodyColumn(
+          Column(
+            children: [
+              if (headerContent != null) headerContent!,
+              _wrapContentCard(
+                Container(
+                  decoration: _buildContentCardDecoration(
+                    isDarkMode: isDarkMode,
+                    borderRadius: contentCardBorderRadius,
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: _buildContentCardChild(),
                 ),
-                clipBehavior: Clip.antiAlias,
-                child: _buildContentCardChild(),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
+import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
+import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/features/contact_us_screen/presentation/provider/contact_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -53,12 +55,12 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
         Provider.of<LanguageProvider>(context).isMalayalam;
 
     return BaseScreenLayout(
-      appBar: AppBar(
-        title: Text(
-          isMalayalam ? 'ഞങ്ങളെ ബന്ധപ്പെടുക' : 'Contact Us',
-          style: AppTextTheme.localizedTitle(isMalayalam: isMalayalam),
-        ),
+      appBar: CommonAppBar.homeAppBar(
+        context,
+        showOrnament: false,
+        title: isMalayalam ? 'ഞങ്ങളെ ബന്ധപ്പെടുക' : 'Contact Us',
       ),
+      drawer: const CommonDrawer(),
       child: Container(
         decoration: const BoxDecoration(),
         child: Padding(
@@ -80,7 +82,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (description != null) ...[
-                      Text(
+                      SelectableText(
                         description,
                         style: AppTextTheme.localizedBody(
                           isMalayalam: isMalayalam,
@@ -124,7 +126,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Text(
+                                          SelectableText(
                                             'Phone',
                                             style: AppTextTheme.popinsDefault(
                                               fontSize: 14,
@@ -166,7 +168,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Text(
+                                          SelectableText(
                                             'Email',
                                             style: AppTextTheme.popinsDefault(
                                               fontSize: 14,
@@ -206,7 +208,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(
+                                        SelectableText(
                                           'Address',
                                           style: AppTextTheme.popinsDefault(
                                             fontSize: 14,
@@ -214,7 +216,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                           ),
                                         ),
                                         const SizedBox(height: 4),
-                                        Text(
+                                        SelectableText(
                                           address,
                                           style: AppTextTheme.localizedBody(
                                             isMalayalam: isMalayalam,

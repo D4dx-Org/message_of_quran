@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/juz_hizb_model.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/juz_hizb_provider.dart';
-import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
 class HizbColumn extends StatelessWidget {
@@ -54,18 +54,8 @@ class HizbColumn extends StatelessWidget {
               child: InkWell(
               onTap: available
                   ? () {
-                      final surahProv = context.read<SurahProvider>();
-                      final idx = surahProv.surahList.indexWhere(
-                        (s) => s.surahNumber == hizb.surahNumber,
-                      );
-                      if (idx < 0) return;
-                      surahProv.assignIndex(idx);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              SurahScreen(scrollToAyahId: hizb.ayahNumber),
-                        ),
+                      context.push(
+                        '/surah/${hizb.surahNumber}?scrollToAyahId=${hizb.ayahNumber}',
                       );
                     }
                   : null,

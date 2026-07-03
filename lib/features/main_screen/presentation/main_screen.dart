@@ -4,15 +4,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
-import 'package:the_message_of_the_quran/features/bookmark_screen/presentation/bookmark_screen.dart';
-import 'package:the_message_of_the_quran/features/home_screen/presentation/home_screen.dart';
-import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
-import 'package:the_message_of_the_quran/features/mushaf/screens/mushaf_landing_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
 import 'package:the_message_of_the_quran/features/search_screen/presentation/widgets/web_full_text_search_dialog.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
@@ -21,12 +18,9 @@ import 'package:the_message_of_the_quran/main.dart' as app;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  const MainScreen({super.key, required this.shell});
 
-  static void navigateToTab(BuildContext context, int index) {
-    final state = context.findAncestorStateOfType<_MainScreenState>();
-    state?._onItemTapped(index);
-  }
+  final StatefulNavigationShell shell;
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -50,13 +44,6 @@ class _MainScreenState extends State<MainScreen> {
       iconData: null,
       assetPath: 'assets/icons/settings-img.png',
     ),
-  ];
-
-  static const List<Widget> _pages = [
-    HomeScreen(),
-    BookmarkScreen(),
-    MushafLandingScreen(), // index 2
-    SettingsScreen(),
   ];
 
   @override
@@ -105,7 +92,7 @@ class _MainScreenState extends State<MainScreen> {
       showSettingsDialog(context);
       return;
     }
-    Provider.of<HomeProvider>(context, listen: false).changeIndex(index);
+    widget.shell.goBranch(index);
     final screenNames = ['Home', 'Bookmarks', 'Mushaf', 'Settings'];
     // ignore: deprecated_member_use
     SemanticsService.announce(
@@ -198,7 +185,6 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<HomeProvider>(context);
     final theme = Theme.of(context);
     final bottomViewPadding = MediaQuery.viewPaddingOf(context).bottom;
     final isDarkMode = theme.brightness == Brightness.dark;
@@ -211,13 +197,13 @@ class _MainScreenState extends State<MainScreen> {
     final inactiveColor = isDarkMode
         ? Colors.grey[400]!
         : const Color(0xFF4A4A4A);
-    final displayIndex = controller.currentIndex;
+    final displayIndex = widget.shell.currentIndex;
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     final tablet = ResponsiveHelper.isTablet(context);
     final scale = ResponsiveHelper.scaleFactor(context);
     final navCornerRadius = 28.0 * scale;
 
-    final pageBody = IndexedStack(index: displayIndex, children: _pages);
+    final pageBody = widget.shell;
 
     if (_useWebShell(context)) {
       return _buildWebShell(context, pageBody, displayIndex, isMalayalam);

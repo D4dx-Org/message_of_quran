@@ -1,5 +1,8 @@
+import 'dart:math' as math;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/juz_hizb_model.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
@@ -10,6 +13,7 @@ import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
 import 'package:the_message_of_the_quran/core/widgets/scroll_to_top_button.dart';
+import 'package:the_message_of_the_quran/core/widgets/shimmer_asset_image.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_screen_list.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/juz_column.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/surah_chip_row.dart';
@@ -20,7 +24,6 @@ import 'package:the_message_of_the_quran/features/search_screen/presentation/wid
     // hide Expanded, AppTextTheme, InputDecoration;
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
-import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -33,6 +36,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   static const double _webHomeMaxWidth = 1140;
+  static const double _webTabBarMaxWidth = 400.0;
   static const double _webPopularCompactSidePadding = 6;
   static const double _webPopularRegularSidePadding = 8;
   static const double _webPopularCompactGap = 8;
@@ -46,7 +50,6 @@ class _HomeScreenState extends State<HomeScreen>
   final ScrollController _listController = ScrollController();
   bool _showScrollToTop = false;
   late final TabController _tabController;
-  int _selectedWebSectionIndex = 0;
   bool _isWebSearchActive = false;
 
   @override
@@ -98,6 +101,10 @@ class _HomeScreenState extends State<HomeScreen>
     // Persist the new active sub-tab so it can be restored if MainScreen is
     // rebuilt (e.g. when the user presses the Home button in SurahScreen).
     context.read<HomeProvider>().setHomeSubTabIndex(_tabController.index);
+    if (_useWebHome(context)) {
+      setState(() {});
+      return;
+    }
     if (_tabController.index != 0) {
       if (_showScrollToTop) {
         setState(() => _showScrollToTop = false);
@@ -127,15 +134,8 @@ class _HomeScreenState extends State<HomeScreen>
     bool saveTabSelection = true,
   }) async {
     final surahProvider = context.read<SurahProvider>();
-    final index = surahProvider.surahList.indexWhere(
-      (surah) => surah.surahNumber == surahNumber,
-    );
-    if (index < 0) return;
-
-    surahProvider.assignIndex(index);
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => SurahScreen(scrollToAyahId: ayahId)),
+    await context.push(
+      '/surah/$surahNumber${ayahId != null ? '?scrollToAyahId=$ayahId' : ''}',
     );
     if (!context.mounted) return;
     if (saveTabSelection) {
@@ -168,16 +168,6 @@ class _HomeScreenState extends State<HomeScreen>
     await context.read<JuzHizbProvider>().selectJuz(juz.number);
   }
 
-  void _selectWebSection(int index) {
-    if (_selectedWebSectionIndex == index) return;
-    setState(() {
-      _selectedWebSectionIndex = index;
-      _showScrollToTop = _listController.hasClients
-          ? _listController.offset > 200
-          : false;
-    });
-  }
-
   double? _webHomeContentMaxWidth(BuildContext context) {
     if (!kIsWeb) return null;
 
@@ -187,11 +177,17 @@ class _HomeScreenState extends State<HomeScreen>
     return (width * 0.84).clamp(920.0, 1080.0).toDouble();
   }
 
-  double? _webHomeTabBarMaxWidth(BuildContext context) {
-    final contentWidth = _webHomeContentMaxWidth(context);
-    if (contentWidth == null) return null;
+  double? _webBrowsePanelMaxWidth(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    if (width < 1100) return null;
 
-    return contentWidth.clamp(680.0, 760.0).toDouble();
+    return (width * 0.8).clamp(960.0, 1400.0).toDouble();
+  }
+
+  double? _webHomeTabBarMaxWidth(BuildContext context) {
+    if (!kIsWeb) return null;
+
+    return _webTabBarMaxWidth;
   }
 
   @override
@@ -299,10 +295,6 @@ class _HomeScreenState extends State<HomeScreen>
     return _isDarkWebSurface(context) ? Colors.white : AppTheme.appThemePrimary;
   }
 
-  Color _webSecondaryText(BuildContext context) {
-    return _isDarkWebSurface(context) ? Colors.white70 : Colors.grey[600]!;
-  }
-
   Color _webSurfaceBorder(BuildContext context) {
     final theme = Theme.of(context);
     return _isDarkWebSurface(context)
@@ -366,27 +358,12 @@ class _HomeScreenState extends State<HomeScreen>
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
       child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Image.asset(
-              'assets/images/symbol-logo.png',
-              width: emblemWidth,
-              fit: BoxFit.contain,
-              filterQuality: FilterQuality.high,
-            ),
-            // const SizedBox(height: 8),
-            Image.asset(
-              'assets/images/symbol-logo-text.png',
-              width: titleWidth,
-              fit: BoxFit.contain,
-              filterQuality: FilterQuality.high,
-              color: _isDarkWebSurface(context)
-                  ? Colors.white.withValues(alpha: 0.85)
-                  : AppTheme.appThemePrimary,
-              colorBlendMode: BlendMode.srcIn,
-            ),
-          ],
+        child: _WebBrandingLogo(
+          emblemWidth: emblemWidth,
+          titleWidth: titleWidth,
+          titleColor: _isDarkWebSurface(context)
+              ? Colors.white.withValues(alpha: 0.85)
+              : AppTheme.appThemePrimary,
         ),
       ),
     );
@@ -501,60 +478,11 @@ class _HomeScreenState extends State<HomeScreen>
     required List<JuzHizbModel> juzList,
   }) {
     final primaryTextColor = _webPrimaryText(context);
-    final secondaryTextColor = _webSecondaryText(context);
     final outlineColor = _webSurfaceBorder(context);
     final fillColor = _isDarkWebSurface(context)
         ? Theme.of(context).scaffoldBackgroundColor
         : Colors.white;
     final isCompactWebHome = _useCompactWebHome(context);
-    final sectionLabels = isMalayalam
-      ? const ['സൂറത്ത്', 'ജുസ്അ്']
-      : const ['Surah', "Juz'"];
-
-    Widget buildTabStrip() {
-      return Wrap(
-        alignment: WrapAlignment.start,
-        spacing: 24,
-        runSpacing: 8,
-        children: List.generate(sectionLabels.length, (index) {
-          final isSelected = _selectedWebSectionIndex == index;
-          return InkWell(
-            onTap: () => _selectWebSection(index),
-            borderRadius: BorderRadius.circular(999),
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 6),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    sectionLabels[index],
-                    style: TextStyle(
-                      color: isSelected ? primaryTextColor : secondaryTextColor,
-                      fontSize: 16,
-                      fontWeight: isSelected
-                          ? FontWeight.w700
-                          : FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 180),
-                    curve: Curves.easeOut,
-                    height: 3,
-                    width: isSelected ? 48 : 0,
-                    decoration: BoxDecoration(
-                      color: AppTheme.appThemePrimary,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }),
-      );
-    }
 
     Widget buildSectionDropdown({
       required double width,
@@ -603,7 +531,7 @@ class _HomeScreenState extends State<HomeScreen>
       );
     }
 
-    final isJuzSection = _selectedWebSectionIndex == 1;
+    final isJuzSection = _tabController.index == 1;
     final dropdownFieldKey = isJuzSection
         ? const ValueKey('webJuzSelector')
         : const ValueKey('webSurahSelector');
@@ -675,15 +603,15 @@ class _HomeScreenState extends State<HomeScreen>
           return Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: buildTabStrip()),
+              Expanded(child: _buildTabBar(context)),
               const SizedBox(width: 16),
-              buildSectionDropdown(
-                width: dropdownWidth,
-                fieldKey: dropdownFieldKey,
-                hintText: dropdownHintText,
-                items: dropdownItems,
-                onChanged: handleDropdownChanged,
-              ),
+              // buildSectionDropdown(
+              //   width: dropdownWidth,
+              //   fieldKey: dropdownFieldKey,
+              //   hintText: dropdownHintText,
+              //   items: dropdownItems,
+              //   onChanged: handleDropdownChanged,
+              // ),
             ],
           );
         }
@@ -691,7 +619,7 @@ class _HomeScreenState extends State<HomeScreen>
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            buildTabStrip(),
+            _buildTabBar(context),
             const SizedBox(height: 10),
             Align(
               alignment: Alignment.centerLeft,
@@ -722,7 +650,7 @@ class _HomeScreenState extends State<HomeScreen>
         context.watch<LastReadProvider>().lastSurahTabSelection;
     final compactGridMaxCrossAxisExtent = isMalayalam ? 420.0 : 400.0;
 
-    switch (_selectedWebSectionIndex) {
+    switch (_tabController.index) {
       case 1:
         if (juzHizbProvider.isLoading && juzHizbProvider.juzList.isEmpty) {
           return const Center(child: CircularProgressIndicator());
@@ -870,41 +798,48 @@ class _HomeScreenState extends State<HomeScreen>
                       surahList: surahProvider.surahList,
                       isLoading: surahProvider.isSurahLoading,
                     ),
-                    if (!hasActiveWebSearch) ...[
+                    if (!hasActiveWebSearch)
                       _buildWebPopularSection(
                         context,
                         isMalayalam: isMalayalam,
                         surahList: surahProvider.surahList,
                       ),
-                      const SizedBox(height: _webPopularToBrowseGap),
-                      DecoratedBox(
-                        decoration: _webPanelDecoration(context),
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildWebSectionHeader(
-                                context,
-                                isMalayalam: isMalayalam,
-                                surahList: surahProvider.surahList,
-                                juzList: juzHizbProvider.juzList,
-                              ),
-                              const SizedBox(height: 8),
-                              _buildWebSectionBody(
-                                context,
-                                isMalayalam: isMalayalam,
-                                surahProvider: surahProvider,
-                                juzHizbProvider: juzHizbProvider,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
                   ],
                 ),
               ),
+              if (!hasActiveWebSearch) ...[
+                const SizedBox(height: _webPopularToBrowseGap),
+                ResponsiveContentWrapper(
+                  maxWidth: _webBrowsePanelMaxWidth(context),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: horizontalPadding,
+                  ),
+                  child: DecoratedBox(
+                    decoration: _webPanelDecoration(context),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildWebSectionHeader(
+                            context,
+                            isMalayalam: isMalayalam,
+                            surahList: surahProvider.surahList,
+                            juzList: juzHizbProvider.juzList,
+                          ),
+                          const SizedBox(height: 8),
+                          _buildWebSectionBody(
+                            context,
+                            isMalayalam: isMalayalam,
+                            surahProvider: surahProvider,
+                            juzHizbProvider: juzHizbProvider,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
           PositionedDirectional(
@@ -963,6 +898,94 @@ class _HomeScreenState extends State<HomeScreen>
               maxWidth: homeContentMaxWidth,
               child: homeContent,
             ),
+    );
+  }
+}
+
+/// Emblem + wordmark lockup shown above the web surah search box. Shows one
+/// square shimmer placeholder covering both images while they load, then
+/// cross-fades to the real logo — a single clean square reads better here
+/// than each image's own narrow/tall shimmer shape.
+class _WebBrandingLogo extends StatefulWidget {
+  const _WebBrandingLogo({
+    required this.emblemWidth,
+    required this.titleWidth,
+    required this.titleColor,
+  });
+
+  final double emblemWidth;
+  final double titleWidth;
+  final Color titleColor;
+
+  @override
+  State<_WebBrandingLogo> createState() => _WebBrandingLogoState();
+}
+
+class _WebBrandingLogoState extends State<_WebBrandingLogo> {
+  bool _ready = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_ready) return;
+    Future.wait([
+      precacheImage(
+        const AssetImage('assets/images/symbol-logo.png'),
+        context,
+      ),
+      precacheImage(
+        const AssetImage('assets/images/symbol-logo-text.png'),
+        context,
+      ),
+    ]).then((_) {
+      if (mounted) setState(() => _ready = true);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final emblemHeight = widget.emblemWidth * (276 / 165);
+    final titleHeight = widget.titleWidth * (154 / 258);
+    final totalHeight = emblemHeight + titleHeight;
+    final totalWidth = math.max(widget.emblemWidth, widget.titleWidth);
+    final squareSize = emblemHeight;
+
+    final logo = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Image.asset(
+          'assets/images/symbol-logo.png',
+          width: widget.emblemWidth,
+          fit: BoxFit.contain,
+          filterQuality: FilterQuality.high,
+        ),
+        Image.asset(
+          'assets/images/symbol-logo-text.png',
+          width: widget.titleWidth,
+          fit: BoxFit.contain,
+          filterQuality: FilterQuality.high,
+          color: widget.titleColor,
+          colorBlendMode: BlendMode.srcIn,
+        ),
+      ],
+    );
+
+    return SizedBox(
+      width: totalWidth,
+      height: totalHeight,
+      child: Center(
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 250),
+          child: _ready
+              ? KeyedSubtree(key: const ValueKey('logo'), child: logo)
+              : ShimmerBox(
+                  key: const ValueKey('shimmer'),
+                  width: squareSize,
+                  height: squareSize,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+        ),
+      ),
     );
   }
 }

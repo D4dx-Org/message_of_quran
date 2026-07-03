@@ -1,10 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
-import 'package:the_message_of_the_quran/features/force_update_screen/presentation/force_update_screen.dart';
-import 'package:the_message_of_the_quran/features/main_screen/presentation/main_screen.dart';
 import 'package:the_message_of_the_quran/features/splash_screen/presentation/widgets/splash_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/splash_screen/providers/version_check_provider.dart';
 
@@ -29,18 +28,6 @@ class _SplashScreenState extends State<SplashScreen> {
     return SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.manual,
       overlays: SystemUiOverlay.values,
-    );
-  }
-
-  Route<void> _buildNextRoute(VersionCheckProvider controller) {
-    final nextScreen = controller.isUpdateNeeded
-        ? const ForceUpdateScreen()
-        : const MainScreen();
-
-    return PageRouteBuilder<void>(
-      transitionDuration: Duration.zero,
-      reverseTransitionDuration: Duration.zero,
-      pageBuilder: (context, animation, secondaryAnimation) => nextScreen,
     );
   }
 
@@ -77,11 +64,7 @@ class _SplashScreenState extends State<SplashScreen> {
       await _restoreDefaultSystemUi();
       if (!mounted) return;
       debugPrint('Splash: navigating to next route');
-      Navigator.pushAndRemoveUntil(
-        context,
-        _buildNextRoute(controller),
-        (route) => false,
-      );
+      context.go(controller.isUpdateNeeded ? '/force-update' : '/');
     });
   }
 

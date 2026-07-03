@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
+import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
+import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
+import 'package:the_message_of_the_quran/core/widgets/bio_with_floating_image.dart';
 import 'package:the_message_of_the_quran/features/author_screen/provider/translator_provider.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 
 class TranslatorScreen extends StatefulWidget {
   const TranslatorScreen({super.key});
@@ -12,6 +17,8 @@ class TranslatorScreen extends StatefulWidget {
 }
 
 class _TranslatorScreenState extends State<TranslatorScreen> {
+  bool? _lastMalayalam;
+
   @override
   void initState() {
     super.initState();
@@ -22,17 +29,36 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // This screen only ever shows the Malayalam translator's bio. If the
+    // user switches the app language away from Malayalam while it's still
+    // on screen, hop over to its English sibling route instead of showing
+    // stale Malayalam content.
+    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
+    if (_lastMalayalam != isMalayalam) {
+      _lastMalayalam = isMalayalam;
+      if (!isMalayalam) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) context.pushReplacement('/translator-en');
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bodyColor = isDark ? Colors.white70 : Colors.black87;
 
     return BaseScreenLayout(
-      appBar: AppBar(
-        title: Text(
-          'വിവർത്തകൻ',
-          style: AppTextTheme.localizedTitle(isMalayalam: true),
-        ),
+      appBar: CommonAppBar.homeAppBar(
+        context,
+        showOrnament: false,
+        title: 'വിവർത്തകൻ',
       ),
+      drawer: const CommonDrawer(),
+      expandContentCard: false,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
         child: Consumer<TranslatorProvider>(
@@ -42,7 +68,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
             }
             if (provider.aboutAuthorList.isEmpty) {
               return Center(
-                child: Text(
+                child: SelectableText(
                   'വിവർത്തകനെ കുറിച്ചുള്ള വിവരങ്ങൾ ലഭ്യമല്ല.',
                   style: AppTextTheme.localizedBody(
                     isMalayalam: true,
@@ -61,7 +87,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
                     Center(
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 16),
-                        child: Text(
+                        child: SelectableText(
                           author.name!,
                           textAlign: TextAlign.center,
                           style: AppTextTheme.localizedTitle(
@@ -73,35 +99,24 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
                         ),
                       ),
                     ),
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.asset(
-                          'assets/images/kc-saleem.png',
-                           width: 300,
-                          height: 300,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+                  BioWithFloatingImage(
+                    imagePath: 'assets/images/kc-saleem.png',
+                    bioText: (author.bio != null && author.bio!.isNotEmpty)
+                        ? author.bio!
+                            .split('\n')
+                            .where((p) => p.trim().isNotEmpty)
+                            .map((p) => p.trim())
+                            .join('\n\n')
+                        : '',
+                    textStyle: AppTextTheme.localizedBody(
+                      isMalayalam: true,
+                      fontSize: 14,
+                      color: bodyColor,
                     ),
                   ),
-                  if (author.bio != null && author.bio!.isNotEmpty)
-                    ...author.bio!.split('\n').where((p) => p.trim().isNotEmpty).expand((paragraph) => [
-                      Text(
-                        paragraph.trim(),
-                        style: AppTextTheme.localizedBody(
-                          isMalayalam: true,
-                          fontSize: 14,
-                          color: bodyColor,
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                    ]),
                   const SizedBox(height: 16),
                      if (author.mobile != null && author.mobile!.isNotEmpty)
-                    Text(
+                    SelectableText(
                         author.mobile!,
                       style: AppTextTheme.popinsDefault(
                         fontSize: 14,
@@ -110,7 +125,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
                       ),
                     ),
                   if (author.email != null && author.email!.isNotEmpty)
-                    Text(
+                    SelectableText(
                       'E-mail: ${author.email!}',
                       style: AppTextTheme.popinsDefault(
                         fontSize: 14,

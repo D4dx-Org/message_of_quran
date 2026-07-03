@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
@@ -8,7 +9,6 @@ import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_card.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
-import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
 class SearchScreen extends StatelessWidget {
@@ -40,15 +40,7 @@ class SearchScreen extends StatelessWidget {
     int index,
   ) {
     final surah = controller.searchList[index];
-    final idx = controller.surahList.indexWhere(
-      (s) => s.surahNumber == surah.surahNumber,
-    );
-    if (idx < 0) return;
-    controller.assignIndex(idx);
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const SurahScreen()),
-    );
+    context.push('/surah/${surah.surahNumber}');
   }
 
   Widget _buildMobileResults(BuildContext context, SurahProvider controller) {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/appendix_model.dart';
@@ -6,6 +8,11 @@ import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
+import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
+import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
+import 'package:the_message_of_the_quran/features/main_screen/presentation/main_screen.dart';
+import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 
 class AppendixScreen extends StatefulWidget {
@@ -106,7 +113,7 @@ class _AppendixScreenState extends State<AppendixScreen> {
       });
     }
   }
-
+ 
   @override
   void dispose() {
     _searchController.dispose();
@@ -122,12 +129,12 @@ class _AppendixScreenState extends State<AppendixScreen> {
     final isMalayalam = Provider.of<LanguageProvider>(context).isMalayalam;
 
     return BaseScreenLayout(
-      appBar: AppBar(
-        title: Text(
-          isMalayalam ? 'അനുബന്ധം' : 'Appendix',
-          style: AppTextTheme.localizedTitle(isMalayalam: isMalayalam),
+      appBar:  CommonAppBar.homeAppBar(
+          context,
+          showOrnament: false,
+          title:isMalayalam?"അനുബന്ധം": "Appendix"
         ),
-      ),
+        drawer: const CommonDrawer(),
       child: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
@@ -288,7 +295,7 @@ class _AppendixAccordionTile extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: AnimatedRotation(
-                        turns: isExpanded ? 0.25 : 0.0,
+                        turns: isExpanded ? 0.50 : 0.0,
                         duration: const Duration(milliseconds: 150),
                         child: Icon(
                           Icons.expand_more,

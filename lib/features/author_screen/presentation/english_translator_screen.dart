@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
+import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
+import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
+import 'package:the_message_of_the_quran/core/widgets/bio_with_floating_image.dart';
 import 'package:the_message_of_the_quran/features/author_screen/provider/english_translator_provider.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 
 class EnglishTranslatorScreen extends StatefulWidget {
   const EnglishTranslatorScreen({super.key});
@@ -12,6 +17,8 @@ class EnglishTranslatorScreen extends StatefulWidget {
 }
 
 class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen> {
+  bool? _lastMalayalam;
+
   @override
   void initState() {
     super.initState();
@@ -22,14 +29,36 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // This screen only ever shows the English translator's bio. If the
+    // user switches the app language to Malayalam while it's still on
+    // screen, hop over to its Malayalam sibling route instead of showing
+    // stale English content.
+    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
+    if (_lastMalayalam != isMalayalam) {
+      _lastMalayalam = isMalayalam;
+      if (isMalayalam) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) context.pushReplacement('/translator');
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bodyColor = isDark ? Colors.white70 : Colors.black87;
 
     return BaseScreenLayout(
-      appBar: AppBar(
-        title: Text('Translator', style: AppTextTheme.titleRegular),
+      appBar: CommonAppBar.homeAppBar(
+        context,
+        showOrnament: false,
+        title: 'Translator',
       ),
+      expandContentCard: false,
+      drawer: const CommonDrawer(),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
         child: Consumer<EnglishTranslatorProvider>(
@@ -39,7 +68,7 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen> {
             }
             if (provider.translatorList.isEmpty) {
               return Center(
-                child: Text(
+                child: SelectableText(
                   'No translator information available.',
                   style: AppTextTheme.popinsDefault(
                       fontSize: 14, color: Colors.grey),
@@ -55,7 +84,7 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen> {
                     Center(
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 16),
-                        child: Text(
+                        child: SelectableText(
                           translator.name!,
                           textAlign: TextAlign.center,
                           style: AppTextTheme.popinsDefault(
@@ -66,36 +95,23 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen> {
                         ),
                       ),
                     ),
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.asset(
-                          'assets/images/kc-saleem.png',
-                          width: 300,
-                          height: 300,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
+                  BioWithFloatingImage(
+                    imagePath: 'assets/images/kc-saleem.png',
+                    bioText: (translator.bio != null &&
+                            translator.bio!.isNotEmpty)
+                        ? translator.bio!
+                            .split('\n')
+                            .where((p) => p.trim().isNotEmpty)
+                            .map((p) => p.trim())
+                            .join('\n\n')
+                        : '',
+                    textStyle:
+                        AppTextTheme.popinsDefault(fontSize: 14, color: bodyColor),
                   ),
-                  if (translator.bio != null && translator.bio!.isNotEmpty)
-                    ...translator.bio!
-                        .split('\n')
-                        .where((p) => p.trim().isNotEmpty)
-                        .expand((paragraph) => [
-                              Text(
-                                paragraph.trim(),
-                                style: AppTextTheme.popinsDefault(
-                                    fontSize: 14, color: bodyColor),
-                              ),
-                              const SizedBox(height: 14),
-                            ]),
                   const SizedBox(height: 16),
                   if (translator.address != null &&
                       translator.address!.isNotEmpty)
-                    Text(
+                    SelectableText(
                       'Address: ${translator.address!}',
                       style: AppTextTheme.popinsDefault(
                           fontSize: 14,
@@ -105,7 +121,7 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen> {
                   if (translator.email != null && translator.email!.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
-                      child: Text(
+                      child: SelectableText(
                         'Email: ${translator.email!}',
                         style: AppTextTheme.popinsDefault(
                             fontSize: 14,

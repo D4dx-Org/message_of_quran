@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/arabic_block_model.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
@@ -10,7 +11,6 @@ import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
 import 'package:the_message_of_the_quran/features/mushaf/widgets/star_number.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
-import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
 Future<void> showSurahQuickSearchDialog(
@@ -18,8 +18,6 @@ Future<void> showSurahQuickSearchDialog(
   List<ArabicBlockModel>? arabicBlockList,
   void Function(int ayaStart)? onAyahSelected,
 }) async {
-  final surahProvider = context.read<SurahProvider>();
-
   final result = await showDialog<_QuickSearchResult>(
     context: context,
     barrierDismissible: true,
@@ -37,15 +35,7 @@ Future<void> showSurahQuickSearchDialog(
 
   if (result.surahNumber == null) return;
 
-  final index = surahProvider.surahList.indexWhere(
-    (surah) => surah.surahNumber == result.surahNumber,
-  );
-  if (index < 0) return;
-
-  surahProvider.assignIndex(index);
-  await Navigator.of(context).push(
-    MaterialPageRoute(builder: (_) => const SurahScreen()),
-  );
+  await context.push('/surah/${result.surahNumber}');
   if (!context.mounted) return;
   context.read<LastReadProvider>().saveLastSurahTabSelection(result.surahNumber!);
 }
@@ -449,8 +439,8 @@ class _SurahQuickSearchState extends State<SurahQuickSearch> {
           decoration: InputDecoration(
             border: InputBorder.none,
             hintText: widget.isMalayalam
-                ? 'പേര് / നമ്പർ തിരയുക'
-                : 'Search by name or number',
+                ? 'സൂറത്തിൻ്റെ പേരോ നമ്പറോ ഉപയോഗിച്ച് തിരയുക'
+                : 'Search by surah name or number',
             hintStyle: AppTextTheme.localizedBody(
               isMalayalam: widget.isMalayalam,
               fontSize: widget.isMalayalam ? 13 : 14,

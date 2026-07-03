@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
@@ -9,7 +10,6 @@ import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/juz_hizb_provider.dart';
 import 'package:the_message_of_the_quran/features/mushaf/widgets/star_number.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
-import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
 import 'home_list_row_text_styles.dart';
@@ -102,13 +102,8 @@ class JuzColumn extends StatelessWidget {
               child: InkWell(
                 onTap: available
                     ? () async {
-                        surahProvider.assignIndex(surahIndex);
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                SurahScreen(scrollToAyahId: juz.ayahNumber),
-                          ),
+                        await context.push(
+                          '/surah/${juz.surahNumber}?scrollToAyahId=${juz.ayahNumber}',
                         );
                         if (!context.mounted) return;
                         unawaited(provider.selectJuz(juz.number));

@@ -6,7 +6,6 @@ import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/platform_helper.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
-import 'package:the_message_of_the_quran/core/widgets/d4dx_branding_footer.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_app_block.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_audio_block.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_card.dart';
@@ -77,9 +76,9 @@ class _SettingsDialog extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          isMl ? 'സെറ്റിംഗ്സ്' : 'Settings',
+                          'Settings',
                           style: AppTextTheme.localizedTitle(
-                            isMalayalam: isMl,
+                            isMalayalam: false,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: isDark
@@ -227,8 +226,6 @@ class SettingsScreen extends StatelessWidget {
             const SizedBox(height: 8),
             const SettingsScreenAppBlock(),
           ],
-          const SizedBox(height: 24),
-          const D4dxBrandingFooter(),
         ],
       );
     }
@@ -286,8 +283,6 @@ class SettingsScreen extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 24),
-        const D4dxBrandingFooter(),
       ],
     );
   }
@@ -332,7 +327,6 @@ class SettingsScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   const SettingsScreenAppBlock(),
                 ],
-                const D4dxBrandingFooter(),
               ],
             ),
     );
