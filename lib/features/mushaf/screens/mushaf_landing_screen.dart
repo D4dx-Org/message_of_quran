@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/theme/app_text_theme.dart';
@@ -15,7 +16,6 @@ import '../utils/surah_unicode.dart';
 import '../../../core/theme/app_theme.dart';
 import '../widgets/mushaf_download_required_dialog.dart';
 import '../widgets/star_number.dart';
-import 'mushaf_reader_screen.dart';
 
 // ─── Surah metadata ──────────────────────────────────────────────────────────
 
@@ -559,13 +559,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
       return;
     }
     _p.saveMushafSurahSelection(suraNo);
-    Navigator.of(context)
-        .push(
-          MaterialPageRoute(
-            builder: (_) => MushafReaderScreen(initialPage: page),
-          ),
-        )
-        .then((_) => _p.refreshAfterReader());
+    context.push('/mushaf-reader?page=$page').then((_) => _p.refreshAfterReader());
   }
 
   Future<void> _openRevelationSurah(BuildContext context, int suraNo) async {
@@ -576,13 +570,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
       return;
     }
     _p.saveMushafRevelationSelection(suraNo);
-    Navigator.of(context)
-        .push(
-          MaterialPageRoute(
-            builder: (_) => MushafReaderScreen(initialPage: page),
-          ),
-        )
-        .then((_) => _p.refreshAfterReader());
+    context.push('/mushaf-reader?page=$page').then((_) => _p.refreshAfterReader());
   }
 
   void _openJuz(BuildContext context, int juzNo, int firstPage) {
@@ -592,12 +580,8 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
       return;
     }
     _p.saveMushafJuzSelection(juzNo);
-    Navigator.of(context)
-        .push(
-          MaterialPageRoute(
-            builder: (_) => MushafReaderScreen(initialPage: firstPage),
-          ),
-        )
+    context
+        .push('/mushaf-reader?page=$firstPage')
         .then((_) => _p.refreshAfterReader());
   }
 
@@ -616,13 +600,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
       _handleUndownloadedPage(context);
       return;
     }
-    Navigator.of(context)
-        .push(
-          MaterialPageRoute(
-            builder: (_) => MushafReaderScreen(initialPage: page),
-          ),
-        )
-        .then((_) => _p.refreshAfterReader());
+    context.push('/mushaf-reader?page=$page').then((_) => _p.refreshAfterReader());
   }
 
   void _handleUndownloadedPage(BuildContext context) {

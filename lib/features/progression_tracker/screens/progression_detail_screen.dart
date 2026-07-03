@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
@@ -6,7 +7,6 @@ import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/provider/progression_detail_provider.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/provider/progression_tracker_provider.dart';
-import 'package:the_message_of_the_quran/features/progression_tracker/screens/progression_day_detail_screen.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/services/progression_notification_service.dart';
 
 class ProgressionDetailScreen extends StatefulWidget {
@@ -56,7 +56,7 @@ class _ProgressionDetailScreenState extends State<ProgressionDetailScreen> {
       await context.read<ProgressionTrackerProvider>().deleteProgression(
         widget.progressionId,
       );
-      if (mounted) Navigator.pop(context);
+      if (mounted) context.pop();
     }
   }
 
@@ -227,7 +227,7 @@ class _ProgressionDetailScreenState extends State<ProgressionDetailScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.chevron_left, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop(),
         ),
         title: Text(
           'Progression Tracker',
@@ -405,17 +405,13 @@ class _ProgressionDetailScreenState extends State<ProgressionDetailScreen> {
                   return GestureDetector(
                     onTap: (isReading || isCompleted)
                         ? () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => ProgressionDayDetailScreen(
-                                  progressionId: widget.progressionId,
-                                  dayId: day.id!,
-                                ),
-                              ),
-                            ).then((_) {
-                              detail.loadProgression(widget.progressionId);
-                            });
+                            context
+                                .push(
+                                  '/progression/${widget.progressionId}/day/${day.id}',
+                                )
+                                .then((_) {
+                                  detail.loadProgression(widget.progressionId);
+                                });
                           }
                         : null,
                     child: Container(

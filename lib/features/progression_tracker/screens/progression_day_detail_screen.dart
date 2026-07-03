@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/provider/progression_detail_provider.dart';
-import 'package:the_message_of_the_quran/features/progression_tracker/screens/ayah_reading_screen.dart';
 
 class ProgressionDayDetailScreen extends StatefulWidget {
   final int progressionId;
@@ -47,7 +47,7 @@ class _ProgressionDayDetailScreenState
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.chevron_left, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop(),
         ),
         title: Text(
           'Progression Tracker',
@@ -154,18 +154,14 @@ class _ProgressionDayDetailScreenState
                       onTap: canTap
                           ? () {
                               detail.setCurrentAyah(ayah);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => AyahReadingScreen(
-                                    progressionId: widget.progressionId,
-                                    dayId: widget.dayId,
-                                  ),
-                                ),
-                              ).then((_) {
-                                detail.loadAyahsForDay(widget.dayId);
-                                detail.loadProgression(widget.progressionId);
-                              });
+                              context
+                                  .push(
+                                    '/progression/${widget.progressionId}/day/${widget.dayId}/reading',
+                                  )
+                                  .then((_) {
+                                    detail.loadAyahsForDay(widget.dayId);
+                                    detail.loadProgression(widget.progressionId);
+                                  });
                             }
                           : () {
                               ScaffoldMessenger.of(context).showSnackBar(

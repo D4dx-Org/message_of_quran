@@ -3,6 +3,8 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
+import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
+import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/features/author_screen/provider/author_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -59,18 +61,12 @@ class _AuthorScreenState extends State<AuthorScreen> {
     final signature = createdBy?.trim();
 
     if (signature == null || signature.isEmpty) {
-      return {
-        'bodyHtml': cleanedHtml,
-        'signature': null,
-      };
+      return {'bodyHtml': cleanedHtml, 'signature': null};
     }
 
     final paragraphMatches = _paragraphRegex.allMatches(cleanedHtml).toList();
     if (paragraphMatches.isEmpty) {
-      return {
-        'bodyHtml': cleanedHtml,
-        'signature': null,
-      };
+      return {'bodyHtml': cleanedHtml, 'signature': null};
     }
 
     final lastParagraphMatch = paragraphMatches.last;
@@ -79,14 +75,13 @@ class _AuthorScreenState extends State<AuthorScreen> {
 
     if (_normalizeSignature(lastParagraphText) !=
         _normalizeSignature(signature)) {
-      return {
-        'bodyHtml': cleanedHtml,
-        'signature': null,
-      };
+      return {'bodyHtml': cleanedHtml, 'signature': null};
     }
 
     return {
-      'bodyHtml': cleanedHtml.substring(0, lastParagraphMatch.start).trimRight(),
+      'bodyHtml': cleanedHtml
+          .substring(0, lastParagraphMatch.start)
+          .trimRight(),
       'signature': lastParagraphText,
     };
   }
@@ -134,8 +129,10 @@ class _AuthorScreenState extends State<AuthorScreen> {
       _lastMalayalam = isMalayalam;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          Provider.of<AuthorProvider>(context, listen: false)
-              .getAuthorInfo(malayalam: isMalayalam);
+          Provider.of<AuthorProvider>(
+            context,
+            listen: false,
+          ).getAuthorInfo(malayalam: isMalayalam);
         }
       });
     }
@@ -147,12 +144,12 @@ class _AuthorScreenState extends State<AuthorScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bodyColor = isDark ? Colors.white70 : Colors.black87;
     return BaseScreenLayout(
-      appBar: AppBar(
-        title: Text(
-          isMalayalam ? 'മുഹമ്മദ് അസദ്' : 'Muhammad Asad',
-          style: AppTextTheme.localizedTitle(isMalayalam: isMalayalam),
-        ),
+      appBar: CommonAppBar.homeAppBar(
+        context,
+        showOrnament: false,
+        title: isMalayalam ? 'മുഹമ്മദ് അസദ്' : 'Muhammad Asad',
       ),
+      drawer: const CommonDrawer(),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
         child: Consumer<AuthorProvider>(
@@ -210,7 +207,10 @@ class _AuthorScreenState extends State<AuthorScreen> {
                             if (url != null) {
                               final uri = Uri.parse(url);
                               if (await canLaunchUrl(uri)) {
-                                await launchUrl(uri, mode: LaunchMode.externalApplication);
+                                await launchUrl(
+                                  uri,
+                                  mode: LaunchMode.externalApplication,
+                                );
                               }
                             }
                           },
@@ -248,7 +248,10 @@ class _AuthorScreenState extends State<AuthorScreen> {
                             if (url != null) {
                               final uri = Uri.parse(url);
                               if (await canLaunchUrl(uri)) {
-                                await launchUrl(uri, mode: LaunchMode.externalApplication);
+                                await launchUrl(
+                                  uri,
+                                  mode: LaunchMode.externalApplication,
+                                );
                               }
                             }
                           },

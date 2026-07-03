@@ -32,6 +32,8 @@ class BaseScreenLayout extends StatelessWidget {
     this.endDrawer,
     this.resizeToAvoidBottomInset,
     this.contentTopInset = defaultContentTopInset,
+    this.contentBottomInset = 0,
+    this.expandContentCard = true,
   });
 
   /// The main content displayed inside the rounded card area.
@@ -74,6 +76,13 @@ class BaseScreenLayout extends StatelessWidget {
   /// The top inset applied inside the rounded content card before [child].
   final double contentTopInset;
 
+  /// The bottom inset applied inside the rounded content card after [child].
+  final double contentBottomInset;
+
+  /// Whether the content card fills all remaining vertical space.
+  /// Set `false` to let the card shrink-wrap [child]'s height instead.
+  final bool expandContentCard;
+
   static const _lightContentSurfaceBottomColor = Color.fromRGBO(
     255,
     250,
@@ -113,6 +122,10 @@ class BaseScreenLayout extends StatelessWidget {
     );
   }
 
+  Widget _wrapContentCard(Widget card) {
+    return expandContentCard ? Expanded(child: card) : card;
+  }
+
   Color _contentSurfaceColor({required bool isDarkMode}) {
     return isDarkMode
         ? _darkContentSurfaceColor
@@ -120,11 +133,14 @@ class BaseScreenLayout extends StatelessWidget {
   }
 
   Widget _buildContentCardChild() {
-    Widget content = contentTopInset == 0
+    Widget content = contentTopInset == 0 && contentBottomInset == 0
         ? child
         : Padding(
             key: _baseScreenLayoutContentInsetPaddingKey,
-            padding: EdgeInsets.only(top: contentTopInset),
+            padding: EdgeInsets.only(
+              top: contentTopInset,
+              bottom: contentBottomInset,
+            ),
             child: child,
           );
     // On web, suppress the scrollbar inside the rounded content card so the
@@ -207,8 +223,8 @@ class BaseScreenLayout extends StatelessWidget {
                 headerContent!,
                 SizedBox(height: width < 640 ? 8 : 12),
               ],
-              Expanded(
-                child: Container(
+              _wrapContentCard(
+                Container(
                   decoration: _buildContentCardDecoration(
                     isDarkMode: isDarkMode,
                     borderRadius: contentCardBorderRadius,
@@ -230,8 +246,8 @@ class BaseScreenLayout extends StatelessWidget {
         child: Column(
           children: [
             if (headerContent != null) headerContent!,
-            Expanded(
-              child: Container(
+            _wrapContentCard(
+              Container(
                 decoration: _buildContentCardDecoration(
                   isDarkMode: isDarkMode,
                   borderRadius: contentCardBorderRadius,

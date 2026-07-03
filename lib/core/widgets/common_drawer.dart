@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
@@ -8,17 +9,6 @@ import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/d4dx_branding_footer.dart';
-import 'package:the_message_of_the_quran/features/author_screen/author_screen.dart';
-import 'package:the_message_of_the_quran/features/author_screen/presentation/english_translator_screen.dart';
-import 'package:the_message_of_the_quran/features/author_screen/presentation/translator_screen.dart';
-import 'package:the_message_of_the_quran/features/about_screen/presentation/about_screen.dart';
-import 'package:the_message_of_the_quran/features/contact_us_screen/presentation/contact_us_screen.dart';
-import 'package:the_message_of_the_quran/features/library/presentation/appendix_screen.dart';
-import 'package:the_message_of_the_quran/features/library/presentation/foreword_screen.dart';
-import 'package:the_message_of_the_quran/features/library/presentation/works_of_reference_screen.dart';
-import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
-import 'package:the_message_of_the_quran/features/common_email/presentation/feedback_screen.dart';
-import 'package:the_message_of_the_quran/features/prostration_verses/presentation/prostration_verses_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
 import 'package:the_message_of_the_quran/core/utils/platform_helper.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
@@ -42,7 +32,6 @@ class CommonDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<HomeProvider>(context, listen: false);
     final isMalayalam = Provider.of<LanguageProvider>(context).isMalayalam;
     final theme = Theme.of(context);
     final scale = ResponsiveHelper.scaleFactor(context);
@@ -80,9 +69,8 @@ class CommonDrawer extends StatelessWidget {
                         icon: Icons.home_outlined,
                         assetPath: 'assets/icons/home-img.png',
                         onTap: () {
-                          controller.changeIndex(0);
                           Navigator.pop(context);
-                          Navigator.popUntil(context, (route) => route.isFirst);
+                          context.go('/');
                         },
                       ),
                       _DrawerTile(
@@ -92,14 +80,7 @@ class CommonDrawer extends StatelessWidget {
                         isMalayalam: isMalayalam,
                         onTap: () {
                           Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const AboutScreen(
-                                showStandaloneBackAppBar: true,
-                              ),
-                            ),
-                          );
+                          context.push('/about');
                         },
                       ),
                       if (isMalayalam)
@@ -114,12 +95,7 @@ class CommonDrawer extends StatelessWidget {
                               isMalayalam: true,
                               onTap: () {
                                 Navigator.pop(context);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const AuthorScreen(),
-                                  ),
-                                );
+                                context.push('/author');
                               },
                             ),
                             _DrawerSubTile(
@@ -128,13 +104,7 @@ class CommonDrawer extends StatelessWidget {
                               isMalayalam: true,
                               onTap: () {
                                 Navigator.pop(context);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) =>
-                                        const TranslatorScreen(),
-                                  ),
-                                );
+                                context.push('/translator');
                               },
                             ),
                           ],
@@ -149,13 +119,7 @@ class CommonDrawer extends StatelessWidget {
                               icon: Icons.edit_outlined,
                               onTap: () {
                                 Navigator.pop(context);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) =>
-                                        const AuthorScreen(),
-                                  ),
-                                );
+                                context.push('/author');
                               },
                             ),
                             _DrawerSubTile(
@@ -163,13 +127,7 @@ class CommonDrawer extends StatelessWidget {
                               icon: Icons.translate_outlined,
                               onTap: () {
                                 Navigator.pop(context);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) =>
-                                        const EnglishTranslatorScreen(),
-                                  ),
-                                );
+                                context.push('/translator-en');
                               },
                             ),
                           ],
@@ -185,12 +143,7 @@ class CommonDrawer extends StatelessWidget {
                             isMalayalam: isMalayalam,
                             onTap: () {
                               Navigator.pop(context);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const ForewordScreen(),
-                                ),
-                              );
+                              context.push('/foreword');
                             },
                           ),
                           _DrawerSubTile(
@@ -199,12 +152,7 @@ class CommonDrawer extends StatelessWidget {
                             isMalayalam: isMalayalam,
                             onTap: () {
                               Navigator.pop(context);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const AppendixScreen(),
-                                ),
-                              );
+                              context.push('/appendix');
                             },
                           ),
                           if (!isMalayalam)
@@ -213,13 +161,7 @@ class CommonDrawer extends StatelessWidget {
                               icon: Icons.library_books_outlined,
                               onTap: () {
                                 Navigator.pop(context);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) =>
-                                        const WorksOfReferenceScreen(),
-                                  ),
-                                );
+                                context.push('/works-of-reference');
                               },
                             ),
                         ],
@@ -232,12 +174,7 @@ class CommonDrawer extends StatelessWidget {
                         isMalayalam: isMalayalam,
                         onTap: () {
                           Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const ProstrationVersesScreen(),
-                            ),
-                          );
+                          context.push('/prostration-verses');
                         },
                       ),
                       for (final section in usefulLinksSections)
@@ -267,12 +204,7 @@ class CommonDrawer extends StatelessWidget {
                         icon: Icons.mail_outline,
                         onTap: () {
                           Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const FeedbackScreen(),
-                            ),
-                          );
+                          context.push('/feedback');
                         },
                       ),
                       _DrawerTile(
@@ -280,12 +212,7 @@ class CommonDrawer extends StatelessWidget {
                         icon: Icons.chat_bubble_outline,
                         onTap: () {
                           Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const ContactUsScreen(),
-                            ),
-                          );
+                          context.push('/contact-us');
                         },
                       ),
                       if (!PlatformHelper.isWeb)

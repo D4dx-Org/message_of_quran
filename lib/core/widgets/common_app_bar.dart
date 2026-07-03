@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/constants/app_constants.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
@@ -10,6 +11,7 @@ import 'package:the_message_of_the_quran/core/widgets/app_bar_language_button.da
 import 'package:the_message_of_the_quran/core/widgets/app_bar_theme_button.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_screen_svg.dart';
 import 'package:the_message_of_the_quran/features/search_screen/presentation/widgets/surah_quick_search.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
 
 class CommonWebAppBarActions extends StatefulWidget {
   const CommonWebAppBarActions({
@@ -20,6 +22,7 @@ class CommonWebAppBarActions extends StatefulWidget {
     this.compact = true,
     this.showSearch = true,
     this.showLabels = true,
+    this.isBookmarkNeeded = true,
   });
 
   final int? selectedPageIndex;
@@ -28,20 +31,26 @@ class CommonWebAppBarActions extends StatefulWidget {
   final bool compact;
   final bool showSearch;
   final bool showLabels;
+  final bool isBookmarkNeeded;
 
   @override
   State<CommonWebAppBarActions> createState() => _CommonWebAppBarActionsState();
 }
 
 class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
-  static const List<({String label, int pageIndex, String assetPath})>
-  _navItems = [
+  bool get isBookmarkNeed => widget.isBookmarkNeeded;
+
+  List<({String label, int pageIndex, String assetPath})> get _navItems => [
     (label: 'Home', pageIndex: 0, assetPath: 'assets/icons/home-img.png'),
-    (
-      label: 'Bookmarks',
-      pageIndex: 1,
-      assetPath: 'assets/icons/bookmark-img.png',
-    ),
+
+    // Clean, direct Collection-If implementation
+    if (isBookmarkNeed)
+      (
+        label: 'Bookmarks',
+        pageIndex: 1,
+        assetPath: 'assets/icons/bookmark-img.png',
+      ),
+
     (
       label: 'Settings',
       pageIndex: 3,
@@ -181,7 +190,8 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
               width: iconSize,
               height: iconSize,
               color: accentColor.withValues(
-                alpha: widget.selectedPageIndex == item.pageIndex ||
+                alpha:
+                    widget.selectedPageIndex == item.pageIndex ||
                         _hoveredPageIndices.contains(item.pageIndex)
                     ? 1.0
                     : 0.78,
@@ -194,11 +204,14 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
             isSelected: false,
             isHovered: _isSearchHovered,
             onTap:
-                widget.onSearchPressed ?? () => showSurahQuickSearchDialog(context),
+                widget.onSearchPressed ??
+                () => showSurahQuickSearchDialog(context),
             onHover: _setSearchHovered,
             icon: HomeScreenSvg(
               icon: 'search',
-              color: accentColor.withValues(alpha: _isSearchHovered ? 1.0 : 0.78),
+              color: accentColor.withValues(
+                alpha: _isSearchHovered ? 1.0 : 0.78,
+              ),
               width: iconSize,
               height: iconSize,
             ),
@@ -212,9 +225,7 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
           icon: Icon(
             isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
             size: iconSize,
-            color: accentColor.withValues(
-              alpha: _isThemeHovered ? 1.0 : 0.78,
-            ),
+            color: accentColor.withValues(alpha: _isThemeHovered ? 1.0 : 0.78),
           ),
         ),
         const SizedBox(width: 6),
@@ -231,22 +242,21 @@ class CommonAppBar {
   // Change this constant to compare both rendering modes.
   static const _appBarLogoClarityMode = _AppBarLogoClarityMode.highQuality;
 
-  static Widget brandLogo(
+  static Widget _brandLogoTapTarget(
     BuildContext context, {
-    Alignment alignment = Alignment.centerLeft,
     double? height,
     VoidCallback? onTap,
   }) {
     final scale = ResponsiveHelper.scaleFactor(context);
     final logoHeight = height ?? 40 * scale;
-    final isHighQualityMode =
+    const isHighQualityMode =
         _appBarLogoClarityMode == _AppBarLogoClarityMode.highQuality;
-    final appBarLogoFilterQuality = isHighQualityMode
+    const appBarLogoFilterQuality = isHighQualityMode
         ? FilterQuality.high
         : FilterQuality.medium;
     final cacheHeight = isHighQualityMode
-      ? null
-      : (logoHeight * MediaQuery.devicePixelRatioOf(context)).round();
+        ? null
+        : (logoHeight * MediaQuery.devicePixelRatioOf(context)).round();
     final image = Row(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -270,17 +280,24 @@ class CommonAppBar {
         ),
       ],
     );
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: onTap ?? () => context.go('/'),
+        child: image,
+      ),
+    );
+  }
+
+  static Widget brandLogo(
+    BuildContext context, {
+    Alignment alignment = Alignment.centerLeft,
+    double? height,
+    VoidCallback? onTap,
+  }) {
     return Align(
       alignment: alignment,
-      child: onTap != null
-          ? MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: GestureDetector(
-                onTap: onTap,
-                child: image,
-              ),
-            )
-          : image,
+      child: _brandLogoTapTarget(context, height: height, onTap: onTap),
     );
   }
 
@@ -306,6 +323,7 @@ class CommonAppBar {
   static PreferredSizeWidget homeAppBar(
     BuildContext ctx, {
     bool showOrnament = true,
+    String title = "",
     List<Widget>? actions,
     PreferredSizeWidget? bottom,
   }) {
@@ -314,45 +332,86 @@ class CommonAppBar {
     final ornamentOverflow = 75.0 * scale;
     final ornamentWidth = 137.0 * scale;
     final ornamentHeight = 146.0 * scale;
+    const edgePadding = 5.0;
+    final leadingWidth = (46 * scale).roundToDouble() + edgePadding;
+    final hasTitleText = title.isNotEmpty;
+    final resolvedActions = <Widget>[
+      ...actions ?? [_buildAppendixWebActions(ctx)],
+      const SizedBox(width: edgePadding),
+    ];
+
+    final flexibleSpaceChildren = <Widget>[
+      if (showOrnament)
+        PositionedDirectional(
+          top: ornamentTop,
+          end: -ornamentOverflow,
+          child: Image.asset(
+            'assets/images/home_side_image.png',
+            width: ornamentWidth,
+            height: ornamentHeight,
+            fit: BoxFit.contain,
+            color: AppTheme.appThemeRawChips,
+            colorBlendMode: BlendMode.srcIn,
+          ),
+        ),
+      // Positioned outside the title slot so it can't rob centerTitle of the
+      // slack it needs to truly center the title text.
+      if (hasTitleText)
+        PositionedDirectional(
+          start: leadingWidth + NavigationToolbar.kMiddleSpacing,
+          top: 0,
+          bottom: 0,
+          child: Center(child: _brandLogoTapTarget(ctx)),
+        ),
+    ];
+
     return AppBar(
       automaticallyImplyLeading: false,
       backgroundColor: AppTheme.appThemePrimary,
       elevation: 0,
       clipBehavior: Clip.none,
-      flexibleSpace: showOrnament
-          ? Stack(
-              clipBehavior: Clip.none,
+      flexibleSpace: flexibleSpaceChildren.isEmpty
+          ? null
+          : Stack(clipBehavior: Clip.none, children: flexibleSpaceChildren),
+      leadingWidth: leadingWidth,
+      title: hasTitleText
+          ? Text(title, style: AppTextTheme.titleRegular)
+          : Stack(
+              alignment: AlignmentGeometry.center,
               children: [
-                PositionedDirectional(
-                  top: ornamentTop,
-                  end: -ornamentOverflow,
-                  child: Image.asset(
-                    'assets/images/home_side_image.png',
-                    width: ornamentWidth,
-                    height: ornamentHeight,
-                    fit: BoxFit.contain,
-                    color: AppTheme.appThemeRawChips,
-                    colorBlendMode: BlendMode.srcIn,
-                  ),
-                ),
+                brandLogo(ctx),
+                const SizedBox(width: 8),
+                Text(title, style: AppTextTheme.titleRegular),
               ],
-            )
-          : null,
-      leadingWidth: (46 * scale).roundToDouble(),
-      titleSpacing: 0,
-      title: brandLogo(ctx),
-      centerTitle: false,
-      leading: Builder(builder: (context) => _drawerMenuButton(context)),
-      actions:
-          actions ??
-          [
-            const AppBarThemeToggleButton(),
-            const SizedBox(width: 4),
-            const AppBarLanguageButton(),
-            const SizedBox(width: 8),
-          ],
+            ),
+      centerTitle: true,
+      leading: Builder(
+        builder: (context) => Padding(
+          padding: const EdgeInsetsDirectional.only(start: edgePadding),
+          child: _drawerMenuButton(context),
+        ),
+      ),
+      actions: resolvedActions,
       bottom: bottom,
     );
+  }
+
+  static Widget _buildAppendixWebActions(BuildContext context) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final isNarrow = screenWidth < 640;
+    final actions = CommonWebAppBarActions(
+      isBookmarkNeeded: false,
+      selectedPageIndex: null,
+      onPageSelected: (index) {
+        if (index == 3) showSettingsDialog(context);
+        context.go('/');
+      },
+      compact: true,
+      showSearch: false,
+      showLabels: !isNarrow,
+      onSearchPressed: () {},
+    );
+    return Padding(padding: const EdgeInsets.only(right: 8), child: actions);
   }
 
   static PreferredSizeWidget appBar(
@@ -396,7 +455,10 @@ class CommonAppBar {
                 const SizedBox(width: 8),
                 if (showSearch)
                   IconButton(
-                    icon: const HomeScreenSvg(icon: 'search', color: Colors.white),
+                    icon: const HomeScreenSvg(
+                      icon: 'search',
+                      color: Colors.white,
+                    ),
                     tooltip: 'Search',
                     padding: EdgeInsets.zero,
                     visualDensity: VisualDensity.compact,

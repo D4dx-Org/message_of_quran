@@ -1067,7 +1067,7 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
     return null;
   }
 
-  void _openSheet(BuildContext context) {
+  void _openSheet(BuildContext context, {int? lockedTab}) {
     final screenWidth = MediaQuery.sizeOf(context).width;
     const double maxSheetWidth = 620;
     final double hInset = screenWidth < 640
@@ -1089,6 +1089,7 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
           arabicBlockList: widget.arabicBlockList,
           // Use the last explicitly-selected ayah, not the scroll-position one.
           currentAyahNumber: _selectedAyah,
+          lockedTab: lockedTab,
           onSurahSelected: (surahNumber) async {
             Navigator.of(sheetCtx).pop();
             // Reset jumped ayah for the new surah.
@@ -1130,56 +1131,103 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
     final screenWidth = MediaQuery.sizeOf(context).width;
     // On narrow screens show only the surah number to prevent overflow.
     final narrowChip = screenWidth < 640;
-    final chipLabel = narrowChip
-        ? '${widget.currentSurahNumber}'
-        : '${widget.currentSurahNumber}. $surahLabel';
 
     const white = Colors.white;
     final fill = white.withValues(alpha: isDark ? 0.10 : 0.13);
     final border = white.withValues(alpha: 0.22);
 
-    return Semantics(
-      button: true,
-      label: 'Jump to surah or ayah',
-      child: GestureDetector(
-        onTap: () => _openSheet(context),
-        child: Container(
-          constraints: BoxConstraints(maxWidth: narrowChip ? 44 : 180),
-          padding: EdgeInsets.symmetric(
-            horizontal: (narrowChip ? 5 : 8) * scale,
-            vertical: (narrowChip ? 4 : 6) * scale,
-          ),
-          decoration: BoxDecoration(
-            color: fill,
-            borderRadius: BorderRadius.circular(9 * scale),
-            border: Border.all(color: border),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                child: Text(
-                  chipLabel,
-                  style: TextStyle(
-                    color: white,
-                    fontSize: (narrowChip ? 10 : 10.5) * scale,
-                    fontWeight: FontWeight.w600,
-                    height: 1.2,
+    Widget chip({
+      required String label,
+      required String semanticsLabel,
+      required double maxWidth,
+      required VoidCallback onTap,
+    }) {
+      return Semantics(
+        button: true,
+        label: semanticsLabel,
+        child: GestureDetector(
+          onTap: onTap,
+          child: Container(
+            constraints: BoxConstraints(maxWidth: maxWidth),
+            padding: EdgeInsets.symmetric(
+              horizontal: (narrowChip ? 5 : 8) * scale,
+              vertical: (narrowChip ? 4 : 6) * scale,
+            ),
+            decoration: BoxDecoration(
+              color: fill,
+              borderRadius: BorderRadius.circular(9 * scale),
+              border: Border.all(color: border),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      color: white,
+                      fontSize: (narrowChip ? 10 : 10.5) * scale,
+                      fontWeight: FontWeight.w600,
+                      height: 1.2,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
                 ),
-              ),
-              SizedBox(width: 3 * scale),
-              Icon(
-                Icons.keyboard_arrow_down_rounded,
-                color: white.withValues(alpha: 0.80),
-                size: (narrowChip ? 13 : 16) * scale,
-              ),
-            ],
+                SizedBox(width: 3 * scale),
+                Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  color: white.withValues(alpha: 0.80),
+                  size: (narrowChip ? 13 : 16) * scale,
+                ),
+              ],
+            ),
           ),
         ),
-      ),
+      );
+    }
+
+    // Web: surah and ayah jump are two independent controls, not tabs of one
+    // combined sheet.
+    if (kIsWeb) {
+      final surahChipLabel = narrowChip
+          ? '${widget.currentSurahNumber}'
+          : '${widget.currentSurahNumber}. $surahLabel';
+      final ayahChipLabel = narrowChip
+          ? '$_selectedAyah'
+          : (widget.isMalayalam
+                ? 'ആയത്ത് $_selectedAyah'
+                : 'Ayah $_selectedAyah');
+
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          chip(
+            label: surahChipLabel,
+            semanticsLabel: 'Jump to surah',
+            maxWidth: narrowChip ? 44 : 150,
+            onTap: () => _openSheet(context, lockedTab: 0),
+          ),
+          SizedBox(width: 6 * scale),
+          chip(
+            label: ayahChipLabel,
+            semanticsLabel: 'Jump to ayah',
+            maxWidth: narrowChip ? 44 : 110,
+            onTap: () => _openSheet(context, lockedTab: 1),
+          ),
+        ],
+      );
+    }
+
+    final chipLabel = narrowChip
+        ? '${widget.currentSurahNumber}'
+        : '${widget.currentSurahNumber}. $surahLabel';
+
+    return chip(
+      label: chipLabel,
+      semanticsLabel: 'Jump to surah or ayah',
+      maxWidth: narrowChip ? 44 : 180,
+      onTap: () => _openSheet(context),
     );
   }
 }
@@ -1197,6 +1245,7 @@ class _SurahNavigatorSheet extends StatefulWidget {
     required this.currentAyahNumber,
     required this.onSurahSelected,
     required this.onAyahSelected,
+    this.lockedTab,
   });
 
   final bool isMalayalam;
@@ -1206,13 +1255,16 @@ class _SurahNavigatorSheet extends StatefulWidget {
   final int currentAyahNumber;
   final ValueChanged<int> onSurahSelected;
   final ValueChanged<int> onAyahSelected;
+  // When set, hides the Surah/Ayah tab switcher and locks the sheet to a
+  // single list (used on web where the two jump actions are separate).
+  final int? lockedTab;
 
   @override
   State<_SurahNavigatorSheet> createState() => _SurahNavigatorSheetState();
 }
 
 class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
-  int _selectedTab = 0; // 0 = Surah, 1 = Ayah
+  late int _selectedTab = widget.lockedTab ?? 0; // 0 = Surah, 1 = Ayah
   final TextEditingController _searchCtrl = TextEditingController();
   final TextEditingController _ayahSearchCtrl = TextEditingController();
   final ScrollController _surahScrollCtrl = ScrollController();
@@ -1247,6 +1299,7 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
     final cs = theme.colorScheme;
     final isMl = widget.isMalayalam;
     final screenHeight = MediaQuery.sizeOf(context).height;
+    final tabsLocked = widget.lockedTab != null;
 
     return ConstrainedBox(
       constraints: BoxConstraints(maxHeight: screenHeight * 0.82),
@@ -1258,33 +1311,46 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
             padding: const EdgeInsets.fromLTRB(16, 14, 12, 6),
             child: Row(
               children: [
-                _TabButton(
-                  label: isMl ? 'സൂറത്ത്' : 'Surah',
-                  isSelected: _selectedTab == 0,
-                  isMalayalam: isMl,
-                  onTap: () {
-                    if (_selectedTab != 0) {
-                      setState(() => _selectedTab = 0);
-                    }
-                  },
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Text(
-                    '|',
-                    style: TextStyle(color: cs.outline, fontSize: 14),
+                if (tabsLocked)
+                  Text(
+                    _selectedTab == 0
+                        ? (isMl ? 'സൂറത്ത്' : 'Jump to Surah')
+                        : (isMl ? 'ആയത്ത്' : 'Jump to Ayah'),
+                    style: TextStyle(
+                      color: cs.onSurface,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  )
+                else ...[
+                  _TabButton(
+                    label: isMl ? 'സൂറത്ത്' : 'Surah',
+                    isSelected: _selectedTab == 0,
+                    isMalayalam: isMl,
+                    onTap: () {
+                      if (_selectedTab != 0) {
+                        setState(() => _selectedTab = 0);
+                      }
+                    },
                   ),
-                ),
-                _TabButton(
-                  label: isMl ? 'ആയത്ത്' : 'Ayah',
-                  isSelected: _selectedTab == 1,
-                  isMalayalam: isMl,
-                  onTap: () {
-                    if (_selectedTab != 1) {
-                      setState(() => _selectedTab = 1);
-                    }
-                  },
-                ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(
+                      '|',
+                      style: TextStyle(color: cs.outline, fontSize: 14),
+                    ),
+                  ),
+                  _TabButton(
+                    label: isMl ? 'ആയത്ത്' : 'Ayah',
+                    isSelected: _selectedTab == 1,
+                    isMalayalam: isMl,
+                    onTap: () {
+                      if (_selectedTab != 1) {
+                        setState(() => _selectedTab = 1);
+                      }
+                    },
+                  ),
+                ],
                 const Spacer(),
                 // Close button
                 GestureDetector(

@@ -3,8 +3,15 @@ import 'dart:typed_data';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 
-final sqflite.DatabaseFactory _webDatabaseFactory =
-  databaseFactoryFfiWebNoWebWorker;
+// sqlite3.wasm is resolved by the package via `Uri.base` (the current
+// browser URL), not the document's <base href>. With go_router path-based
+// URLs, opening the app on a nested route (e.g. /surah/18) would otherwise
+// resolve the relative default 'sqlite3.wasm' to the wrong path
+// (/surah/sqlite3.wasm). Pin it to a root-absolute path instead.
+final sqflite.DatabaseFactory _webDatabaseFactory = createDatabaseFactoryFfiWeb(
+  noWebWorker: true,
+  options: SqfliteFfiWebOptions(sqlite3WasmUri: Uri.parse('/sqlite3.wasm')),
+);
 
 Future<void> deleteFileIfExists(String path) async {
   try {

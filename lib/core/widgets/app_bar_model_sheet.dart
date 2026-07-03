@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
@@ -6,7 +7,6 @@ import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
-import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
@@ -81,42 +81,33 @@ class _JumpToSheetState extends State<_JumpToSheet> {
     if (_navigating) return;
     _navigating = true;
 
-    final provider = Provider.of<SurahProvider>(context, listen: false);
-
     // Check if we're already on a route above root (i.e. on SurahScreen).
     final isOnRoot = ModalRoute.of(widget.navCtx)?.isFirst ?? true;
 
     // Close the bottom sheet first.
     if (mounted) Navigator.pop(context);
 
-    final idx = provider.surahList.indexWhere(
-      (s) => s.surahNumber == surah.surahNumber,
-    );
-    if (idx < 0) return;
-    provider.assignIndex(idx);
+    if (!widget.navCtx.mounted) return;
 
     if (isOnRoot) {
       // On home screen — push a fresh SurahScreen and update the Surah tab
       // highlight (only relevant when the user is navigating from the Surah
       // home tab; updating it from a Juz-opened reader would contaminate the
       // Surah tab's independent selection state).
-      if (widget.navCtx.mounted) {
-        Provider.of<LastReadProvider>(
-          widget.navCtx,
-          listen: false,
-        ).saveLastSurahTabSelection(surah.surahNumber);
+      Provider.of<LastReadProvider>(
+        widget.navCtx,
+        listen: false,
+      ).saveLastSurahTabSelection(surah.surahNumber);
 
-        Navigator.push(
-          widget.navCtx,
-          MaterialPageRoute(builder: (_) => const SurahScreen()),
-        );
-      }
+      widget.navCtx.push('/surah/${surah.surahNumber}');
     } else {
-      // Already on SurahScreen — load data async; screen rebuilds via Provider.
+      // Already on SurahScreen — re-invoke the same route with the new
+      // surahNumber; go_router rebuilds SurahRouteResolver in place (no new
+      // page pushed) which re-resolves SurahProvider and reloads ayahs.
       // Do NOT update lastSurahTabSelection here: the user is jumping surahs
       // inside the reader (possibly from the Juz tab), so the Surah tab's
       // independent highlight must not be affected.
-      provider.getAyasForCurrentSurah();
+      widget.navCtx.go('/surah/${surah.surahNumber}');
     }
   }
 
