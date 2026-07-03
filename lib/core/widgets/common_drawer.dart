@@ -9,6 +9,7 @@ import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/d4dx_branding_footer.dart';
+import 'package:the_message_of_the_quran/core/widgets/shimmer_asset_image.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
 import 'package:the_message_of_the_quran/core/utils/platform_helper.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
@@ -459,7 +460,7 @@ class _DrawerTile extends StatelessWidget {
     final accentColor = appBarAccentColor(context);
 
     final leadingWidget = assetPath != null
-        ? Image.asset(
+        ? ShimmerAssetImage(
             assetPath!,
             width: 22 * scale,
             height: 22 * scale,

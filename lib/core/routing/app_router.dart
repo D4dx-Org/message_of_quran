@@ -124,12 +124,17 @@ GoRouter buildAppRouter() {
       GoRoute(
         path: '/translator',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const TranslatorScreen(),
+        // No transition: switching the app language while on this page
+        // pushReplacement()s to '/translator-en', which should read as an
+        // instant content swap rather than a page navigation.
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: TranslatorScreen()),
       ),
       GoRoute(
         path: '/translator-en',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const EnglishTranslatorScreen(),
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: EnglishTranslatorScreen()),
       ),
       GoRoute(
         path: '/foreword',
@@ -238,7 +243,16 @@ class _SurahRouteResolverState extends State<SurahRouteResolver> {
   void didUpdateWidget(covariant SurahRouteResolver oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.surahNumber != widget.surahNumber) {
-      _resolveFuture = _resolve();
+      // go_router reuses this element (same Page key) for surah-to-surah
+      // navigation, so this runs inside didUpdateWidget — which fires while
+      // the framework's build phase is still locked. selectSurahByNumber()
+      // calls notifyListeners() synchronously once surahList is already
+      // loaded, which would throw "setState() called during build" if
+      // called from here directly. Defer to after the frame, same fix
+      // SurahProvider's own constructor already applies to loadBookmarks().
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _resolveFuture = _resolve());
+      });
     }
   }
 

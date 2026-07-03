@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -11,6 +13,7 @@ import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
 import 'package:the_message_of_the_quran/core/widgets/scroll_to_top_button.dart';
+import 'package:the_message_of_the_quran/core/widgets/shimmer_asset_image.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_screen_list.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/juz_column.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/surah_chip_row.dart';
@@ -355,27 +358,12 @@ class _HomeScreenState extends State<HomeScreen>
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
       child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Image.asset(
-              'assets/images/symbol-logo.png',
-              width: emblemWidth,
-              fit: BoxFit.contain,
-              filterQuality: FilterQuality.high,
-            ),
-            // const SizedBox(height: 8),
-            Image.asset(
-              'assets/images/symbol-logo-text.png',
-              width: titleWidth,
-              fit: BoxFit.contain,
-              filterQuality: FilterQuality.high,
-              color: _isDarkWebSurface(context)
-                  ? Colors.white.withValues(alpha: 0.85)
-                  : AppTheme.appThemePrimary,
-              colorBlendMode: BlendMode.srcIn,
-            ),
-          ],
+        child: _WebBrandingLogo(
+          emblemWidth: emblemWidth,
+          titleWidth: titleWidth,
+          titleColor: _isDarkWebSurface(context)
+              ? Colors.white.withValues(alpha: 0.85)
+              : AppTheme.appThemePrimary,
         ),
       ),
     );
@@ -910,6 +898,94 @@ class _HomeScreenState extends State<HomeScreen>
               maxWidth: homeContentMaxWidth,
               child: homeContent,
             ),
+    );
+  }
+}
+
+/// Emblem + wordmark lockup shown above the web surah search box. Shows one
+/// square shimmer placeholder covering both images while they load, then
+/// cross-fades to the real logo — a single clean square reads better here
+/// than each image's own narrow/tall shimmer shape.
+class _WebBrandingLogo extends StatefulWidget {
+  const _WebBrandingLogo({
+    required this.emblemWidth,
+    required this.titleWidth,
+    required this.titleColor,
+  });
+
+  final double emblemWidth;
+  final double titleWidth;
+  final Color titleColor;
+
+  @override
+  State<_WebBrandingLogo> createState() => _WebBrandingLogoState();
+}
+
+class _WebBrandingLogoState extends State<_WebBrandingLogo> {
+  bool _ready = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_ready) return;
+    Future.wait([
+      precacheImage(
+        const AssetImage('assets/images/symbol-logo.png'),
+        context,
+      ),
+      precacheImage(
+        const AssetImage('assets/images/symbol-logo-text.png'),
+        context,
+      ),
+    ]).then((_) {
+      if (mounted) setState(() => _ready = true);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final emblemHeight = widget.emblemWidth * (276 / 165);
+    final titleHeight = widget.titleWidth * (154 / 258);
+    final totalHeight = emblemHeight + titleHeight;
+    final totalWidth = math.max(widget.emblemWidth, widget.titleWidth);
+    final squareSize = emblemHeight;
+
+    final logo = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Image.asset(
+          'assets/images/symbol-logo.png',
+          width: widget.emblemWidth,
+          fit: BoxFit.contain,
+          filterQuality: FilterQuality.high,
+        ),
+        Image.asset(
+          'assets/images/symbol-logo-text.png',
+          width: widget.titleWidth,
+          fit: BoxFit.contain,
+          filterQuality: FilterQuality.high,
+          color: widget.titleColor,
+          colorBlendMode: BlendMode.srcIn,
+        ),
+      ],
+    );
+
+    return SizedBox(
+      width: totalWidth,
+      height: totalHeight,
+      child: Center(
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 250),
+          child: _ready
+              ? KeyedSubtree(key: const ValueKey('logo'), child: logo)
+              : ShimmerBox(
+                  key: const ValueKey('shimmer'),
+                  width: squareSize,
+                  height: squareSize,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+        ),
+      ),
     );
   }
 }

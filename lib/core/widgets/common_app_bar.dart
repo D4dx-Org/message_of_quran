@@ -9,6 +9,7 @@ import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/app_bar_language_button.dart';
 import 'package:the_message_of_the_quran/core/widgets/app_bar_theme_button.dart';
+import 'package:the_message_of_the_quran/core/widgets/shimmer_asset_image.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_screen_svg.dart';
 import 'package:the_message_of_the_quran/features/search_screen/presentation/widgets/surah_quick_search.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
@@ -261,19 +262,19 @@ class CommonAppBar {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Image.asset(
+        ShimmerAssetImage(
           'assets/images/symbol-logo.png',
           height: logoHeight,
-          fit: BoxFit.contain,
+          aspectRatio: 165 / 276,
           filterQuality: appBarLogoFilterQuality,
           cacheHeight: cacheHeight,
           semanticLabel: 'Quran Asad Malayalam logo symbol',
         ),
         SizedBox(width: 2 * scale),
-        Image.asset(
+        ShimmerAssetImage(
           'assets/images/symbol-logo-text.png',
           height: logoHeight,
-          fit: BoxFit.contain,
+          aspectRatio: 258 / 154,
           filterQuality: appBarLogoFilterQuality,
           cacheHeight: cacheHeight,
           semanticLabel: 'Quran Asad Malayalam logo text',
@@ -403,7 +404,10 @@ class CommonAppBar {
       isBookmarkNeeded: false,
       selectedPageIndex: null,
       onPageSelected: (index) {
-        if (index == 3) showSettingsDialog(context);
+        if (index == 3) {
+          showSettingsDialog(context);
+          return;
+        }
         context.go('/');
       },
       compact: true,
