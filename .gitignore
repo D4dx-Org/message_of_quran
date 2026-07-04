@@ -51,4 +51,4 @@ app.*.map.json
 
 # db files
 # /assets/db/
-daily_changes_2026-06-04.md
+daily_changes_*.md
