@@ -11,7 +11,6 @@ class DbConstants {
   static const String surasTable = "suras";
   static const String translationsTable = "translations";
   static const String interpretationsTable = "interpretations";
-  static const String aboutUsTableName = "about_us";
   static const String contactTableName = "contact_us";
   static const String authorTableName = "authors";
   static const String helpTableName = "help";
@@ -58,13 +57,6 @@ class DbConstants {
   static const String tajweedWordPos = "word_pos";
   static const String tajweedWordText = "word_text";
   static const String tajweedImageUrl = "image_url";
-
-  /// About us
-  static const String aboutTitle = "title";
-  static const String aboutDescription = "description";
-  static const String aboutCreatedBy = "created_by";
-  static const String aboutCreatedByRole = "created_by_role";
-  static const String aboutIsVerified = "is_verified";
 
   /// Contact us
   static const String contactMobile = "mobile";
@@ -115,7 +107,7 @@ class DbConstants {
   // ═══════════════════════════════════════════════════════════════════════════
   static const String quranAsadDbName = "quran_asad_combined_nw.sqlite";
   static const String quranAsadDbVersionKey = 'quran_asad_db_version';
-  static const int quranAsadDbVersion = 24;
+  static const int quranAsadDbVersion = 26;
 
   // ─── Table names (quran_asad.sqlite) ───
   static const String asadSurahsTable = "surahs";
@@ -199,13 +191,6 @@ class DbConstants {
   static const String forewordId = "id";
   static const String forewordBody = "body";
 
-  // ─── about_us (quran_asad.sqlite → about_us) ───
-  static const String enAboutUsTable = "about_us";
-  static const String enAboutUsId = "id";
-  static const String enAboutUsTitle = "title";
-  static const String enAboutUsDescription = "description";
-  static const String enAboutUsSignedBy = "signed_by";
-
   // ─── contact_us_content (quran_asad.sqlite → contact_us_content) ───
   static const String enContactUsTable = "contact_us_content";
   static const String enContactUsId = "id";
@@ -244,13 +229,6 @@ class DbConstants {
   static const String mlPrefaceId = "id";
   static const String mlPrefaceHeading = "heading";
   static const String mlPrefaceContent = "content";
-
-  // ─── malayalam_about_us ───
-  static const String mlAboutUsTable = "malayalam_about_us";
-  static const String mlAboutUsId = "id";
-  static const String mlAboutUsTitle = "title";
-  static const String mlAboutUsDescription = "description";
-  static const String mlAboutUsSignedBy = "signed_by";
 
   // ─── malayalam_contact_us ───
   static const String mlContactUsTable = "malayalam_contact_us";

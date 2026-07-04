@@ -106,7 +106,7 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen> {
                             .join('\n\n')
                         : '',
                     textStyle:
-                        AppTextTheme.popinsDefault(fontSize: 14, color: bodyColor),
+                        AppTextTheme.popinsDefault(fontSize: 15, color: bodyColor),
                   ),
                   const SizedBox(height: 16),
                   if (translator.address != null &&

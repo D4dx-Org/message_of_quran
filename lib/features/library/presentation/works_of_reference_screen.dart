@@ -17,12 +17,12 @@ class WorksOfReferenceScreen extends StatelessWidget {
         margin: Margins.zero,
         padding: HtmlPaddings.zero,
         color: bodyColor,
-        fontSize: FontSize(14),
+        fontSize: FontSize(15),
         fontFamily: AppTextTheme.englishFontFamily,
       ),
       'p': Style(
         color: bodyColor,
-        fontSize: FontSize(14),
+        fontSize: FontSize(15),
         fontFamily: AppTextTheme.englishFontFamily,
       ),
       'h2': Style(

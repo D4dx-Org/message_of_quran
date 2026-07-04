@@ -18,12 +18,27 @@ Future<void> showSurahQuickSearchDialog(
   List<ArabicBlockModel>? arabicBlockList,
   void Function(int ayaStart)? onAyahSelected,
 }) async {
-  final result = await showDialog<_QuickSearchResult>(
+  final result = await showGeneralDialog<_QuickSearchResult>(
     context: context,
     barrierDismissible: true,
-    builder: (_) => SurahQuickSearchDialog(
-      arabicBlockList: arabicBlockList,
-    ),
+    barrierLabel: 'Search',
+    barrierColor: Colors.black.withValues(alpha: 0.45),
+    transitionDuration: const Duration(milliseconds: 220),
+    pageBuilder: (context, animation, secondaryAnimation) =>
+        SurahQuickSearchDialog(arabicBlockList: arabicBlockList),
+    transitionBuilder: (context, animation, secondaryAnimation, child) {
+      final curved = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutCubic,
+      );
+      return FadeTransition(
+        opacity: curved,
+        child: ScaleTransition(
+          scale: Tween<double>(begin: 0.92, end: 1.0).animate(curved),
+          child: child,
+        ),
+      );
+    },
   );
 
   if (result == null || !context.mounted) return;

@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
+import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// Compact copyright + "Powered by D4DX" strip pinned at the bottom of every
@@ -35,10 +37,20 @@ class AppFooter extends StatelessWidget {
         ? const Color(0xFFF2F2F7).withValues(alpha: 0.85)
         : theme.colorScheme.outline.withValues(alpha: 0.92);
 
+    // Mirror BaseScreenLayout's content card width so the footer's contents
+    // line up with the card above it instead of always spanning full width.
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final contentMaxWidth = kIsWeb
+        ? 1180.0
+        : ResponsiveHelper.contentMaxWidth(context);
+    final horizontalPadding = kIsWeb
+        ? (screenWidth < 640 ? 12.0 : 24.0)
+        : 12.0;
+
     return SafeArea(
       top: false,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: const EdgeInsets.symmetric(vertical: 6),
         decoration: BoxDecoration(
           color: theme.scaffoldBackgroundColor,
           border: Border(
@@ -50,37 +62,48 @@ class AppFooter extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Flexible(
-              child: Text(
-                _copyrightText,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: footerColor,
-                  fontSize: 11,
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Semantics(
-              button: true,
-              label: 'Visit D4DX website',
-              child: InkWell(
-                borderRadius: BorderRadius.circular(8),
-                onTap: _launchWebsite,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 4,
-                    vertical: 2,
-                  ),
-                  child: Text(
-                    'Powered by D4DX',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: footerColor,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: contentMaxWidth),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        _copyrightText,
+                        textAlign: TextAlign.start,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: footerColor,
+                          fontSize: 11,
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 8),
+                    Semantics(
+                      button: true,
+                      label: 'Visit D4DX website',
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(8),
+                        onTap: _launchWebsite,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 2,
+                          ),
+                          child: Text(
+                            'Powered by D4DX',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: footerColor,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
