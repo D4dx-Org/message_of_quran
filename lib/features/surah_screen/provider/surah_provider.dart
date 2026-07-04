@@ -669,7 +669,15 @@ class SurahProvider extends ChangeNotifier {
   /// SurahScreen opens with data already available (no loading-indicator flash
   /// and reliable scroll-to-ayah on first frame).
   Future<void> selectSurahByNumber(int surahNumber) async {
-    if (surahList.isEmpty) await getAllSurah();
+    if (surahList.isEmpty) {
+      await getAllSurah();
+    } else {
+      // Force an async gap even on the already-loaded fast path, so the
+      // notifyListeners() below never fires synchronously with a caller's
+      // build phase (e.g. SurahRouteResolver.initState), which would throw
+      // "setState() called during build".
+      await Future<void>.value();
+    }
     final idx = surahList.indexWhere((s) => s.surahNumber == surahNumber);
     if (idx < 0) return;
     index = idx;

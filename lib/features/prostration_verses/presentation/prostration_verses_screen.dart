@@ -97,6 +97,7 @@ class _ProstrationVersesScreenState extends State<ProstrationVersesScreen> {
         title: isMalayalam ? 'സുജൂദിന്റെ ആയത്തുകൾ' : 'Prostration Verses',
       ),
       drawer: const CommonDrawer(),
+      contentBottomInset: BaseScreenLayout.defaultContentTopInset,
       child: _buildBody(context, isMalayalam),
     );
   }
@@ -187,7 +188,11 @@ class _ProstrationVersesScreenState extends State<ProstrationVersesScreen> {
         24 * scale,
       ),
       itemCount: _verses.length,
-      separatorBuilder: (_, _) => SizedBox(height: 12 * scale),
+      separatorBuilder: (context, _) => Divider(
+        height: 1,
+        thickness: 1,
+        color: Theme.of(context).colorScheme.outlineVariant,
+      ),
       itemBuilder: (context, index) {
         final verse = _verses[index];
         return _ProstrationVerseTile(
@@ -237,17 +242,12 @@ class _ProstrationVerseTile extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(22),
           onTap: onTap,
-          child: Ink(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(22),
-              border: Border.all(color: theme.colorScheme.outlineVariant),
-            ),
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 16 * scale,
-                vertical: 14 * scale,
-              ),
-              child: Row(
+          child: Container(
+            width: double.infinity,
+            height: 70 * scale,
+            alignment: Alignment.centerLeft,
+            padding: EdgeInsets.symmetric(horizontal: 16 * scale),
+            child: Row(
                 children: [
                   Container(
                     width: 42 * scale,
@@ -269,6 +269,7 @@ class _ProstrationVerseTile extends StatelessWidget {
                   SizedBox(width: 14 * scale),
                   Expanded(
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         FractionallySizedBox(
@@ -313,7 +314,9 @@ class _ProstrationVerseTile extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 }
+
+
+

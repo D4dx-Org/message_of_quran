@@ -190,6 +190,20 @@ class _HomeScreenState extends State<HomeScreen>
     return _webTabBarMaxWidth;
   }
 
+  /// 70% of the rendered width of the surah index container (the browse
+  /// panel below), so the search bar tracks it at every breakpoint.
+  double _webSearchBarMaxWidth(BuildContext context) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final horizontalPadding = _webHorizontalPadding(context);
+    final browsePanelMaxWidth =
+        _webBrowsePanelMaxWidth(context) ?? double.infinity;
+    final containerWidth = math.min(
+      screenWidth - 2 * horizontalPadding,
+      browsePanelMaxWidth,
+    );
+    return containerWidth * 0.7;
+  }
+
   @override
   void dispose() {
     _tabController.removeListener(_handleTabChange);
@@ -379,11 +393,13 @@ class _HomeScreenState extends State<HomeScreen>
       padding: const EdgeInsets.only(top: 6, bottom: 30),
       child: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 920),
+          constraints: BoxConstraints(maxWidth: _webSearchBarMaxWidth(context)),
           child: SurahQuickSearch(
             isMalayalam: isMalayalam,
             surahList: surahList,
             isLoading: isLoading,
+            fieldMaxWidth: _webSearchBarMaxWidth(context),
+            resultsMaxWidth: _webSearchBarMaxWidth(context),
             onSearchActiveChanged: (isActive) {
               if (_isWebSearchActive == isActive) return;
               setState(() {

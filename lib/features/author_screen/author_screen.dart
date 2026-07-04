@@ -99,12 +99,12 @@ class _AuthorScreenState extends State<AuthorScreen> {
         margin: Margins.zero,
         padding: HtmlPaddings.zero,
         color: bodyColor,
-        fontSize: FontSize(14),
+        fontSize: FontSize(15),
         fontFamily: fontFamily,
       ),
       'p': Style(
         color: bodyColor,
-        fontSize: FontSize(14),
+        fontSize: FontSize(15),
         fontFamily: fontFamily,
       ),
       'h2': Style(
@@ -202,7 +202,7 @@ class _AuthorScreenState extends State<AuthorScreen> {
                           bioText: bioText,
                           textStyle: AppTextTheme.localizedBody(
                             isMalayalam: isMalayalam,
-                            fontSize: 14,
+                            fontSize: 15,
                             color: bodyColor,
                           ),
                         ),

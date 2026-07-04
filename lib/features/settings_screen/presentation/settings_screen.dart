@@ -19,11 +19,27 @@ import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_pr
 /// Shows the settings as a centered, scrollable dialog overlay.
 /// Use this everywhere instead of pushing [SettingsScreen] as a new route.
 Future<void> showSettingsDialog(BuildContext context) async {
-  await showDialog<void>(
+  await showGeneralDialog<void>(
     context: context,
     barrierDismissible: true,
+    barrierLabel: 'Settings',
     barrierColor: Colors.black.withValues(alpha: 0.45),
-    builder: (_) => const _SettingsDialog(),
+    transitionDuration: const Duration(milliseconds: 220),
+    pageBuilder: (context, animation, secondaryAnimation) =>
+        const _SettingsDialog(),
+    transitionBuilder: (context, animation, secondaryAnimation, child) {
+      final curved = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutCubic,
+      );
+      return FadeTransition(
+        opacity: curved,
+        child: ScaleTransition(
+          scale: Tween<double>(begin: 0.92, end: 1.0).animate(curved),
+          child: child,
+        ),
+      );
+    },
   );
 }
 

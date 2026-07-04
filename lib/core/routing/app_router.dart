@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:the_message_of_the_quran/features/about_screen/presentation/about_screen.dart';
 import 'package:the_message_of_the_quran/features/author_screen/author_screen.dart';
 import 'package:the_message_of_the_quran/features/author_screen/presentation/english_translator_screen.dart';
 import 'package:the_message_of_the_quran/features/author_screen/presentation/translator_screen.dart';
@@ -109,12 +108,6 @@ GoRouter buildAppRouter() {
             initialAyaNo: _intParam(q, 'ayaNo'),
           );
         },
-      ),
-      GoRoute(
-        path: '/about',
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            const AboutScreen(showStandaloneBackAppBar: true),
       ),
       GoRoute(
         path: '/author',

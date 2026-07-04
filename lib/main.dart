@@ -15,7 +15,6 @@ import 'package:the_message_of_the_quran/features/main_screen/providers/home_pro
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
 import 'package:the_message_of_the_quran/features/splash_screen/presentation/widgets/splash_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/splash_screen/providers/version_check_provider.dart';
-import 'package:the_message_of_the_quran/features/about_screen/provider/about_providers.dart';
 import 'package:the_message_of_the_quran/features/contact_us_screen/presentation/provider/contact_provider.dart';
 import 'package:the_message_of_the_quran/features/author_screen/provider/author_provider.dart';
 import 'package:the_message_of_the_quran/features/author_screen/provider/translator_provider.dart';
@@ -514,7 +513,6 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => SurahProvider()),
         ChangeNotifierProvider(create: (context) => FontSizeChangerProvider()),
         ChangeNotifierProvider(create: (context) => VersionCheckProvider()),
-        ChangeNotifierProvider(create: (context) => AboutProvider()),
         ChangeNotifierProvider(create: (context) => ContactProvider()),
         ChangeNotifierProvider(create: (context) => HelpProvider()),
         ChangeNotifierProvider(create: (context) => AuthorProvider()),

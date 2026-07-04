@@ -110,7 +110,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
                         : '',
                     textStyle: AppTextTheme.localizedBody(
                       isMalayalam: true,
-                      fontSize: 14,
+                      fontSize: 15,
                       color: bodyColor,
                     ),
                   ),

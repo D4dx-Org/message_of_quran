@@ -1199,23 +1199,26 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
                 ? 'ആയത്ത് $_selectedAyah'
                 : 'Ayah $_selectedAyah');
 
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          chip(
-            label: surahChipLabel,
-            semanticsLabel: 'Jump to surah',
-            maxWidth: narrowChip ? 44 : 150,
-            onTap: () => _openSheet(context, lockedTab: 0),
-          ),
-          SizedBox(width: 6 * scale),
-          chip(
-            label: ayahChipLabel,
-            semanticsLabel: 'Jump to ayah',
-            maxWidth: narrowChip ? 44 : 110,
-            onTap: () => _openSheet(context, lockedTab: 1),
-          ),
-        ],
+      return Padding(
+        padding: EdgeInsets.all(4 * scale),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            chip(
+              label: surahChipLabel,
+              semanticsLabel: 'Jump to surah',
+              maxWidth: narrowChip ? 44 : 150,
+              onTap: () => _openSheet(context, lockedTab: 0),
+            ),
+            SizedBox(width: 6 * scale),
+            chip(
+              label: ayahChipLabel,
+              semanticsLabel: 'Jump to ayah',
+              maxWidth: narrowChip ? 44 : 110,
+              onTap: () => _openSheet(context, lockedTab: 1),
+            ),
+          ],
+        ),
       );
     }
 

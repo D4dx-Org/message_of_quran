@@ -53,8 +53,8 @@ class _AppBarThemeToggleButtonState extends State<AppBarThemeToggleButton> {
               children: [
                 Icon(
                   isDark
-                      ? Icons.light_mode_rounded
-                      : Icons.dark_mode_rounded,
+                      ? Icons.light_mode_outlined
+                      : Icons.dark_mode_outlined,
                   size: widget.iconSize,
                   color: _accent,
                 ),

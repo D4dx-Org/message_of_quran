@@ -224,7 +224,7 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
           onTap: () => themeProvider.toggleTheme(),
           onHover: _setThemeHovered,
           icon: Icon(
-            isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+            isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
             size: iconSize,
             color: accentColor.withValues(alpha: _isThemeHovered ? 1.0 : 0.78),
           ),

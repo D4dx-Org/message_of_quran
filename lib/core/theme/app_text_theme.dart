@@ -357,7 +357,7 @@ class AppTextTheme {
     final isDark = Theme.of(ctx).brightness == Brightness.dark;
     return localizedBody(
       isMalayalam: isMalayalam,
-      fontSize: 14,
+      fontSize: 15,
       height: 1.8,
       color: isDark ? Colors.white70 : Colors.black87,
     );
@@ -377,7 +377,7 @@ class AppTextTheme {
     final isDark = Theme.of(ctx).brightness == Brightness.dark;
     return localizedBody(
       isMalayalam: isMalayalam,
-      fontSize: 14,
+      fontSize: 15,
       fontStyle: FontStyle.italic,
       height: 1.8,
       color: isDark ? Colors.white70 : Colors.black87,
