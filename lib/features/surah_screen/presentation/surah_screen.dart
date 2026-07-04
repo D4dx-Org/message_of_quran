@@ -1608,12 +1608,10 @@ class _SurahScreenState extends State<SurahScreen> {
     final matches = markerRegex.allMatches(arabicText).toList();
 
     if (matches.isEmpty) {
-      final isPlaying = playingAyahId == verseFrom;
       return [
         TextSpan(
           text: arabicText,
           style: baseStyle.copyWith(
-            color: isPlaying ? highlightColor : null,
             backgroundColor: _ayahBackgroundColor(
               ayahNumber: verseFrom,
               controller: controller,
@@ -1632,13 +1630,11 @@ class _SurahScreenState extends State<SurahScreen> {
     for (final match in matches) {
       final segment =
           '${arabicText.substring(pos, match.start)} ${arabicText.substring(match.start, match.end)} ';
-      final isPlaying = playingAyahId == currentAyah;
       final ayahNum = currentAyah;
       spans.add(
         TextSpan(
           text: segment,
           style: baseStyle.copyWith(
-            color: isPlaying ? highlightColor : null,
             backgroundColor: _ayahBackgroundColor(
               ayahNumber: ayahNum,
               controller: controller,
@@ -2586,17 +2582,57 @@ class _SurahScreenState extends State<SurahScreen> {
                                                               ? audio
                                                                     .playingAyahId
                                                               : null;
-                                                          return Padding(
+                                                          final isBlockPlaying =
+                                                              effectivePlayingAyahId !=
+                                                                  null &&
+                                                              effectivePlayingAyahId >=
+                                                                  ayaStart &&
+                                                              effectivePlayingAyahId <=
+                                                                  ayaEnd;
+                                                          final blockHighlightColor =
+                                                              Theme.of(
+                                                                        highlightCtx,
+                                                                      ).brightness ==
+                                                                      Brightness
+                                                                          .dark
+                                                              ? const Color(
+                                                                  0xFFFFD966,
+                                                                )
+                                                              : AppTheme
+                                                                    .appIconTheme;
+                                                          return AnimatedContainer(
+                                                            duration:
+                                                                const Duration(
+                                                                  milliseconds:
+                                                                      250,
+                                                                ),
                                                             key: ValueKey(
                                                               index,
                                                             ),
-                                                            padding:
+                                                            margin:
                                                                 const EdgeInsets.fromLTRB(
                                                                   4,
                                                                   8,
                                                                   4,
                                                                   4,
                                                                 ),
+                                                            padding:
+                                                                const EdgeInsets.all(
+                                                                  8,
+                                                                ),
+                                                            decoration: BoxDecoration(
+                                                              color: isBlockPlaying
+                                                                  ? blockHighlightColor
+                                                                        .withValues(
+                                                                          alpha:
+                                                                              0.15,
+                                                                        )
+                                                                  : null,
+                                                              borderRadius:
+                                                                  BorderRadius.circular(
+                                                                    12,
+                                                                  ),
+                                                            ),
                                                             child: Column(
                                                               crossAxisAlignment:
                                                                   CrossAxisAlignment
@@ -3239,13 +3275,7 @@ class _TajweedHtmlTextState extends State<_TajweedHtmlText> {
     for (var ayah = widget.verseFrom; ayah <= widget.verseTo; ayah++) {
       final html = TajweedHtmlService.displayHtmlFor(widget.surahNo, ayah);
       if (html == null) continue;
-      final isPlaying = widget.playingAyahId == ayah;
-      final ayahStyle = isPlaying
-          ? baseStyle.copyWith(
-              backgroundColor: AppTheme.appIconTheme.withValues(alpha: 0.15),
-            )
-          : baseStyle;
-      spans.addAll(parseTajweedHtml(html, ayahStyle));
+      spans.addAll(parseTajweedHtml(html, baseStyle));
       // Ayah-end marker, matching the Arabic ornamental parentheses used in the
       // normal Arabic view (U+FD3F ﴿ ... U+FD3E ﴾).
       spans.add(
