@@ -84,8 +84,6 @@ class BaseScreenLayout extends StatelessWidget {
   /// Set `false` to let the card shrink-wrap [child]'s height instead.
   final bool expandContentCard;
 
-  static const _darkContentSurfaceColor = Color(0xff0c2d52);
-
   BoxDecoration _buildContentCardDecoration({
     required bool isDarkMode,
     required BorderRadius borderRadius,
@@ -103,7 +101,7 @@ class BaseScreenLayout extends StatelessWidget {
                 AppTheme.lightContentSurfaceBottomColor,
               ],
             ),
-      color: isDarkMode ? _darkContentSurfaceColor : null,
+      color: isDarkMode ? AppTheme.darkContentSurfaceBottomColor : null,
       border: borderColor != null ? Border.all(color: borderColor) : null,
       boxShadow:
           contentCardBoxShadows ??
@@ -137,7 +135,7 @@ class BaseScreenLayout extends StatelessWidget {
 
   Color _contentSurfaceColor({required bool isDarkMode}) {
     return isDarkMode
-        ? _darkContentSurfaceColor
+        ? AppTheme.darkContentSurfaceBottomColor
         : AppTheme.lightContentSurfaceBottomColor;
   }
 

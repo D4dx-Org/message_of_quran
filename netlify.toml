@@ -37,21 +37,23 @@
     Referrer-Policy               = "strict-origin-when-cross-origin"
 
 # Keep critical runtime assets revalidated on each load to avoid stale
-# persisted/cached DB and wasm artifacts after deploy.
+# persisted/cached DB and wasm artifacts after deploy. "no-cache" (not
+# "no-store") lets the browser reuse unchanged bytes via a cheap 304 instead
+# of re-downloading the full asset (54.5MB for the DB) on every load.
 [[headers]]
   for = "/assets/db/*"
   [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate"
+    Cache-Control = "no-cache"
 
 [[headers]]
   for = "/sqlite3.wasm"
   [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate"
+    Cache-Control = "no-cache"
 
 [[headers]]
   for = "/sqflite_sw.js"
   [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate"
+    Cache-Control = "no-cache"
 
 [[headers]]
   for = "/flutter_service_worker.js"
@@ -62,6 +64,31 @@
   for = "/flutter_bootstrap.js"
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Static asset caching — images/icons/data aren't filename-hashed, so 1 week
+# balances instant repeat loads against a redeployed asset going stale.
+# canvaskit/* is versioned by the Flutter SDK build itself, safe to cache hard.
+# ─────────────────────────────────────────────────────────────────────────────
+[[headers]]
+  for = "/assets/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, must-revalidate"
+
+[[headers]]
+  for = "/assets/icons/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, must-revalidate"
+
+[[headers]]
+  for = "/assets/data/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, must-revalidate"
+
+[[headers]]
+  for = "/canvaskit/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SPA redirect — Flutter web is a single-page app.

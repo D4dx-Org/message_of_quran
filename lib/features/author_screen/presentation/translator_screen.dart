@@ -101,6 +101,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
                     ),
                   BioWithFloatingImage(
                     imagePath: 'assets/images/kc-saleem.png',
+                    thumbnailPath: 'assets/images/kc-saleem_thumb.png',
                     bioText: (author.bio != null && author.bio!.isNotEmpty)
                         ? author.bio!
                             .split('\n')

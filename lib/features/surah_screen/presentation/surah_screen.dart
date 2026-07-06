@@ -1309,10 +1309,26 @@ class _SurahScreenState extends State<SurahScreen> {
       surahNumber: surah.surahNumber,
     );
 
-    showDialog<void>(
+    showGeneralDialog<void>(
       context: context,
       barrierDismissible: true,
-      builder: (dialogContext) {
+      barrierLabel: 'Surah Info',
+      barrierColor: Colors.black.withValues(alpha: 0.45),
+      transitionDuration: const Duration(milliseconds: 220),
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        final curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
+        );
+        return FadeTransition(
+          opacity: curved,
+          child: ScaleTransition(
+            scale: Tween<double>(begin: 0.92, end: 1.0).animate(curved),
+            child: child,
+          ),
+        );
+      },
+      pageBuilder: (dialogContext, animation, secondaryAnimation) {
         final theme = Theme.of(dialogContext);
         final isDark = theme.brightness == Brightness.dark;
         final colorScheme = theme.colorScheme;
@@ -2017,11 +2033,26 @@ class _SurahScreenState extends State<SurahScreen> {
         : ((size.width - maxDialogWidth) / 2).clamp(24.0, double.infinity);
     final double maxHeight = (size.height * 0.85).clamp(300.0, 760.0);
 
-    showDialog<void>(
+    showGeneralDialog<void>(
       context: context,
       barrierDismissible: true,
+      barrierLabel: 'Footnote',
       barrierColor: kInterpretationSheetBarrierColor,
-      builder: (dialogCtx) => Material(
+      transitionDuration: const Duration(milliseconds: 220),
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        final curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
+        );
+        return FadeTransition(
+          opacity: curved,
+          child: ScaleTransition(
+            scale: Tween<double>(begin: 0.92, end: 1.0).animate(curved),
+            child: child,
+          ),
+        );
+      },
+      pageBuilder: (dialogCtx, animation, secondaryAnimation) => Material(
         type: MaterialType.transparency,
         child: Stack(
           children: [
@@ -2349,7 +2380,6 @@ class _SurahScreenState extends State<SurahScreen> {
         }
       },
       child: BaseScreenLayout(
-        contentBottomInset: BaseScreenLayout.defaultContentTopInset,
         topBorderRadius: kIsWeb ? AppTheme.desktopContentCardRadius : 40,
         bottomBorderRadius: kIsWeb ? AppTheme.desktopContentCardRadius : 0,
         appBar: CommonAppBar.appBar(

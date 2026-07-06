@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/core/services/database/database_ready_notifier.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
@@ -19,6 +20,7 @@ class JuzColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dbStatus = context.watch<DatabaseReadyNotifier>().status;
     return Consumer2<JuzHizbProvider, SurahProvider>(
       builder: (context, provider, surahProvider, _) {
         final hPad = ResponsiveHelper.horizontalPadding(context);
@@ -31,9 +33,27 @@ class JuzColumn extends StatelessWidget {
         final subColor = isDarkMode ? Colors.white54 : Colors.grey[600]!;
         final dividerColor = DividerTheme.of(context).color;
 
-        if (provider.isLoading && provider.juzList.isEmpty) {
+        if (provider.juzList.isEmpty &&
+            (provider.isLoading || dbStatus == DbInitStatus.loading)) {
           return const Center(
             child: CircularProgressIndicator(color: AppTheme.appIconTheme),
+          );
+        }
+
+        if (provider.juzList.isEmpty && dbStatus == DbInitStatus.failed) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(isMalayalam ? 'ജുസ്അ് ലഭ്യമല്ല' : 'Could not load Juz.'),
+                const SizedBox(height: 12),
+                FilledButton(
+                  onPressed: () =>
+                      context.read<DatabaseReadyNotifier>().retry(),
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
           );
         }
 

@@ -97,6 +97,7 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen> {
                     ),
                   BioWithFloatingImage(
                     imagePath: 'assets/images/kc-saleem.png',
+                    thumbnailPath: 'assets/images/kc-saleem_thumb.png',
                     bioText: (translator.bio != null &&
                             translator.bio!.isNotEmpty)
                         ? translator.bio!

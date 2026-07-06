@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/core/services/database/database_ready_notifier.dart';
 import 'package:the_message_of_the_quran/features/author_screen/author_screen.dart';
 import 'package:the_message_of_the_quran/features/author_screen/presentation/english_translator_screen.dart';
 import 'package:the_message_of_the_quran/features/author_screen/presentation/translator_screen.dart';
@@ -249,10 +250,17 @@ class _SurahRouteResolverState extends State<SurahRouteResolver> {
     }
   }
 
-  Future<void> _resolve() {
+  Future<void> _resolve() async {
+    await context.read<DatabaseReadyNotifier>().whenReady;
+    if (!mounted) return;
     return context.read<SurahProvider>().selectSurahByNumber(
       widget.surahNumber,
     );
+  }
+
+  void _retry() {
+    context.read<DatabaseReadyNotifier>().retry();
+    setState(() => _resolveFuture = _resolve());
   }
 
   @override
@@ -263,6 +271,20 @@ class _SurahRouteResolverState extends State<SurahRouteResolver> {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        if (snapshot.hasError) {
+          return Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Could not load this surah.'),
+                  const SizedBox(height: 12),
+                  FilledButton(onPressed: _retry, child: const Text('Retry')),
+                ],
+              ),
+            ),
           );
         }
         return SurahScreen(scrollToAyahId: widget.scrollToAyahId);

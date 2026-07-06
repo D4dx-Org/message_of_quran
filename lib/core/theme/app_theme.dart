@@ -20,6 +20,10 @@ class AppTheme {
     1,
   );
 
+  /// Dark-theme counterpart of [lightContentSurfaceBottomColor] — the same
+  /// content card uses a solid fill instead of a gradient in dark mode.
+  static const Color darkContentSurfaceBottomColor = Color(0xff0c2d52);
+
   static String get appThemePrimaryHex => colorToHex(appThemePrimary);
   static String get appThemeSecondaryHex => colorToHex(appThemeSecondary);
   static String get appBarForegroundHex => colorToHex(appBarForegroundColor);

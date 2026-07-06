@@ -1,6 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
+/// Resolves the missing dimension from [aspectRatio] (width / height) when
+/// only one of [width]/[height] is given, so a pre-decode placeholder never
+/// collapses to zero size and the real image's box matches it exactly.
+Size resolveAssetImageSize({
+  required double? width,
+  required double? height,
+  required double? aspectRatio,
+}) {
+  assert(
+    width != null || height != null,
+    'Provide width and/or height (with aspectRatio if only one is given)',
+  );
+  assert(
+    (width != null && height != null) || aspectRatio != null,
+    'aspectRatio is required when only width or only height is given',
+  );
+  return Size(
+    width ?? (height! * aspectRatio!),
+    height ?? (width! / aspectRatio!),
+  );
+}
+
 /// Image.asset wrapper that shows a same-sized shimmer placeholder until
 /// the asset's first frame decodes, then cross-fades to the real image.
 ///
@@ -23,14 +45,7 @@ class ShimmerAssetImage extends StatelessWidget {
     this.cacheHeight,
     this.semanticLabel,
     this.borderRadius,
-  }) : assert(
-         width != null || height != null,
-         'Provide width and/or height (with aspectRatio if only one is given)',
-       ),
-       assert(
-         (width != null && height != null) || aspectRatio != null,
-         'aspectRatio is required when only width or only height is given',
-       );
+  });
 
   final String assetPath;
   final double? width;
@@ -49,8 +64,13 @@ class ShimmerAssetImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final resolvedWidth = width ?? (height! * aspectRatio!);
-    final resolvedHeight = height ?? (width! / aspectRatio!);
+    final resolvedSize = resolveAssetImageSize(
+      width: width,
+      height: height,
+      aspectRatio: aspectRatio,
+    );
+    final resolvedWidth = resolvedSize.width;
+    final resolvedHeight = resolvedSize.height;
 
     final image = Image.asset(
       assetPath,

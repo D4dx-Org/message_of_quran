@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/core/services/database/database_ready_notifier.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_list_row_text_styles.dart';
@@ -17,12 +18,32 @@ class HomeScreenList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hPad = ResponsiveHelper.horizontalPadding(context);
+    final dbStatus = context.watch<DatabaseReadyNotifier>().status;
     return Consumer<SurahProvider>(
       builder: (context, surahProvider, child) {
-        if (surahProvider.isSurahLoading) {
+        if (surahProvider.isSurahLoading ||
+            (dbStatus == DbInitStatus.loading &&
+                surahProvider.surahList.isEmpty)) {
           return const Center(
             child: CircularProgressIndicator(
               color: AppTheme.appIconTheme,
+            ),
+          );
+        }
+        if (dbStatus == DbInitStatus.failed &&
+            surahProvider.surahList.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Could not load Surahs.'),
+                const SizedBox(height: 12),
+                FilledButton(
+                  onPressed: () =>
+                      context.read<DatabaseReadyNotifier>().retry(),
+                  child: const Text('Retry'),
+                ),
+              ],
             ),
           );
         }

@@ -104,7 +104,7 @@ class _ProstrationVersesScreenState extends State<ProstrationVersesScreen> {
 
   Widget _buildBody(BuildContext context, bool isMalayalam) {
     final scale = ResponsiveHelper.scaleFactor(context);
-    final horizontalPadding = ResponsiveHelper.horizontalPadding(context);
+    const horizontalPadding = 24.0;
 
     if (_isLoading) {
       return const Center(
@@ -240,7 +240,6 @@ class _ProstrationVerseTile extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(22),
           onTap: onTap,
           child: Container(
             width: double.infinity,

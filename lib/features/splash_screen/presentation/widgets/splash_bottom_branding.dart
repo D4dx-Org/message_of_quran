@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
+import 'package:the_message_of_the_quran/core/widgets/blur_up_asset_image.dart';
 import 'package:the_message_of_the_quran/features/splash_screen/presentation/widgets/splash_layout_metrics.dart';
 
 class SplashBottomBranding extends StatelessWidget {
@@ -65,13 +66,14 @@ class SplashBottomBranding extends StatelessWidget {
                           ),
                         ),
                         SizedBox(height: 4 * scale),
-                        Image.asset(
-                          'assets/images/d4_logo.png',
+                        BlurUpAssetImage(
+                          assetPath: 'assets/images/d4_logo.png',
+                          thumbnailPath: 'assets/images/d4_logo_thumb.png',
                           width: logoWidth,
+                          aspectRatio: 1936 / 2048,
                           fit: BoxFit.contain,
                           color: Colors.white,
                           colorBlendMode: BlendMode.srcIn,
-                          filterQuality: FilterQuality.high,
                         ),
                       ],
                     ),

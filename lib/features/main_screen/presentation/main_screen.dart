@@ -6,6 +6,7 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/core/services/database/database_ready_notifier.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
@@ -50,6 +51,15 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      try {
+        await Provider.of<DatabaseReadyNotifier>(
+          context,
+          listen: false,
+        ).whenReady;
+      } catch (_) {
+        return;
+      }
       if (!mounted) return;
       final prefs = await SharedPreferences.getInstance();
       final isMalayalam = (prefs.getString('app_language') ?? 'en') == 'ml';
