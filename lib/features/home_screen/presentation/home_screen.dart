@@ -6,10 +6,12 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/juz_hizb_model.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
+import 'package:the_message_of_the_quran/core/services/database/database_ready_notifier.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
+import 'package:the_message_of_the_quran/core/widgets/app_footer.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
 import 'package:the_message_of_the_quran/core/widgets/scroll_to_top_button.dart';
@@ -66,7 +68,13 @@ class _HomeScreenState extends State<HomeScreen>
     );
     _tabController.addListener(_handleTabChange);
     _listController.addListener(_onScroll);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      try {
+        await context.read<DatabaseReadyNotifier>().whenReady;
+      } catch (_) {
+        return;
+      }
       if (!mounted) return;
       context.read<JuzHizbProvider>().loadJuz();
     });
@@ -215,13 +223,13 @@ class _HomeScreenState extends State<HomeScreen>
   Widget _buildTabBar(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final containerBg = isDarkMode
-        ? const Color(0xff163d6e)
+        ? AppTheme.darkContentSurfaceBottomColor
         : const Color.fromRGBO(230, 230, 230, 1);
     final selectedBg = isDarkMode
         ? AppTheme.appThemePrimary
         : AppTheme.appThemePrimary;
     final unselectedBg = isDarkMode
-        ? const Color(0xff163d6e)
+        ? AppTheme.darkContentSurfaceBottomColor
         : const Color.fromRGBO(221, 221, 221, 1);
     const selectedTextColor = Colors.white;
     final unselectedTextColor = isDarkMode
@@ -856,6 +864,15 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                 ),
               ],
+              const SizedBox(height: _webPopularToBrowseGap),
+              ResponsiveContentWrapper(
+                maxWidth: _webBrowsePanelMaxWidth(context),
+                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                child: AppFooter(
+                  fullBleed: false,
+                  maxWidth: _webBrowsePanelMaxWidth(context),
+                ),
+              ),
             ],
           ),
           PositionedDirectional(

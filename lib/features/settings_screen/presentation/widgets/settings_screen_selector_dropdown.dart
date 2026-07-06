@@ -137,58 +137,98 @@ class _SettingsScreenSelectorDropdownState<T>
     extends State<SettingsScreenSelectorDropdown<T>> {
   final _anchorKey = GlobalKey();
 
-  void _showMenu({
+  Future<void> _showMenu({
     required double popupWidth,
     required BoxConstraints popupConstraints,
     required int itemCount,
-  }) {
+  }) async {
     final anchorBox = _anchorKey.currentContext?.findRenderObject() as RenderBox?;
     final overlayBox = Overlay.of(context).context.findRenderObject() as RenderBox?;
     if (anchorBox == null || overlayBox == null) return;
 
     final anchorTopLeft = anchorBox.localToGlobal(Offset.zero, ancestor: overlayBox);
     final anchorSize = anchorBox.size;
-    final screenHeight = overlayBox.size.height;
+
+    // Clamp to the nearest scrollable viewport (the settings dialog's content
+    // area, or the full settings page) instead of the whole screen, so the
+    // popup never spills outside the panel it's opened from.
+    final viewportBox =
+        Scrollable.maybeOf(context)?.context.findRenderObject() as RenderBox?;
+    final bounds = viewportBox != null
+        ? (viewportBox.localToGlobal(Offset.zero, ancestor: overlayBox) &
+            viewportBox.size)
+        : (Offset.zero & overlayBox.size);
 
     const gap = 8.0;
     final popupHeight = math.min(
       settingsSelectorPopupMaxHeight(itemCount),
-      screenHeight - gap * 2,
+      bounds.height - gap * 2,
     );
 
-    final spaceBelow = screenHeight - (anchorTopLeft.dy + anchorSize.height) - gap;
-    final spaceAbove = anchorTopLeft.dy - gap;
+    final spaceBelow = bounds.bottom - (anchorTopLeft.dy + anchorSize.height) - gap;
+    final spaceAbove = anchorTopLeft.dy - bounds.top - gap;
     final openBelow = spaceBelow >= popupHeight || spaceBelow >= spaceAbove;
 
     final top = openBelow
         ? anchorTopLeft.dy + anchorSize.height + gap
-        : math.max(gap, anchorTopLeft.dy - popupHeight - gap);
-    final left = anchorTopLeft.dx + math.max(0, anchorSize.width - popupWidth);
+        : math.max(bounds.top + gap, anchorTopLeft.dy - popupHeight - gap);
+    final left = (anchorTopLeft.dx + math.max(0, anchorSize.width - popupWidth))
+        .clamp(
+          bounds.left + gap,
+          math.max(bounds.left + gap, bounds.right - popupWidth - gap),
+        )
+        .toDouble();
 
     final theme = Theme.of(context);
-    showMenu<T>(
+    final items = _buildMenuItems(context);
+
+    final value = await showGeneralDialog<T>(
       context: context,
-      position: RelativeRect.fromLTRB(
-        left,
-        top,
-        overlayBox.size.width - left - popupWidth,
-        overlayBox.size.height - top - popupHeight,
-      ),
-      items: _buildMenuItems(context),
-      constraints: popupConstraints,
-      clipBehavior: Clip.antiAlias,
-      elevation: kSettingsSelectorPopupElevation,
-      shadowColor: settingsSelectorPopupShadowColor(theme.brightness),
-      color: settingsSelectorPopupBackgroundColor(theme),
-      surfaceTintColor: settingsSelectorPopupBackgroundColor(theme),
-      menuPadding: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: settingsSelectorPopupBorderSide(theme.brightness),
-      ),
-    ).then((value) {
-      if (value != null) widget.onChanged(value);
-    });
+      barrierDismissible: true,
+      barrierLabel: widget.title,
+      barrierColor: Colors.transparent,
+      transitionDuration: const Duration(milliseconds: 160),
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return Stack(
+          children: [
+            Positioned(
+              left: left,
+              top: top,
+              child: ConstrainedBox(
+                constraints: popupConstraints,
+                child: Material(
+                  color: settingsSelectorPopupBackgroundColor(theme),
+                  surfaceTintColor: settingsSelectorPopupBackgroundColor(theme),
+                  shadowColor: settingsSelectorPopupShadowColor(theme.brightness),
+                  elevation: kSettingsSelectorPopupElevation,
+                  clipBehavior: Clip.antiAlias,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    side: settingsSelectorPopupBorderSide(theme.brightness),
+                  ),
+                  child: SingleChildScrollView(
+                    child: Column(mainAxisSize: MainAxisSize.min, children: items),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+        return FadeTransition(
+          opacity: curved,
+          child: ScaleTransition(
+            alignment: openBelow ? Alignment.topCenter : Alignment.bottomCenter,
+            scale: Tween<double>(begin: 0.85, end: 1.0).animate(curved),
+            child: child,
+          ),
+        );
+      },
+    );
+
+    if (value != null) widget.onChanged(value);
   }
 
   List<PopupMenuEntry<T>> _buildMenuItems(BuildContext context) {

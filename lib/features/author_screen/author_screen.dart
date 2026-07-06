@@ -199,6 +199,7 @@ class _AuthorScreenState extends State<AuthorScreen> {
                       if (bioText.isNotEmpty)
                         BioWithFloatingImage(
                           imagePath: 'assets/images/asad_img.jpeg',
+                          thumbnailPath: 'assets/images/asad_img_thumb.jpeg',
                           bioText: bioText,
                           textStyle: AppTextTheme.localizedBody(
                             isMalayalam: isMalayalam,

@@ -106,6 +106,7 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/icons/revamp/
+    - assets/google_fonts/
     - assets/db/quran_asad_combined_nw.sqlite
     - assets/db/DB.db
     - assets/db/quran_tajweed_data/output/quran_tajweed_complete.json

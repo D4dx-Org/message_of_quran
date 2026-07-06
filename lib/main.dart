@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/routing/app_router.dart';
 import 'package:the_message_of_the_quran/core/services/audio_handler.dart';
 import 'package:the_message_of_the_quran/core/services/database/database_helper.dart';
+import 'package:the_message_of_the_quran/core/services/database/database_ready_notifier.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
@@ -219,30 +220,19 @@ Future<void> _initializeDeferredMobileServices() async {
   _startInitialNotificationActionLookup();
 }
 
+// Mobile-only bootstrap path. Web builds MyApp immediately and owns its own
+// DB lifecycle via DatabaseReadyNotifier (see _AppBootstrapState) instead of
+// gating the whole app behind this function.
 Future<void> _initializeAppServices() async {
-  final databaseInitialization = () {
-    // Web first launch can take longer because sqlite wasm + bundled DB bytes
-    // are fetched and persisted before openDatabase succeeds.
-    if (kIsWeb) {
-      return DatabaseHelper.initializeServices();
-    }
-    return DatabaseHelper.initializeServices().timeout(
+  await _runStartupStep(
+    'initializing database services',
+    () => DatabaseHelper.initializeServices().timeout(
       const Duration(seconds: 20),
       onTimeout: () => throw TimeoutException(
         'Database initialization timed out.',
       ),
-    );
-  };
-
-  await _runStartupStep(
-    'initializing database services',
-    databaseInitialization,
+    ),
   );
-
-  if (kIsWeb) {
-    audioHandler ??= QuranAudioHandler();
-    return;
-  }
 
   audioHandler = await _runStartupStep(
     'initializing audio services',
@@ -328,12 +318,22 @@ class AppBootstrap extends StatefulWidget {
 }
 
 class _AppBootstrapState extends State<AppBootstrap> {
+  // Mobile-only: gates MyApp behind the full DB+audio+notifications bootstrap.
   late Future<void> _bootstrapFuture;
+
+  // Web-only: MyApp builds immediately; this notifier tracks the DB load in
+  // the background so only DB-dependent widgets need to wait/retry.
+  DatabaseReadyNotifier? _webDbNotifier;
 
   @override
   void initState() {
     super.initState();
-    _bootstrapFuture = _initializeAppServices();
+    if (kIsWeb) {
+      audioHandler ??= QuranAudioHandler();
+      _webDbNotifier = DatabaseReadyNotifier()..start();
+    } else {
+      _bootstrapFuture = _initializeAppServices();
+    }
   }
 
   void _retry() {
@@ -344,6 +344,10 @@ class _AppBootstrapState extends State<AppBootstrap> {
 
   @override
   Widget build(BuildContext context) {
+    if (kIsWeb) {
+      return MyApp(dbNotifier: _webDbNotifier!);
+    }
+
     return FutureBuilder<void>(
       future: _bootstrapFuture,
       builder: (context, snapshot) {
@@ -356,7 +360,7 @@ class _AppBootstrapState extends State<AppBootstrap> {
             onRetry: _retry,
           );
         }
-        return const MyApp();
+        return MyApp(dbNotifier: DatabaseReadyNotifier.ready());
       },
     );
   }
@@ -367,38 +371,12 @@ class _BootstrapLoadingApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (kIsWeb) {
-      // A plain (non-router) MaterialApp always reports its resolved route
-      // back to the browser on web, which would overwrite a deep URL like
-      // /surah/18 with "/" before MaterialApp.router ever mounts. Using
-      // MaterialApp.router here with an empty route table (always falls
-      // through to errorBuilder) shows the same spinner for any path
-      // without ever touching the browser's URL.
-      return MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        routerConfig: _bootstrapRouter,
-      );
-    }
-
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(body: SplashScreenLayout()),
     );
   }
 }
-
-final GoRouter _bootstrapRouter = GoRouter(
-  routes: const [],
-  errorBuilder: (context, state) => const Scaffold(
-    body: Center(
-      child: SizedBox(
-        width: 28,
-        height: 28,
-        child: CircularProgressIndicator(),
-      ),
-    ),
-  ),
-);
 
 class _BootstrapErrorApp extends StatelessWidget {
   const _BootstrapErrorApp({required this.error, required this.onRetry});
@@ -446,16 +424,6 @@ class _BootstrapErrorApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (kIsWeb) {
-      // See _BootstrapLoadingApp for why this avoids a plain MaterialApp.
-      return MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        routerConfig: GoRouter(
-          routes: const [],
-          errorBuilder: (context, state) => _content(context),
-        ),
-      );
-    }
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: _content(context),
@@ -502,15 +470,22 @@ Future<bool> handleNotificationRoute(String route) async {
 final GoRouter _appRouter = buildAppRouter();
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({super.key, required this.dbNotifier});
+
+  final DatabaseReadyNotifier dbNotifier;
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider<DatabaseReadyNotifier>.value(value: dbNotifier),
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => HomeProvider()),
-        ChangeNotifierProvider(create: (context) => SurahProvider()),
+        ChangeNotifierProvider(
+          create: (context) => SurahProvider(
+            dbNotifier: context.read<DatabaseReadyNotifier>(),
+          ),
+        ),
         ChangeNotifierProvider(create: (context) => FontSizeChangerProvider()),
         ChangeNotifierProvider(create: (context) => VersionCheckProvider()),
         ChangeNotifierProvider(create: (context) => ContactProvider()),

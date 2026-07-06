@@ -9,6 +9,7 @@ import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:the_message_of_the_quran/core/models/translation_block_model.dart';
 import 'package:the_message_of_the_quran/core/services/database/arabic_block_db_helper.dart';
 import 'package:the_message_of_the_quran/core/services/database/bookmark_db_helper.dart';
+import 'package:the_message_of_the_quran/core/services/database/database_ready_notifier.dart';
 import 'package:the_message_of_the_quran/core/services/database/interpretations_db_helper.dart';
 import 'package:the_message_of_the_quran/core/services/database/surah_db_helper.dart';
 import 'package:the_message_of_the_quran/core/services/database/translation_block_db_helper.dart';
@@ -341,11 +342,28 @@ class SurahProvider extends ChangeNotifier {
     return _buildAyahExportText(_selectedAyahs);
   }
 
-  SurahProvider() {
+  DatabaseReadyNotifier? _dbNotifier;
+
+  SurahProvider({DatabaseReadyNotifier? dbNotifier}) {
     // Defer until after the first frame so notifyListeners() is never called
     // while the widget tree is locked (during the initial build), which would
     // throw: "setState() or markNeedsBuild() called when widget tree was locked."
     WidgetsBinding.instance.addPostFrameCallback((_) => loadBookmarks());
+
+    // On web, MyApp (and this provider) is built before the database finishes
+    // loading, so the call above can run against an unopened userDatabase.
+    // Re-run it once the database becomes ready.
+    if (dbNotifier != null && dbNotifier.status != DbInitStatus.ready) {
+      _dbNotifier = dbNotifier;
+      dbNotifier.addListener(_onDbReady);
+    }
+  }
+
+  void _onDbReady() {
+    if (_dbNotifier?.status != DbInitStatus.ready) return;
+    _dbNotifier?.removeListener(_onDbReady);
+    _dbNotifier = null;
+    loadBookmarks();
   }
 
   @override
@@ -356,6 +374,7 @@ class SurahProvider extends ChangeNotifier {
   @override
   void dispose() {
     _isDisposed = true;
+    _dbNotifier?.removeListener(_onDbReady);
     _singleTapTimer?.cancel();
     searchController.dispose();
     super.dispose();

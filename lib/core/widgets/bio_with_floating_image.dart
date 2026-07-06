@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:the_message_of_the_quran/core/widgets/blur_up_asset_image.dart';
 
 /// Renders [imagePath] floated top-left with [bioText] wrapping beside it
 /// for as many lines as fit within the image's height, then continuing
@@ -11,6 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 /// find the line boundary at the image's height, and split there.
 class BioWithFloatingImage extends StatefulWidget {
   final String imagePath;
+  final String thumbnailPath;
   final String bioText;
   final TextStyle textStyle;
   final double imageWidth;
@@ -19,6 +21,7 @@ class BioWithFloatingImage extends StatefulWidget {
   const BioWithFloatingImage({
     super.key,
     required this.imagePath,
+    required this.thumbnailPath,
     required this.bioText,
     required this.textStyle,
     this.imageWidth = 200,
@@ -50,20 +53,19 @@ class _BioWithFloatingImageState extends State<BioWithFloatingImage> {
   @override
   Widget build(BuildContext context) {
     final imagePath = widget.imagePath;
+    final thumbnailPath = widget.thumbnailPath;
     final bioText = widget.bioText;
     final textStyle = widget.textStyle;
     final imageWidth = widget.imageWidth;
     final imageHeight = widget.imageHeight;
     final image = Padding(
       padding: const EdgeInsets.only(right: _gap, bottom: 8),
-      child: ClipRRect(
+      child: BlurUpAssetImage(
+        assetPath: imagePath,
+        thumbnailPath: thumbnailPath,
+        width: imageWidth,
+        height: imageHeight,
         borderRadius: BorderRadius.circular(12),
-        child: Image.asset(
-          imagePath,
-          width: imageWidth,
-          height: imageHeight,
-          fit: BoxFit.cover,
-        ),
       ),
     );
 
