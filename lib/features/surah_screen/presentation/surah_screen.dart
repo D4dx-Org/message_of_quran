@@ -2600,46 +2600,51 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                 )
                                                               : AppTheme
                                                                     .appIconTheme;
-                                                          return AnimatedContainer(
-                                                            duration:
-                                                                const Duration(
-                                                                  milliseconds:
-                                                                      250,
-                                                                ),
+                                                          return Column(
                                                             key: ValueKey(
                                                               index,
                                                             ),
-                                                            margin:
-                                                                const EdgeInsets.fromLTRB(
-                                                                  4,
-                                                                  8,
-                                                                  4,
-                                                                  4,
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .stretch,
+                                                            children: [
+                                                              AnimatedContainer(
+                                                                duration:
+                                                                    const Duration(
+                                                                      milliseconds:
+                                                                          250,
+                                                                    ),
+                                                                margin:
+                                                                    const EdgeInsets.fromLTRB(
+                                                                      4,
+                                                                      8,
+                                                                      4,
+                                                                      0,
+                                                                    ),
+                                                                padding:
+                                                                    const EdgeInsets.all(
+                                                                      8,
+                                                                    ),
+                                                                decoration: BoxDecoration(
+                                                                  color: isBlockPlaying
+                                                                      ? blockHighlightColor
+                                                                            .withValues(
+                                                                              alpha:
+                                                                                  0.15,
+                                                                            )
+                                                                      : null,
+                                                                  borderRadius:
+                                                                      BorderRadius.circular(
+                                                                        12,
+                                                                      ),
                                                                 ),
-                                                            padding:
-                                                                const EdgeInsets.all(
-                                                                  8,
-                                                                ),
-                                                            decoration: BoxDecoration(
-                                                              color: isBlockPlaying
-                                                                  ? blockHighlightColor
-                                                                        .withValues(
-                                                                          alpha:
-                                                                              0.15,
-                                                                        )
-                                                                  : null,
-                                                              borderRadius:
-                                                                  BorderRadius.circular(
-                                                                    12,
-                                                                  ),
-                                                            ),
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .stretch,
-                                                              children: [
-                                                                if (arabicText
-                                                                    .isNotEmpty)
+                                                                child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .stretch,
+                                                                  children: [
+                                                                    if (arabicText
+                                                                        .isNotEmpty)
                                                                   Padding(
                                                                     padding:
                                                                         const EdgeInsets.only(
@@ -2870,17 +2875,27 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                     );
                                                                   },
                                                                 ),
-                                                                if (isLastBlock)
-                                                                  _buildFinalAyahNavSection(
-                                                                    context,
-                                                                  )
-                                                                else
-                                                                  const Divider(
-                                                                    thickness:
-                                                                        0.5,
-                                                                  ),
-                                                              ],
-                                                            ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets.fromLTRB(
+                                                                      4,
+                                                                      0,
+                                                                      4,
+                                                                      4,
+                                                                    ),
+                                                                child: isLastBlock
+                                                                    ? _buildFinalAyahNavSection(
+                                                                        context,
+                                                                      )
+                                                                    : const Divider(
+                                                                        thickness:
+                                                                            0.5,
+                                                                      ),
+                                                              ),
+                                                            ],
                                                           );
                                                         },
                                                       ),

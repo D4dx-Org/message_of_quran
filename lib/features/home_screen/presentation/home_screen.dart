@@ -10,6 +10,7 @@ import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
+import 'package:the_message_of_the_quran/core/widgets/app_footer.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
 import 'package:the_message_of_the_quran/core/widgets/scroll_to_top_button.dart';
@@ -856,6 +857,15 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                 ),
               ],
+              const SizedBox(height: _webPopularToBrowseGap),
+              ResponsiveContentWrapper(
+                maxWidth: _webBrowsePanelMaxWidth(context),
+                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                child: AppFooter(
+                  fullBleed: false,
+                  maxWidth: _webBrowsePanelMaxWidth(context),
+                ),
+              ),
             ],
           ),
           PositionedDirectional(

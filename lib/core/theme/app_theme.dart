@@ -11,6 +11,15 @@ class AppTheme {
   static const Color appThemeRawChips = Color(0xff103564);
   static const Color appBarForegroundColor = Colors.white;
 
+  /// Bottom color of the light-theme content card gradient — the card that
+  /// shows the ayah and its meaning/translation.
+  static const Color lightContentSurfaceBottomColor = Color.fromRGBO(
+    255,
+    250,
+    234,
+    1,
+  );
+
   static String get appThemePrimaryHex => colorToHex(appThemePrimary);
   static String get appThemeSecondaryHex => colorToHex(appThemeSecondary);
   static String get appBarForegroundHex => colorToHex(appBarForegroundColor);

@@ -84,12 +84,6 @@ class BaseScreenLayout extends StatelessWidget {
   /// Set `false` to let the card shrink-wrap [child]'s height instead.
   final bool expandContentCard;
 
-  static const _lightContentSurfaceBottomColor = Color.fromRGBO(
-    255,
-    250,
-    234,
-    1,
-  );
   static const _darkContentSurfaceColor = Color(0xff0c2d52);
 
   BoxDecoration _buildContentCardDecoration({
@@ -106,7 +100,7 @@ class BaseScreenLayout extends StatelessWidget {
               end: Alignment.bottomCenter,
               colors: [
                 Color.fromRGBO(255, 255, 255, 1),
-                _lightContentSurfaceBottomColor,
+                AppTheme.lightContentSurfaceBottomColor,
               ],
             ),
       color: isDarkMode ? _darkContentSurfaceColor : null,
@@ -144,7 +138,7 @@ class BaseScreenLayout extends StatelessWidget {
   Color _contentSurfaceColor({required bool isDarkMode}) {
     return isDarkMode
         ? _darkContentSurfaceColor
-        : _lightContentSurfaceBottomColor;
+        : AppTheme.lightContentSurfaceBottomColor;
   }
 
   Widget _buildContentCardChild() {
