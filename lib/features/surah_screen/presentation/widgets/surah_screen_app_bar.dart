@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:the_message_of_the_quran/core/models/arabic_block_model.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
@@ -1067,45 +1066,91 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
     return null;
   }
 
-  void _openSheet(BuildContext context, {int? lockedTab}) {
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    const double maxSheetWidth = 620;
-    final double hInset = screenWidth < 640
-        ? 16.0
-        : ((screenWidth - maxSheetWidth) / 2).clamp(24.0, double.infinity);
+  // Anchors the navigator sheet as a dropdown starting right below the
+  // tapped chip, instead of a centered dialog.
+  void _openSheet(BuildContext chipContext, {int? lockedTab}) {
+    final renderBox = chipContext.findRenderObject() as RenderBox;
+    final chipTopLeft = renderBox.localToGlobal(Offset.zero);
+    final chipSize = renderBox.size;
+    final screenSize = MediaQuery.sizeOf(context);
 
-    showDialog(
+    const double margin = 12;
+    // Ayah-only dropdown just lists short numbers, so it can be narrower.
+    final double baseWidth = lockedTab == 1 ? 200.0 : 340.0;
+    final double sheetWidth = (screenSize.width - margin * 2).clamp(
+      0.0,
+      baseWidth,
+    );
+    double left = chipTopLeft.dx;
+    if (left + sheetWidth > screenSize.width - margin) {
+      left = screenSize.width - sheetWidth - margin;
+    }
+    if (left < margin) left = margin;
+    final double top = chipTopLeft.dy + chipSize.height + 8;
+    final double maxHeight = (screenSize.height - top - margin).clamp(
+      200.0,
+      screenSize.height * 0.7,
+    );
+
+    showGeneralDialog(
       context: context,
-      barrierColor: Colors.black.withValues(alpha: 0.45),
-      builder: (sheetCtx) => Dialog(
-        backgroundColor: Theme.of(context).cardColor,
-        insetPadding: EdgeInsets.symmetric(horizontal: hInset, vertical: 36),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        clipBehavior: Clip.antiAlias,
-        child: _SurahNavigatorSheet(
-          isMalayalam: widget.isMalayalam,
-          surahList: widget.surahList,
-          currentSurahNumber: widget.currentSurahNumber,
-          arabicBlockList: widget.arabicBlockList,
-          // Use the last explicitly-selected ayah, not the scroll-position one.
-          currentAyahNumber: _selectedAyah,
-          lockedTab: lockedTab,
-          onSurahSelected: (surahNumber) async {
-            Navigator.of(sheetCtx).pop();
-            // Reset jumped ayah for the new surah.
-            setState(() => _lastJumpedAyah = null);
-            await sheetCtx.read<SurahProvider>().selectSurahByNumber(
-              surahNumber,
-            );
-          },
-          onAyahSelected: (ayahStart) {
-            Navigator.of(sheetCtx).pop();
-            // Remember this as the last explicitly-selected ayah.
-            setState(() => _lastJumpedAyah = ayahStart);
-            widget.onAyahSelected(ayahStart);
-          },
-        ),
+      barrierDismissible: true,
+      barrierLabel: 'Dismiss',
+      barrierColor: Colors.black.withValues(alpha: 0.15),
+      transitionDuration: const Duration(milliseconds: 150),
+      pageBuilder: (sheetCtx, animation, secondaryAnimation) => Stack(
+        children: [
+          Positioned(
+            left: left,
+            top: top,
+            width: sheetWidth,
+            child: Material(
+              color: Theme.of(context).cardColor,
+              elevation: 10,
+              borderRadius: BorderRadius.circular(16),
+              clipBehavior: Clip.antiAlias,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: maxHeight),
+                child: _SurahNavigatorSheet(
+                  isMalayalam: widget.isMalayalam,
+                  surahList: widget.surahList,
+                  currentSurahNumber: widget.currentSurahNumber,
+                  arabicBlockList: widget.arabicBlockList,
+                  // Use the last explicitly-selected ayah, not the scroll-position one.
+                  currentAyahNumber: _selectedAyah,
+                  lockedTab: lockedTab,
+                  onSurahSelected: (surahNumber) async {
+                    Navigator.of(sheetCtx).pop();
+                    // Reset jumped ayah for the new surah.
+                    setState(() => _lastJumpedAyah = null);
+                    await sheetCtx.read<SurahProvider>().selectSurahByNumber(
+                      surahNumber,
+                    );
+                  },
+                  onAyahSelected: (ayahStart) {
+                    Navigator.of(sheetCtx).pop();
+                    // Remember this as the last explicitly-selected ayah.
+                    setState(() => _lastJumpedAyah = ayahStart);
+                    widget.onAyahSelected(ayahStart);
+                  },
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
+      transitionBuilder: (transitionCtx, animation, secondaryAnimation, child) {
+        return FadeTransition(
+          opacity: animation,
+          child: ScaleTransition(
+            scale: Tween(begin: 0.95, end: 1.0).animate(
+              CurvedAnimation(parent: animation, curve: Curves.easeOut),
+            ),
+            alignment: Alignment.topCenter,
+            child: child,
+          ),
+        );
+      },
     );
   }
 
@@ -1140,47 +1185,49 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
       required String label,
       required String semanticsLabel,
       required double maxWidth,
-      required VoidCallback onTap,
+      required void Function(BuildContext chipContext) onTap,
     }) {
-      return Semantics(
-        button: true,
-        label: semanticsLabel,
-        child: GestureDetector(
-          onTap: onTap,
-          child: Container(
-            constraints: BoxConstraints(maxWidth: maxWidth),
-            padding: EdgeInsets.symmetric(
-              horizontal: (narrowChip ? 5 : 8) * scale,
-              vertical: (narrowChip ? 4 : 6) * scale,
-            ),
-            decoration: BoxDecoration(
-              color: fill,
-              borderRadius: BorderRadius.circular(9 * scale),
-              border: Border.all(color: border),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                  child: Text(
-                    label,
-                    style: TextStyle(
-                      color: white,
-                      fontSize: (narrowChip ? 10 : 10.5) * scale,
-                      fontWeight: FontWeight.w600,
-                      height: 1.2,
+      return Builder(
+        builder: (chipContext) => Semantics(
+          button: true,
+          label: semanticsLabel,
+          child: GestureDetector(
+            onTap: () => onTap(chipContext),
+            child: Container(
+              constraints: BoxConstraints(maxWidth: maxWidth),
+              padding: EdgeInsets.symmetric(
+                horizontal: (narrowChip ? 5 : 8) * scale,
+                vertical: (narrowChip ? 4 : 6) * scale,
+              ),
+              decoration: BoxDecoration(
+                color: fill,
+                borderRadius: BorderRadius.circular(9 * scale),
+                border: Border.all(color: border),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        color: white,
+                        fontSize: (narrowChip ? 10 : 10.5) * scale,
+                        fontWeight: FontWeight.w600,
+                        height: 1.2,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
                   ),
-                ),
-                SizedBox(width: 3 * scale),
-                Icon(
-                  Icons.keyboard_arrow_down_rounded,
-                  color: white.withValues(alpha: 0.80),
-                  size: (narrowChip ? 13 : 16) * scale,
-                ),
-              ],
+                  SizedBox(width: 3 * scale),
+                  Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: white.withValues(alpha: 0.80),
+                    size: (narrowChip ? 13 : 16) * scale,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -1208,14 +1255,14 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
               label: surahChipLabel,
               semanticsLabel: 'Jump to surah',
               maxWidth: narrowChip ? 44 : 150,
-              onTap: () => _openSheet(context, lockedTab: 0),
+              onTap: (chipContext) => _openSheet(chipContext, lockedTab: 0),
             ),
             SizedBox(width: 6 * scale),
             chip(
               label: ayahChipLabel,
               semanticsLabel: 'Jump to ayah',
               maxWidth: narrowChip ? 44 : 110,
-              onTap: () => _openSheet(context, lockedTab: 1),
+              onTap: (chipContext) => _openSheet(chipContext, lockedTab: 1),
             ),
           ],
         ),
@@ -1230,7 +1277,7 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
       label: chipLabel,
       semanticsLabel: 'Jump to surah or ayah',
       maxWidth: narrowChip ? 44 : 180,
-      onTap: () => _openSheet(context),
+      onTap: (chipContext) => _openSheet(chipContext),
     );
   }
 }
@@ -1269,16 +1316,13 @@ class _SurahNavigatorSheet extends StatefulWidget {
 class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
   late int _selectedTab = widget.lockedTab ?? 0; // 0 = Surah, 1 = Ayah
   final TextEditingController _searchCtrl = TextEditingController();
-  final TextEditingController _ayahSearchCtrl = TextEditingController();
   final ScrollController _surahScrollCtrl = ScrollController();
   final ScrollController _ayahScrollCtrl = ScrollController();
   String _searchQuery = '';
-  String _ayahSearchQuery = '';
 
   @override
   void dispose() {
     _searchCtrl.dispose();
-    _ayahSearchCtrl.dispose();
     _surahScrollCtrl.dispose();
     _ayahScrollCtrl.dispose();
     super.dispose();
@@ -1361,12 +1405,7 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
                   child: Container(
                     width: 28,
                     height: 28,
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.10)
-                          : Colors.grey.shade200,
-                      shape: BoxShape.circle,
-                    ),
+                    alignment: Alignment.center,
                     child: Icon(Icons.close, size: 16, color: cs.onSurface),
                   ),
                 ),
@@ -1374,76 +1413,56 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
             ),
           ),
           const Divider(height: 1),
-          // Search field — shown for both tabs
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
-            child: TextField(
-              controller: _selectedTab == 0 ? _searchCtrl : _ayahSearchCtrl,
-              keyboardType: _selectedTab == 1
-                  ? TextInputType.number
-                  : TextInputType.text,
-              inputFormatters: _selectedTab == 1
-                  ? [FilteringTextInputFormatter.digitsOnly]
-                  : null,
-              onChanged: (v) => setState(() {
-                if (_selectedTab == 0) {
-                  _searchQuery = v;
-                } else {
-                  _ayahSearchQuery = v;
-                }
-              }),
-              style: AppTextTheme.localizedLabel(
-                isMalayalam: isMl,
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-              ),
-              decoration: InputDecoration(
-                hintText: _selectedTab == 0
-                    ? (isMl ? 'സൂറത്ത് തിരയുക' : 'Search Surah')
-                    : (isMl ? 'ആയത്ത് തിരയുക' : 'Search Ayah'),
-                hintStyle: AppTextTheme.localizedLabel(
+          // Search field — Surah tab only; Ayah tab has no search.
+          if (_selectedTab == 0)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
+              child: TextField(
+                controller: _searchCtrl,
+                onChanged: (v) => setState(() => _searchQuery = v),
+                style: AppTextTheme.localizedLabel(
                   isMalayalam: isMl,
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
                 ),
-                prefixIcon: const Icon(Icons.search, size: 18),
-                suffixIcon:
-                    (_selectedTab == 0 ? _searchQuery : _ayahSearchQuery)
-                        .isEmpty
-                    ? null
-                    : IconButton(
-                        icon: const Icon(Icons.clear, size: 18),
-                        onPressed: () => setState(() {
-                          if (_selectedTab == 0) {
+                decoration: InputDecoration(
+                  hintText: isMl ? 'സൂറത്ത് തിരയുക' : 'Search Surah',
+                  hintStyle: AppTextTheme.localizedLabel(
+                    isMalayalam: isMl,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  prefixIcon: const Icon(Icons.search, size: 18),
+                  suffixIcon: _searchQuery.isEmpty
+                      ? null
+                      : IconButton(
+                          icon: const Icon(Icons.clear, size: 18),
+                          onPressed: () => setState(() {
                             _searchCtrl.clear();
                             _searchQuery = '';
-                          } else {
-                            _ayahSearchCtrl.clear();
-                            _ayahSearchQuery = '';
-                          }
-                        }),
-                      ),
-                filled: true,
-                fillColor: isDark
-                    ? Colors.white.withValues(alpha: 0.06)
-                    : Colors.grey.shade100,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
+                          }),
+                        ),
+                  filled: true,
+                  fillColor: isDark
+                      ? Colors.white.withValues(alpha: 0.06)
+                      : Colors.grey.shade100,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
+                  isDense: true,
                 ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 10,
-                ),
-                isDense: true,
               ),
             ),
-          ),
           // List body
           Flexible(
             child: _selectedTab == 0
                 ? _buildSurahList(isDark, isMl, cs)
-                : _buildAyahList(isDark, isMl, cs, _ayahSearchQuery),
+                : _buildAyahList(isDark, isMl, cs),
           ),
         ],
       ),
@@ -1555,23 +1574,9 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
     );
   }
 
-  Widget _buildAyahList(bool isDark, bool isMl, ColorScheme cs, String query) {
-    final typed = int.tryParse(query);
-    final allBlocks = widget.arabicBlockList;
-    final blocks = query.isEmpty
-        ? allBlocks
-        : allBlocks.where((block) {
-            final i = allBlocks.indexOf(block);
-            final start = block.verseFrom ?? i + 1;
-            final end = block.verseTo ?? i + 1;
-            final matchesRange =
-                typed != null && typed >= start && typed <= end;
-            final matchesText =
-                start.toString().contains(query) ||
-                end.toString().contains(query);
-            return matchesRange || matchesText;
-          }).toList();
-    if (allBlocks.isEmpty) {
+  Widget _buildAyahList(bool isDark, bool isMl, ColorScheme cs) {
+    final blocks = widget.arabicBlockList;
+    if (blocks.isEmpty) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -1587,6 +1592,7 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
 
     return ListView.separated(
       controller: _ayahScrollCtrl,
+      shrinkWrap: true,
       itemCount: blocks.length,
       separatorBuilder: (_, __) =>
           const Divider(height: 1, indent: 58, endIndent: 16),

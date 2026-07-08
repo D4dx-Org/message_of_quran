@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:the_message_of_the_quran/core/models/juz_hizb_model.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:the_message_of_the_quran/core/services/database/database_ready_notifier.dart';
@@ -673,11 +674,20 @@ class _HomeScreenState extends State<HomeScreen>
     final lastSurahTabSelection =
         context.watch<LastReadProvider>().lastSurahTabSelection;
     final compactGridMaxCrossAxisExtent = isMalayalam ? 420.0 : 400.0;
+    // On the first visit the DB copy runs in the background after this tab
+    // has already painted, before getAllSurah()/loadJuz() ever set their own
+    // isLoading flag — cover that gap so the tab shows a spinner instead of
+    // an empty grid, scoped to this tab only (not a full-screen loader).
+    final dbNotReady =
+        context.watch<DatabaseReadyNotifier>().status != DbInitStatus.ready;
 
     switch (_tabController.index) {
       case 1:
-        if (juzHizbProvider.isLoading && juzHizbProvider.juzList.isEmpty) {
-          return const Center(child: CircularProgressIndicator());
+        if (juzHizbProvider.juzList.isEmpty &&
+            (dbNotReady || juzHizbProvider.isLoading)) {
+          return _buildWebCardSkeletonGrid(
+            maxCrossAxisExtent: compactGridMaxCrossAxisExtent,
+          );
         }
         return _buildWebCardGrid(
           itemCount: juzHizbProvider.juzList.length,
@@ -721,8 +731,11 @@ class _HomeScreenState extends State<HomeScreen>
       case 2:
       case 0:
       default:
-        if (surahProvider.isSurahLoading) {
-          return const Center(child: CircularProgressIndicator());
+        if (surahProvider.surahList.isEmpty &&
+            (dbNotReady || surahProvider.isSurahLoading)) {
+          return _buildWebCardSkeletonGrid(
+            maxCrossAxisExtent: compactGridMaxCrossAxisExtent,
+          );
         }
         return _buildWebCardGrid(
           itemCount: surahProvider.surahList.length,
@@ -758,6 +771,31 @@ class _HomeScreenState extends State<HomeScreen>
           },
         );
     }
+  }
+
+  /// Skeleton placeholder for the Surah/Juz grid, shown in place of the real
+  /// cards while data is loading — same grid/card shape so there's no layout
+  /// shift once content arrives.
+  Widget _buildWebCardSkeletonGrid({required double maxCrossAxisExtent}) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final baseColor = isDarkMode ? Colors.grey.shade800 : Colors.grey.shade300;
+    final highlightColor = isDarkMode
+        ? Colors.grey.shade700
+        : Colors.grey.shade100;
+
+    return Shimmer.fromColors(
+      baseColor: baseColor,
+      highlightColor: highlightColor,
+      child: _buildWebCardGrid(
+        itemCount: 20,
+        maxCrossAxisExtent: maxCrossAxisExtent,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        itemBuilder: (context, index) => _WebCompactCardSkeleton(
+          color: baseColor,
+        ),
+      ),
+    );
   }
 
   Widget _buildWebCardGrid({
@@ -1151,6 +1189,77 @@ class _WebHoverSurfaceState extends State<_WebHoverSurface> {
           ),
           padding: widget.padding,
           child: widget.child,
+        ),
+      ),
+    );
+  }
+}
+
+/// Static placeholder matching [_WebCompactSurahCard]/[_WebCompactJuzCard]'s
+/// row shape (leading circle, two-line title block, trailing box). Meant to
+/// sit inside a single [Shimmer.fromColors] ancestor, so it paints in plain
+/// [color] rather than shimmering itself.
+class _WebCompactCardSkeleton extends StatelessWidget {
+  const _WebCompactCardSkeleton({required this.color});
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Theme.of(context).scaffoldBackgroundColor
+            : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white.withValues(alpha: 0.10)
+              : (Theme.of(context).dividerTheme.color ??
+                    Theme.of(context).colorScheme.outlineVariant),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DecoratedBox(
+              decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+              child: const SizedBox(width: 40, height: 40),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: color,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const SizedBox(width: double.infinity, height: 14),
+                  ),
+                  const SizedBox(height: 6),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: color,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const SizedBox(width: 80, height: 11),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 10),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: const SizedBox(width: 46, height: 11),
+            ),
+          ],
         ),
       ),
     );
