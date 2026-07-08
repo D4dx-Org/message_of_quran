@@ -673,10 +673,17 @@ class _HomeScreenState extends State<HomeScreen>
     final lastSurahTabSelection =
         context.watch<LastReadProvider>().lastSurahTabSelection;
     final compactGridMaxCrossAxisExtent = isMalayalam ? 420.0 : 400.0;
+    // On the first visit the DB copy runs in the background after this tab
+    // has already painted, before getAllSurah()/loadJuz() ever set their own
+    // isLoading flag — cover that gap so the tab shows a spinner instead of
+    // an empty grid, scoped to this tab only (not a full-screen loader).
+    final dbNotReady =
+        context.watch<DatabaseReadyNotifier>().status != DbInitStatus.ready;
 
     switch (_tabController.index) {
       case 1:
-        if (juzHizbProvider.isLoading && juzHizbProvider.juzList.isEmpty) {
+        if (juzHizbProvider.juzList.isEmpty &&
+            (dbNotReady || juzHizbProvider.isLoading)) {
           return const Center(child: CircularProgressIndicator());
         }
         return _buildWebCardGrid(
@@ -721,7 +728,8 @@ class _HomeScreenState extends State<HomeScreen>
       case 2:
       case 0:
       default:
-        if (surahProvider.isSurahLoading) {
+        if (surahProvider.surahList.isEmpty &&
+            (dbNotReady || surahProvider.isSurahLoading)) {
           return const Center(child: CircularProgressIndicator());
         }
         return _buildWebCardGrid(
