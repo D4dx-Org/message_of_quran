@@ -1613,29 +1613,6 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
             horizontal: 16,
             vertical: 2,
           ),
-          leading: Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? activeColor
-                  : (isDark
-                        ? Colors.white.withValues(alpha: 0.08)
-                        : Colors.grey.shade100),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              '$start',
-              style: TextStyle(
-                color: isSelected
-                    ? (isDark ? AppTheme.appThemePrimary : Colors.white)
-                    : (isDark ? Colors.white70 : Colors.black87),
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
           title: Text(
             label,
             style: AppTextTheme.localizedLabel(

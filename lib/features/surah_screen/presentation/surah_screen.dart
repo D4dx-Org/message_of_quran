@@ -2382,6 +2382,7 @@ class _SurahScreenState extends State<SurahScreen> {
       child: BaseScreenLayout(
         topBorderRadius: kIsWeb ? AppTheme.desktopContentCardRadius : 40,
         bottomBorderRadius: kIsWeb ? AppTheme.desktopContentCardRadius : 0,
+        contentBottomInset: BaseScreenLayout.defaultContentTopInset,
         appBar: CommonAppBar.appBar(
           context,
           showBrandLogo: true,
@@ -2649,7 +2650,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                       4,
                                                                       8,
                                                                       4,
-                                                                      0,
+                                                                      8,
                                                                     ),
                                                                 padding:
                                                                     const EdgeInsets.all(
@@ -2912,7 +2913,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                 padding:
                                                                     const EdgeInsets.fromLTRB(
                                                                       4,
-                                                                      0,
+                                                                      4,
                                                                       4,
                                                                       4,
                                                                     ),

@@ -17,6 +17,17 @@ class HomeProvider extends ChangeNotifier {
     homeSubTabIndex = index;
   }
 
+  /// Tracks which sub-tab pill is currently hovered (web/desktop pointer).
+  int? _hoveredSubTabIndex;
+
+  int? get hoveredSubTabIndex => _hoveredSubTabIndex;
+
+  void setHoveredSubTabIndex(int? index) {
+    if (_hoveredSubTabIndex == index) return;
+    _hoveredSubTabIndex = index;
+    notifyListeners();
+  }
+
   void changeIndex(int newIndex) {
     if (newIndex < 0 || newIndex > 3) return;
     _currentIndex = newIndex;

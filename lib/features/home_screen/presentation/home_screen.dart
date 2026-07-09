@@ -24,7 +24,7 @@ import 'package:the_message_of_the_quran/features/home_screen/providers/juz_hizb
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
 import 'package:the_message_of_the_quran/features/mushaf/widgets/star_number.dart';
 import 'package:the_message_of_the_quran/features/search_screen/presentation/widgets/surah_quick_search.dart';
-    // hide Expanded, AppTextTheme, InputDecoration;
+// hide Expanded, AppTextTheme, InputDecoration;
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
@@ -60,8 +60,10 @@ class _HomeScreenState extends State<HomeScreen>
     super.initState();
     // Restore the last-active sub-tab (Surah = 0, Juz = 1) from HomeProvider
     // so that returning via SurahScreen's Home button reopens the correct tab.
-    final initialTabIndex =
-        context.read<HomeProvider>().homeSubTabIndex.clamp(0, 1);
+    final initialTabIndex = context.read<HomeProvider>().homeSubTabIndex.clamp(
+      0,
+      1,
+    );
     _tabController = TabController(
       length: 2,
       vsync: this,
@@ -152,11 +154,10 @@ class _HomeScreenState extends State<HomeScreen>
       // surah inside the SurahScreen is reflected here instead of the
       // originally opened surah.
       final currentIndex = surahProvider.index;
-      if (currentIndex >= 0 &&
-          currentIndex < surahProvider.surahList.length) {
+      if (currentIndex >= 0 && currentIndex < surahProvider.surahList.length) {
         context.read<LastReadProvider>().saveLastSurahTabSelection(
-              surahProvider.surahList[currentIndex].surahNumber,
-            );
+          surahProvider.surahList[currentIndex].surahNumber,
+        );
       }
     }
   }
@@ -232,6 +233,9 @@ class _HomeScreenState extends State<HomeScreen>
     final unselectedBg = isDarkMode
         ? AppTheme.darkContentSurfaceBottomColor
         : const Color.fromRGBO(221, 221, 221, 1);
+    final hoveredBg = isDarkMode
+        ? AppTheme.appThemePrimary.withValues(alpha: 0.6)
+        : const Color.fromRGBO(209, 209, 209, 1);
     const selectedTextColor = Colors.white;
     final unselectedTextColor = isDarkMode
         ? Colors.grey[400]!
@@ -239,6 +243,8 @@ class _HomeScreenState extends State<HomeScreen>
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     final tabs = isMalayalam ? ['സൂറത്ത്', 'ജുസ്അ്'] : ['Surah', "Juz'"];
     final tabBarMaxWidth = _webHomeTabBarMaxWidth(context);
+    final homeProvider = context.watch<HomeProvider>();
+    final hoveredTabIndex = homeProvider.hoveredSubTabIndex;
 
     final tabBar = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -258,26 +264,33 @@ class _HomeScreenState extends State<HomeScreen>
                 for (int index = 0; index < tabs.length; index++) ...[
                   if (index > 0) const SizedBox(width: 8),
                   Expanded(
-                    child: GestureDetector(
-                      onTap: () => _tabController.animateTo(index),
-                      child: Container(
-                        height: 26,
-                        decoration: BoxDecoration(
-                          color: currentIndex == index
-                              ? selectedBg
-                              : unselectedBg,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          tabs[index],
-                          style: AppTextTheme.localizedLabel(
-                            isMalayalam: isMalayalam,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      onEnter: (_) => homeProvider.setHoveredSubTabIndex(index),
+                      onExit: (_) => homeProvider.setHoveredSubTabIndex(null),
+                      child: GestureDetector(
+                        onTap: () => _tabController.animateTo(index),
+                        child: Container(
+                          height: 26,
+                          decoration: BoxDecoration(
                             color: currentIndex == index
-                                ? selectedTextColor
-                                : unselectedTextColor,
+                                ? selectedBg
+                                : (hoveredTabIndex == index
+                                      ? hoveredBg
+                                      : unselectedBg),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            tabs[index],
+                            style: AppTextTheme.localizedLabel(
+                              isMalayalam: isMalayalam,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: currentIndex == index
+                                  ? selectedTextColor
+                                  : unselectedTextColor,
+                            ),
                           ),
                         ),
                       ),
@@ -561,8 +574,8 @@ class _HomeScreenState extends State<HomeScreen>
         ? const ValueKey('webJuzSelector')
         : const ValueKey('webSurahSelector');
     final dropdownHintText = isJuzSection
-      ? (isMalayalam ? 'ജുസ്അ് തിരയുക' : 'Select juz')
-      : (isMalayalam ? 'സൂറത്ത് തിരയുക' : 'Select surah');
+        ? (isMalayalam ? 'ജുസ്അ് തിരയുക' : 'Select juz')
+        : (isMalayalam ? 'സൂറത്ത് തിരയുക' : 'Select surah');
     final dropdownItems = isJuzSection
         ? juzList
               .map(
@@ -617,10 +630,10 @@ class _HomeScreenState extends State<HomeScreen>
         final stackedColumns = constraints.maxWidth < 640 ? 1 : 2;
         final stackedSpacing = 12.0 * (stackedColumns - 1);
         final stackedDropdownWidth = isCompactWebHome
-          ? ((constraints.maxWidth - stackedSpacing) / stackedColumns)
-              .clamp(0.0, isMalayalam ? 420.0 : 400.0)
-              .toDouble()
-          : dropdownWidth;
+            ? ((constraints.maxWidth - stackedSpacing) / stackedColumns)
+                  .clamp(0.0, isMalayalam ? 420.0 : 400.0)
+                  .toDouble()
+            : dropdownWidth;
         final minInlineWidth = isMalayalam ? 560.0 : 520.0;
         final canFitInlineHeader = constraints.maxWidth >= minInlineWidth;
 
@@ -671,8 +684,9 @@ class _HomeScreenState extends State<HomeScreen>
     final surahByNumber = {
       for (final surah in surahProvider.surahList) surah.surahNumber: surah,
     };
-    final lastSurahTabSelection =
-        context.watch<LastReadProvider>().lastSurahTabSelection;
+    final lastSurahTabSelection = context
+        .watch<LastReadProvider>()
+        .lastSurahTabSelection;
     final compactGridMaxCrossAxisExtent = isMalayalam ? 420.0 : 400.0;
     // On the first visit the DB copy runs in the background after this tab
     // has already painted, before getAllSurah()/loadJuz() ever set their own
@@ -712,8 +726,8 @@ class _HomeScreenState extends State<HomeScreen>
                     surahNumber: surah.surahNumber,
                   );
             final subtitle = displayText.subtitle.trim().isEmpty
-              ? (isMalayalam ? 'ജുസ്അ് ${juz.number}' : 'Juz ${juz.number}')
-              : displayText.subtitle;
+                ? (isMalayalam ? 'ജുസ്അ് ${juz.number}' : 'Juz ${juz.number}')
+                : displayText.subtitle;
             return _WebCompactJuzCard(
               isMalayalam: isMalayalam,
               number: juz.number,
@@ -791,9 +805,8 @@ class _HomeScreenState extends State<HomeScreen>
         maxCrossAxisExtent: maxCrossAxisExtent,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
-        itemBuilder: (context, index) => _WebCompactCardSkeleton(
-          color: baseColor,
-        ),
+        itemBuilder: (context, index) =>
+            _WebCompactCardSkeleton(color: baseColor),
       ),
     );
   }
@@ -814,18 +827,18 @@ class _HomeScreenState extends State<HomeScreen>
             ? 2
             : 3;
         final totalSpacing = crossAxisSpacing * (columns - 1);
-        final itemWidth =
-            ((availableWidth - totalSpacing) / columns).clamp(0.0, maxCrossAxisExtent);
+        final itemWidth = ((availableWidth - totalSpacing) / columns).clamp(
+          0.0,
+          maxCrossAxisExtent,
+        );
 
         return Wrap(
           spacing: crossAxisSpacing,
           runSpacing: mainAxisSpacing,
           children: List.generate(
             itemCount,
-            (index) => SizedBox(
-              width: itemWidth,
-              child: itemBuilder(context, index),
-            ),
+            (index) =>
+                SizedBox(width: itemWidth, child: itemBuilder(context, index)),
           ),
         );
       },
@@ -873,9 +886,7 @@ class _HomeScreenState extends State<HomeScreen>
                 const SizedBox(height: _webPopularToBrowseGap),
                 ResponsiveContentWrapper(
                   maxWidth: _webBrowsePanelMaxWidth(context),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: horizontalPadding,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
                   child: DecoratedBox(
                     decoration: _webPanelDecoration(context),
                     child: Padding(
@@ -1000,10 +1011,7 @@ class _WebBrandingLogoState extends State<_WebBrandingLogo> {
     super.didChangeDependencies();
     if (_ready) return;
     Future.wait([
-      precacheImage(
-        const AssetImage('assets/images/symbol-logo.png'),
-        context,
-      ),
+      precacheImage(const AssetImage('assets/images/symbol-logo.png'), context),
       precacheImage(
         const AssetImage('assets/images/symbol-logo-text.png'),
         context,

@@ -6,6 +6,7 @@ import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/core/widgets/bio_with_floating_image.dart';
+import 'package:the_message_of_the_quran/core/services/database/database_ready_notifier.dart';
 import 'package:the_message_of_the_quran/features/author_screen/provider/translator_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 
@@ -22,7 +23,10 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      await context.read<DatabaseReadyNotifier>().whenReady;
+      if (!mounted) return;
       Provider.of<TranslatorProvider>(context, listen: false)
           .getAboutAuthorInfo();
     });
@@ -50,6 +54,8 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bodyColor = isDark ? Colors.white70 : Colors.black87;
+    final dbLoading =
+        context.watch<DatabaseReadyNotifier>().status == DbInitStatus.loading;
 
     return BaseScreenLayout(
       appBar: CommonAppBar.homeAppBar(
@@ -63,7 +69,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
         padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
         child: Consumer<TranslatorProvider>(
           builder: (context, provider, child) {
-            if (provider.isLoading) {
+            if (provider.isLoading || dbLoading) {
               return const Center(child: CircularProgressIndicator());
             }
             if (provider.aboutAuthorList.isEmpty) {

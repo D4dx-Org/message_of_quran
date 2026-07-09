@@ -6,6 +6,7 @@ import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/core/widgets/bio_with_floating_image.dart';
+import 'package:the_message_of_the_quran/core/services/database/database_ready_notifier.dart';
 import 'package:the_message_of_the_quran/features/author_screen/provider/author_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -128,13 +129,14 @@ class _AuthorScreenState extends State<AuthorScreen> {
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     if (_lastMalayalam != isMalayalam) {
       _lastMalayalam = isMalayalam;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          Provider.of<AuthorProvider>(
-            context,
-            listen: false,
-          ).getAuthorInfo(malayalam: isMalayalam);
-        }
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (!mounted) return;
+        await context.read<DatabaseReadyNotifier>().whenReady;
+        if (!mounted) return;
+        Provider.of<AuthorProvider>(
+          context,
+          listen: false,
+        ).getAuthorInfo(malayalam: isMalayalam);
       });
     }
   }
@@ -144,6 +146,8 @@ class _AuthorScreenState extends State<AuthorScreen> {
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bodyColor = isDark ? Colors.white70 : Colors.black87;
+    final dbLoading =
+        context.watch<DatabaseReadyNotifier>().status == DbInitStatus.loading;
     return BaseScreenLayout(
       appBar: CommonAppBar.homeAppBar(
         context,
@@ -156,7 +160,7 @@ class _AuthorScreenState extends State<AuthorScreen> {
         padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
         child: Consumer<AuthorProvider>(
           builder: (context, authorProvider, child) {
-            if (authorProvider.isAuthorsLoading) {
+            if (authorProvider.isAuthorsLoading || dbLoading) {
               return const Center(child: CircularProgressIndicator());
             }
             if (authorProvider.authorsList.isEmpty) {
