@@ -31,6 +31,7 @@ import 'package:the_message_of_the_quran/features/search_screen/presentation/wid
 import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/core/widgets/scroll_to_top_button.dart';
+import 'package:the_message_of_the_quran/core/widgets/web_mobile_bottom_nav_bar.dart';
 import 'package:the_message_of_the_quran/core/widgets/pinch_zoom_view.dart';
 import 'package:the_message_of_the_quran/features/bookmark_screen/presentation/bookmark_conflict_dialog.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/surah_screen_app_bar.dart';
@@ -487,7 +488,7 @@ class _SurahScreenState extends State<SurahScreen> {
           final isNarrowTitleArea = maxWidth < 220;
           // Keep branding size identical to Home app bar.
           final logoHeight = 40.0 * scale;
-          final interItemGap = isNarrowTitleArea ? 3.0 : 6.0;
+          final interItemGap = isNarrowTitleArea ? 8.0 : 14.0;
 
           final chip = SurahHeaderControls(
             isMalayalam: isMalayalam,
@@ -1600,10 +1601,6 @@ class _SurahScreenState extends State<SurahScreen> {
     required int ayahNumber,
     required SurahProvider controller,
   }) {
-    if (_temporarilyHighlightedAyahId == ayahNumber) {
-      return appBarAccentFillColor(context, alpha: 0.22);
-    }
-
     if (controller.isAyahSelected(ayahNumber)) {
       return const Color(0xFF338FCC).withValues(alpha: 0.25);
     }
@@ -2375,8 +2372,14 @@ class _SurahScreenState extends State<SurahScreen> {
       canPop: true,
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) {
-          _saveLastRead();
-          Provider.of<AudioProvider>(context, listen: false).stopAudio();
+          // Deferred: calling notifyListeners() synchronously here races the
+          // Hero transition's build phase mid-pop and trips
+          // "setState() called during build" (LastReadProvider).
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            _saveLastRead();
+            Provider.of<AudioProvider>(context, listen: false).stopAudio();
+          });
         }
       },
       child: BaseScreenLayout(
@@ -2390,6 +2393,16 @@ class _SurahScreenState extends State<SurahScreen> {
           titleWidget: _buildSurahAppBarTitleControls(controller),
           actions: kIsWeb ? [_buildSurahWebActions(context)] : null,
         ),
+        mobileBottomNavOverride: kIsWeb
+            ? WebMobileBottomNavBar(
+                selectedPageIndex: null,
+                isBookmarkNeeded: true,
+                showSearch: true,
+                onPageSelected: (index) =>
+                    unawaited(_navigateToMainTab(index)),
+                onSearchPressed: () => showWebFullTextSearchDialog(context),
+              )
+            : null,
         headerContent: useDesktopWebReaderLayout
             ? _buildDesktopReaderHeader(
                 context,
@@ -2620,6 +2633,13 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                   ayaStart &&
                                                               effectivePlayingAyahId <=
                                                                   ayaEnd;
+                                                          final isBlockJumpHighlighted =
+                                                              _temporarilyHighlightedAyahId !=
+                                                                  null &&
+                                                              _temporarilyHighlightedAyahId! >=
+                                                                  ayaStart &&
+                                                              _temporarilyHighlightedAyahId! <=
+                                                                  ayaEnd;
                                                           final blockHighlightColor =
                                                               Theme.of(
                                                                         highlightCtx,
@@ -2657,7 +2677,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                       8,
                                                                     ),
                                                                 decoration: BoxDecoration(
-                                                                  color: isBlockPlaying
+                                                                  color: isBlockPlaying || isBlockJumpHighlighted
                                                                       ? blockHighlightColor
                                                                             .withValues(
                                                                               alpha:

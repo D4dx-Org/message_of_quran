@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/blur_up_asset_image.dart';
+import 'package:the_message_of_the_quran/core/widgets/link_hover/hover_link.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class D4dxBrandingFooter extends StatelessWidget {
@@ -77,25 +78,29 @@ class D4dxBrandingFooter extends StatelessWidget {
             ),
           ),
           SizedBox(height: 8 * scale),
-          Semantics(
-            button: true,
-            label: 'Visit D4DX website',
-            child: InkWell(
-              borderRadius: BorderRadius.circular(12 * scale),
-              onTap: _launchWebsite,
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 12 * scale,
-                  vertical: 8 * scale,
-                ),
-                child: BlurUpAssetImage(
-                  assetPath: 'assets/images/d4_logo.png',
-                  thumbnailPath: 'assets/images/d4_logo_thumb.png',
-                  height: 46 * scale,
-                  aspectRatio: 1936 / 2048,
-                  fit: BoxFit.contain,
-                  color: isDark ? footerColor : null,
-                  colorBlendMode: isDark ? BlendMode.srcIn : null,
+          HoverLink(
+            url: ApiConstants.d4dxWebsiteUrl,
+            child: Semantics(
+              button: true,
+              label: 'Visit D4DX website',
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12 * scale),
+                onTap: _launchWebsite,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 12 * scale,
+                    vertical: 8 * scale,
+                  ),
+                  child: BlurUpAssetImage(
+                    assetPath: 'assets/images/d4_logo.png',
+                    thumbnailPath: 'assets/images/d4_logo_thumb.png',
+                    height: 46 * scale,
+                    aspectRatio: 1936 / 2048,
+                    fit: BoxFit.contain,
+                    color: isDark ? footerColor : null,
+                    colorBlendMode: isDark ? BlendMode.srcIn : null,
+                    blurSigma: 4,
+                  ),
                 ),
               ),
             ),

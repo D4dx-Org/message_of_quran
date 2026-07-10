@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
+import 'package:the_message_of_the_quran/core/widgets/link_hover/hover_link.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// Compact copyright + "Powered by D4DX" strip.
@@ -79,31 +80,39 @@ class AppFooter extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            Semantics(
-              button: true,
-              label: 'Visit D4DX website',
-              child: InkWell(
-                borderRadius: BorderRadius.circular(8),
-                onTap: _launchWebsite,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 4,
-                    vertical: 2,
-                  ),
-                  child: Text.rich(
-                    TextSpan(
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: footerColor,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
+            Flexible(
+              child: HoverLink(
+                url: ApiConstants.d4dxWebsiteUrl,
+                child: Semantics(
+                  button: true,
+                  label: 'Visit D4DX website',
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(8),
+                    onTap: _launchWebsite,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 2,
                       ),
-                      children: [
-                        const TextSpan(text: 'Powered by '),
+                      child: Text.rich(
                         TextSpan(
-                          text: 'D4DX',
-                          style: TextStyle(color: d4dxColor),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: footerColor,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          children: [
+                            const TextSpan(text: 'Powered by '),
+                            TextSpan(
+                              text: 'D4DX',
+                              style: TextStyle(color: d4dxColor),
+                            ),
+                          ],
                         ),
-                      ],
+                        maxLines: 1,
+                        softWrap: false,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ),
                 ),

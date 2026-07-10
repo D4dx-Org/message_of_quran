@@ -762,6 +762,11 @@ class SurahHeaderControls extends StatelessWidget {
         })
         .toList(growable: false);
 
+    // Numbers only (no "Ayah"/"Ayahs" word) — this dropdown's own chip/caption
+    // already makes clear what it jumps to.
+    String ayahNumberLabel(int start, int end) =>
+        start == end ? '$start' : '$start – $end';
+
     final ayahItems = arabicBlockList
         .asMap()
         .entries
@@ -773,9 +778,7 @@ class SurahHeaderControls extends StatelessWidget {
           return DropdownMenuItem<int>(
             value: start,
             child: popupItemChild(
-              start == end
-                  ? formatAyahReferenceLabel(start, isMalayalam: isMalayalam)
-                  : formatAyahRangeLabel(start, end, isMalayalam: isMalayalam),
+              ayahNumberLabel(start, end),
               selected: start == currentAyahNumber,
             ),
           );
@@ -791,9 +794,7 @@ class SurahHeaderControls extends StatelessWidget {
           final start = block.verseFrom ?? index + 1;
           final end = block.verseTo ?? index + 1;
           return Text(
-            start == end
-                ? formatAyahReferenceLabel(start, isMalayalam: isMalayalam)
-                : formatAyahRangeLabel(start, end, isMalayalam: isMalayalam),
+            ayahNumberLabel(start, end),
             overflow: TextOverflow.ellipsis,
             style: itemTextStyle,
           );
@@ -806,6 +807,7 @@ class SurahHeaderControls extends StatelessWidget {
       required List<DropdownMenuItem<int>> items,
       required ValueChanged<int?> onChanged,
       List<Widget>? selectedLabels,
+      bool dynamicWidth = false,
     }) {
       // DropdownButton asserts that value must be present in items when non-null.
       // Guard against empty lists or stale values during initial load.
@@ -828,7 +830,7 @@ class SurahHeaderControls extends StatelessWidget {
             selectedItemBuilder: selectedLabels != null
                 ? (_) => selectedLabels
                 : null,
-            isExpanded: !compact,
+            isExpanded: dynamicWidth ? false : !compact,
             isDense: compact,
             // null = use intrinsic item height (avoids the >=48 assertion)
             itemHeight: null,
@@ -850,8 +852,9 @@ class SurahHeaderControls extends StatelessWidget {
         return dropdown;
       }
 
-      return Column(
+      final column = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 4, bottom: 6),
@@ -866,6 +869,12 @@ class SurahHeaderControls extends StatelessWidget {
           dropdown,
         ],
       );
+
+      // Shrink-wraps to content instead of stretching to fill the row/column,
+      // since callers that request dynamicWidth wrap it in Expanded/stretch.
+      return dynamicWidth
+          ? Align(alignment: AlignmentDirectional.centerStart, child: column)
+          : column;
     }
 
     Widget buildActionIcon({
@@ -895,10 +904,11 @@ class SurahHeaderControls extends StatelessWidget {
     }
 
     final ayahDropdown = buildDropdown(
-      label: isMalayalam ? 'ജം ടു ആയത്ത്' : 'Jump to Ayah',
+      label: isMalayalam ? 'ആയത്ത്' : 'Ayah',
       value: currentAyahNumber,
       items: ayahItems,
       selectedLabels: ayahSelectedLabels.isNotEmpty ? ayahSelectedLabels : null,
+      dynamicWidth: true,
       onChanged: (value) {
         if (value == null) return;
         onAyahSelected(value);
@@ -1001,7 +1011,7 @@ class SurahHeaderControls extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Expanded(child: ayahDropdown),
+        ayahDropdown,
         const SizedBox(width: 12),
         Expanded(child: surahDropdown),
         if (actionButtons.isNotEmpty) ...[
@@ -1075,8 +1085,24 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
     final screenSize = MediaQuery.sizeOf(context);
 
     const double margin = 12;
-    // Ayah-only dropdown just lists short numbers, so it can be narrower.
-    final double baseWidth = lockedTab == 1 ? 200.0 : 340.0;
+    // Ayah-only dropdown just lists short numbers — size it to how wide the
+    // longest label ("N" or "N – M") in this surah actually renders,
+    // instead of a fixed guess.
+    final double ayahWidth = () {
+      var maxChars = 1;
+      for (final block in widget.arabicBlockList) {
+        final start = block.verseFrom ?? 1;
+        final end = block.verseTo ?? start;
+        final label = start == end ? '$start' : '$start – $end';
+        maxChars = label.length > maxChars ? label.length : maxChars;
+      }
+      const double horizontalContentPadding = 16 * 2; // ListTile padding
+      const double charWidth = 9.0; // ~glyph width at fontSize 14
+      const double extraSideMargin = 5 * 2; // +5px on each side
+      return (maxChars * charWidth + horizontalContentPadding + 8 + extraSideMargin)
+          .clamp(64.0, 200.0);
+    }();
+    final double baseWidth = lockedTab == 1 ? ayahWidth : 340.0;
     final double sheetWidth = (screenSize.width - margin * 2).clamp(
       0.0,
       baseWidth,
@@ -1087,10 +1113,20 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
     }
     if (left < margin) left = margin;
     final double top = chipTopLeft.dy + chipSize.height + 8;
-    final double maxHeight = (screenSize.height - top - margin).clamp(
-      200.0,
+    final double availableHeight = (screenSize.height - top - margin).clamp(
+      0.0,
       screenSize.height * 0.7,
     );
+    // Ayah-only popup has no header/search/divider now — size it to the
+    // actual row count (dense ListTile ≈ 34px incl. divider) instead of
+    // always stretching toward the available space, only capping/scrolling
+    // once a surah has enough ayahs to need it.
+    const double ayahRowHeight = 34.0;
+    final double ayahContentHeight =
+        widget.arabicBlockList.length * ayahRowHeight;
+    final double maxHeight = lockedTab == 1
+        ? ayahContentHeight.clamp(ayahRowHeight, availableHeight)
+        : availableHeight.clamp(200.0, screenSize.height * 0.7);
 
     showGeneralDialog(
       context: context,
@@ -1181,6 +1217,13 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
     final fill = white.withValues(alpha: isDark ? 0.10 : 0.13);
     final border = white.withValues(alpha: 0.22);
 
+    // The chip already shrinks to fit its label (Flexible + ellipsis); this
+    // just scales the *cap* with screen width instead of a flat constant, so
+    // it has more room on wide screens and stays tight on narrow ones.
+    final double surahChipMaxWidth = narrowChip
+        ? 44.0
+        : (screenWidth * 0.22).clamp(120.0, 220.0);
+
     Widget chip({
       required String label,
       required String semanticsLabel,
@@ -1240,11 +1283,7 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
       final surahChipLabel = narrowChip
           ? '${widget.currentSurahNumber}'
           : '${widget.currentSurahNumber}. $surahLabel';
-      final ayahChipLabel = narrowChip
-          ? '$_selectedAyah'
-          : (widget.isMalayalam
-                ? 'ആയത്ത് $_selectedAyah'
-                : 'Ayah $_selectedAyah');
+      final ayahChipLabel = '$_selectedAyah';
 
       return Padding(
         padding: EdgeInsets.all(4 * scale),
@@ -1254,7 +1293,7 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
             chip(
               label: surahChipLabel,
               semanticsLabel: 'Jump to surah',
-              maxWidth: narrowChip ? 44 : 150,
+              maxWidth: surahChipMaxWidth,
               onTap: (chipContext) => _openSheet(chipContext, lockedTab: 0),
             ),
             SizedBox(width: 6 * scale),
@@ -1276,7 +1315,7 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
     return chip(
       label: chipLabel,
       semanticsLabel: 'Jump to surah or ayah',
-      maxWidth: narrowChip ? 44 : 180,
+      maxWidth: surahChipMaxWidth,
       onTap: (chipContext) => _openSheet(chipContext),
     );
   }
@@ -1347,72 +1386,75 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
     final isMl = widget.isMalayalam;
     final screenHeight = MediaQuery.sizeOf(context).height;
     final tabsLocked = widget.lockedTab != null;
+    // The ayah-only popup (web) is small and self-explanatory — skip the
+    // header, close button, and divider; the barrier tap already dismisses it.
+    final showHeader = !(tabsLocked && _selectedTab == 1);
 
     return ConstrainedBox(
       constraints: BoxConstraints(maxHeight: screenHeight * 0.82),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Tab header row
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 12, 6),
-            child: Row(
-              children: [
-                if (tabsLocked)
-                  Text(
-                    _selectedTab == 0
-                        ? (isMl ? 'സൂറത്ത്' : 'Jump to Surah')
-                        : (isMl ? 'ആയത്ത്' : 'Jump to Ayah'),
-                    style: TextStyle(
-                      color: cs.onSurface,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
+          if (showHeader) ...[
+            // Tab header row
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 12, 6),
+              child: Row(
+                children: [
+                  if (tabsLocked)
+                    Text(
+                      isMl ? 'സൂറത്ത്' : 'Surah',
+                      style: TextStyle(
+                        color: cs.onSurface,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    )
+                  else ...[
+                    _TabButton(
+                      label: isMl ? 'സൂറത്ത്' : 'Surah',
+                      isSelected: _selectedTab == 0,
+                      isMalayalam: isMl,
+                      onTap: () {
+                        if (_selectedTab != 0) {
+                          setState(() => _selectedTab = 0);
+                        }
+                      },
                     ),
-                  )
-                else ...[
-                  _TabButton(
-                    label: isMl ? 'സൂറത്ത്' : 'Surah',
-                    isSelected: _selectedTab == 0,
-                    isMalayalam: isMl,
-                    onTap: () {
-                      if (_selectedTab != 0) {
-                        setState(() => _selectedTab = 0);
-                      }
-                    },
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(
-                      '|',
-                      style: TextStyle(color: cs.outline, fontSize: 14),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Text(
+                        '|',
+                        style: TextStyle(color: cs.outline, fontSize: 14),
+                      ),
                     ),
-                  ),
-                  _TabButton(
-                    label: isMl ? 'ആയത്ത്' : 'Ayah',
-                    isSelected: _selectedTab == 1,
-                    isMalayalam: isMl,
-                    onTap: () {
-                      if (_selectedTab != 1) {
-                        setState(() => _selectedTab = 1);
-                      }
-                    },
+                    _TabButton(
+                      label: isMl ? 'ആയത്ത്' : 'Ayah',
+                      isSelected: _selectedTab == 1,
+                      isMalayalam: isMl,
+                      onTap: () {
+                        if (_selectedTab != 1) {
+                          setState(() => _selectedTab = 1);
+                        }
+                      },
+                    ),
+                  ],
+                  const Spacer(),
+                  // Close button
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: Container(
+                      width: 28,
+                      height: 28,
+                      alignment: Alignment.center,
+                      child: Icon(Icons.close, size: 16, color: cs.onSurface),
+                    ),
                   ),
                 ],
-                const Spacer(),
-                // Close button
-                GestureDetector(
-                  onTap: () => Navigator.of(context).pop(),
-                  child: Container(
-                    width: 28,
-                    height: 28,
-                    alignment: Alignment.center,
-                    child: Icon(Icons.close, size: 16, color: cs.onSurface),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-          const Divider(height: 1),
+            const Divider(height: 1),
+          ],
           // Search field — Surah tab only; Ayah tab has no search.
           if (_selectedTab == 0)
             Padding(
@@ -1594,8 +1636,7 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
       controller: _ayahScrollCtrl,
       shrinkWrap: true,
       itemCount: blocks.length,
-      separatorBuilder: (_, __) =>
-          const Divider(height: 1, indent: 58, endIndent: 16),
+      separatorBuilder: (_, __) => const Divider(height: 1),
       itemBuilder: (_, index) {
         final block = blocks[index];
         final start = block.verseFrom ?? index + 1;
@@ -1604,17 +1645,20 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
             start == widget.currentAyahNumber ||
             (widget.currentAyahNumber >= start &&
                 widget.currentAyahNumber <= end);
-        final label = start == end
-            ? formatAyahReferenceLabel(start, isMalayalam: isMl)
-            : formatAyahRangeLabel(start, end, isMalayalam: isMl);
+        // Numbers only — the "Ayah" tab header already says what this list is.
+        final label = start == end ? '$start' : '$start – $end';
 
         return ListTile(
+          dense: true,
+          visualDensity: const VisualDensity(vertical: -4),
+          minVerticalPadding: 0,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,
             vertical: 2,
           ),
           title: Text(
             label,
+            textAlign: TextAlign.center,
             style: AppTextTheme.localizedLabel(
               isMalayalam: isMl,
               fontSize: 14,

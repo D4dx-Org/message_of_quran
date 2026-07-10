@@ -10,6 +10,15 @@ class LanguageProvider extends ChangeNotifier {
   SharedPreferences? _prefs;
   bool _isInitialized = false;
 
+  // Kicked off as early as possible (before runApp) so the read is already
+  // in flight/resolved by the time this provider is constructed, avoiding a
+  // visible flash back to English on the first frame after a web refresh.
+  static Future<SharedPreferences>? _preloadedPrefs;
+
+  static void preload() {
+    _preloadedPrefs ??= SharedPreferences.getInstance();
+  }
+
   String get currentLanguage => _currentLanguage;
   bool get isMalayalam => _currentLanguage == malayalam;
 
@@ -19,7 +28,7 @@ class LanguageProvider extends ChangeNotifier {
 
   Future<void> _initialize() async {
     if (_isInitialized) return;
-    _prefs = await SharedPreferences.getInstance();
+    _prefs = await (_preloadedPrefs ??= SharedPreferences.getInstance());
     _currentLanguage = _prefs?.getString(_languageKey) ?? english;
     _isInitialized = true;
     notifyListeners();

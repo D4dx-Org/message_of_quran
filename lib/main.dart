@@ -12,6 +12,8 @@ import 'package:the_message_of_the_quran/core/services/audio_handler.dart';
 import 'package:the_message_of_the_quran/core/services/database/database_helper.dart';
 import 'package:the_message_of_the_quran/core/services/database/database_ready_notifier.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
+import 'package:the_message_of_the_quran/core/widgets/link_hover/link_hover_controller.dart';
+import 'package:the_message_of_the_quran/core/widgets/link_hover/link_status_bar.dart';
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
 import 'package:the_message_of_the_quran/features/splash_screen/presentation/widgets/splash_screen_layout.dart';
@@ -47,6 +49,7 @@ const String surahAlKahfNotificationRoute = 'surah_18';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  LanguageProvider.preload();
   if (kIsWeb) {
     usePathUrlStrategy();
   }
@@ -518,6 +521,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<MushafDownloadManager>(
           create: (_) => MushafDownloadManager.instance,
         ),
+        ChangeNotifierProvider(create: (context) => LinkHoverController()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, value, child) {
@@ -546,7 +550,20 @@ class MyApp extends StatelessWidget {
               }
               final double referenceWidth = physicalWidth / referenceDpr;
 
-              if (data.size.width < referenceWidth - 1.0) {
+              // Overlay the browser-style hover link preview above the app
+              // content on web; native platforms have no mouse cursor.
+              final content = kIsWeb
+                  ? Stack(children: [child!, const LinkStatusBar()])
+                  : child!;
+
+              // Web must always see the true browser viewport width so
+              // responsive breakpoints (e.g. the 640px mobile checks) track
+              // actual window resizes. This density-reference rescale is a
+              // native-only DPI normalization; on web it can inflate the
+              // reported width (e.g. high-DPR narrow windows) past those
+              // breakpoints, showing the desktop layout on a mobile-width
+              // viewport.
+              if (!kIsWeb && data.size.width < referenceWidth - 1.0) {
                 final double scale = data.size.width / referenceWidth;
                 final double invScale = 1.0 / scale;
                 final double referenceHeight = data.size.height * invScale;
@@ -582,7 +599,7 @@ class MyApp extends StatelessWidget {
                     child: SizedBox(
                       width: referenceWidth,
                       height: referenceHeight,
-                      child: child!,
+                      child: content,
                     ),
                   ),
                 );
@@ -590,7 +607,7 @@ class MyApp extends StatelessWidget {
 
               return MediaQuery(
                 data: data.copyWith(textScaler: TextScaler.noScaling),
-                child: child!,
+                child: content,
               );
             },
           );

@@ -22,6 +22,7 @@ class BlurUpAssetImage extends StatelessWidget {
     this.color,
     this.colorBlendMode,
     this.borderRadius,
+    this.blurSigma = 12,
   });
 
   final String assetPath;
@@ -36,6 +37,7 @@ class BlurUpAssetImage extends StatelessWidget {
   final Color? color;
   final BlendMode? colorBlendMode;
   final BorderRadius? borderRadius;
+  final double blurSigma;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +51,7 @@ class BlurUpAssetImage extends StatelessWidget {
       fit: StackFit.expand,
       children: [
         ImageFiltered(
-          imageFilter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          imageFilter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
           child: Image.asset(
             thumbnailPath,
             fit: fit,

@@ -11,6 +11,8 @@ import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
+import 'package:the_message_of_the_quran/core/widgets/nav_bar_corner_painter.dart';
+import 'package:the_message_of_the_quran/core/widgets/web_mobile_bottom_nav_bar.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
 import 'package:the_message_of_the_quran/features/search_screen/presentation/widgets/web_full_text_search_dialog.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
@@ -173,6 +175,12 @@ class _MainScreenState extends State<MainScreen> {
     bool isMalayalam,
   ) {
     final theme = Theme.of(context);
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final isNarrow = screenWidth < 640;
+    final selectedPageIndex = switch (displayIndex) {
+      0 || 1 || 3 => displayIndex,
+      _ => null,
+    };
 
     return PopScope(
       canPop: displayIndex == 0,
@@ -189,6 +197,15 @@ class _MainScreenState extends State<MainScreen> {
         ),
         drawer: const CommonDrawer(),
         body: pageBody,
+        bottomNavigationBar: isNarrow
+            ? WebMobileBottomNavBar(
+                selectedPageIndex: selectedPageIndex,
+                isBookmarkNeeded: true,
+                showSearch: true,
+                onPageSelected: _onItemTapped,
+                onSearchPressed: () => showWebFullTextSearchDialog(context),
+              )
+            : null,
       ),
     );
   }
@@ -317,7 +334,7 @@ class _MainScreenState extends State<MainScreen> {
             Positioned.fill(
               child: IgnorePointer(
                 child: CustomPaint(
-                  painter: _NavCornerFillPainter(
+                  painter: NavBarCornerFillPainter(
                     color: navCornerFillColor,
                     radius: navCornerRadius,
                   ),
@@ -403,60 +420,5 @@ class _MainScreenState extends State<MainScreen> {
         ),
       ),
     );
-  }
-}
-
-class _NavCornerFillPainter extends CustomPainter {
-  const _NavCornerFillPainter({required this.color, required this.radius});
-
-  final Color color;
-  final double radius;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (radius <= 0 || size.width <= 0 || size.height <= 0) return;
-
-    final wedgeExtent = radius.clamp(0.0, size.width / 2);
-    final paint = Paint()..color = color;
-
-    final leftSquare = Path()
-      ..addRect(Rect.fromLTWH(0, 0, wedgeExtent, wedgeExtent));
-    final leftCircle = Path()
-      ..addOval(
-        Rect.fromCircle(
-          center: Offset(wedgeExtent, wedgeExtent),
-          radius: wedgeExtent,
-        ),
-      );
-    final leftWedge = Path.combine(
-      PathOperation.difference,
-      leftSquare,
-      leftCircle,
-    );
-
-    final rightSquare = Path()
-      ..addRect(
-        Rect.fromLTWH(size.width - wedgeExtent, 0, wedgeExtent, wedgeExtent),
-      );
-    final rightCircle = Path()
-      ..addOval(
-        Rect.fromCircle(
-          center: Offset(size.width - wedgeExtent, wedgeExtent),
-          radius: wedgeExtent,
-        ),
-      );
-    final rightWedge = Path.combine(
-      PathOperation.difference,
-      rightSquare,
-      rightCircle,
-    );
-
-    canvas.drawPath(leftWedge, paint);
-    canvas.drawPath(rightWedge, paint);
-  }
-
-  @override
-  bool shouldRepaint(_NavCornerFillPainter oldDelegate) {
-    return oldDelegate.color != color || oldDelegate.radius != radius;
   }
 }

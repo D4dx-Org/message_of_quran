@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:the_message_of_the_quran/core/models/appendix_model.dart';
 import 'package:the_message_of_the_quran/core/services/database/appendix_db_helper.dart';
+import 'package:the_message_of_the_quran/core/services/database/database_ready_notifier.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
@@ -17,6 +18,23 @@ class AppendixDetailScreen extends StatelessWidget {
 
   final int appendixNumber;
   final String title;
+
+  // On web the DB loads in the background after first paint; querying
+  // before it's ready silently yields a "failed to load" state.
+  static Future<AppendixModel?> _loadAppendix(
+    BuildContext context,
+    int appendixNumber,
+    bool isMalayalam,
+  ) async {
+    final dbNotifier = context.read<DatabaseReadyNotifier>();
+    if (dbNotifier.status != DbInitStatus.ready) {
+      await dbNotifier.whenReady;
+    }
+    return AppendixDbHelper.getAppendixByNumber(
+      appendixNumber,
+      malayalam: isMalayalam,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +53,10 @@ class AppendixDetailScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.share_outlined, color: Colors.white),
             onPressed: () async {
-              final appendix = await AppendixDbHelper.getAppendixByNumber(
+              final appendix = await _loadAppendix(
+                context,
                 appendixNumber,
-                malayalam: isMalayalam,
+                isMalayalam,
               );
               if (appendix != null) {
                 await Share.share(
@@ -50,10 +69,7 @@ class AppendixDetailScreen extends StatelessWidget {
         ],
       ),
       child: FutureBuilder<AppendixModel?>(
-        future: AppendixDbHelper.getAppendixByNumber(
-          appendixNumber,
-          malayalam: isMalayalam,
-        ),
+        future: _loadAppendix(context, appendixNumber, isMalayalam),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

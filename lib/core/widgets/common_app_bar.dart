@@ -175,48 +175,54 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
     final iconSize = AppConstants.appBarIconWidth * (compact ? 0.72 : 0.95);
     final themeProvider = context.watch<ThemeProvider>();
     final isDark = themeProvider.isDarkMode;
+    // Nav + search icons relocate to a bottom nav bar on mobile-width web
+    // views, matching the native app's bottom nav instead of the desktop
+    // toolbar button style.
+    final isMobileWidth = MediaQuery.sizeOf(context).width < 640;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        for (final item in _navItems)
-          _buildToolbarButton(
-            label: item.label,
-            isSelected: widget.selectedPageIndex == item.pageIndex,
-            isHovered: _hoveredPageIndices.contains(item.pageIndex),
-            onTap: () => widget.onPageSelected(item.pageIndex),
-            onHover: (hovered) => _setHoveredPage(item.pageIndex, hovered),
-            icon: Image.asset(
-              item.assetPath,
-              width: iconSize,
-              height: iconSize,
-              color: accentColor.withValues(
-                alpha:
-                    widget.selectedPageIndex == item.pageIndex ||
-                        _hoveredPageIndices.contains(item.pageIndex)
-                    ? 1.0
-                    : 0.78,
+        if (!isMobileWidth) ...[
+          for (final item in _navItems)
+            _buildToolbarButton(
+              label: item.label,
+              isSelected: widget.selectedPageIndex == item.pageIndex,
+              isHovered: _hoveredPageIndices.contains(item.pageIndex),
+              onTap: () => widget.onPageSelected(item.pageIndex),
+              onHover: (hovered) => _setHoveredPage(item.pageIndex, hovered),
+              icon: Image.asset(
+                item.assetPath,
+                width: iconSize,
+                height: iconSize,
+                color: accentColor.withValues(
+                  alpha:
+                      widget.selectedPageIndex == item.pageIndex ||
+                          _hoveredPageIndices.contains(item.pageIndex)
+                      ? 1.0
+                      : 0.78,
+                ),
               ),
             ),
-          ),
-        if (widget.showSearch)
-          _buildToolbarButton(
-            label: 'Search',
-            isSelected: false,
-            isHovered: _isSearchHovered,
-            onTap:
-                widget.onSearchPressed ??
-                () => showSurahQuickSearchDialog(context),
-            onHover: _setSearchHovered,
-            icon: HomeScreenSvg(
-              icon: 'search',
-              color: accentColor.withValues(
-                alpha: _isSearchHovered ? 1.0 : 0.78,
+          if (widget.showSearch)
+            _buildToolbarButton(
+              label: 'Search',
+              isSelected: false,
+              isHovered: _isSearchHovered,
+              onTap:
+                  widget.onSearchPressed ??
+                  () => showSurahQuickSearchDialog(context),
+              onHover: _setSearchHovered,
+              icon: HomeScreenSvg(
+                icon: 'search',
+                color: accentColor.withValues(
+                  alpha: _isSearchHovered ? 1.0 : 0.78,
+                ),
+                width: iconSize,
+                height: iconSize,
               ),
-              width: iconSize,
-              height: iconSize,
             ),
-          ),
+        ],
         _buildToolbarButton(
           label: isDark ? 'Light' : 'Dark',
           isSelected: false,
@@ -325,6 +331,7 @@ class CommonAppBar {
     BuildContext ctx, {
     bool showOrnament = true,
     String title = "",
+    TextStyle? titleStyle,
     List<Widget>? actions,
     PreferredSizeWidget? bottom,
   }) {
@@ -376,13 +383,13 @@ class CommonAppBar {
           : Stack(clipBehavior: Clip.none, children: flexibleSpaceChildren),
       leadingWidth: leadingWidth,
       title: hasTitleText
-          ? Text(title, style: AppTextTheme.titleRegular)
+          ? Text(title, style: titleStyle ?? AppTextTheme.titleRegular)
           : Stack(
               alignment: AlignmentGeometry.center,
               children: [
                 brandLogo(ctx),
                 const SizedBox(width: 8),
-                Text(title, style: AppTextTheme.titleRegular),
+                Text(title, style: titleStyle ?? AppTextTheme.titleRegular),
               ],
             ),
       centerTitle: true,

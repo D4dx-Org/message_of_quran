@@ -1,8 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/app_footer.dart';
 import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
+import 'package:the_message_of_the_quran/core/widgets/web_mobile_bottom_nav_bar.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
 
 const _baseScreenLayoutBottomSafeAreaFillKey = Key(
   'baseScreenLayoutBottomSafeAreaFill',
@@ -35,6 +38,8 @@ class BaseScreenLayout extends StatelessWidget {
     this.contentTopInset = defaultContentTopInset,
     this.contentBottomInset = 0,
     this.expandContentCard = true,
+    this.showMobileBottomNav = true,
+    this.mobileBottomNavOverride,
   });
 
   /// The main content displayed inside the rounded card area.
@@ -83,6 +88,15 @@ class BaseScreenLayout extends StatelessWidget {
   /// Whether the content card fills all remaining vertical space.
   /// Set `false` to let the card shrink-wrap [child]'s height instead.
   final bool expandContentCard;
+
+  /// Whether to show the default mobile-web bottom nav bar (Home + Settings)
+  /// in place of [AppFooter] on mobile-width web views. Set `false` to keep
+  /// [AppFooter] on mobile too.
+  final bool showMobileBottomNav;
+
+  /// Custom bottom nav bar to show on mobile-width web views instead of the
+  /// default Home + Settings nav (e.g. to also include Bookmarks/Search).
+  final Widget? mobileBottomNavOverride;
 
   BoxDecoration _buildContentCardDecoration({
     required bool isDarkMode,
@@ -163,6 +177,24 @@ class BaseScreenLayout extends StatelessWidget {
     return content;
   }
 
+  Widget _buildBottomNavigationBar(BuildContext context) {
+    final isMobileWeb = kIsWeb && MediaQuery.sizeOf(context).width < 640;
+    if (!isMobileWeb) return const AppFooter();
+    if (mobileBottomNavOverride != null) return mobileBottomNavOverride!;
+    if (!showMobileBottomNav) return const AppFooter();
+
+    return WebMobileBottomNavBar(
+      selectedPageIndex: null,
+      onPageSelected: (index) {
+        if (index == 3) {
+          showSettingsDialog(context);
+          return;
+        }
+        context.go('/');
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final body = _buildBody(context);
@@ -180,7 +212,7 @@ class BaseScreenLayout extends StatelessWidget {
       floatingActionButton: floatingActionButton,
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       body: body,
-      bottomNavigationBar: const AppFooter(),
+      bottomNavigationBar: _buildBottomNavigationBar(context),
     );
   }
 

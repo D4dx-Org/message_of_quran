@@ -6,6 +6,7 @@ import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/features/contact_us_screen/presentation/provider/contact_provider.dart';
+import 'package:the_message_of_the_quran/core/widgets/link_hover/hover_link.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -111,40 +112,45 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                         child: Column(
                           children: [
                             if (mobile != null) ...[
-                              GestureDetector(
-                                onTap: () => _launchPhone(mobile),
-                                child: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.phone_outlined,
-                                      color: AppTheme.appIconTheme,
-                                      size: 24,
-                                    ),
-                                    const SizedBox(width: 15),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          SelectableText(
-                                            'Phone',
-                                            style: AppTextTheme.popinsDefault(
-                                              fontSize: 14,
-                                              color: Colors.grey,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            mobile,
-                                            style: AppTextTheme.popinsDefault(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ],
+                              HoverLink(
+                                url: 'tel:$mobile',
+                                child: GestureDetector(
+                                  onTap: () => _launchPhone(mobile),
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.phone_outlined,
+                                        color: AppTheme.appIconTheme,
+                                        size: 24,
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(width: 15),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            SelectableText(
+                                              'Phone',
+                                              style:
+                                                  AppTextTheme.popinsDefault(
+                                                fontSize: 14,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              mobile,
+                                              style:
+                                                  AppTextTheme.popinsDefault(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                               const Padding(
@@ -153,40 +159,45 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                               ),
                             ],
                             if (email != null) ...[
-                              GestureDetector(
-                                onTap: () => _launchEmail(email),
-                                child: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.email_outlined,
-                                      color: AppTheme.appIconTheme,
-                                      size: 24,
-                                    ),
-                                    const SizedBox(width: 15),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          SelectableText(
-                                            'Email',
-                                            style: AppTextTheme.popinsDefault(
-                                              fontSize: 14,
-                                              color: Colors.grey,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            email,
-                                            style: AppTextTheme.popinsDefault(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ],
+                              HoverLink(
+                                url: 'mailto:$email',
+                                child: GestureDetector(
+                                  onTap: () => _launchEmail(email),
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.email_outlined,
+                                        color: AppTheme.appIconTheme,
+                                        size: 24,
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(width: 15),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            SelectableText(
+                                              'Email',
+                                              style:
+                                                  AppTextTheme.popinsDefault(
+                                                fontSize: 14,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              email,
+                                              style:
+                                                  AppTextTheme.popinsDefault(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                               const Padding(

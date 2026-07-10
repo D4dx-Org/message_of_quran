@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:the_message_of_the_quran/core/services/database/database_ready_notifier.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
@@ -42,6 +43,14 @@ class _ProstrationVersesScreenState extends State<ProstrationVersesScreen> {
     });
 
     try {
+      // On web the DB loads in the background after first paint; querying
+      // before it's ready silently yields English-only fallback names.
+      final dbNotifier = context.read<DatabaseReadyNotifier>();
+      if (dbNotifier.status != DbInitStatus.ready) {
+        await dbNotifier.whenReady;
+      }
+      if (!mounted) return;
+
       final verses = await ProstrationVersesService.loadVerses();
       if (!mounted) return;
       setState(() {
@@ -95,6 +104,9 @@ class _ProstrationVersesScreenState extends State<ProstrationVersesScreen> {
         context,
         showOrnament: false,
         title: isMalayalam ? 'സുജൂദിന്റെ ആയത്തുകൾ' : 'Prostration Verses',
+        titleStyle: AppTextTheme.titleRegular.copyWith(
+          fontWeight: FontWeight.w700,
+        ),
       ),
       drawer: const CommonDrawer(),
       contentBottomInset: BaseScreenLayout.defaultContentTopInset,
@@ -281,7 +293,7 @@ class _ProstrationVerseTile extends StatelessWidget {
                             style: AppTextTheme.localizedLabel(
                               isMalayalam: isMalayalam,
                               color: accentColor,
-                              fontSize: 15 * scale,
+                              fontSize: 11 * scale,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -294,7 +306,7 @@ class _ProstrationVerseTile extends StatelessWidget {
                           style: AppTextTheme.localizedBody(
                             isMalayalam: isMalayalam,
                             color: isDarkMode ? Colors.white70 : accentColor,
-                            fontSize: 12 * scale,
+                            fontSize: 10 * scale,
                             fontWeight: FontWeight.w500,
                             height: 1.35,
                           ),

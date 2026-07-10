@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/appendix_model.dart';
 import 'package:the_message_of_the_quran/core/services/database/appendix_db_helper.dart';
+import 'package:the_message_of_the_quran/core/services/database/database_ready_notifier.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
@@ -52,6 +53,14 @@ class _AppendixScreenState extends State<AppendixScreen> {
       _isLoading = true;
       _expandedIndex = null;
     });
+
+    // On web the DB loads in the background after first paint; querying
+    // before it's ready silently yields an empty list.
+    final dbNotifier = context.read<DatabaseReadyNotifier>();
+    if (dbNotifier.status != DbInitStatus.ready) {
+      await dbNotifier.whenReady;
+    }
+    if (!mounted) return;
 
     final data = await AppendixDbHelper.getAppendices(
       malayalam: isMalayalam,

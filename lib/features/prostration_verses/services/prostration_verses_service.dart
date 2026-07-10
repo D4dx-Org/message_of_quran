@@ -10,16 +10,23 @@ class ProstrationVersesService {
   static Future<List<ProstrationVerseModel>> loadVerses() async {
     final jsonStr = await rootBundle.loadString(_assetPath);
     final references = parseJson(jsonStr);
-    final surahs = await SurahDbHelper.getAllSuras();
+    final results = await Future.wait([
+      SurahDbHelper.getAllSuras(),
+      SurahDbHelper.getAllSuras(malayalam: true),
+    ]);
     final surahByNumber = {
-      for (final surah in surahs) surah.surahNumber: surah,
+      for (final surah in results[0]) surah.surahNumber: surah,
+    };
+    final malayalamNameByNumber = {
+      for (final surah in results[1]) surah.surahNumber: surah.malayalamName,
     };
 
     return references.map((reference) {
       final surah = surahByNumber[reference.surahNumber];
       return reference.copyWith(
         englishSurahName: surah?.name ?? 'Surah ${reference.surahNumber}',
-        malayalamSurahName: surah?.malayalamName ?? '',
+        malayalamSurahName:
+            malayalamNameByNumber[reference.surahNumber] ?? '',
       );
     }).toList(growable: false);
   }

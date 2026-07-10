@@ -9,6 +9,7 @@ import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/d4dx_branding_footer.dart';
+import 'package:the_message_of_the_quran/core/widgets/link_hover/hover_link.dart';
 import 'package:the_message_of_the_quran/core/widgets/shimmer_asset_image.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
 import 'package:the_message_of_the_quran/core/utils/platform_helper.dart';
@@ -242,18 +243,23 @@ class CommonDrawer extends StatelessWidget {
                           showSettingsDialog(context);
                         },
                       ),
-                      _DrawerTile(
-                        title: 'Privacy',
-                        icon: Icons.shield_outlined,
-                        onTap: () {
-                          try {
-                            launchUrl(Uri.parse(ApiConstants.privacyPolicyUrl));
-                          } catch (e) {
-                            debugPrint(
-                              'Drawer: failed to launch privacy URL — $e',
-                            );
-                          }
-                        },
+                      HoverLink(
+                        url: ApiConstants.privacyPolicyUrl,
+                        child: _DrawerTile(
+                          title: 'Privacy',
+                          icon: Icons.shield_outlined,
+                          onTap: () {
+                            try {
+                              launchUrl(
+                                Uri.parse(ApiConstants.privacyPolicyUrl),
+                              );
+                            } catch (e) {
+                              debugPrint(
+                                'Drawer: failed to launch privacy URL — $e',
+                              );
+                            }
+                          },
+                        ),
                       ),
                       SizedBox(height: 6 * scale),
                       const _DrawerFooter(),
@@ -421,7 +427,6 @@ class _DrawerFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     return const D4dxBrandingFooter(
       key: ValueKey('drawer-footer'),
-      versionLabel: ' ${AppConstants.appVersion}',
       showTopBorder: true,
     );
   }
@@ -591,44 +596,47 @@ class _DrawerLinkTile extends StatelessWidget {
     final theme = Theme.of(context);
     final scale = ResponsiveHelper.scaleFactor(context);
 
-    return ListTile(
-      onTap: () async {
-        Navigator.pop(context);
-        try {
-          await launchUrl(
-            Uri.parse(url),
-            mode: LaunchMode.externalApplication,
-          );
-        } catch (e) {
-          debugPrint('Drawer: failed to launch link — $e');
-        }
-      },
-      leading: Text(
-        '•',
-        style: theme.textTheme.bodyMedium?.copyWith(
-          fontWeight: FontWeight.w700,
-          fontSize: 14,
+    return HoverLink(
+      url: url,
+      child: ListTile(
+        onTap: () async {
+          Navigator.pop(context);
+          try {
+            await launchUrl(
+              Uri.parse(url),
+              mode: LaunchMode.externalApplication,
+            );
+          } catch (e) {
+            debugPrint('Drawer: failed to launch link — $e');
+          }
+        },
+        leading: Text(
+          '•',
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+            fontSize: 14,
+          ),
         ),
-      ),
-      title: Text(
-        title,
-        style: theme.textTheme.bodyMedium?.copyWith(
-          fontWeight: FontWeight.w400,
-          fontSize: 13,
+        title: Text(
+          title,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w400,
+            fontSize: 13,
+          ),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
+        trailing: Icon(
+          Icons.open_in_new,
+          size: 16 * scale,
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
+        ),
+        contentPadding: EdgeInsets.only(left: 56 * scale, right: 16 * scale),
+        minLeadingWidth: 12 * scale,
+        horizontalTitleGap: 6 * scale,
+        dense: true,
+        visualDensity: const VisualDensity(vertical: -4),
       ),
-      trailing: Icon(
-        Icons.open_in_new,
-        size: 16 * scale,
-        color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
-      ),
-      contentPadding: EdgeInsets.only(left: 56 * scale, right: 16 * scale),
-      minLeadingWidth: 12 * scale,
-      horizontalTitleGap: 6 * scale,
-      dense: true,
-      visualDensity: const VisualDensity(vertical: -4),
     );
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/authors_model.dart';
+import 'package:the_message_of_the_quran/core/services/database/database_ready_notifier.dart';
 import 'package:the_message_of_the_quran/core/services/database/works_of_reference_db_helper.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
@@ -37,6 +39,16 @@ class WorksOfReferenceScreen extends StatelessWidget {
     };
   }
 
+  // On web the DB loads in the background after first paint; querying
+  // before it's ready silently yields an empty list.
+  Future<List<AuthorsModel>> _loadWorksOfReference(BuildContext context) async {
+    final dbNotifier = context.read<DatabaseReadyNotifier>();
+    if (dbNotifier.status != DbInitStatus.ready) {
+      await dbNotifier.whenReady;
+    }
+    return WorksOfReferenceDbHelper.getWorksOfReference();
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -49,7 +61,7 @@ class WorksOfReferenceScreen extends StatelessWidget {
       ),
       drawer: const CommonDrawer(),
       child: FutureBuilder<List<AuthorsModel>>(
-        future: WorksOfReferenceDbHelper.getWorksOfReference(),
+        future: _loadWorksOfReference(context),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/foreword_model.dart';
 import 'package:the_message_of_the_quran/core/models/ml_preface_model.dart';
+import 'package:the_message_of_the_quran/core/services/database/database_ready_notifier.dart';
 import 'package:the_message_of_the_quran/core/services/database/foreword_db_helper.dart';
 import 'package:the_message_of_the_quran/core/services/database/ml_preface_db_helper.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
@@ -17,8 +18,18 @@ import 'package:the_message_of_the_quran/features/settings_screen/providers/lang
 class ForewordScreen extends StatelessWidget {
   const ForewordScreen({super.key});
 
+  // On web the DB loads in the background after first paint; querying
+  // before it's ready silently yields a "no foreword available" state.
+  static Future<void> _awaitDbReady(BuildContext context) async {
+    final dbNotifier = context.read<DatabaseReadyNotifier>();
+    if (dbNotifier.status != DbInitStatus.ready) {
+      await dbNotifier.whenReady;
+    }
+  }
+
   static Future<({ForewordModel? foreword, String bismillahGlyph})>
-      _loadData() async {
+      _loadData(BuildContext context) async {
+    await _awaitDbReady(context);
     final results = await Future.wait([
       ForewordDbHelper.getForeword(),
       MushafRepository().getBismillahGlyph(2),
@@ -48,7 +59,7 @@ class ForewordScreen extends StatelessWidget {
         ),
         drawer: const CommonDrawer(),
       child: FutureBuilder<({ForewordModel? foreword, String bismillahGlyph})>(
-        future: _loadData(),
+        future: _loadData(context),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -96,7 +107,8 @@ class _MalayalamPrefaceScreen extends StatelessWidget {
         drawer: const CommonDrawer(),
       
       child: FutureBuilder<MlPrefaceModel?>(
-        future: MlPrefaceDbHelper.getPreface(),
+        future: ForewordScreen._awaitDbReady(context)
+            .then((_) => MlPrefaceDbHelper.getPreface()),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
