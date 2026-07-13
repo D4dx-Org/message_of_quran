@@ -4,27 +4,6 @@ plugins {
     id 'dev.flutter.flutter-gradle-plugin'
 }
 
-def localProperties = new Properties()
-def localPropertiesFile = rootProject.file('local.properties')
-if (localPropertiesFile.exists()) {
-    localPropertiesFile.withInputStream { localProperties.load(it) }
-}
-
-def quranAsadEmailApiKey =
-        localProperties.getProperty('quran.asad.email.api.key')?.trim()
-if (quranAsadEmailApiKey) {
-    def encodedFeedbackApiKey = java.util.Base64.encoder.encodeToString(
-            "QURAN_ASAD_EMAIL_API_KEY=${quranAsadEmailApiKey}".getBytes('UTF-8')
-    )
-    def existingDartDefines = project.findProperty('dart-defines')?.toString()
-    project.extensions.extraProperties.set(
-            'dart-defines',
-            existingDartDefines
-                    ? "${existingDartDefines},${encodedFeedbackApiKey}"
-                    : encodedFeedbackApiKey
-    )
-}
-
 def keystorePropertiesFile = rootProject.file('key.properties')
 def keystoreProperties = new Properties()
 if (keystorePropertiesFile.exists()) {

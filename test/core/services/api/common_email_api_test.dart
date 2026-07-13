@@ -11,7 +11,7 @@ import 'package:the_message_of_the_quran/features/common_email/models/common_ema
 void main() {
   group('CommonEmailApi', () {
     test(
-      'sendFeedback posts the documented payload and API key header',
+      'sendFeedback posts the documented payload',
       () async {
         late Uri requestedUri;
         late Map<String, dynamic> requestBody;
@@ -24,10 +24,7 @@ void main() {
           return http.Response('{"success": true}', 200);
         });
 
-        final api = CommonEmailApi(
-          client: client,
-          feedbackApiKey: 'test-feedback-key',
-        );
+        final api = CommonEmailApi(client: client);
 
         await api.sendFeedback(
           const FeedbackRequest(
@@ -46,7 +43,7 @@ void main() {
           requestedUri.toString(),
           ApiConstants.feedbackUrl,
         );
-        expect(requestHeaders['x-api-key'], 'test-feedback-key');
+        expect(requestHeaders.containsKey('x-api-key'), isFalse);
         expect(
           requestHeaders['x-app-theme-primary'],
           AppTheme.appThemePrimaryHex,

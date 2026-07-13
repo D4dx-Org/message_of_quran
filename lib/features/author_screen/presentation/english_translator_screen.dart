@@ -6,6 +6,7 @@ import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/core/widgets/bio_with_floating_image.dart';
+import 'package:the_message_of_the_quran/core/routing/app_router.dart';
 import 'package:the_message_of_the_quran/core/services/database/database_ready_notifier.dart';
 import 'package:the_message_of_the_quran/features/author_screen/provider/english_translator_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
@@ -17,8 +18,10 @@ class EnglishTranslatorScreen extends StatefulWidget {
       _EnglishTranslatorScreenState();
 }
 
-class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen> {
+class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen>
+    with RouteAware {
   bool? _lastMalayalam;
+  ModalRoute<void>? _subscribedRoute;
 
   @override
   void initState() {
@@ -35,19 +38,46 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route != _subscribedRoute) {
+      if (_subscribedRoute != null) appRouteObserver.unsubscribe(this);
+      if (route != null) appRouteObserver.subscribe(this, route);
+      _subscribedRoute = route;
+    }
     // This screen only ever shows the English translator's bio. If the
-    // user switches the app language to Malayalam while it's still on
-    // screen, hop over to its Malayalam sibling route instead of showing
-    // stale English content.
+    // user switches the app language to Malayalam while it's still the
+    // visible screen, hop over to its Malayalam sibling route instead of
+    // showing stale English content. A pushReplacement while this screen
+    // is buried under another route (e.g. a Library page) would hijack that
+    // route instead, so only act when this route is actually on top.
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     if (_lastMalayalam != isMalayalam) {
       _lastMalayalam = isMalayalam;
-      if (isMalayalam) {
+      if (isMalayalam && route!.isCurrent) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) context.pushReplacement('/translator');
         });
       }
     }
+  }
+
+  @override
+  void didPopNext() {
+    // Another route that was covering this screen got popped, so this
+    // screen is visible again — re-check in case the language changed
+    // while it was buried.
+    final isMalayalam = context.read<LanguageProvider>().isMalayalam;
+    if (isMalayalam) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) context.pushReplacement('/translator');
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    appRouteObserver.unsubscribe(this);
+    super.dispose();
   }
 
   @override

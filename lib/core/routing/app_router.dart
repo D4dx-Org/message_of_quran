@@ -33,6 +33,11 @@ final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> _shellNavigatorKey =
     GlobalKey<NavigatorState>();
 
+// Lets a buried route (e.g. Translator, underneath a pushed Library page)
+// know when it becomes the visible route again, via RouteAware.didPopNext.
+final RouteObserver<ModalRoute<void>> appRouteObserver =
+    RouteObserver<ModalRoute<void>>();
+
 int? _intParam(Map<String, String> params, String key) =>
     int.tryParse(params[key] ?? '');
 
@@ -45,6 +50,7 @@ GoRouter buildAppRouter() {
 
   return GoRouter(
     navigatorKey: rootNavigatorKey,
+    observers: [appRouteObserver],
     initialLocation: kIsWeb ? '/' : '/splash',
     routes: [
       GoRoute(

@@ -26,6 +26,7 @@ class CommonWebAppBarActions extends StatefulWidget {
     this.showLabels = true,
     this.isBookmarkNeeded = true,
     this.mobileBreakpoint = 640,
+    this.showLanguageButton = true,
   });
 
   final int? selectedPageIndex;
@@ -35,6 +36,7 @@ class CommonWebAppBarActions extends StatefulWidget {
   final bool showSearch;
   final bool showLabels;
   final bool isBookmarkNeeded;
+  final bool showLanguageButton;
 
   /// Width below which the inline Home/Bookmarks/Settings/Search nav items
   /// hide from this row (relocating to a bottom nav bar instead). Callers
@@ -253,8 +255,10 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
             color: accentColor.withValues(alpha: _isThemeHovered ? 1.0 : 0.78),
           ),
         ),
-        const SizedBox(width: 6),
-        AppBarLanguageButton(showText: widget.showLabels, iconSize: iconSize),
+        if (widget.showLanguageButton) ...[
+          const SizedBox(width: 6),
+          AppBarLanguageButton(showText: widget.showLabels, iconSize: iconSize),
+        ],
       ],
     );
   }
@@ -355,6 +359,7 @@ class CommonAppBar {
     TextStyle? titleStyle,
     List<Widget>? actions,
     PreferredSizeWidget? bottom,
+    bool showLanguageButton = true,
   }) {
     final scale = ResponsiveHelper.scaleFactor(ctx);
     final ornamentTop = -48.0 * scale;
@@ -365,7 +370,13 @@ class CommonAppBar {
     final leadingWidth = (46 * scale).roundToDouble() + edgePadding;
     final hasTitleText = title.isNotEmpty;
     final resolvedActions = <Widget>[
-      ...actions ?? [_buildAppendixWebActions(ctx)],
+      ...actions ??
+          [
+            _buildAppendixWebActions(
+              ctx,
+              showLanguageButton: showLanguageButton,
+            ),
+          ],
       const SizedBox(width: edgePadding),
     ];
 
@@ -425,7 +436,10 @@ class CommonAppBar {
     );
   }
 
-  static Widget _buildAppendixWebActions(BuildContext context) {
+  static Widget _buildAppendixWebActions(
+    BuildContext context, {
+    bool showLanguageButton = true,
+  }) {
     final screenWidth = MediaQuery.sizeOf(context).width;
     final isNarrow = screenWidth < 640;
     final actions = CommonWebAppBarActions(
@@ -442,6 +456,7 @@ class CommonAppBar {
       showSearch: false,
       showLabels: !isNarrow,
       onSearchPressed: () {},
+      showLanguageButton: showLanguageButton,
     );
     return Padding(padding: const EdgeInsets.only(right: 8), child: actions);
   }

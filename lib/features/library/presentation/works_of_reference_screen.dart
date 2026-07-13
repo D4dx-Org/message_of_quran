@@ -58,6 +58,7 @@ class WorksOfReferenceScreen extends StatelessWidget {
         context,
         showOrnament: false,
         title: 'Works of Reference',
+        showLanguageButton: false,
       ),
       drawer: const CommonDrawer(),
       child: FutureBuilder<List<AuthorsModel>>(

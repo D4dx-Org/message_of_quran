@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
 import 'package:the_message_of_the_quran/core/constants/app_constants.dart';
 import 'package:the_message_of_the_quran/core/constants/useful_links.dart';
+import 'package:the_message_of_the_quran/core/routing/app_router.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
@@ -16,6 +17,24 @@ import 'package:the_message_of_the_quran/core/utils/platform_helper.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+/// Navigates to a drawer destination while keeping the root navigator stack
+/// at most two pages deep: [Home, destination]. The first hop from Home
+/// pushes (so Home stays underneath); any hop from an already-pushed drawer
+/// page replaces it instead of stacking further, so the back button always
+/// lands on Home rather than the previously visited drawer page. Tapping the
+/// drawer item for the screen already showing is a no-op — otherwise
+/// pushReplacement would still swap in a fresh instance of the same screen.
+void _navigateFromDrawer(BuildContext context, String path) {
+  if (GoRouter.of(context).state.uri.path == path) return;
+
+  final canPop = rootNavigatorKey.currentState?.canPop() ?? false;
+  if (canPop) {
+    context.pushReplacement(path);
+  } else {
+    context.push(path);
+  }
+}
 
 class CommonDrawer extends StatelessWidget {
   const CommonDrawer({super.key});
@@ -89,7 +108,7 @@ class CommonDrawer extends StatelessWidget {
                               url: '/author',
                               onTap: () {
                                 Navigator.pop(context);
-                                context.push('/author');
+                                _navigateFromDrawer(context, '/author');
                               },
                             ),
                             _DrawerSubTile(
@@ -99,7 +118,7 @@ class CommonDrawer extends StatelessWidget {
                               url: '/translator',
                               onTap: () {
                                 Navigator.pop(context);
-                                context.push('/translator');
+                                _navigateFromDrawer(context, '/translator');
                               },
                             ),
                           ],
@@ -115,7 +134,7 @@ class CommonDrawer extends StatelessWidget {
                               url: '/author',
                               onTap: () {
                                 Navigator.pop(context);
-                                context.push('/author');
+                                _navigateFromDrawer(context, '/author');
                               },
                             ),
                             _DrawerSubTile(
@@ -124,7 +143,7 @@ class CommonDrawer extends StatelessWidget {
                               url: '/translator-en',
                               onTap: () {
                                 Navigator.pop(context);
-                                context.push('/translator-en');
+                                _navigateFromDrawer(context, '/translator-en');
                               },
                             ),
                           ],
@@ -141,7 +160,7 @@ class CommonDrawer extends StatelessWidget {
                             url: '/foreword',
                             onTap: () {
                               Navigator.pop(context);
-                              context.push('/foreword');
+                              _navigateFromDrawer(context, '/foreword');
                             },
                           ),
                           _DrawerSubTile(
@@ -151,7 +170,7 @@ class CommonDrawer extends StatelessWidget {
                             url: '/appendix',
                             onTap: () {
                               Navigator.pop(context);
-                              context.push('/appendix');
+                              _navigateFromDrawer(context, '/appendix');
                             },
                           ),
                           if (!isMalayalam)
@@ -161,7 +180,10 @@ class CommonDrawer extends StatelessWidget {
                               url: '/works-of-reference',
                               onTap: () {
                                 Navigator.pop(context);
-                                context.push('/works-of-reference');
+                                _navigateFromDrawer(
+                                  context,
+                                  '/works-of-reference',
+                                );
                               },
                             ),
                         ],
@@ -175,7 +197,7 @@ class CommonDrawer extends StatelessWidget {
                         url: '/prostration-verses',
                         onTap: () {
                           Navigator.pop(context);
-                          context.push('/prostration-verses');
+                          _navigateFromDrawer(context, '/prostration-verses');
                         },
                       ),
                       for (final section in usefulLinksSections)
@@ -206,7 +228,7 @@ class CommonDrawer extends StatelessWidget {
                         url: '/feedback',
                         onTap: () {
                           Navigator.pop(context);
-                          context.push('/feedback');
+                          _navigateFromDrawer(context, '/feedback');
                         },
                       ),
                       _DrawerTile(
@@ -215,7 +237,7 @@ class CommonDrawer extends StatelessWidget {
                         url: '/contact-us',
                         onTap: () {
                           Navigator.pop(context);
-                          context.push('/contact-us');
+                          _navigateFromDrawer(context, '/contact-us');
                         },
                       ),
                       if (!PlatformHelper.isWeb)
