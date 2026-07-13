@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/widgets/link_hover/hover_link.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_screen_svg.dart';
 
 /// Bottom navigation bar shown on mobile-width web views, using the same
@@ -45,7 +46,14 @@ class WebMobileBottomNavBar extends StatelessWidget {
     final selectedColor = isDarkMode ? Colors.white : AppTheme.appIconTheme;
 
     return Container(
-      color: theme.scaffoldBackgroundColor,
+      decoration: BoxDecoration(
+        color: theme.scaffoldBackgroundColor,
+        border: Border(
+          top: BorderSide(
+            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.8),
+          ),
+        ),
+      ),
       child: SafeArea(
         top: false,
         minimum: EdgeInsets.only(bottom: bottomViewPadding > 0 ? 0 : 6),
@@ -69,6 +77,13 @@ class WebMobileBottomNavBar extends StatelessWidget {
                     onTap: item.isSearch
                         ? (onSearchPressed ?? () {})
                         : () => onPageSelected(item.pageIndex!),
+                    url: item.isSearch
+                        ? null
+                        : switch (item.pageIndex) {
+                            0 => '/',
+                            1 => '/bookmarks',
+                            _ => null,
+                          },
                   ),
                 ),
             ],
@@ -88,6 +103,7 @@ class _NavBarButton extends StatelessWidget {
     required this.icon,
     required this.isSearch,
     required this.onTap,
+    this.url,
   });
 
   final String label;
@@ -97,6 +113,7 @@ class _NavBarButton extends StatelessWidget {
   final String? icon;
   final bool isSearch;
   final VoidCallback onTap;
+  final String? url;
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +126,7 @@ class _NavBarButton extends StatelessWidget {
           )
         : Image.asset(icon!, width: iconSize, height: iconSize, color: color);
 
-    return Semantics(
+    final button = Semantics(
       button: true,
       label: '$label tab${selected ? ', selected' : ''}',
       excludeSemantics: true,
@@ -138,5 +155,7 @@ class _NavBarButton extends StatelessWidget {
         ),
       ),
     );
+
+    return url != null ? HoverLink(url: url!, child: button) : button;
   }
 }

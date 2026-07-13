@@ -8,6 +8,7 @@ import 'package:the_message_of_the_quran/core/models/verse_search_result_model.d
 import 'package:the_message_of_the_quran/core/services/database/interpretations_db_helper.dart';
 import 'package:the_message_of_the_quran/core/services/database/translation_block_db_helper.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/widgets/link_hover/hover_link.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
@@ -69,6 +70,13 @@ class _NavTarget {
   const _NavTarget({required this.surahNumber, required this.verseNumber});
   final int surahNumber;
   final int verseNumber;
+}
+
+/// Mirrors the push target [showWebFullTextSearchDialog] navigates to once
+/// this dialog is popped with a [_NavTarget], for the hover link preview.
+String _navTargetUrl(int surahNumber, int verseNumber) {
+  final scrollToAyahId = verseNumber > 0 ? verseNumber : null;
+  return '/surah/$surahNumber${scrollToAyahId != null ? '?scrollToAyahId=$scrollToAyahId' : ''}';
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -533,6 +541,7 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
                 snippet: r.translationText,
                 primaryColor: primaryColor,
                 isDark: isDark,
+                url: _navTargetUrl(r.surahNumber, r.verseNumber),
                 onTap: () => _navigateTo(
                   _NavTarget(
                     surahNumber: r.surahNumber,
@@ -590,6 +599,9 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
                 snippet: r.text,
                 primaryColor: primaryColor,
                 isDark: isDark,
+                url: hasRef
+                    ? _navTargetUrl(r.surahNumber, r.verseNumber)
+                    : null,
                 onTap: hasRef
                     ? () => _navigateTo(
                         _NavTarget(
@@ -627,7 +639,9 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
             itemBuilder: (ctx, i) {
               final r = _arabicResults[i];
               final surahName = _surahName(ctx, r.surahNumber);
-              return InkWell(
+              return HoverLink(
+                url: _navTargetUrl(r.surahNumber, r.verseNumber),
+                child: InkWell(
                 onTap: () => _navigateTo(
                   _NavTarget(
                     surahNumber: r.surahNumber,
@@ -684,6 +698,7 @@ class _WebFullTextSearchDialogState extends State<_WebFullTextSearchDialog> {
                     ],
                   ),
                 ),
+                ),
               );
             },
           ),
@@ -730,6 +745,7 @@ class _ResultTile extends StatelessWidget {
     required this.primaryColor,
     required this.isDark,
     this.onTap,
+    this.url,
   });
 
   final String label;
@@ -737,6 +753,7 @@ class _ResultTile extends StatelessWidget {
   final Color primaryColor;
   final bool isDark;
   final VoidCallback? onTap;
+  final String? url;
 
   @override
   Widget build(BuildContext context) {
@@ -744,7 +761,7 @@ class _ResultTile extends StatelessWidget {
         ? Colors.white.withValues(alpha: 0.35)
         : Colors.black38;
 
-    return InkWell(
+    final tile = InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: Padding(
@@ -777,6 +794,8 @@ class _ResultTile extends StatelessWidget {
         ),
       ),
     );
+
+    return url != null ? HoverLink(url: url!, child: tile) : tile;
   }
 
   String _truncated(String text) {

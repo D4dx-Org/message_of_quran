@@ -14,6 +14,7 @@ import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
 import 'package:the_message_of_the_quran/core/widgets/app_footer.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
+import 'package:the_message_of_the_quran/core/widgets/link_hover/hover_link.dart';
 import 'package:the_message_of_the_quran/core/widgets/responsive_content_wrapper.dart';
 import 'package:the_message_of_the_quran/core/widgets/scroll_to_top_button.dart';
 import 'package:the_message_of_the_quran/core/widgets/shimmer_asset_image.dart';
@@ -89,13 +90,21 @@ class _HomeScreenState extends State<HomeScreen>
 
   void _onScroll() {
     final offset = _listController.hasClients ? _listController.offset : 0.0;
-    final shouldShow = offset > 200;
     if (mounted && _useWebHome(context)) {
+      // Near the bottom the footer sits under the button on tablet/mobile
+      // web widths (the browse panel spans full width there), so hide the
+      // button before it overlaps the footer's "Powered by D4DX" link.
+      final maxScrollExtent = _listController.hasClients
+          ? _listController.position.maxScrollExtent
+          : 0.0;
+      final nearBottom = maxScrollExtent - offset < 120;
+      final shouldShow = offset > 200 && !nearBottom;
       if (shouldShow != _showScrollToTop) {
         setState(() => _showScrollToTop = shouldShow);
       }
       return;
     }
+    final shouldShow = offset > 200;
     if (_tabController.index != 0) {
       if (_showScrollToTop) {
         setState(() => _showScrollToTop = false);
@@ -492,6 +501,8 @@ class _HomeScreenState extends State<HomeScreen>
                       _WebPopularSurahCard(
                         isMalayalam: isMalayalam,
                         title: featured[index].title,
+                        url:
+                            '/surah/${featured[index].surah.surahNumber}${featured[index].ayahId != null ? '?scrollToAyahId=${featured[index].ayahId}' : ''}',
                         onTap: () => _openSurah(
                           context,
                           surahNumber: featured[index].surah.surahNumber,
@@ -737,6 +748,8 @@ class _HomeScreenState extends State<HomeScreen>
                 juz.ayahNumber,
                 isMalayalam: isMalayalam,
               ),
+              surahNumber: juz.surahNumber,
+              ayahNumber: juz.ayahNumber,
               isHighlighted: juzHizbProvider.selectedJuzNumber == juz.number,
               onTap: () => _openJuz(context, juz: juz),
             );
@@ -832,15 +845,20 @@ class _HomeScreenState extends State<HomeScreen>
           maxCrossAxisExtent,
         );
 
-        return Wrap(
+        final grid = Wrap(
           spacing: crossAxisSpacing,
           runSpacing: mainAxisSpacing,
+          alignment: columns == 1
+              ? WrapAlignment.center
+              : WrapAlignment.start,
           children: List.generate(
             itemCount,
             (index) =>
                 SizedBox(width: itemWidth, child: itemBuilder(context, index)),
           ),
         );
+
+        return columns == 1 ? Center(child: grid) : grid;
       },
     );
   }
@@ -1074,11 +1092,13 @@ class _WebPopularSurahCard extends StatelessWidget {
     required this.isMalayalam,
     required this.title,
     required this.onTap,
+    this.url,
   });
 
   final bool isMalayalam;
   final String title;
   final VoidCallback onTap;
+  final String? url;
 
   @override
   Widget build(BuildContext context) {
@@ -1098,6 +1118,7 @@ class _WebPopularSurahCard extends StatelessWidget {
 
     return _WebHoverSurface(
       onTap: onTap,
+      url: url,
       surfaceColor: surfaceColor,
       borderColor: borderColor,
       hoverSurfaceColor: hoverSurfaceColor,
@@ -1134,6 +1155,7 @@ class _WebHoverSurface extends StatefulWidget {
     required this.borderRadius,
     required this.padding,
     required this.child,
+    this.url,
   });
 
   final VoidCallback onTap;
@@ -1144,6 +1166,7 @@ class _WebHoverSurface extends StatefulWidget {
   final BorderRadius borderRadius;
   final EdgeInsetsGeometry padding;
   final Widget child;
+  final String? url;
 
   @override
   State<_WebHoverSurface> createState() => _WebHoverSurfaceState();
@@ -1164,7 +1187,7 @@ class _WebHoverSurfaceState extends State<_WebHoverSurface> {
       alpha: Theme.of(context).brightness == Brightness.dark ? 0.18 : 0.10,
     );
 
-    return Material(
+    final surface = Material(
       color: Colors.transparent,
       borderRadius: widget.borderRadius,
       child: InkWell(
@@ -1200,6 +1223,10 @@ class _WebHoverSurfaceState extends State<_WebHoverSurface> {
         ),
       ),
     );
+
+    return widget.url != null
+        ? HoverLink(url: widget.url!, child: surface)
+        : surface;
   }
 }
 
@@ -1319,6 +1346,7 @@ class _WebCompactSurahCard extends StatelessWidget {
 
     return _WebHoverSurface(
       onTap: onTap,
+      url: '/surah/$number',
       surfaceColor: surfaceColor,
       borderColor: borderColor,
       hoverSurfaceColor: hoverSurfaceColor,
@@ -1433,6 +1461,8 @@ class _WebCompactJuzCard extends StatelessWidget {
     required this.subtitle,
     required this.ayahReferenceLabel,
     required this.onTap,
+    required this.surahNumber,
+    required this.ayahNumber,
     this.isHighlighted = false,
   });
 
@@ -1442,6 +1472,8 @@ class _WebCompactJuzCard extends StatelessWidget {
   final String subtitle;
   final String ayahReferenceLabel;
   final VoidCallback onTap;
+  final int surahNumber;
+  final int ayahNumber;
   final bool isHighlighted;
 
   @override
@@ -1467,6 +1499,7 @@ class _WebCompactJuzCard extends StatelessWidget {
 
     return _WebHoverSurface(
       onTap: onTap,
+      url: '/surah/$surahNumber?scrollToAyahId=$ayahNumber',
       surfaceColor: surfaceColor,
       borderColor: borderColor,
       hoverSurfaceColor: hoverSurfaceColor,

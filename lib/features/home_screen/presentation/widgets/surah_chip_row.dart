@@ -6,6 +6,7 @@ import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
+import 'package:the_message_of_the_quran/core/widgets/link_hover/hover_link.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
@@ -138,32 +139,35 @@ class _SurahChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        // Open the surah EXACTLY like the other chips (Yaseen,
-        // Al Mulk, etc.) — push immediately. SurahScreen loads its data
-        // and, when scrollToAyahId is non-null (e.g. Ayatul Kursi = 255),
-        // automatically scrolls to that ayah once the layout is ready.
-        context.push(
-          '/surah/$surahNumber${ayahId != null ? '?scrollToAyahId=$ayahId' : ''}',
-        );
-      },
-      child: Container(
-        padding: compact
-            ? EdgeInsets.all(compactPadding)
-            : const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: AppTheme.appThemeRawChips,
-          borderRadius: BorderRadius.circular(compact ? 16 : 20),
-        ),
-        alignment: compact ? null : Alignment.center,
-        child: Text(
-          label,
-          style: AppTextTheme.localizedLabel(
-            isMalayalam: isMalayalam,
-            color: Colors.white,
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
+    final url =
+        '/surah/$surahNumber${ayahId != null ? '?scrollToAyahId=$ayahId' : ''}';
+    return HoverLink(
+      url: url,
+      child: GestureDetector(
+        onTap: () {
+          // Open the surah EXACTLY like the other chips (Yaseen,
+          // Al Mulk, etc.) — push immediately. SurahScreen loads its data
+          // and, when scrollToAyahId is non-null (e.g. Ayatul Kursi = 255),
+          // automatically scrolls to that ayah once the layout is ready.
+          context.push(url);
+        },
+        child: Container(
+          padding: compact
+              ? EdgeInsets.all(compactPadding)
+              : const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: AppTheme.appThemeRawChips,
+            borderRadius: BorderRadius.circular(compact ? 16 : 20),
+          ),
+          alignment: compact ? null : Alignment.center,
+          child: Text(
+            label,
+            style: AppTextTheme.localizedLabel(
+              isMalayalam: isMalayalam,
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
       ),

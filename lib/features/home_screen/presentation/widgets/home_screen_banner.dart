@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
+import 'package:the_message_of_the_quran/core/widgets/link_hover/hover_link.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/reading_progress_provider.dart';
 
@@ -39,7 +40,7 @@ class HomeScreenBanner extends StatelessWidget {
               r'[\u0D00-\u0D7F]',
             ).hasMatch(lastReadTitle);
 
-            return Semantics(
+            final card = Semantics(
               button: lastRead.hasLastRead,
               label: lastRead.hasLastRead
                   ? 'Last Read: Surah ${lastRead.surahName}, Ayah ${lastRead.ayahId}, $progressPct percent complete'
@@ -193,6 +194,14 @@ class HomeScreenBanner extends StatelessWidget {
                 ),
               ),
             );
+
+            return lastRead.hasLastRead
+                ? HoverLink(
+                    url:
+                        '/surah/${lastRead.surahNumber}?scrollToAyahId=${lastRead.ayahId}',
+                    child: card,
+                  )
+                : card;
           },
         ),
     );

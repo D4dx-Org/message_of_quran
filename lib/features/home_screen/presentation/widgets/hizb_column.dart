@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/juz_hizb_model.dart';
+import 'package:the_message_of_the_quran/core/widgets/link_hover/hover_link.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/juz_hizb_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
@@ -46,7 +47,7 @@ class HizbColumn extends StatelessWidget {
             final available = hizb != null &&
                 surahProvider.surahList
                     .any((s) => s.surahNumber == hizb.surahNumber);
-            return Semantics(
+            final tile = Semantics(
               button: available,
               label: 'Hizb $hizbNumber',
               hint: available ? 'Double tap to open' : 'Not available',
@@ -75,6 +76,14 @@ class HizbColumn extends StatelessWidget {
               ),
             ),
             );
+
+            return available
+                ? HoverLink(
+                    url:
+                        '/surah/${hizb.surahNumber}?scrollToAyahId=${hizb.ayahNumber}',
+                    child: tile,
+                  )
+                : tile;
           },
         );
       },

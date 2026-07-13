@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
+import 'package:the_message_of_the_quran/core/widgets/link_hover/hover_link.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/provider/progression_tracker_provider.dart';
 
 class ProgressionTrackerScreen extends StatelessWidget {
@@ -33,15 +34,18 @@ class ProgressionTrackerScreen extends StatelessWidget {
         elevation: 0,
         backgroundColor: AppTheme.appThemePrimary,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.push('/progression/add').then((_) {
-            if (!context.mounted) return;
-            context.read<ProgressionTrackerProvider>().loadProgressions();
-          });
-        },
-        backgroundColor: AppTheme.appIconTheme,
-        child: const Icon(Icons.add, color: Colors.white),
+      floatingActionButton: HoverLink(
+        url: '/progression/add',
+        child: FloatingActionButton(
+          onPressed: () {
+            context.push('/progression/add').then((_) {
+              if (!context.mounted) return;
+              context.read<ProgressionTrackerProvider>().loadProgressions();
+            });
+          },
+          backgroundColor: AppTheme.appIconTheme,
+          child: const Icon(Icons.add, color: Colors.white),
+        ),
       ),
       child: Consumer<ProgressionTrackerProvider>(
         builder: (context, provider, _) {

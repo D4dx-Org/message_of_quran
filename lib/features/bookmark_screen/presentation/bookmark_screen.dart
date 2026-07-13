@@ -8,6 +8,7 @@ import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
+import 'package:the_message_of_the_quran/core/widgets/link_hover/hover_link.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_card.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
@@ -83,15 +84,15 @@ class BookmarkScreen extends StatelessWidget {
     return null;
   }
 
-  void _openBookmark(BuildContext context, AyahBookmarkModel bookmark) {
+  String _bookmarkUrl(AyahBookmarkModel bookmark) {
     if (_isMushafBookmark(bookmark)) {
-      context.push(
-        '/mushaf-reader?surahNo=${bookmark.surahNumber}&ayaNo=${bookmark.ayahId}',
-      );
-      return;
+      return '/mushaf-reader?surahNo=${bookmark.surahNumber}&ayaNo=${bookmark.ayahId}';
     }
+    return '/surah/${bookmark.surahNumber}?scrollToAyahId=${bookmark.ayahId}';
+  }
 
-    context.push('/surah/${bookmark.surahNumber}?scrollToAyahId=${bookmark.ayahId}');
+  void _openBookmark(BuildContext context, AyahBookmarkModel bookmark) {
+    context.push(_bookmarkUrl(bookmark));
   }
 
   Future<void> _showEditLabelDialog(
@@ -173,7 +174,9 @@ class BookmarkScreen extends StatelessWidget {
                                         '${bookmark.surahName ?? 'Surah ${bookmark.surahNumber}'}, Ayah ${bookmark.ayahId}${bookmark.label != null && bookmark.label!.isNotEmpty ? ', ${bookmark.label}' : ''}',
                                     hint:
                                         'Double tap to open. Use the action buttons to edit or delete.',
-                                    child: SettingsScreenCard(
+                                    child: HoverLink(
+                                      url: _bookmarkUrl(bookmark),
+                                      child: SettingsScreenCard(
                                       child: InkWell(
                                         borderRadius: BorderRadius.circular(16),
                                         onTap: () => _openBookmark(context, bookmark),
@@ -336,6 +339,7 @@ class BookmarkScreen extends StatelessWidget {
                                         ),
                                       ),
                                     ),
+                                  ),
                                   ),
                                 );
                               }),

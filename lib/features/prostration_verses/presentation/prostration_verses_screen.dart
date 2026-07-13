@@ -9,6 +9,7 @@ import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
+import 'package:the_message_of_the_quran/core/widgets/link_hover/hover_link.dart';
 import 'package:the_message_of_the_quran/features/prostration_verses/data/prostration_verse_model.dart';
 import 'package:the_message_of_the_quran/features/prostration_verses/services/prostration_verses_service.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
@@ -249,7 +250,9 @@ class _ProstrationVerseTile extends StatelessWidget {
           ? 'തുറക്കാൻ ഇരട്ട ടാപ്പ് ചെയ്യുക'
           : 'Double tap to open',
       excludeSemantics: true,
-      child: Material(
+      child: HoverLink(
+        url: '/surah/${verse.surahNumber}?scrollToAyahId=${verse.ayahNumber}',
+        child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
@@ -324,6 +327,7 @@ class _ProstrationVerseTile extends StatelessWidget {
               ),
             ),
           ),
+        ),
         ),
       );
   }

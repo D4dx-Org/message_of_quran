@@ -8,6 +8,7 @@ import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
+import 'package:the_message_of_the_quran/core/widgets/link_hover/hover_link.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/juz_hizb_provider.dart';
 import 'package:the_message_of_the_quran/features/mushaf/widgets/star_number.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
@@ -114,7 +115,7 @@ class JuzColumn extends StatelessWidget {
               startAyahLabel,
             ];
 
-            return Semantics(
+            final tile = Semantics(
               button: available,
               label: semanticsParts.join(', '),
               hint: available ? 'Double tap to open' : 'Not available',
@@ -212,6 +213,14 @@ class JuzColumn extends StatelessWidget {
                 ),
               ),
             );
+
+            return available
+                ? HoverLink(
+                    url:
+                        '/surah/${juz.surahNumber}?scrollToAyahId=${juz.ayahNumber}',
+                    child: tile,
+                  )
+                : tile;
           },
         );
       },

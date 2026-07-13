@@ -555,7 +555,12 @@ class _SurahScreenState extends State<SurahScreen> {
 
   Widget _buildSurahWebActions(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
-    final isNarrow = screenWidth < 640;
+    // Keep in sync with the `mobileWebBreakpoint: 768` passed to
+    // BaseScreenLayout below, which is where the bottom nav bar takes over.
+    // Mismatched thresholds mean both the inline nav here and the bottom nav
+    // bar render at once, overflowing the app bar row.
+    const mobileBreakpoint = 768.0;
+    final isNarrow = screenWidth < mobileBreakpoint;
     final actions = CommonWebAppBarActions(
       selectedPageIndex: null,
       onPageSelected: (index) {
@@ -564,6 +569,7 @@ class _SurahScreenState extends State<SurahScreen> {
       compact: true,
       showSearch: true,
       showLabels: !isNarrow,
+      mobileBreakpoint: mobileBreakpoint,
       onSearchPressed: () => showWebFullTextSearchDialog(context),
     );
     return Padding(padding: const EdgeInsets.only(right: 8), child: actions);
@@ -2386,6 +2392,7 @@ class _SurahScreenState extends State<SurahScreen> {
         topBorderRadius: kIsWeb ? AppTheme.desktopContentCardRadius : 40,
         bottomBorderRadius: kIsWeb ? AppTheme.desktopContentCardRadius : 0,
         contentBottomInset: BaseScreenLayout.defaultContentTopInset,
+        mobileWebBreakpoint: 768,
         appBar: CommonAppBar.appBar(
           context,
           showBrandLogo: true,

@@ -5,6 +5,7 @@ import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
+import 'package:the_message_of_the_quran/core/widgets/link_hover/hover_link.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
 import 'package:the_message_of_the_quran/features/mushaf/widgets/star_number.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
@@ -66,7 +67,9 @@ class HomeScreenListTile extends StatelessWidget {
       label: semanticsParts.join(', '),
       hint: 'Double tap to open',
       excludeSemantics: true,
-      child: InkWell(
+      child: HoverLink(
+        url: '/surah/${surah.surahNumber}',
+        child: InkWell(
         onTap: onTap,
         child: Padding(
           padding: homeListRowPadding,
@@ -167,6 +170,7 @@ class HomeScreenListTile extends StatelessWidget {
               ),
             ],
           ),
+        ),
         ),
       ),
     );

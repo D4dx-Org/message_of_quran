@@ -10,6 +10,8 @@ class LinkStatusBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final url = context.watch<LinkHoverController>().hoveredUrl;
+    final path = url == '/' ? '/home' : url;
+    final displayUrl = path == null ? null : '${Uri.base.origin}$path';
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Positioned(
@@ -42,7 +44,7 @@ class LinkStatusBar extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  url ?? '',
+                  displayUrl ?? '',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(

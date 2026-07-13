@@ -72,6 +72,8 @@ class AppFooter extends StatelessWidget {
               child: Text(
                 _copyrightText,
                 textAlign: TextAlign.start,
+                maxLines: 1,
+                softWrap: false,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: footerColor,
@@ -141,10 +143,14 @@ class AppFooter extends StatelessWidget {
       top: false,
       child: Container(
         color: theme.scaffoldBackgroundColor,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [bordered],
-        ),
+        // Center (not Row) so `bordered`'s ConstrainedBox(maxWidth) actually
+        // receives the real available width and shrinks on narrow screens —
+        // a Row gives non-flex children unbounded main-axis constraints,
+        // which made the content always claim the full 1180px and overflow.
+        // heightFactor pins Center to shrink-wrap its height instead of
+        // expanding to fill the (loose but bounded) height Scaffold gives
+        // bottomNavigationBar, which was pushing the footer to mid-screen.
+        child: Center(heightFactor: 1.0, child: bordered),
       ),
     );
   }

@@ -40,6 +40,7 @@ class BaseScreenLayout extends StatelessWidget {
     this.expandContentCard = true,
     this.showMobileBottomNav = true,
     this.mobileBottomNavOverride,
+    this.mobileWebBreakpoint = 640,
   });
 
   /// The main content displayed inside the rounded card area.
@@ -97,6 +98,10 @@ class BaseScreenLayout extends StatelessWidget {
   /// Custom bottom nav bar to show on mobile-width web views instead of the
   /// default Home + Settings nav (e.g. to also include Bookmarks/Search).
   final Widget? mobileBottomNavOverride;
+
+  /// Width below which web views are treated as "mobile" (showing the
+  /// bottom nav bar instead of [AppFooter]). Defaults to 640.
+  final double mobileWebBreakpoint;
 
   BoxDecoration _buildContentCardDecoration({
     required bool isDarkMode,
@@ -178,7 +183,8 @@ class BaseScreenLayout extends StatelessWidget {
   }
 
   Widget _buildBottomNavigationBar(BuildContext context) {
-    final isMobileWeb = kIsWeb && MediaQuery.sizeOf(context).width < 640;
+    final isMobileWeb =
+        kIsWeb && MediaQuery.sizeOf(context).width < mobileWebBreakpoint;
     if (!isMobileWeb) return const AppFooter();
     if (mobileBottomNavOverride != null) return mobileBottomNavOverride!;
     if (!showMobileBottomNav) return const AppFooter();

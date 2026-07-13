@@ -70,6 +70,7 @@ class CommonDrawer extends StatelessWidget {
                         title: 'Home',
                         icon: Icons.home_outlined,
                         assetPath: 'assets/icons/home-img.png',
+                        url: '/',
                         onTap: () {
                           Navigator.pop(context);
                           context.go('/');
@@ -85,6 +86,7 @@ class CommonDrawer extends StatelessWidget {
                               title: 'മുഹമ്മദ് അസദ്',
                               icon: Icons.edit_outlined,
                               isMalayalam: true,
+                              url: '/author',
                               onTap: () {
                                 Navigator.pop(context);
                                 context.push('/author');
@@ -94,6 +96,7 @@ class CommonDrawer extends StatelessWidget {
                               title: 'വിവർത്തകൻ',
                               icon: Icons.translate_outlined,
                               isMalayalam: true,
+                              url: '/translator',
                               onTap: () {
                                 Navigator.pop(context);
                                 context.push('/translator');
@@ -109,6 +112,7 @@ class CommonDrawer extends StatelessWidget {
                             _DrawerSubTile(
                               title: 'Muhammad Asad',
                               icon: Icons.edit_outlined,
+                              url: '/author',
                               onTap: () {
                                 Navigator.pop(context);
                                 context.push('/author');
@@ -117,6 +121,7 @@ class CommonDrawer extends StatelessWidget {
                             _DrawerSubTile(
                               title: 'Translator',
                               icon: Icons.translate_outlined,
+                              url: '/translator-en',
                               onTap: () {
                                 Navigator.pop(context);
                                 context.push('/translator-en');
@@ -133,6 +138,7 @@ class CommonDrawer extends StatelessWidget {
                             title: isMalayalam ? 'മുഖവുര' : 'Foreword',
                             icon: Icons.history_edu_outlined,
                             isMalayalam: isMalayalam,
+                            url: '/foreword',
                             onTap: () {
                               Navigator.pop(context);
                               context.push('/foreword');
@@ -142,6 +148,7 @@ class CommonDrawer extends StatelessWidget {
                             title: isMalayalam ? 'അനുബന്ധം' : 'Appendix',
                             icon: Icons.note_alt_outlined,
                             isMalayalam: isMalayalam,
+                            url: '/appendix',
                             onTap: () {
                               Navigator.pop(context);
                               context.push('/appendix');
@@ -151,6 +158,7 @@ class CommonDrawer extends StatelessWidget {
                             _DrawerSubTile(
                               title: 'Works of Reference',
                               icon: Icons.library_books_outlined,
+                              url: '/works-of-reference',
                               onTap: () {
                                 Navigator.pop(context);
                                 context.push('/works-of-reference');
@@ -164,6 +172,7 @@ class CommonDrawer extends StatelessWidget {
                             : 'Prostration Verses',
                         icon: Icons.mosque_outlined,
                         isMalayalam: isMalayalam,
+                        url: '/prostration-verses',
                         onTap: () {
                           Navigator.pop(context);
                           context.push('/prostration-verses');
@@ -194,6 +203,7 @@ class CommonDrawer extends StatelessWidget {
                       _DrawerTile(
                         title: 'Feedback',
                         icon: Icons.mail_outline,
+                        url: '/feedback',
                         onTap: () {
                           Navigator.pop(context);
                           context.push('/feedback');
@@ -202,6 +212,7 @@ class CommonDrawer extends StatelessWidget {
                       _DrawerTile(
                         title: 'Contact Us',
                         icon: Icons.chat_bubble_outline,
+                        url: '/contact-us',
                         onTap: () {
                           Navigator.pop(context);
                           context.push('/contact-us');
@@ -440,6 +451,7 @@ class _DrawerTile extends StatelessWidget {
     this.onTapWithContext,
     this.assetPath,
     this.isMalayalam = false,
+    this.url,
   });
   final String title;
   final IconData icon;
@@ -447,6 +459,7 @@ class _DrawerTile extends StatelessWidget {
   final Future<void> Function(BuildContext context)? onTapWithContext;
   final String? assetPath;
   final bool isMalayalam;
+  final String? url;
 
   @override
   Widget build(BuildContext context) {
@@ -463,7 +476,7 @@ class _DrawerTile extends StatelessWidget {
           )
         : Icon(icon, color: accentColor, size: 22 * scale);
 
-    return Builder(
+    final tile = Builder(
       builder: (tileContext) => ListTile(
         onTap: () async {
           if (onTapWithContext != null) {
@@ -494,6 +507,8 @@ class _DrawerTile extends StatelessWidget {
         visualDensity: VisualDensity.compact,
       ),
     );
+
+    return url != null ? HoverLink(url: url!, child: tile) : tile;
   }
 }
 
@@ -548,11 +563,13 @@ class _DrawerSubTile extends StatelessWidget {
     required this.icon,
     this.onTap,
     this.isMalayalam = false,
+    this.url,
   });
   final String title;
   final IconData icon;
   final VoidCallback? onTap;
   final bool isMalayalam;
+  final String? url;
 
   @override
   Widget build(BuildContext context) {
@@ -560,7 +577,7 @@ class _DrawerSubTile extends StatelessWidget {
     final scale = ResponsiveHelper.scaleFactor(context);
     final accentColor = appBarAccentColor(context);
 
-    return ListTile(
+    final tile = ListTile(
       onTap: onTap,
       leading: Icon(icon, color: accentColor, size: 20 * scale),
       title: Text(
@@ -580,6 +597,8 @@ class _DrawerSubTile extends StatelessWidget {
       dense: true,
       visualDensity: const VisualDensity(vertical: -4),
     );
+
+    return url != null ? HoverLink(url: url!, child: tile) : tile;
   }
 }
 

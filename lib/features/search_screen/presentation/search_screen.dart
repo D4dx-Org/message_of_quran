@@ -7,6 +7,7 @@ import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
+import 'package:the_message_of_the_quran/core/widgets/link_hover/hover_link.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_card.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
@@ -54,13 +55,16 @@ class SearchScreen extends StatelessWidget {
                   ),
                 )
               : ListView.separated(
-                  itemBuilder: (context, index) => InkWell(
+                  itemBuilder: (context, index) => HoverLink(
+                    url: '/surah/${controller.searchList[index].surahNumber}',
+                    child: InkWell(
                     onTap: () => _openSearchResult(context, controller, index),
                     child: SettingsScreenCard(
                       child: ListTile(
                         tileColor: Colors.transparent,
                         title: Text(controller.searchList[index].name),
                       ),
+                    ),
                     ),
                   ),
                   separatorBuilder: (context, index) =>
@@ -107,7 +111,9 @@ class SearchScreen extends StatelessWidget {
               surahNumber: surah.surahNumber,
             );
 
-            return InkWell(
+            return HoverLink(
+              url: '/surah/${surah.surahNumber}',
+              child: InkWell(
               onTap: () => _openSearchResult(context, controller, index),
               borderRadius: BorderRadius.circular(16),
               child: SettingsScreenCard(
@@ -159,6 +165,7 @@ class SearchScreen extends StatelessWidget {
                     ],
                   ),
                 ),
+              ),
               ),
             );
           },

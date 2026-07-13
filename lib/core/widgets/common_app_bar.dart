@@ -9,6 +9,7 @@ import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/app_bar_language_button.dart';
 import 'package:the_message_of_the_quran/core/widgets/app_bar_theme_button.dart';
+import 'package:the_message_of_the_quran/core/widgets/link_hover/hover_link.dart';
 import 'package:the_message_of_the_quran/core/widgets/shimmer_asset_image.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_screen_svg.dart';
 import 'package:the_message_of_the_quran/features/search_screen/presentation/widgets/surah_quick_search.dart';
@@ -24,6 +25,7 @@ class CommonWebAppBarActions extends StatefulWidget {
     this.showSearch = true,
     this.showLabels = true,
     this.isBookmarkNeeded = true,
+    this.mobileBreakpoint = 640,
   });
 
   final int? selectedPageIndex;
@@ -33,6 +35,13 @@ class CommonWebAppBarActions extends StatefulWidget {
   final bool showSearch;
   final bool showLabels;
   final bool isBookmarkNeeded;
+
+  /// Width below which the inline Home/Bookmarks/Settings/Search nav items
+  /// hide from this row (relocating to a bottom nav bar instead). Callers
+  /// that swap in a bottom nav bar at a wider breakpoint (e.g.
+  /// [BaseScreenLayout.mobileWebBreakpoint]) should pass the same value here
+  /// so the two don't render simultaneously and overflow the app bar.
+  final double mobileBreakpoint;
 
   @override
   State<CommonWebAppBarActions> createState() => _CommonWebAppBarActionsState();
@@ -97,6 +106,7 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
     required bool isHovered,
     required VoidCallback onTap,
     required ValueChanged<bool> onHover,
+    String? url,
   }) {
     const accentColor = AppTheme.appBarForegroundColor;
     final compact = widget.compact;
@@ -107,7 +117,7 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
     final hoverBackgroundColor = accentColor.withValues(alpha: 0.14);
     final hoverBorderColor = accentColor.withValues(alpha: 0.24);
 
-    return Semantics(
+    final button = Semantics(
       button: true,
       selected: isSelected,
       label: '$label navigation item',
@@ -166,6 +176,8 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
         ),
       ),
     );
+
+    return url != null ? HoverLink(url: url, child: button) : button;
   }
 
   @override
@@ -178,7 +190,8 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
     // Nav + search icons relocate to a bottom nav bar on mobile-width web
     // views, matching the native app's bottom nav instead of the desktop
     // toolbar button style.
-    final isMobileWidth = MediaQuery.sizeOf(context).width < 640;
+    final isMobileWidth =
+        MediaQuery.sizeOf(context).width < widget.mobileBreakpoint;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -191,6 +204,11 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
               isHovered: _hoveredPageIndices.contains(item.pageIndex),
               onTap: () => widget.onPageSelected(item.pageIndex),
               onHover: (hovered) => _setHoveredPage(item.pageIndex, hovered),
+              url: switch (item.pageIndex) {
+                0 => '/',
+                1 => '/bookmarks',
+                _ => null,
+              },
               icon: Image.asset(
                 item.assetPath,
                 width: iconSize,
@@ -287,11 +305,14 @@ class CommonAppBar {
         ),
       ],
     );
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: onTap ?? () => context.go('/'),
-        child: image,
+    return HoverLink(
+      url: '/',
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: onTap ?? () => context.go('/'),
+          child: image,
+        ),
       ),
     );
   }

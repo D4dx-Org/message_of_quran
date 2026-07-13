@@ -8,6 +8,7 @@ import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
+import 'package:the_message_of_the_quran/core/widgets/link_hover/hover_link.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
 import 'package:the_message_of_the_quran/features/mushaf/widgets/star_number.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
@@ -643,7 +644,9 @@ class _SurahQuickSearchResultCard extends StatelessWidget {
       surahNumber: surah.surahNumber,
     );
 
-    return Material(
+    return HoverLink(
+      url: '/surah/${surah.surahNumber}',
+      child: Material(
       color: surfaceColor,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
@@ -714,6 +717,7 @@ class _SurahQuickSearchResultCard extends StatelessWidget {
             ],
           ),
         ),
+      ),
       ),
     );
   }

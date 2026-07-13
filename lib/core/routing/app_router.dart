@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_message_of_the_quran/core/services/database/database_ready_notifier.dart';
 import 'package:the_message_of_the_quran/features/author_screen/author_screen.dart';
 import 'package:the_message_of_the_quran/features/author_screen/presentation/english_translator_screen.dart';
@@ -253,9 +254,23 @@ class _SurahRouteResolverState extends State<SurahRouteResolver> {
   Future<void> _resolve() async {
     await context.read<DatabaseReadyNotifier>().whenReady;
     if (!mounted) return;
-    return context.read<SurahProvider>().selectSurahByNumber(
-      widget.surahNumber,
-    );
+    final surahProvider = context.read<SurahProvider>();
+    // On a direct/refresh load of this route, MainScreen never mounts (this
+    // route sits outside the StatefulShellRoute), so SurahProvider's language
+    // flag stays at its default instead of being synced from the persisted
+    // setting. Sync it here before fetching, or translations load in the
+    // wrong language even though the UI chrome (surah name, dropdown) reads
+    // LanguageProvider directly and shows the correct one.
+    // Read SharedPreferences directly rather than via LanguageProvider:
+    // LanguageProvider's own init is async and may not have finished
+    // resolving yet at this point, which would just re-introduce the race.
+    final prefs = await SharedPreferences.getInstance();
+    final isMalayalam = (prefs.getString('app_language') ?? 'en') == 'ml';
+    if (surahProvider.isMalayalam != isMalayalam) {
+      await surahProvider.setMalayalam(isMalayalam);
+    }
+    if (!mounted) return;
+    return surahProvider.selectSurahByNumber(widget.surahNumber);
   }
 
   void _retry() {
