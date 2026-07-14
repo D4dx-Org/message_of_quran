@@ -11,7 +11,11 @@ class LinkStatusBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final url = context.watch<LinkHoverController>().hoveredUrl;
     final path = url == '/' ? '/home' : url;
-    final displayUrl = path == null ? null : '${Uri.base.origin}$path';
+    final displayUrl = path == null
+        ? null
+        : Uri.parse(path).hasScheme
+        ? path
+        : '${Uri.base.origin}$path';
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Positioned(

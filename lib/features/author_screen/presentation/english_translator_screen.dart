@@ -55,7 +55,9 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen>
       _lastMalayalam = isMalayalam;
       if (isMalayalam && route!.isCurrent) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) context.pushReplacement('/translator');
+          if (mounted) {
+            context.pushReplacement('/translator', extra: instantSwap);
+          }
         });
       }
     }
@@ -69,7 +71,9 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen>
     final isMalayalam = context.read<LanguageProvider>().isMalayalam;
     if (isMalayalam) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) context.pushReplacement('/translator');
+        if (mounted) {
+          context.pushReplacement('/translator', extra: instantSwap);
+        }
       });
     }
   }

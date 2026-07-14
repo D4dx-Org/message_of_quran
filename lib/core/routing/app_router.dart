@@ -29,6 +29,11 @@ import 'package:the_message_of_the_quran/features/splash_screen/presentation/spl
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
+// Extra-data marker: pass as `extra` to pushReplacement() between
+// '/translator' and '/translator-en' to request an instant, transition-free
+// page swap (used for in-place language switching).
+const Object instantSwap = 'instantSwap';
+
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> _shellNavigatorKey =
     GlobalKey<NavigatorState>();
@@ -125,17 +130,22 @@ GoRouter buildAppRouter() {
       GoRoute(
         path: '/translator',
         parentNavigatorKey: rootNavigatorKey,
-        // No transition: switching the app language while on this page
-        // pushReplacement()s to '/translator-en', which should read as an
-        // instant content swap rather than a page navigation.
-        pageBuilder: (context, state) =>
-            const NoTransitionPage(child: TranslatorScreen()),
+        // Normal push transition, except when arriving via the language-swap
+        // pushReplacement() from '/translator-en' (extra: instantSwap), which
+        // should read as an instant content swap rather than a page navigation.
+        pageBuilder: (context, state) => state.extra == instantSwap
+            ? const NoTransitionPage(child: TranslatorScreen())
+            : MaterialPage(key: state.pageKey, child: const TranslatorScreen()),
       ),
       GoRoute(
         path: '/translator-en',
         parentNavigatorKey: rootNavigatorKey,
-        pageBuilder: (context, state) =>
-            const NoTransitionPage(child: EnglishTranslatorScreen()),
+        pageBuilder: (context, state) => state.extra == instantSwap
+            ? const NoTransitionPage(child: EnglishTranslatorScreen())
+            : MaterialPage(
+                key: state.pageKey,
+                child: const EnglishTranslatorScreen(),
+              ),
       ),
       GoRoute(
         path: '/foreword',

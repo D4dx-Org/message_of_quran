@@ -54,7 +54,9 @@ class _TranslatorScreenState extends State<TranslatorScreen> with RouteAware {
       _lastMalayalam = isMalayalam;
       if (!isMalayalam && route!.isCurrent) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) context.pushReplacement('/translator-en');
+          if (mounted) {
+            context.pushReplacement('/translator-en', extra: instantSwap);
+          }
         });
       }
     }
@@ -68,7 +70,9 @@ class _TranslatorScreenState extends State<TranslatorScreen> with RouteAware {
     final isMalayalam = context.read<LanguageProvider>().isMalayalam;
     if (!isMalayalam) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) context.pushReplacement('/translator-en');
+        if (mounted) {
+          context.pushReplacement('/translator-en', extra: instantSwap);
+        }
       });
     }
   }
