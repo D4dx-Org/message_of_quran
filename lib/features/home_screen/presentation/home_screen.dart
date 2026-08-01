@@ -876,7 +876,8 @@ class _HomeScreenState extends State<HomeScreen>
         children: [
           ListView(
             controller: _listController,
-            padding: const EdgeInsets.only(bottom: 40),
+            // No bottom padding — the footer is the last thing on the page.
+            padding: EdgeInsets.zero,
             children: [
               ResponsiveContentWrapper(
                 maxWidth: _webHomeMaxWidth,
@@ -932,14 +933,10 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
               ],
               const SizedBox(height: _webPopularToBrowseGap),
-              ResponsiveContentWrapper(
-                maxWidth: _webBrowsePanelMaxWidth(context),
-                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-                child: AppFooter(
-                  fullBleed: false,
-                  maxWidth: _webBrowsePanelMaxWidth(context),
-                ),
-              ),
+              // Full-bleed so the copyright bar's brand colour reaches both
+              // screen edges; its own gutter matches _webHorizontalPadding, so
+              // the text still lines up with the panels above.
+              AppFooter(maxWidth: _webBrowsePanelMaxWidth(context)),
             ],
           ),
           PositionedDirectional(

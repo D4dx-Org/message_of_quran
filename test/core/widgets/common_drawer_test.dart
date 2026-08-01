@@ -153,10 +153,6 @@ void main() {
     final logoRect = tester.getRect(
       find.byKey(const ValueKey('drawer-brand-logo-box')),
     );
-    final supportButtonRect = tester.getRect(
-      find.byKey(const ValueKey('drawer-support-button-box')),
-    );
-
     expect(headerRect.left, moreOrLessEquals(14 * scale, epsilon: 0.01));
     expect(headerRect.top, moreOrLessEquals(expectedTop, epsilon: 0.01));
     expect(
@@ -164,14 +160,6 @@ void main() {
       moreOrLessEquals(expectedDrawerWidth - (28 * scale), epsilon: 0.01),
     );
     expect(logoRect.height, moreOrLessEquals(44 * scale, epsilon: 0.01));
-    expect(
-      supportButtonRect.width,
-      moreOrLessEquals(headerRect.width - (36 * scale), epsilon: 0.01),
-    );
-    expect(
-      supportButtonRect.top - logoRect.bottom,
-      moreOrLessEquals(14 * scale, epsilon: 0.01),
-    );
   });
 
   testWidgets('drawer keeps phone width on tablet surfaces', (

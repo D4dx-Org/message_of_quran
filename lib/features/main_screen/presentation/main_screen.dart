@@ -12,7 +12,6 @@ import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
 import 'package:the_message_of_the_quran/core/widgets/nav_bar_corner_painter.dart';
-import 'package:the_message_of_the_quran/core/widgets/web_mobile_bottom_nav_bar.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
 import 'package:the_message_of_the_quran/features/search_screen/presentation/widgets/web_full_text_search_dialog.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
@@ -153,12 +152,23 @@ class _MainScreenState extends State<MainScreen> {
       0 || 1 || 3 => displayIndex,
       _ => null,
     };
+    final isOnBookmarks = displayIndex == 1;
     final toolbar = CommonWebAppBarActions(
       selectedPageIndex: selectedPageIndex,
       onPageSelected: _onItemTapped,
       compact: true,
       showSearch: true,
       showLabels: !isNarrow,
+      // Narrow web views have no bottom nav bar, so the nav items stay in the
+      // app bar, replacing the theme and language buttons (both live in
+      // Settings). Room is tight, so only the destination the user isn't
+      // already on is shown: Bookmarks from home, Home from bookmarks.
+      mobileBreakpoint: 0,
+      showHome: !isNarrow || isOnBookmarks,
+      isBookmarkNeeded: !isNarrow || !isOnBookmarks,
+      settingsLast: isNarrow,
+      showThemeButton: !isNarrow,
+      showLanguageButton: !isNarrow,
       onSearchPressed: () => showWebFullTextSearchDialog(context),
     );
 
@@ -175,12 +185,6 @@ class _MainScreenState extends State<MainScreen> {
     bool isMalayalam,
   ) {
     final theme = Theme.of(context);
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    final isNarrow = screenWidth < 640;
-    final selectedPageIndex = switch (displayIndex) {
-      0 || 1 || 3 => displayIndex,
-      _ => null,
-    };
 
     return PopScope(
       canPop: displayIndex == 0,
@@ -193,19 +197,13 @@ class _MainScreenState extends State<MainScreen> {
         appBar: CommonAppBar.homeAppBar(
           context,
           showOrnament: false,
+          // Mobile web keeps the brand logo on home only; the other tabs need
+          // the row for their own nav items.
+          keepBrandLogoOnMobile: displayIndex == 0,
           actions: [_buildWebToolbarActions(context, displayIndex)],
         ),
         drawer: const CommonDrawer(),
         body: pageBody,
-        bottomNavigationBar: isNarrow
-            ? WebMobileBottomNavBar(
-                selectedPageIndex: selectedPageIndex,
-                isBookmarkNeeded: true,
-                showSearch: true,
-                onPageSelected: _onItemTapped,
-                onSearchPressed: () => showWebFullTextSearchDialog(context),
-              )
-            : null,
       ),
     );
   }

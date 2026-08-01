@@ -141,6 +141,9 @@ class BookmarkScreen extends StatelessWidget {
         Expanded(
           child: BaseScreenLayout(
             contentCardBoxShadows: const [],
+            // Nav lives in the app bar on mobile web, so keep the footer here
+            // instead of stacking a second bottom nav under the shell.
+            showMobileBottomNav: false,
             child: CustomScrollView(
               slivers: [
                 Consumer<SurahProvider>(

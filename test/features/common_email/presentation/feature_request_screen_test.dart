@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/services/api/common_email_api.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/features/common_email/models/common_email_requests.dart';
 import 'package:the_message_of_the_quran/features/common_email/presentation/feature_request_screen.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 
 void main() {
   Future<void> pumpFeatureRequestScreen(
@@ -18,12 +20,20 @@ void main() {
     final themeProvider = ThemeProvider();
 
     await tester.pumpWidget(
-      MaterialApp(
-        theme: themeProvider.lightTheme,
-        home: FeatureRequestScreen(api: api),
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<ThemeProvider>.value(value: themeProvider),
+          ChangeNotifierProvider<LanguageProvider>(
+            create: (_) => LanguageProvider(),
+          ),
+        ],
+        child: MaterialApp(
+          theme: themeProvider.lightTheme,
+          home: FeatureRequestScreen(api: api),
+        ),
       ),
     );
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 300));
   }
 
   testWidgets('feature request screen requires all fields', (tester) async {
@@ -36,7 +46,7 @@ void main() {
     await tester.tap(
       find.byKey(const ValueKey('feature-request-submit-button')),
     );
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.text('Enter your name.'), findsOneWidget);
     expect(find.text('Enter your email address.'), findsOneWidget);
@@ -62,26 +72,26 @@ void main() {
     await tester.enterText(fields.at(1), 'fathima@example.com');
     await tester.enterText(fields.at(2), '+919876543210');
     await tester.ensureVisible(find.text('Mobile App'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.text('Mobile App'));
     await tester.ensureVisible(find.text('Content Feature'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.text('Content Feature'));
     await tester.ensureVisible(find.text('Feature Title'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 300));
     await tester.enterText(fields.at(3), 'Add bookmarking');
     await tester.ensureVisible(find.text('Description'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 300));
     await tester.enterText(fields.at(4), 'Please add bookmarking for ayahs.');
 
     await tester.ensureVisible(
       find.byKey(const ValueKey('feature-request-submit-button')),
     );
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(
       find.byKey(const ValueKey('feature-request-submit-button')),
     );
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 300));
 
     expect(api.featureRequestSubmission, isNotNull);
     expect(api.featureRequestSubmission!.name, 'Fathima Zahra');

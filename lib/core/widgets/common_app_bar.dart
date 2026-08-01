@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -27,6 +28,9 @@ class CommonWebAppBarActions extends StatefulWidget {
     this.isBookmarkNeeded = true,
     this.mobileBreakpoint = 640,
     this.showLanguageButton = true,
+    this.showThemeButton = true,
+    this.showHome = true,
+    this.settingsLast = false,
   });
 
   final int? selectedPageIndex;
@@ -37,6 +41,16 @@ class CommonWebAppBarActions extends StatefulWidget {
   final bool showLabels;
   final bool isBookmarkNeeded;
   final bool showLanguageButton;
+  final bool showThemeButton;
+
+  /// Whether to include the Home nav item. Set `false` where the app bar's
+  /// brand logo already navigates home (e.g. narrow mobile-web views, where
+  /// the row has no room for a redundant item).
+  final bool showHome;
+
+  /// Whether the Settings item renders after the Search item instead of
+  /// before it.
+  final bool settingsLast;
 
   /// Width below which the inline Home/Bookmarks/Settings/Search nav items
   /// hide from this row (relocating to a bottom nav bar instead). Callers
@@ -50,10 +64,13 @@ class CommonWebAppBarActions extends StatefulWidget {
 }
 
 class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
+  static const int _settingsPageIndex = 3;
+
   bool get isBookmarkNeed => widget.isBookmarkNeeded;
 
   List<({String label, int pageIndex, String assetPath})> get _navItems => [
-    (label: 'Home', pageIndex: 0, assetPath: 'assets/icons/home-img.png'),
+    if (widget.showHome)
+      (label: 'Home', pageIndex: 0, assetPath: 'assets/icons/home-img.png'),
 
     // Clean, direct Collection-If implementation
     if (isBookmarkNeed)
@@ -182,6 +199,34 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
     return url != null ? HoverLink(url: url, child: button) : button;
   }
 
+  Widget _buildNavItemButton(
+    ({String label, int pageIndex, String assetPath}) item, {
+    required double iconSize,
+    required Color accentColor,
+  }) {
+    final isActive =
+        widget.selectedPageIndex == item.pageIndex ||
+        _hoveredPageIndices.contains(item.pageIndex);
+    return _buildToolbarButton(
+      label: item.label,
+      isSelected: widget.selectedPageIndex == item.pageIndex,
+      isHovered: _hoveredPageIndices.contains(item.pageIndex),
+      onTap: () => widget.onPageSelected(item.pageIndex),
+      onHover: (hovered) => _setHoveredPage(item.pageIndex, hovered),
+      url: switch (item.pageIndex) {
+        0 => '/',
+        1 => '/bookmarks',
+        _ => null,
+      },
+      icon: Image.asset(
+        item.assetPath,
+        width: iconSize,
+        height: iconSize,
+        color: accentColor.withValues(alpha: isActive ? 1.0 : 0.78),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     const accentColor = AppTheme.appBarForegroundColor;
@@ -194,35 +239,26 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
     // toolbar button style.
     final isMobileWidth =
         MediaQuery.sizeOf(context).width < widget.mobileBreakpoint;
+    // With [settingsLast] the Settings item trails Search instead of sitting
+    // between the other destinations and it.
+    final trailingItems = widget.settingsLast
+        ? _navItems.where((item) => item.pageIndex == _settingsPageIndex)
+        : const Iterable<
+            ({String label, int pageIndex, String assetPath})
+          >.empty();
+    final leadingItems = widget.settingsLast
+        ? _navItems.where((item) => item.pageIndex != _settingsPageIndex)
+        : _navItems;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         if (!isMobileWidth) ...[
-          for (final item in _navItems)
-            _buildToolbarButton(
-              label: item.label,
-              isSelected: widget.selectedPageIndex == item.pageIndex,
-              isHovered: _hoveredPageIndices.contains(item.pageIndex),
-              onTap: () => widget.onPageSelected(item.pageIndex),
-              onHover: (hovered) => _setHoveredPage(item.pageIndex, hovered),
-              url: switch (item.pageIndex) {
-                0 => '/',
-                1 => '/bookmarks',
-                _ => null,
-              },
-              icon: Image.asset(
-                item.assetPath,
-                width: iconSize,
-                height: iconSize,
-                color: accentColor.withValues(
-                  alpha:
-                      widget.selectedPageIndex == item.pageIndex ||
-                          _hoveredPageIndices.contains(item.pageIndex)
-                      ? 1.0
-                      : 0.78,
-                ),
-              ),
+          for (final item in leadingItems)
+            _buildNavItemButton(
+              item,
+              iconSize: iconSize,
+              accentColor: accentColor,
             ),
           if (widget.showSearch)
             _buildToolbarButton(
@@ -242,19 +278,28 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
                 height: iconSize,
               ),
             ),
+          for (final item in trailingItems)
+            _buildNavItemButton(
+              item,
+              iconSize: iconSize,
+              accentColor: accentColor,
+            ),
         ],
-        _buildToolbarButton(
-          label: isDark ? 'Light' : 'Dark',
-          isSelected: false,
-          isHovered: _isThemeHovered,
-          onTap: () => themeProvider.toggleTheme(),
-          onHover: _setThemeHovered,
-          icon: Icon(
-            isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
-            size: iconSize,
-            color: accentColor.withValues(alpha: _isThemeHovered ? 1.0 : 0.78),
+        if (widget.showThemeButton)
+          _buildToolbarButton(
+            label: isDark ? 'Light' : 'Dark',
+            isSelected: false,
+            isHovered: _isThemeHovered,
+            onTap: () => themeProvider.toggleTheme(),
+            onHover: _setThemeHovered,
+            icon: Icon(
+              isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+              size: iconSize,
+              color: accentColor.withValues(
+                alpha: _isThemeHovered ? 1.0 : 0.78,
+              ),
+            ),
           ),
-        ),
         if (widget.showLanguageButton) ...[
           const SizedBox(width: 6),
           AppBarLanguageButton(showText: widget.showLabels, iconSize: iconSize),
@@ -271,11 +316,31 @@ class CommonAppBar {
   // Change this constant to compare both rendering modes.
   static const _appBarLogoClarityMode = _AppBarLogoClarityMode.highQuality;
 
+  /// Web width below which the brand logo is dropped from the app bar, freeing
+  /// the row for the title/controls on mobile-width web views.
+  static const _brandLogoBreakpoint = 640.0;
+
+  /// Whether the brand logo should be omitted from the app bar for the current
+  /// viewport. Callers that lay the logo out themselves (e.g. inside a title
+  /// widget) should check this so they skip its slot as well.
+  ///
+  /// Pass [keepOnMobile] on the home screen, which keeps its branding at every
+  /// width; every other screen gives the row up to its own title/controls.
+  static bool hideBrandLogo(BuildContext context, {bool keepOnMobile = false}) =>
+      !keepOnMobile &&
+      kIsWeb &&
+      MediaQuery.sizeOf(context).width < _brandLogoBreakpoint;
+
   static Widget _brandLogoTapTarget(
     BuildContext context, {
     double? height,
     VoidCallback? onTap,
+    bool keepOnMobile = false,
   }) {
+    if (hideBrandLogo(context, keepOnMobile: keepOnMobile)) {
+      return const SizedBox.shrink();
+    }
+
     final scale = ResponsiveHelper.scaleFactor(context);
     final logoHeight = height ?? 40 * scale;
     const isHighQualityMode =
@@ -326,10 +391,16 @@ class CommonAppBar {
     Alignment alignment = Alignment.centerLeft,
     double? height,
     VoidCallback? onTap,
+    bool keepOnMobile = false,
   }) {
     return Align(
       alignment: alignment,
-      child: _brandLogoTapTarget(context, height: height, onTap: onTap),
+      child: _brandLogoTapTarget(
+        context,
+        height: height,
+        onTap: onTap,
+        keepOnMobile: keepOnMobile,
+      ),
     );
   }
 
@@ -360,6 +431,7 @@ class CommonAppBar {
     List<Widget>? actions,
     PreferredSizeWidget? bottom,
     bool showLanguageButton = true,
+    bool keepBrandLogoOnMobile = false,
   }) {
     final scale = ResponsiveHelper.scaleFactor(ctx);
     final ornamentTop = -48.0 * scale;
@@ -401,7 +473,12 @@ class CommonAppBar {
           start: leadingWidth + NavigationToolbar.kMiddleSpacing,
           top: 0,
           bottom: 0,
-          child: Center(child: _brandLogoTapTarget(ctx)),
+          child: Center(
+            child: _brandLogoTapTarget(
+              ctx,
+              keepOnMobile: keepBrandLogoOnMobile,
+            ),
+          ),
         ),
     ];
 
@@ -419,7 +496,7 @@ class CommonAppBar {
           : Stack(
               alignment: AlignmentGeometry.center,
               children: [
-                brandLogo(ctx),
+                brandLogo(ctx, keepOnMobile: keepBrandLogoOnMobile),
                 const SizedBox(width: 8),
                 Text(title, style: titleStyle ?? AppTextTheme.titleRegular),
               ],

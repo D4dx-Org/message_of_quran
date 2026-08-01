@@ -68,18 +68,7 @@ class CommonDrawer extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _DrawerBrandHeader(
-                onSupportTap: () async {
-                  try {
-                    await launchUrl(
-                      Uri.parse(' '),
-                      mode: LaunchMode.externalApplication,
-                    );
-                  } catch (e) {
-                    debugPrint('Drawer: failed to launch donate URL - $e');
-                  }
-                },
-              ),
+              const _DrawerBrandHeader(),
               Expanded(
                 child: SingleChildScrollView(
                   padding: EdgeInsets.only(top: 1 * scale, bottom: 8 * scale),
@@ -232,6 +221,15 @@ class CommonDrawer extends StatelessWidget {
                         },
                       ),
                       _DrawerTile(
+                        title: 'Feature Request',
+                        icon: Icons.lightbulb_outline_rounded,
+                        url: '/feature-request',
+                        onTap: () {
+                          Navigator.pop(context);
+                          _navigateFromDrawer(context, '/feature-request');
+                        },
+                      ),
+                      _DrawerTile(
                         title: 'Contact Us',
                         icon: Icons.chat_bubble_outline,
                         url: '/contact-us',
@@ -334,9 +332,7 @@ class _HalfMoonClipper extends CustomClipper<Path> {
 }
 
 class _DrawerBrandHeader extends StatelessWidget {
-  const _DrawerBrandHeader({required this.onSupportTap});
-
-  final VoidCallback onSupportTap;
+  const _DrawerBrandHeader();
 
   @override
   Widget build(BuildContext context) {
@@ -402,44 +398,6 @@ class _DrawerBrandHeader extends StatelessWidget {
                             semanticLabel: 'The Message of the Quran logo text',
                           ),
                         ],
-                      ),
-                    ),
-                    SizedBox(height: 18 * scale),
-                    SizedBox(
-                      key: const ValueKey('drawer-support-button-box'),
-                      // width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: onSupportTap,
-                        label: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: Text(
-                            'Support Us',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              color: headerAccent,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: headerAccent,
-                          backgroundColor: Colors.white.withValues(
-                            alpha: isDarkMode(context: context) ? 0.04 : 0.02,
-                          ),
-                          side: BorderSide(
-                            color: headerAccent.withValues(alpha: 0.92),
-                            width: 1.5,
-                          ),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 20 * scale,
-                            vertical: 12 * scale,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(999),
-                          ),
-                          textStyle: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
                       ),
                     ),
                   ],

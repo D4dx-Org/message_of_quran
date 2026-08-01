@@ -1210,7 +1210,9 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
         displayText?.title ?? (widget.isMalayalam ? 'സൂറ' : 'Surah');
 
     final screenWidth = MediaQuery.sizeOf(context).width;
-    // On narrow screens show only the surah number to prevent overflow.
+    // Narrow screens keep the tighter padding/font, but still carry the surah
+    // name — the label ellipsizes within [surahChipMaxWidth] rather than being
+    // dropped down to a bare number.
     final narrowChip = screenWidth < 640;
 
     const white = Colors.white;
@@ -1221,7 +1223,7 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
     // just scales the *cap* with screen width instead of a flat constant, so
     // it has more room on wide screens and stays tight on narrow ones.
     final double surahChipMaxWidth = narrowChip
-        ? 44.0
+        ? (screenWidth * 0.42).clamp(96.0, 180.0)
         : (screenWidth * 0.22).clamp(120.0, 220.0);
 
     Widget chip({
@@ -1277,46 +1279,37 @@ class _SurahJumpButtonState extends State<SurahJumpButton> {
       );
     }
 
-    // Web: surah and ayah jump are two independent controls, not tabs of one
-    // combined sheet.
-    if (kIsWeb) {
-      final surahChipLabel = narrowChip
-          ? '${widget.currentSurahNumber}'
-          : '${widget.currentSurahNumber}. $surahLabel';
-      final ayahChipLabel = '$_selectedAyah';
+    // Surah and ayah jump are two independent controls, not tabs of one
+    // combined sheet — same on web and mobile.
+    final surahChipLabel = '${widget.currentSurahNumber}. $surahLabel';
+    final ayahChipLabel = widget.isMalayalam
+        ? 'ആയത്ത് $_selectedAyah'
+        : 'Ayah $_selectedAyah';
 
-      return Padding(
-        padding: EdgeInsets.all(4 * scale),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            chip(
+    return Padding(
+      padding: EdgeInsets.all(4 * scale),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Flexible so the pair degrades to an ellipsized surah label instead
+          // of overflowing the app bar's title slot on narrow phones.
+          Flexible(
+            child: chip(
               label: surahChipLabel,
               semanticsLabel: 'Jump to surah',
               maxWidth: surahChipMaxWidth,
               onTap: (chipContext) => _openSheet(chipContext, lockedTab: 0),
             ),
-            SizedBox(width: 6 * scale),
-            chip(
-              label: ayahChipLabel,
-              semanticsLabel: 'Jump to ayah',
-              maxWidth: narrowChip ? 44 : 110,
-              onTap: (chipContext) => _openSheet(chipContext, lockedTab: 1),
-            ),
-          ],
-        ),
-      );
-    }
-
-    final chipLabel = narrowChip
-        ? '${widget.currentSurahNumber}'
-        : '${widget.currentSurahNumber}. $surahLabel';
-
-    return chip(
-      label: chipLabel,
-      semanticsLabel: 'Jump to surah or ayah',
-      maxWidth: surahChipMaxWidth,
-      onTap: (chipContext) => _openSheet(chipContext),
+          ),
+          SizedBox(width: 6 * scale),
+          chip(
+            label: ayahChipLabel,
+            semanticsLabel: 'Jump to ayah',
+            maxWidth: narrowChip ? 90 : 110,
+            onTap: (chipContext) => _openSheet(chipContext, lockedTab: 1),
+          ),
+        ],
+      ),
     );
   }
 }

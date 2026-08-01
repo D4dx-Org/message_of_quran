@@ -462,8 +462,11 @@ class _SurahScreenState extends State<SurahScreen> {
   }
 
   Widget _buildSurahAppBarTitleControls(SurahProvider controller) {
+    final hideLogo = CommonAppBar.hideBrandLogo(context);
+
     if (controller.surahList.isEmpty ||
         controller.index >= controller.surahList.length) {
+      if (hideLogo) return const SizedBox.shrink();
       return Padding(
         padding: const EdgeInsets.only(left: 10),
         child: CommonAppBar.brandLogo(
@@ -480,8 +483,14 @@ class _SurahScreenState extends State<SurahScreen> {
         _lastKnownAyahStart ??
         (controller.arabicBlockList.firstOrNull?.verseFrom ?? 1);
 
+    // Without the logo anchoring the row's start (mobile web), the chips read
+    // better centred in the title slot than hugging the drawer button.
+    final chipAlignment = hideLogo ? Alignment.center : Alignment.centerLeft;
+
     return Padding(
-      padding: const EdgeInsets.only(left: 10),
+      padding: hideLogo
+          ? const EdgeInsets.symmetric(horizontal: 10)
+          : const EdgeInsets.only(left: 10),
       child: LayoutBuilder(
         builder: (context, constraints) {
           final maxWidth = constraints.maxWidth;
@@ -504,17 +513,19 @@ class _SurahScreenState extends State<SurahScreen> {
           if (!isNarrowTitleArea) {
             // Desktop/tablet: keep controls at the start (near logo), not centered.
             return Align(
-              alignment: Alignment.centerLeft,
+              alignment: chipAlignment,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  CommonAppBar.brandLogo(
-                    context,
-                    height: logoHeight,
-                    onTap: () => _navigateToMainTab(0),
-                  ),
-                  SizedBox(width: interItemGap),
+                  if (!hideLogo) ...[
+                    CommonAppBar.brandLogo(
+                      context,
+                      height: logoHeight,
+                      onTap: () => _navigateToMainTab(0),
+                    ),
+                    SizedBox(width: interItemGap),
+                  ],
                   chip,
                 ],
               ),
@@ -526,25 +537,29 @@ class _SurahScreenState extends State<SurahScreen> {
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Flexible(
-                fit: FlexFit.tight,
-                child: SizedBox(
-                  height: logoHeight,
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: CommonAppBar.brandLogo(
-                      context,
-                      height: logoHeight,
-                      onTap: () => _navigateToMainTab(0),
+              if (!hideLogo) ...[
+                Flexible(
+                  fit: FlexFit.tight,
+                  child: SizedBox(
+                    height: logoHeight,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: CommonAppBar.brandLogo(
+                        context,
+                        height: logoHeight,
+                        onTap: () => _navigateToMainTab(0),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(width: interItemGap),
+                SizedBox(width: interItemGap),
+              ],
               Flexible(
-                fit: FlexFit.loose,
-                child: Align(alignment: Alignment.centerLeft, child: chip),
+                // Tight so the Align has the full remaining width to centre
+                // within; loose would shrink-wrap the chips and no-op it.
+                fit: hideLogo ? FlexFit.tight : FlexFit.loose,
+                child: Align(alignment: chipAlignment, child: chip),
               ),
             ],
           );

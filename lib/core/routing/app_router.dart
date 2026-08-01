@@ -9,6 +9,7 @@ import 'package:the_message_of_the_quran/features/author_screen/presentation/eng
 import 'package:the_message_of_the_quran/features/author_screen/presentation/translator_screen.dart';
 import 'package:the_message_of_the_quran/features/ayah_of_the_day/presentation/ayah_of_the_day_screen.dart';
 import 'package:the_message_of_the_quran/features/bookmark_screen/presentation/bookmark_screen.dart';
+import 'package:the_message_of_the_quran/features/common_email/presentation/feature_request_screen.dart';
 import 'package:the_message_of_the_quran/features/common_email/presentation/feedback_screen.dart';
 import 'package:the_message_of_the_quran/features/contact_us_screen/presentation/contact_us_screen.dart';
 import 'package:the_message_of_the_quran/features/force_update_screen/presentation/force_update_screen.dart';
@@ -181,6 +182,11 @@ GoRouter buildAppRouter() {
         path: '/contact-us',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const ContactUsScreen(),
+      ),
+      GoRoute(
+        path: '/feature-request',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const FeatureRequestScreen(),
       ),
       GoRoute(
         path: '/ayah-of-the-day',
