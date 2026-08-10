@@ -47,18 +47,13 @@ class InterpretationsDbHelper {
     final db = DatabaseHelper.quranAsadMalayalamDb;
     if (db == null) return [];
     try {
-      // malayalam_footnotes has two overlapping numbering groups:
-      //   Global (surahs 1–6):  id = footnote_number
-      //   Local  (surahs 7–114): id > footnote_number
-      // Use surahNumber to restrict to the correct group so the same
-      // footnote_number value doesn't return the wrong surah's footnote.
-      final isGlobal = surahNumber <= 6;
+      // malayalam_footnotes is scoped by surah and numbered from 1 within each
+      // surah, so the pair (surah_number, footnote_number) is unique.
       final rows = await db.query(
         DbConstants.mlFootnotesTable,
-        where: isGlobal
-            ? '${DbConstants.mlFootnoteNumber} = ? AND ${DbConstants.mlFootnoteId} = ${DbConstants.mlFootnoteNumber}'
-            : '${DbConstants.mlFootnoteNumber} = ? AND ${DbConstants.mlFootnoteId} != ${DbConstants.mlFootnoteNumber}',
-        whereArgs: [ayahNumber],
+        where:
+            '${DbConstants.mlFootnoteSurahNumber} = ? AND ${DbConstants.mlFootnoteNumber} = ?',
+        whereArgs: [surahNumber, ayahNumber],
         orderBy: '${DbConstants.mlFootnoteId} ASC',
         limit: 1,
       );
@@ -108,27 +103,18 @@ class InterpretationsDbHelper {
     final db = DatabaseHelper.quranAsadMalayalamDb;
     if (db == null) return {'min': -1, 'max': -1};
     try {
-      // Extract footnote numbers from verse text [^N] markers for this surah
-      final rows = await db.query(
-        DbConstants.mlVersesTable,
-        columns: [DbConstants.mlVersesMalayalamTranslation],
-        where: '${DbConstants.mlVersesSurahId} = ?',
-        whereArgs: [surahNumber],
+      final result = await db.rawQuery(
+        'SELECT MIN(${DbConstants.mlFootnoteNumber}) as min_num,'
+        ' MAX(${DbConstants.mlFootnoteNumber}) as max_num'
+        ' FROM ${DbConstants.mlFootnotesTable}'
+        ' WHERE ${DbConstants.mlFootnoteSurahNumber} = ?',
+        [surahNumber],
       );
-      final pattern = RegExp(r'\[\^?(\d+)\]');
-      int minNum = -1;
-      int maxNum = -1;
-      for (final row in rows) {
-        final text = (row[DbConstants.mlVersesMalayalamTranslation] as String?) ?? '';
-        for (final match in pattern.allMatches(text)) {
-          final num = int.tryParse(match.group(1)!);
-          if (num != null) {
-            if (minNum == -1 || num < minNum) minNum = num;
-            if (maxNum == -1 || num > maxNum) maxNum = num;
-          }
-        }
-      }
-      return {'min': minNum, 'max': maxNum};
+      if (result.isEmpty) return {'min': -1, 'max': -1};
+      return {
+        'min': (result.first['min_num'] as int?) ?? -1,
+        'max': (result.first['max_num'] as int?) ?? -1,
+      };
     } catch (e) {
       debugPrint('InterpretationsDB: Malayalam bounds query failed — $e');
       return {'min': -1, 'max': -1};

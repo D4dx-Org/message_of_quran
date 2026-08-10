@@ -1860,7 +1860,7 @@ class _SurahScreenState extends State<SurahScreen> {
                     } else {
                       spans.add(
                         buildInterpretationNoteMarkerSpan(
-                          number: num - controller.mlFootnoteMinNumber + 1,
+                          number: num,
                           onTap: () => _showInterpretationSheet(
                             context,
                             controller,
@@ -2127,11 +2127,8 @@ class _SurahScreenState extends State<SurahScreen> {
                           ctrl.currentInterpretationNumber > 0
                           ? ctrl.currentInterpretationNumber
                           : (pageNumber ?? -1);
-                      final displayInterpretationNumber = isMalayalam
-                          ? headerInterpretationNumber -
-                                ctrl.mlFootnoteMinNumber +
-                                1
-                          : headerInterpretationNumber;
+                      final displayInterpretationNumber =
+                          headerInterpretationNumber;
                       final surahHeader = formatInterpretationSheetSurahHeader(
                         isMalayalam: isMalayalam,
                         surah: surah,
@@ -2278,9 +2275,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                         ),
                                         if (!isLoading && hasBounds)
                                           Text(
-                                            isMalayalam
-                                                ? '${ctrl.currentInterpretationNumber - ctrl.mlFootnoteMinNumber + 1} / ${ctrl.maxInterpretationNumber - ctrl.mlFootnoteMinNumber + 1}'
-                                                : '${ctrl.currentInterpretationNumber} / ${ctrl.maxInterpretationNumber}',
+                                            '${ctrl.currentInterpretationNumber} / ${ctrl.maxInterpretationNumber}',
                                             style: TextStyle(
                                               fontSize: 13,
                                               color: activeColor,

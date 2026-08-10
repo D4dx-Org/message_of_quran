@@ -244,6 +244,7 @@ class DbConstants {
   static const String mlFootnoteId = "id";
   static const String mlFootnoteNumber = "footnote_number";
   static const String mlFootnoteContent = "content";
+  static const String mlFootnoteSurahNumber = "surah_number";
 
   // ─── malayalam_surahs ───
   static const String mlSurahsTable = "malayalam_surahs";

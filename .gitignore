@@ -53,3 +53,4 @@ app.*.map.json
 # /assets/db/
 changelogs/
 claude.md
+/db data/
