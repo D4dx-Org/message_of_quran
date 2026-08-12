@@ -79,11 +79,11 @@ dependency_overrides:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/new-logo.png"
+  image_path: "tool/branding/new-logo.png"
   min_sdk_android: 21
   remove_alpha_ios: true
   adaptive_icon_background: "#1B3A5C"
-  adaptive_icon_foreground: "assets/images/new-logo.png"
+  adaptive_icon_foreground: "tool/branding/new-logo.png"
   web:
     generate: true
   windows:
@@ -107,9 +107,6 @@ flutter:
     - assets/icons/
     - assets/icons/revamp/
     - assets/google_fonts/
-    - assets/db/quran_asad_combined_nw.sqlite
-    - assets/db/DB.db
-    - assets/db/quran_tajweed_data/output/quran_tajweed_complete.json
     - assets/data/
     - shorebird.yaml
     - assets/fonts/QCF_BSML.TTF

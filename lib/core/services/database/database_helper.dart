@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:the_message_of_the_quran/core/constants/db_constants.dart';
 import 'package:the_message_of_the_quran/features/progression_tracker/data/progression_db_helper.dart';
@@ -29,12 +28,8 @@ class DatabaseHelper {
   DatabaseHelper._internal();
   static final DatabaseHelper _instance = DatabaseHelper._internal();
 
-  static Database? quranAsadDb;
-
-  /// The English (Asad) and Malayalam content now live in a single combined
-  /// database (`quran_asad_combined_nw.sqlite`). This alias keeps the existing
-  /// Malayalam helpers working against the same handle.
-  static Database? get quranAsadMalayalamDb => quranAsadDb;
+  /// Holds bookmarks and progressions only. The Qur'an content is served by the
+  /// backend, so no content database is bundled or opened any more.
   static Database? userDatabase;
 
   static Completer<void>? _initCompleter;
@@ -61,44 +56,8 @@ class DatabaseHelper {
 
     // Close any previously open connections (handles hot restart)
     await _closeAll();
-    final prefs = await SharedPreferences.getInstance();
 
-    // ── quran_asad_combined_nw.sqlite (English + Malayalam) ──
-    final storedAsadVersion =
-        prefs.getInt(DbConstants.quranAsadDbVersionKey) ?? 0;
-    final shouldRefreshAsadBundle =
-      storedAsadVersion < DbConstants.quranAsadDbVersion;
-    if (shouldRefreshAsadBundle) {
-      final asadPath = await _databasePathFor(DbConstants.quranAsadDbName);
-      // Delete the old database and its journal files
-      await db_io.deleteFileIfExists(asadPath);
-      await db_io.deleteWalShmFiles(asadPath);
-    }
-
-    quranAsadDb = await initDatabase(
-      name: DbConstants.quranAsadDbName,
-      dbName: DbConstants.quranAsadDbName,
-      forceAssetRefresh: shouldRefreshAsadBundle,
-    );
-    if (!await _hasExpectedBundledMalayalamRows(quranAsadDb!)) {
-      final asadPath = await _databasePathFor(DbConstants.quranAsadDbName);
-      debugPrint(
-        'database helper : Persisted bundled DB is stale; refreshing from asset',
-      );
-      await quranAsadDb!.close();
-      quranAsadDb = null;
-      await db_io.deleteFileIfExists(asadPath);
-      await db_io.deleteWalShmFiles(asadPath);
-      quranAsadDb = await initDatabase(
-        name: DbConstants.quranAsadDbName,
-        dbName: DbConstants.quranAsadDbName,
-        forceAssetRefresh: true,
-      );
-    }
-    await prefs.setInt(
-      DbConstants.quranAsadDbVersionKey,
-      DbConstants.quranAsadDbVersion,
-    );
+    await _removeBundledContentDatabase();
 
     final userDbPath = await _databasePathFor(DbConstants.userDbName);
     userDatabase = await openDatabase(
@@ -159,82 +118,42 @@ class DatabaseHelper {
   }
 
   static Future<void> _closeAll() async {
-    for (final db in [quranAsadDb, userDatabase]) {
-      if (db != null && db.isOpen) {
-        try {
-          await db.close();
-        } catch (e) {
-          debugPrint('DB: close failed — $e');
-        }
+    final db = userDatabase;
+    if (db != null && db.isOpen) {
+      try {
+        await db.close();
+      } catch (e) {
+        debugPrint('DB: close failed — $e');
       }
     }
-    quranAsadDb = null;
     userDatabase = null;
   }
 
-  static Future<bool> _hasExpectedBundledMalayalamRows(Database db) async {
-    // Sentinel rows from the refreshed bundled DB. If these are empty,
-    // the persisted copy predates the latest asset sync.
-    final rows = await db.rawQuery(
-      'SELECT COUNT(*) AS row_count '
-      'FROM malayalam_verses '
-      'WHERE ('
-      '(surah_id = 3 AND verse_number IN (82, 93)) '
-      'OR (surah_id = 10 AND verse_number = 62)'
-      ') '
-      'AND malayalam_translation IS NOT NULL '
-      "AND TRIM(malayalam_translation) != ''",
-    );
-
-    final count = rows.first['row_count'];
-    final rowCount = switch (count) {
-      int value => value,
-      num value => value.toInt(),
-      String value => int.tryParse(value) ?? 0,
-      _ => 0,
+  /// Earlier versions copied two bundled databases onto the device: the ~52 MB
+  /// Qur'an content and the ~15 MB mushaf page data. Both are served by the
+  /// backend now, so any leftover copy is dead weight and is deleted once on
+  /// the first launch after upgrading.
+  static Future<void> _removeBundledContentDatabase() async {
+    const obsolete = <String, String>{
+      DbConstants.quranAsadDbVersionKey: DbConstants.quranAsadDbName,
+      // LocalDatabase's own key and the name it copied assets/db/DB.db to.
+      'mushaf_db_version': 'mushaf_DB.db',
     };
 
-    return rowCount == 3;
-  }
+    final prefs = await SharedPreferences.getInstance();
+    for (final entry in obsolete.entries) {
+      if (!prefs.containsKey(entry.key)) continue;
 
-  static Future<Database> initDatabase({
-    required String name,
-    required String dbName,
-    bool forceAssetRefresh = false,
-  }) async {
-    final path = await _databasePathFor(name);
+      try {
+        final path = await _databasePathFor(entry.value);
+        await db_io.deleteFileIfExists(path);
+        await db_io.deleteWalShmFiles(path);
+        debugPrint('database helper : Removed obsolete ${entry.value}');
+      } catch (e) {
+        debugPrint('database helper : Could not remove ${entry.value} — $e');
+      }
 
-    Future<void> copyFromAsset() async {
-      final data = await rootBundle.load(join(DbConstants.dbLocation, dbName));
-      final bytes = data.buffer.asUint8List(
-        data.offsetInBytes,
-        data.lengthInBytes,
-      );
-      await db_io.writeAssetDatabase(path, bytes);
-    }
-
-    // Remove stale WAL/SHM files on startup — they cause
-    // SQLITE_CANTOPEN (error 14) on iOS when bundled from macOS.
-    if (!kIsWeb) {
-      await db_io.deleteWalShmFiles(path);
-    }
-
-    final exists = await db_io.databaseExistsAt(path);
-    if (forceAssetRefresh || !exists) {
-      debugPrint(
-        forceAssetRefresh
-            ? "database helper : Refreshing bundled database from asset"
-            : "database helper : Creating new copy from asset",
-      );
-      await copyFromAsset();
-    }
-
-    try {
-      return await openDatabase(path, readOnly: !kIsWeb);
-    } catch (e) {
-      debugPrint("database helper : Re-copying asset due to open failure: $e");
-      await copyFromAsset();
-      return await openDatabase(path, readOnly: !kIsWeb);
+      await prefs.remove(entry.key);
     }
   }
 

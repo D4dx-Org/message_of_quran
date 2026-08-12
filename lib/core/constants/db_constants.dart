@@ -5,7 +5,6 @@ class DbConstants {
 
   /// Database names
   static const String userDbName = "user_data.db";
-  static const String dbLocation = "assets/db";
 
   // ─── Table names ───
   static const String surasTable = "suras";
@@ -103,11 +102,12 @@ class DbConstants {
   static const String prefaceSuraId = "sura_id";
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // quran_asad_combined_nw.sqlite database (single combined English + Malayalam)
+  // Obsolete bundled content database. The content is served by the backend
+  // now; these two are kept only to find and delete the copy that earlier
+  // versions left on the device.
   // ═══════════════════════════════════════════════════════════════════════════
   static const String quranAsadDbName = "quran_asad_combined_nw.sqlite";
   static const String quranAsadDbVersionKey = 'quran_asad_db_version';
-  static const int quranAsadDbVersion = 26;
 
   // ─── Table names (quran_asad.sqlite) ───
   static const String asadSurahsTable = "surahs";

@@ -1,7 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:the_message_of_the_quran/core/services/api/moq_api_client.dart';
 
 final RegExp _leadingBasmalaHtmlRegex = RegExp(
   r'^\s*'
@@ -37,50 +35,61 @@ String _stripLeadingBasmalaHtml(String html) {
   return stripped.replaceFirst(_leadingTajweedInnerSpaceRegex, r'$1');
 }
 
-/// Loads the bundled colour-coded Tajweed data (quran.com style) and exposes a
-/// `verseKey -> text_tajweed_html` lookup plus a parser that turns that HTML
-/// into coloured [InlineSpan]s.
+/// Fetches the colour-coded Tajweed data (quran.com style) from the backend and
+/// exposes a `verseKey -> text_tajweed_html` lookup plus a parser that turns
+/// that HTML into coloured [InlineSpan]s.
+///
+/// The whole book is ~5.5 MB, so it is loaded a surah at a time and cached for
+/// the app lifetime. Call [loadSurahs] before reading, then use the synchronous
+/// [htmlFor] / [displayHtmlFor] while building.
 ///
 /// This is a temporary, font/colour based replacement for the image-download
 /// based Tajweed renderer.
 class TajweedHtmlService {
   TajweedHtmlService._();
 
-  static const _assetPath =
-      'assets/db/quran_tajweed_data/output/quran_tajweed_complete.json';
-
   // verseKey ("surah:ayah") -> text_tajweed_html
-  static Map<String, String>? _verseHtml;
-  static Future<void>? _loading;
+  static final Map<String, String> _verseHtml = {};
+  static final Set<int> _loaded = {};
+  static final Map<int, Future<void>> _inFlight = {};
 
-  /// Ensures the JSON asset is parsed once and cached for the app lifetime.
-  static Future<void> ensureLoaded() {
-    if (_verseHtml != null) return Future<void>.value();
-    return _loading ??= _load();
+  /// Fetches any of [surahs] not already cached. Safe to call repeatedly; a
+  /// surah is only requested once even if several widgets ask at the same time.
+  static Future<void> loadSurahs(Iterable<int> surahs) {
+    final pending = surahs.toSet()
+      ..removeWhere((surah) => _loaded.contains(surah) || surah <= 0);
+    if (pending.isEmpty) return Future<void>.value();
+    return Future.wait(pending.map(_loadSurah));
   }
 
-  static Future<void> _load() async {
-    final raw = await rootBundle.loadString(_assetPath);
-    final decoded = json.decode(raw) as Map<String, dynamic>;
-    final map = <String, String>{};
-    for (final value in decoded.values) {
-      if (value is! Map<String, dynamic>) continue;
-      final verses = value['verses'];
-      if (verses is! List) continue;
-      for (final v in verses) {
-        if (v is! Map<String, dynamic>) continue;
-        final key = v['verse_key'];
-        final html = v['text_tajweed_html'];
-        if (key is String && html is String) {
-          map[key] = html;
-        }
+  static Future<void> _loadSurah(int surah) {
+    final existing = _inFlight[surah];
+    if (existing != null) return existing;
+
+    final future = _fetchSurah(surah);
+    _inFlight[surah] = future;
+    return future;
+  }
+
+  static Future<void> _fetchSurah(int surah) async {
+    try {
+      final rows = await MoqApiClient.instance.getList(
+        '/tajweed/html',
+        query: {'surah': surah},
+      );
+      for (final row in rows) {
+        final key = row['verse_key'];
+        final html = row['text_tajweed_html'];
+        if (key is String && html is String) _verseHtml[key] = html;
       }
+      if (rows.isNotEmpty) _loaded.add(surah);
+    } finally {
+      _inFlight.remove(surah);
     }
-    _verseHtml = map;
   }
 
   /// Returns the raw Tajweed HTML for a verse, or null if not loaded/missing.
-  static String? htmlFor(int surah, int ayah) => _verseHtml?['$surah:$ayah'];
+  static String? htmlFor(int surah, int ayah) => _verseHtml['$surah:$ayah'];
 
   /// Like [htmlFor], but for the first verse of a surah it strips the leading
   /// Basmala so it is not shown twice alongside the decorative Bismillah header.

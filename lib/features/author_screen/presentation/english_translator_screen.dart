@@ -10,6 +10,7 @@ import 'package:the_message_of_the_quran/core/routing/app_router.dart';
 import 'package:the_message_of_the_quran/core/services/database/database_ready_notifier.dart';
 import 'package:the_message_of_the_quran/features/author_screen/provider/english_translator_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
+import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
 
 class EnglishTranslatorScreen extends StatefulWidget {
   const EnglishTranslatorScreen({super.key});
@@ -136,7 +137,7 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen>
                       ),
                     ),
                   BioWithFloatingImage(
-                    imagePath: 'assets/images/kc-saleem.png',
+                    imagePath: '${ApiConstants.imageCdnBaseUrl}/kc-saleem.png',
                     thumbnailPath: 'assets/images/kc-saleem_thumb.png',
                     bioText: (translator.bio != null &&
                             translator.bio!.isNotEmpty)

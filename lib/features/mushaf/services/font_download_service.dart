@@ -7,7 +7,8 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
-import '../db/local_database.dart';
+import 'package:the_message_of_the_quran/core/services/api/moq_api_client.dart';
+
 import 'mushaf_install_state.dart';
 
 /// Downloads and installs the Mushaf font pack (pages 3–604).
@@ -172,17 +173,8 @@ class FontDownloadService {
     if (await tempFile.exists()) await tempFile.delete();
   }
 
-  Future<List<String>> _getPendingZipNames() async {
-    final db = await LocalDatabase.instance.database;
-    final rows = await db.rawQuery(
-      "SELECT DISTINCT fontzip FROM t_linewise_page "
-      "WHERE fontstatus=0 AND fontzip != 'f0' "
-      "ORDER BY fontzip",
-    );
-    return rows
-        .map((r) => (r['fontzip'] as Object).toString())
-        .toList(growable: false);
-  }
+  Future<List<String>> _getPendingZipNames() =>
+      MoqApiClient.instance.getStringList('/mushaf/font-zips');
 
   Future<void> _extractZip(File zipFile, Directory outDir) async {
     final bytes = await zipFile.readAsBytes();

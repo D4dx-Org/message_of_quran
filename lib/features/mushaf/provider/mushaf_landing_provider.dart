@@ -4,13 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/mushaf_repository.dart';
-import '../db/local_database.dart';
 import '../services/mushaf_install_state.dart';
 
 /// State for the Mushaf landing / surah-list screen.
 class MushafLandingProvider extends ChangeNotifier {
   MushafLandingProvider() {
-    _repository = MushafRepository(localDatabase: LocalDatabase.instance);
+    _repository = MushafRepository();
     _loadAll();
   }
 

@@ -10,6 +10,7 @@ import 'package:the_message_of_the_quran/core/services/database/database_ready_n
 import 'package:the_message_of_the_quran/features/author_screen/provider/author_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
 
 class AuthorScreen extends StatefulWidget {
   const AuthorScreen({super.key});
@@ -202,7 +203,7 @@ class _AuthorScreenState extends State<AuthorScreen> {
                     children: [
                       if (bioText.isNotEmpty)
                         BioWithFloatingImage(
-                          imagePath: 'assets/images/asad_img.jpeg',
+                          imagePath: '${ApiConstants.imageCdnBaseUrl}/asad_img.jpeg',
                           thumbnailPath: 'assets/images/asad_img_thumb.jpeg',
                           bioText: bioText,
                           textStyle: AppTextTheme.localizedBody(

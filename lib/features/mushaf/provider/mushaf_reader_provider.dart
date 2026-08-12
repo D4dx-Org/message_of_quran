@@ -9,7 +9,6 @@ import 'package:just_audio/just_audio.dart';
 
 import 'package:the_message_of_the_quran/core/services/audio_handler.dart';
 import '../data/mushaf_repository.dart';
-import '../db/local_database.dart';
 import '../models/page_meta.dart';
 import '../services/mushaf_install_state.dart';
 
@@ -80,7 +79,7 @@ class MushafReaderProvider extends ChangeNotifier {
   ScrollController listScrollController = ScrollController();
 
   Future<void> init() async {
-    repository = MushafRepository(localDatabase: LocalDatabase.instance);
+    repository = MushafRepository();
     _playerStateSub = audioPlayer.playerStateStream.listen(_onPlayerStateChanged);
     await _doInit();
   }

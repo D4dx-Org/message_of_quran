@@ -13,7 +13,6 @@ import 'package:the_message_of_the_quran/core/models/ayah_bookmark_model.dart';
 import 'package:the_message_of_the_quran/core/models/arabic_block_model.dart';
 import 'package:the_message_of_the_quran/core/models/tajweed_word_model.dart';
 import 'package:the_message_of_the_quran/core/models/translation_block_model.dart';
-import 'package:the_message_of_the_quran/core/services/database/database_helper.dart';
 import 'package:the_message_of_the_quran/core/services/database/preface_db_helper.dart';
 import 'package:the_message_of_the_quran/core/services/database/tajweed_db_helper.dart';
 import 'package:the_message_of_the_quran/core/services/tajweed_html_service.dart';
@@ -2529,8 +2528,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                         maxWidth: readerMaxWidth,
                                         child: PinchZoomView(
                                           child: CustomScrollView(
-                                            controller: _scrollController,
-                                            cacheExtent: _deepLinkCacheExtent,
+                                            scrollCacheExtent: ScrollCacheExtent.pixels(_deepLinkCacheExtent), controller: _scrollController,
                                             slivers: [
                                               if (useCompactWebReaderLayout)
                                                 SliverToBoxAdapter(
@@ -3324,7 +3322,7 @@ class _TajweedHtmlTextState extends State<_TajweedHtmlText> {
   @override
   void initState() {
     super.initState();
-    TajweedHtmlService.ensureLoaded().then((_) {
+    TajweedHtmlService.loadSurahs([widget.surahNo]).then((_) {
       if (mounted) setState(() => _loaded = true);
     });
   }
@@ -3434,10 +3432,7 @@ class _TajweedWordRowState extends State<_TajweedWordRow> {
   }
 
   Future<void> _loadWords() async {
-    final db = DatabaseHelper.quranAsadDb;
-    if (db == null) return;
     final words = await TajweedDbHelper.getWordsForBlock(
-      db: db,
       surahNo: widget.surahNo,
       verseFrom: widget.verseFrom,
       verseTo: widget.verseTo,

@@ -144,13 +144,14 @@ class _MushafPageViewState extends State<MushafPageView> {
 
   Future<void> _loadTajweedData(PageMeta meta) async {
     try {
-      final results = await Future.wait([
-        widget.repository.getPageAyas(meta.startAya, meta.endAya),
-        TajweedHtmlService.ensureLoaded(),
-      ]);
+      final ayas = await widget.repository.getPageAyas(
+        meta.startAya,
+        meta.endAya,
+      );
+      // Tajweed markup is fetched per surah, and a page can span two of them.
+      await TajweedHtmlService.loadSurahs(ayas.map((aya) => aya.suraNo));
       if (!mounted) return;
-      _pageAyas =
-          results[0] as List<({int ayaId, int suraNo, int ayaNo})>;
+      _pageAyas = ayas;
       _rebuild.value++;
     } catch (_) {
       // Tajweed data is optional; ignore failures and fall back to QCF.

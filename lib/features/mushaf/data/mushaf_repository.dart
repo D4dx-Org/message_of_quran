@@ -1,34 +1,23 @@
-import 'package:flutter/foundation.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:the_message_of_the_quran/core/services/api/moq_api_client.dart';
 
-import '../db/local_database.dart';
 import '../models/mushaf_line.dart';
 import '../models/page_meta.dart';
 
-/// Mushaf-only database access layer.
+/// Mushaf-only data access layer, backed by the MOQ REST API.
 class MushafRepository {
-  MushafRepository({LocalDatabase? localDatabase})
-      : _localDatabase = localDatabase ?? LocalDatabase.instance;
-
-  final LocalDatabase _localDatabase;
-
-  Future<Database> get _db async => _localDatabase.database;
-
   Future<List<MushafLine>> getMushafPageLines(int pageNo) async {
-    final rows = await (await _db).rawQuery(
-      'SELECT * FROM t_mushafpages WHERE pageid=? ORDER BY id',
-      [pageNo],
+    final rows = await MoqApiClient.instance.getList(
+      '/mushaf/pages/$pageNo/lines',
     );
     return rows.map(MushafLine.fromMap).toList(growable: false);
   }
 
   Future<PageMeta?> getPageMeta(int pageNo) async {
-    final rows = await (await _db).rawQuery(
-      'SELECT * FROM t_ayawise_page WHERE p_id=?',
-      [pageNo],
+    final row = await MoqApiClient.instance.getObject(
+      '/mushaf/pages/$pageNo/meta',
     );
-    if (rows.isEmpty) return null;
-    return PageMeta.fromMap(rows.first);
+    if (row == null) return null;
+    return PageMeta.fromMap(row);
   }
 
   /// Returns the actual ayas (continuous id + sura/aya number) that belong to a
@@ -39,10 +28,9 @@ class MushafRepository {
     int endAya,
   ) async {
     if (startAya <= 0 || endAya < startAya) return const [];
-    final rows = await (await _db).rawQuery(
-      'SELECT aya_id, s_no, aya_no FROM t_aya '
-      'WHERE aya_id BETWEEN ? AND ? AND aya_no > 0 ORDER BY aya_id',
-      [startAya, endAya],
+    final rows = await MoqApiClient.instance.getList(
+      '/mushaf/pages/ayas',
+      query: {'start': startAya, 'end': endAya},
     );
     return rows
         .map((r) => (
@@ -54,71 +42,58 @@ class MushafRepository {
   }
 
   Future<String> getSuraNameGlyph(int suraNo) async {
-    final rows = await (await _db).rawQuery(
-      'SELECT data FROM t_mushafpages WHERE suraid=? AND line=-1 LIMIT 1',
-      [suraNo],
+    final row = await MoqApiClient.instance.getObject(
+      '/mushaf/surahs/$suraNo/glyph',
     );
-    if (rows.isEmpty) return '';
-    return (rows.first['data'] as String?) ?? '';
+    if (row == null) return '';
+    return (row['data'] as String?) ?? '';
   }
 
   Future<String> getBismillahGlyph(int suraNo) async {
-    final rows = await (await _db).rawQuery(
-      'SELECT data FROM t_mushafpages WHERE suraid=? AND line=0 LIMIT 1',
-      [suraNo],
+    final row = await MoqApiClient.instance.getObject(
+      '/mushaf/surahs/$suraNo/bismillah-glyph',
     );
-    if (rows.isEmpty) return '';
-    return (rows.first['data'] as String?) ?? '';
+    if (row == null) return '';
+    return (row['data'] as String?) ?? '';
   }
 
   Future<String> getJuzName(int juzNo) async {
-    try {
-      final rows = await (await _db).rawQuery(
-        'SELECT j_name FROM t_juznames WHERE j_no=?',
-        [juzNo],
-      );
-      if (rows.isEmpty) return '';
-      return (rows.first['j_name'] as String?) ?? '';
-    } catch (e) {
-      debugPrint('MushafRepo: getJuzName failed — $e');
-      return '';
-    }
+    final row = await MoqApiClient.instance.getObject(
+      '/mushaf/juzs/$juzNo/name',
+    );
+    if (row == null) return '';
+    return (row['name'] as String?) ?? '';
   }
 
   Future<int> getPageForAya(int continuesAyaId) async {
     if (continuesAyaId <= 0) return 0;
-    final rows = await (await _db).rawQuery(
-      'SELECT p_id FROM t_ayawise_page WHERE s_aya<=? AND e_aya>=? LIMIT 1',
-      [continuesAyaId, continuesAyaId],
+    final row = await MoqApiClient.instance.getObject(
+      '/mushaf/ayas/$continuesAyaId/page',
     );
-    if (rows.isEmpty) return 0;
-    return (rows.first['p_id'] as num).toInt();
+    if (row == null || row['page'] == null) return 0;
+    return (row['page'] as num).toInt();
   }
 
   Future<int> getContinuesAyaId(int suraId, int ayaNo) async {
-    final rows = await (await _db).rawQuery(
-      'SELECT aya_id FROM t_aya WHERE s_no=? AND aya_no=? LIMIT 1',
-      [suraId, ayaNo],
+    final row = await MoqApiClient.instance.getObject(
+      '/mushaf/ayas/continuous-id',
+      query: {'surah': suraId, 'aya': ayaNo},
     );
-    if (rows.isEmpty) return 0;
-    return (rows.first['aya_id'] as num).toInt();
+    if (row == null || row['ayaId'] == null) return 0;
+    return (row['ayaId'] as num).toInt();
   }
 
   Future<int> getFirstPageForSurah(int suraNo) async {
-    final rows = await (await _db).rawQuery(
-      'SELECT MIN(p.p_id) AS first_page '
-      'FROM t_ayawise_page p '
-      'JOIN t_aya a ON a.aya_id BETWEEN p.s_aya AND p.e_aya '
-      'WHERE a.s_no=? AND a.aya_no>0',
-      [suraNo],
+    final row = await MoqApiClient.instance.getObject(
+      '/mushaf/surahs/$suraNo/first-page',
     );
-    if (rows.isEmpty || rows.first['first_page'] == null) return 1;
-    return (rows.first['first_page'] as num).toInt();
+    if (row == null || row['page'] == null) return 1;
+    return (row['page'] as num).toInt();
   }
 
   Future<List<({int juzNo, int firstPage})>> getAllJuzFirstPages() async {
-    final rows = await (await _db).rawQuery(
-      'SELECT j_no, MIN(p_id) AS first_page FROM t_ayawise_page GROUP BY j_no ORDER BY j_no',
+    final rows = await MoqApiClient.instance.getList(
+      '/mushaf/juzs/first-pages',
     );
     return rows
         .map((r) => (
@@ -129,29 +104,24 @@ class MushafRepository {
   }
 
   Future<List<int>> getContinuousAyaIdsForSurah(int suraNo) async {
-    final rows = await (await _db).rawQuery(
-      'SELECT aya_id FROM t_aya WHERE s_no=? AND aya_no > 0 ORDER BY aya_no',
-      [suraNo],
+    return MoqApiClient.instance.getIntList(
+      '/mushaf/surahs/$suraNo/continuous-aya-ids',
     );
-    return rows.map((r) => (r['aya_id'] as num).toInt()).toList();
   }
 
   Future<({int suraNo, int ayaNo})> getAyaInfo(int continuousAyaId) async {
-    final rows = await (await _db).rawQuery(
-      'SELECT s_no, aya_no FROM t_aya WHERE aya_id=? LIMIT 1',
-      [continuousAyaId],
+    final row = await MoqApiClient.instance.getObject(
+      '/mushaf/ayas/$continuousAyaId/info',
     );
-    if (rows.isEmpty) return (suraNo: 1, ayaNo: 1);
+    if (row == null) return (suraNo: 1, ayaNo: 1);
     return (
-      suraNo: (rows.first['s_no'] as num).toInt(),
-      ayaNo: (rows.first['aya_no'] as num).toInt(),
+      suraNo: (row['suraNo'] as num).toInt(),
+      ayaNo: (row['ayaNo'] as num).toInt(),
     );
   }
 
   Future<List<PageMeta?>> getAllPageMetas() async {
-    final rows = await (await _db).rawQuery(
-      'SELECT * FROM t_ayawise_page ORDER BY p_id',
-    );
+    final rows = await MoqApiClient.instance.getList('/mushaf/pages/meta');
     final result = List<PageMeta?>.filled(604, null);
     for (final row in rows) {
       final meta = PageMeta.fromMap(row);
@@ -162,32 +132,20 @@ class MushafRepository {
   }
 
   Future<Map<int, String>> getAllSurahGlyphs() async {
-    try {
-      final rows = await (await _db).rawQuery(
-        'SELECT suraid, data FROM t_mushafpages WHERE line=-1 GROUP BY suraid ORDER BY suraid',
-      );
-      return {
-        for (final r in rows)
-          (r['suraid'] as num).toInt(): (r['data'] as String?) ?? '',
-      };
-    } catch (e) {
-      debugPrint('MushafRepo: getAllSurahGlyphs failed — $e');
-      return {};
-    }
+    final rows = await MoqApiClient.instance.getList('/mushaf/surahs/glyphs');
+    return {
+      for (final r in rows)
+        (r['suraid'] as num).toInt(): (r['data'] as String?) ?? '',
+    };
   }
 
   Future<Map<int, String>> getAllBismillahGlyphs() async {
-    try {
-      final rows = await (await _db).rawQuery(
-        'SELECT suraid, data FROM t_mushafpages WHERE line=0 GROUP BY suraid ORDER BY suraid',
-      );
-      return {
-        for (final r in rows)
-          (r['suraid'] as num).toInt(): (r['data'] as String?) ?? '',
-      };
-    } catch (e) {
-      debugPrint('MushafRepo: getAllBismillahGlyphs failed — $e');
-      return {};
-    }
+    final rows = await MoqApiClient.instance.getList(
+      '/mushaf/bismillah-glyphs',
+    );
+    return {
+      for (final r in rows)
+        (r['suraid'] as num).toInt(): (r['data'] as String?) ?? '',
+    };
   }
 }

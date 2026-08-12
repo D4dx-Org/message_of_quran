@@ -1,45 +1,18 @@
-import 'package:the_message_of_the_quran/core/constants/db_constants.dart';
 import 'package:the_message_of_the_quran/core/models/juz_hizb_model.dart';
-import 'package:the_message_of_the_quran/core/services/database/database_helper.dart';
+import 'package:the_message_of_the_quran/core/services/api/moq_api_client.dart';
 
 class JuzHizbDbHelper {
   /// Returns the 30 Juz entries with their starting surah and ayah.
-  static Future<List<JuzHizbModel>> getAllJuz() async {
-    final db = DatabaseHelper.quranAsadDb;
-    if (db == null) return [];
-
-    try {
-      final result = await db.query(
-        DbConstants.juzzTable,
-        columns: [DbConstants.customId, DbConstants.chapterNo, DbConstants.verseNo],
-        orderBy: '${DbConstants.customId} ASC',
-      );
-
-      return List.generate(result.length, (i) {
-        return JuzHizbModel.fromMap(result[i], i + 1);
-      });
-    } catch (e) {
-      return [];
-    }
-  }
+  static Future<List<JuzHizbModel>> getAllJuz() => _fetch('/juzs');
 
   /// Returns the 60 Hizb entries with their starting surah and ayah.
-  static Future<List<JuzHizbModel>> getAllHizb() async {
-    final db = DatabaseHelper.quranAsadDb;
-    if (db == null) return [];
+  static Future<List<JuzHizbModel>> getAllHizb() => _fetch('/hizbs');
 
-    try {
-      final result = await db.query(
-        DbConstants.hizbTable,
-        columns: [DbConstants.customId, DbConstants.chapterNo, DbConstants.verseNo],
-        orderBy: '${DbConstants.customId} ASC',
-      );
-
-      return List.generate(result.length, (i) {
-        return JuzHizbModel.fromMap(result[i], i + 1);
-      });
-    } catch (e) {
-      return [];
-    }
+  static Future<List<JuzHizbModel>> _fetch(String path) async {
+    final rows = await MoqApiClient.instance.getList(path);
+    return List.generate(
+      rows.length,
+      (i) => JuzHizbModel.fromMap(rows[i], i + 1),
+    );
   }
 }

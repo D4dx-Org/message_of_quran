@@ -1,11 +1,15 @@
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:the_message_of_the_quran/core/widgets/shimmer_asset_image.dart';
 
-/// Image.asset wrapper for photo-style images: shows a tiny blurred
-/// [thumbnailPath] instantly, then cross-fades to the full [assetPath]
-/// image once it decodes.
+/// Image wrapper for photo-style images: shows a tiny blurred [thumbnailPath]
+/// instantly, then cross-fades to the full [assetPath] image once it decodes.
+///
+/// [assetPath] may be a bundled asset or an `http(s)` URL — the large photos
+/// are served from the CDN rather than shipped in the app. The thumbnail stays
+/// bundled, so there is always something on screen even offline.
 ///
 /// Unlike [ShimmerAssetImage] (flat shimmer, for icons/logos), this gives
 /// photographic images an actual low-res preview instead of a plain gray
@@ -59,19 +63,32 @@ class BlurUpAssetImage extends StatelessWidget {
             colorBlendMode: colorBlendMode,
           ),
         ),
-        Image.asset(
-          assetPath,
-          fit: fit,
-          color: color,
-          colorBlendMode: colorBlendMode,
-          frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-            return AnimatedOpacity(
-              opacity: frame != null || wasSynchronouslyLoaded ? 1 : 0,
-              duration: const Duration(milliseconds: 300),
-              child: child,
-            );
-          },
-        ),
+        if (assetPath.startsWith('http'))
+          CachedNetworkImage(
+            imageUrl: assetPath,
+            fit: fit,
+            color: color,
+            colorBlendMode: colorBlendMode,
+            fadeInDuration: const Duration(milliseconds: 300),
+            // The blurred thumbnail underneath already fills the frame, so a
+            // failed fetch simply leaves it showing.
+            placeholder: (context, _) => const SizedBox.shrink(),
+            errorWidget: (context, _, _) => const SizedBox.shrink(),
+          )
+        else
+          Image.asset(
+            assetPath,
+            fit: fit,
+            color: color,
+            colorBlendMode: colorBlendMode,
+            frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+              return AnimatedOpacity(
+                opacity: frame != null || wasSynchronouslyLoaded ? 1 : 0,
+                duration: const Duration(milliseconds: 300),
+                child: child,
+              );
+            },
+          ),
       ],
     );
 
