@@ -865,7 +865,7 @@ class _AyahTabContentState extends State<_AyahTabContent> {
                 )
               : ListView.separated(
                   itemCount: entries.length,
-                  separatorBuilder: (_, __) =>
+                  separatorBuilder: (_, _) =>
                       Divider(height: 1, indent: 64, color: borderColor),
                   itemBuilder: (_, listIndex) {
                     final i = entries[listIndex].key;

@@ -1521,7 +1521,7 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
     return ListView.separated(
       controller: _surahScrollCtrl,
       itemCount: surahs.length,
-      separatorBuilder: (_, __) =>
+      separatorBuilder: (_, _) =>
           const Divider(height: 1, indent: 58, endIndent: 16),
       itemBuilder: (_, i) {
         final surah = surahs[i];
@@ -1629,7 +1629,7 @@ class _SurahNavigatorSheetState extends State<_SurahNavigatorSheet> {
       controller: _ayahScrollCtrl,
       shrinkWrap: true,
       itemCount: blocks.length,
-      separatorBuilder: (_, __) => const Divider(height: 1),
+      separatorBuilder: (_, _) => const Divider(height: 1),
       itemBuilder: (_, index) {
         final block = blocks[index];
         final start = block.verseFrom ?? index + 1;

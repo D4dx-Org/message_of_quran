@@ -11,9 +11,6 @@ import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
-import 'package:the_message_of_the_quran/features/main_screen/presentation/main_screen.dart';
-import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
-import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 
 class AppendixScreen extends StatefulWidget {

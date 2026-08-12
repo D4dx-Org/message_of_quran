@@ -26,7 +26,7 @@ void main() {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: themeMode,
-          home: Scaffold(body: SettingsScreenFontBlock()),
+          home: const Scaffold(body: SettingsScreenFontBlock()),
         ),
       ),
     );
