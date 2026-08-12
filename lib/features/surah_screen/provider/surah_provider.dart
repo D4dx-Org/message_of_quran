@@ -40,6 +40,18 @@ class SurahProvider extends ChangeNotifier {
   int currentInterpretationNumber = -1;
   int minInterpretationNumber = -1;
   int maxInterpretationNumber = -1;
+
+  /// Footnotes are stored with the number the source file uses, which does not
+  /// always start at 1 for a surah — the Malayalam surah 1 notes run 6-9,
+  /// because 1-5 are the translator's introduction notes that no verse refers
+  /// to. Markers are shown as `number - noteNumberBase + 1` so a reader sees
+  /// 1, 2, 3… while lookups keep using the stored number.
+  int noteNumberBase = 1;
+
+  int displayNoteNumber(int storedNumber) =>
+      storedNumber - noteNumberBase + 1 > 0
+      ? storedNumber - noteNumberBase + 1
+      : storedNumber;
   int index = 0;
   TextEditingController searchController = TextEditingController();
   final List<AyahBookmarkModel> bookmarkedList = [];
@@ -395,6 +407,7 @@ class SurahProvider extends ChangeNotifier {
     currentInterpretationNumber = -1;
     minInterpretationNumber = -1;
     maxInterpretationNumber = -1;
+    noteNumberBase = 1;
   }
 
   void assignIndex(int indexClicked) {
@@ -769,6 +782,11 @@ class SurahProvider extends ChangeNotifier {
         );
         minInterpretationNumber = range['min'] ?? -1;
         maxInterpretationNumber = range['max'] ?? -1;
+        // Opening a note resets the interpretation state, so the display base
+        // has to be restored here too, not only when the surah loads.
+        noteNumberBase = minInterpretationNumber > 0
+            ? minInterpretationNumber
+            : 1;
       }
       currentInterpretationNumber = interpretationNumber;
       interpretationList = await InterpretationsDbHelper.getinterpretations(
@@ -844,10 +862,21 @@ class SurahProvider extends ChangeNotifier {
           malayalam: _isMalayalam,
         ),
         _loadCurrentBismillahGlyph(surahNumber),
+        // Needed before the first marker is painted, so it is fetched with the
+        // verses rather than lazily when a note is opened.
+        InterpretationsDbHelper.getInterpretationRange(
+          surahNumber: surahNumber,
+          malayalam: _isMalayalam,
+        ),
       ]);
       arabicBlockList = results[0] as List<ArabicBlockModel>;
       translationBlockList = results[1] as List<TranslationBlockModel>;
       currentBismillahGlyph = results[2] as String;
+
+      final range = results[3] as Map<String, int>;
+      minInterpretationNumber = range['min'] ?? -1;
+      maxInterpretationNumber = range['max'] ?? -1;
+      noteNumberBase = minInterpretationNumber > 0 ? minInterpretationNumber : 1;
     } catch (e) {
       arabicBlockList = [];
       translationBlockList = [];

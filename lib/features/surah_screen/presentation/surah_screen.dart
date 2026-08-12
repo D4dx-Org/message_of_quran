@@ -1856,7 +1856,9 @@ class _SurahScreenState extends State<SurahScreen> {
                     } else {
                       spans.add(
                         buildInterpretationNoteMarkerSpan(
-                          number: num,
+                          // Shown renumbered from 1; the sheet still opens on
+                          // the stored number.
+                          number: controller.displayNoteNumber(num),
                           onTap: () => _showInterpretationSheet(
                             context,
                             controller,
@@ -2123,8 +2125,8 @@ class _SurahScreenState extends State<SurahScreen> {
                           ctrl.currentInterpretationNumber > 0
                           ? ctrl.currentInterpretationNumber
                           : (pageNumber ?? -1);
-                      final displayInterpretationNumber =
-                          headerInterpretationNumber;
+                      final displayInterpretationNumber = ctrl
+                          .displayNoteNumber(headerInterpretationNumber);
                       final surahHeader = formatInterpretationSheetSurahHeader(
                         isMalayalam: isMalayalam,
                         surah: surah,
@@ -2271,7 +2273,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                         ),
                                         if (!isLoading && hasBounds)
                                           Text(
-                                            '${ctrl.currentInterpretationNumber} / ${ctrl.maxInterpretationNumber}',
+                                            '${ctrl.displayNoteNumber(ctrl.currentInterpretationNumber)} / ${ctrl.displayNoteNumber(ctrl.maxInterpretationNumber)}',
                                             style: TextStyle(
                                               fontSize: 13,
                                               color: activeColor,
