@@ -7,9 +7,12 @@ import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/features/common_email/models/common_email_requests.dart';
 
 class CommonEmailApi {
-  CommonEmailApi({http.Client? client}) : _client = client;
+  CommonEmailApi({http.Client? client, String? feedbackApiKey})
+    : _client = client,
+      _feedbackApiKey = feedbackApiKey ?? ApiConstants.quranAsadEmailApiKey;
 
   final http.Client? _client;
+  final String _feedbackApiKey;
 
   Future<void> sendFeedback(FeedbackRequest request) {
     return _post(
@@ -76,11 +79,18 @@ class CommonEmailApi {
   }
 
   Map<String, String> get _feedbackHeaders {
-    return <String, String>{
+    final headers = <String, String>{
       'x-app-theme-primary': AppTheme.appThemePrimaryHex,
       'x-app-theme-secondary': AppTheme.appThemeSecondaryHex,
       'x-app-theme-on-primary': AppTheme.appBarForegroundHex,
     };
+
+    if (_feedbackApiKey.trim().isEmpty) {
+      return headers;
+    }
+
+    headers['x-api-key'] = _feedbackApiKey.trim();
+    return headers;
   }
 
   String? _readErrorMessage(String responseBody) {
