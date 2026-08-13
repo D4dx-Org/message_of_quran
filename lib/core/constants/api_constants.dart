@@ -16,6 +16,14 @@ class ApiConstants {
   static const String d4dxWebsiteUrl = 'https://d4dx.co/';
   static const String privacyPolicyUrl = 'https://d4dx.co/privacy-policy/';
   static const String commonEmailBaseUrl = 'https://cenloginbackend.d4dx.co';
+
+  /// Authenticates the feedback endpoint. Supplied at build time:
+  /// `--dart-define-from-file=dart_defines.json`. A build that omits it sends
+  /// no key, and the server answers "Unauthorized — invalid API key".
+  static const String quranAsadEmailApiKey = String.fromEnvironment(
+    'QURAN_ASAD_EMAIL_API_KEY',
+  );
+
   static const String feedbackUrl =
       '$commonEmailBaseUrl/api/quran-asad-email/send-feedback';
   static const String featureRequestUrl = '$commonEmailBaseUrl/feature-request';
