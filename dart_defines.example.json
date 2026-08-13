@@ -1,0 +1,8 @@
+{
+  "_comment": "Copy to dart_defines.json (gitignored) and fill in the values, then build with --dart-define-from-file=dart_defines.json. These are compile-time constants: a build that omits them silently ships empty values.",
+
+  "QURAN_ASAD_EMAIL_API_KEY": "ask the owner of cenloginbackend.d4dx.co",
+
+  "_MOQ_API_BASE_URL_note": "web-work branch only; the app reads its content from the bundled database.",
+  "MOQ_API_BASE_URL": "https://asad-pwuw2.ondigitalocean.app/api/v1"
+}

@@ -52,3 +52,5 @@ app.*.map.json
 # db files
 # /assets/db/
 daily_changes_*.md
+# Build-time secrets passed via --dart-define-from-file
+dart_defines.json
