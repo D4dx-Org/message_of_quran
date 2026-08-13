@@ -54,3 +54,5 @@ app.*.map.json
 changelogs/
 claude.md
 /db data/
+# Build-time secrets passed via --dart-define-from-file
+dart_defines.json
