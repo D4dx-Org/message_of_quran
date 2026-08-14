@@ -44,6 +44,7 @@ import 'package:the_message_of_the_quran/features/settings_screen/providers/lang
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/settings_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/audio_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
+import 'package:the_message_of_the_quran/features/favorites/provider/favorite_surah_provider.dart';
 
 String _toArabicNumerals(int value) {
   const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
@@ -414,6 +415,7 @@ class _SurahScreenState extends State<SurahScreen> {
 
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     final audio = context.watch<AudioProvider>();
+    final favoriteProvider = context.watch<FavoriteSurahProvider>();
     final surah = controller.surahList[controller.index];
     final isCurrentSurahSession =
         audio.currentSurahNumber == surah.surahNumber &&
@@ -452,6 +454,9 @@ class _SurahScreenState extends State<SurahScreen> {
             ? () => _showSurahInfo(context, controller)
             : null,
         showStopIcon: showStopIcon,
+        isFavorite: favoriteProvider.isFavorite(surah.surahNumber),
+        onFavoritePressed: () =>
+            favoriteProvider.toggle(surah.surahNumber),
         compact: true,
       ),
     );

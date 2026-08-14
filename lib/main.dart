@@ -24,6 +24,7 @@ import 'package:the_message_of_the_quran/features/author_screen/provider/transla
 import 'package:the_message_of_the_quran/features/author_screen/provider/english_translator_provider.dart';
 import 'package:the_message_of_the_quran/features/help_screen/provider/help_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
+import 'package:the_message_of_the_quran/features/favorites/provider/favorite_surah_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/play_settings_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/audio_provider.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
@@ -488,6 +489,9 @@ class MyApp extends StatelessWidget {
           create: (context) => SurahProvider(
             dbNotifier: context.read<DatabaseReadyNotifier>(),
           ),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => FavoriteSurahProvider()..load(),
         ),
         ChangeNotifierProvider(create: (context) => FontSizeChangerProvider()),
         ChangeNotifierProvider(create: (context) => VersionCheckProvider()),

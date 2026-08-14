@@ -14,6 +14,7 @@ class DbConstants {
   static const String authorTableName = "authors";
   static const String helpTableName = "help";
   static const String bookmarksTableName = "bookmarks";
+  static const String favoriteSurahsTableName = "favorite_surahs";
 
   // ─── Common fields ───
   static const String id = "id";
@@ -93,6 +94,10 @@ class DbConstants {
   static const String bookmarkSurahArabicNumber = "surah_arabic_number";
   static const String bookmarkLabel = "label";
   static const String bookmarkNavigationTarget = "navigation_target";
+
+  /// Favorite surahs (user_data.db)
+  static const String favoriteSurahNumber = "surah_number";
+  static const String favoriteCreatedAt = "created_at";
 
   /// Preface / Surah description (quran_asad.sqlite → prefaces)
   static const String prefaceTable = "prefaces";

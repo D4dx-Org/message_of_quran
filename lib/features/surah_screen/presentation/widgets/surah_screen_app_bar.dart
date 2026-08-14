@@ -10,6 +10,7 @@ import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_place_localizer.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
+import 'package:the_message_of_the_quran/features/favorites/provider/favorite_surah_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 
 const _kMakkahIcon = 'assets/icons/revamp/makkah_icon.svg';
@@ -520,6 +521,7 @@ class SurahScreenAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
+    final favoriteProvider = context.watch<FavoriteSurahProvider>();
     return SliverToBoxAdapter(
       child: Consumer<SurahProvider>(
         builder: (context, sp, _) {
@@ -527,6 +529,7 @@ class SurahScreenAppBar extends StatelessWidget {
             return const SizedBox.shrink();
           }
           final surah = sp.surahList[sp.index];
+          final isFavorite = favoriteProvider.isFavorite(surah.surahNumber);
 
           return SurahInfoStrip(
             surahName: surah.name,
@@ -547,6 +550,9 @@ class SurahScreenAppBar extends StatelessWidget {
                     onPlayPressed: onPlayPressed,
                     onInfoPressed: onInfoPressed,
                     showStopIcon: showStopIcon,
+                    isFavorite: isFavorite,
+                    onFavoritePressed: () =>
+                        favoriteProvider.toggle(surah.surahNumber),
                     compact: true,
                   ),
           );
@@ -562,6 +568,8 @@ class SurahBannerActions extends StatelessWidget {
     required this.isMalayalam,
     this.onPlayPressed,
     this.onInfoPressed,
+    this.onFavoritePressed,
+    this.isFavorite = false,
     this.showStopIcon = false,
     this.compact = false,
   });
@@ -569,12 +577,16 @@ class SurahBannerActions extends StatelessWidget {
   final bool isMalayalam;
   final VoidCallback? onPlayPressed;
   final VoidCallback? onInfoPressed;
+  final VoidCallback? onFavoritePressed;
+  final bool isFavorite;
   final bool showStopIcon;
   final bool compact;
 
   @override
   Widget build(BuildContext context) {
-    if (onPlayPressed == null && onInfoPressed == null) {
+    if (onPlayPressed == null &&
+        onInfoPressed == null &&
+        onFavoritePressed == null) {
       return const SizedBox.shrink();
     }
 
@@ -599,6 +611,7 @@ class SurahBannerActions extends StatelessWidget {
       required IconData icon,
       required String tooltip,
       required VoidCallback onPressed,
+      Color? color,
     }) {
       return Tooltip(
         message: tooltip,
@@ -614,7 +627,11 @@ class SurahBannerActions extends StatelessWidget {
             child: SizedBox(
               width: compact ? 34 : 40,
               height: compact ? 34 : 40,
-              child: Icon(icon, color: iconColor, size: compact ? 18 : 20),
+              child: Icon(
+                icon,
+                color: color ?? iconColor,
+                size: compact ? 18 : 20,
+              ),
             ),
           ),
         ),
@@ -634,7 +651,21 @@ class SurahBannerActions extends StatelessWidget {
               tooltip: showStopIcon ? 'Stop Surah' : 'Play Surah',
               onPressed: onPlayPressed!,
             ),
-          if (onPlayPressed != null && onInfoPressed != null)
+          if (onPlayPressed != null &&
+              (onInfoPressed != null || onFavoritePressed != null))
+            const SizedBox(width: 10),
+          if (onFavoritePressed != null)
+            buildActionIcon(
+              icon: isFavorite
+                  ? Icons.favorite_rounded
+                  : Icons.favorite_border_rounded,
+              tooltip: isFavorite
+                  ? 'Remove from Favourites'
+                  : 'Add to Favourites',
+              onPressed: onFavoritePressed!,
+              color: isFavorite ? Colors.redAccent : null,
+            ),
+          if (onFavoritePressed != null && onInfoPressed != null)
             const SizedBox(width: 10),
           if (onInfoPressed != null)
             buildActionIcon(
