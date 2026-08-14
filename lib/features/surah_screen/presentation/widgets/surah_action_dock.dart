@@ -7,7 +7,7 @@ const double surahActionDockHeight = 56;
 const double surahActionDockDefaultBottomGap = 16;
 const double surahActionDockMinimumBottomGap = 6;
 const double surahActionDockSidePadding = 24;
-const double surahActionDockMaxWidth = 296;
+const double surahActionDockMaxWidth = 356;
 
 double resolveSurahActionDockBottomPadding({required double rootBottomInset}) {
   return math.max(
@@ -34,6 +34,8 @@ class SurahActionDock extends StatelessWidget {
     required this.onJumpToAyahPressed,
     required this.onPlayFromBeginningPressed,
     required this.onSettingsPressed,
+    this.isFavorite = false,
+    this.onFavoritePressed,
   });
 
   final bool visible;
@@ -43,6 +45,8 @@ class SurahActionDock extends StatelessWidget {
   final VoidCallback onJumpToAyahPressed;
   final VoidCallback onPlayFromBeginningPressed;
   final VoidCallback onSettingsPressed;
+  final bool isFavorite;
+  final VoidCallback? onFavoritePressed;
 
   @override
   Widget build(BuildContext context) {
@@ -140,6 +144,23 @@ class SurahActionDock extends StatelessWidget {
                               icon: useAssetIcons ? null : Icons.settings_outlined,
                               onPressed: onSettingsPressed,
                             ),
+                            if (onFavoritePressed != null) ...[
+                              Container(
+                                width: 1,
+                                height: 24,
+                                color: dividerColor,
+                              ),
+                              _SurahActionDockButton(
+                                tooltip: isFavorite
+                                    ? 'Remove from Favourites'
+                                    : 'Add to Favourites',
+                                icon: isFavorite
+                                    ? Icons.favorite_rounded
+                                    : Icons.favorite_border_rounded,
+                                iconColor: isFavorite ? Colors.redAccent : null,
+                                onPressed: onFavoritePressed!,
+                              ),
+                            ],
                           ],
                         ),
                       ),
@@ -160,18 +181,21 @@ class _SurahActionDockButton extends StatelessWidget {
     required this.tooltip,
     this.icon,
     this.assetPath,
+    this.iconColor,
     required this.onPressed,
   });
 
   final String tooltip;
   final IconData? icon;
   final String? assetPath;
+  final Color? iconColor;
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final iconColor = isDarkMode ? Colors.white : AppTheme.appIconTheme;
+    final iconColor = this.iconColor ??
+        (isDarkMode ? Colors.white : AppTheme.appIconTheme);
 
     final Widget iconWidget = assetPath != null
         ? Image.asset(assetPath!, width: 24, height: 24, color: iconColor)

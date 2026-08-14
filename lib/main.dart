@@ -39,6 +39,7 @@ import 'package:the_message_of_the_quran/features/ayah_of_the_day/provider/ayah_
 import 'package:the_message_of_the_quran/core/services/notification/notification_services.dart';
 import 'package:the_message_of_the_quran/features/ayah_of_the_day/presentation/ayah_of_the_day_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
+import 'package:the_message_of_the_quran/features/favorites/provider/favorite_surah_provider.dart';
 
 /// Global navigator key used to navigate from notification taps.
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -497,6 +498,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => HomeProvider()),
         ChangeNotifierProvider(create: (context) => SurahProvider()),
+        ChangeNotifierProvider(
+          create: (context) => FavoriteSurahProvider()..load(),
+        ),
         ChangeNotifierProvider(create: (context) => FontSizeChangerProvider()),
         ChangeNotifierProvider(create: (context) => VersionCheckProvider()),
         ChangeNotifierProvider(create: (context) => AboutProvider()),

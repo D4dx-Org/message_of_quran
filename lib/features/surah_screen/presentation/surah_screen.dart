@@ -43,6 +43,7 @@ import 'package:the_message_of_the_quran/features/main_screen/presentation/main_
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/audio_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
+import 'package:the_message_of_the_quran/features/favorites/provider/favorite_surah_provider.dart';
 import 'package:the_message_of_the_quran/features/tajweed/presentation/widgets/tajweed_ayah_widget.dart';
 
 class _SurahBismillahHeader extends StatelessWidget {
@@ -419,6 +420,7 @@ class _SurahScreenState extends State<SurahScreen> {
     required BuildContext context,
     IconData? icon,
     String? assetPath,
+    Color? iconColor,
     required String label,
     required VoidCallback onPressed,
   }) {
@@ -427,7 +429,7 @@ class _SurahScreenState extends State<SurahScreen> {
     final foregroundColor = isDarkMode ? Colors.white : AppTheme.appIconTheme;
     final iconWidget = assetPath != null
         ? Image.asset(assetPath, width: 19, height: 19, color: foregroundColor)
-        : Icon(icon, size: 18);
+        : Icon(icon, size: 18, color: iconColor);
 
     return OutlinedButton.icon(
       onPressed: onPressed,
@@ -460,6 +462,8 @@ class _SurahScreenState extends State<SurahScreen> {
     final isDarkMode = theme.brightness == Brightness.dark;
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     final surah = controller.surahList[controller.index];
+    final favoriteProvider = context.watch<FavoriteSurahProvider>();
+    final isFavoriteSurah = favoriteProvider.isFavorite(surah.surahNumber);
 
     return Column(
       children: [
@@ -522,6 +526,18 @@ class _SurahScreenState extends State<SurahScreen> {
                       ? 'ആരംഭത്തിൽ നിന്ന് കേൾക്കുക'
                       : 'Play from beginning',
                   onPressed: _restartSurahPlayback,
+                ),
+                _buildDesktopReaderActionButton(
+                  context: context,
+                  icon: isFavoriteSurah
+                      ? Icons.favorite_rounded
+                      : Icons.favorite_border_rounded,
+                  iconColor: isFavoriteSurah ? Colors.redAccent : null,
+                  label: isMalayalam
+                      ? (isFavoriteSurah ? 'പ്രിയപ്പെട്ടത്' : 'പ്രിയപ്പെട്ടതാക്കുക')
+                      : (isFavoriteSurah ? 'Favourited' : 'Add to Favourites'),
+                  onPressed: () =>
+                      favoriteProvider.toggle(surah.surahNumber),
                 ),
                 _buildDesktopReaderActionButton(
                   context: context,
@@ -2888,18 +2904,42 @@ class _SurahScreenState extends State<SurahScreen> {
                     ),
                     if (controller.arabicBlockList.isNotEmpty &&
                         !useDesktopWebReaderLayout)
-                      SurahActionDock(
-                        visible: _showActionDock,
-                        bottomPadding: actionDockBottomPadding,
-                        onHomePressed: () => _navigateToMainTab(0),
-                        onJumpToAyahPressed: () {
-                          _hideActionDock();
-                          _showJumpTo(context, _surahProv.arabicBlockList);
-                        },
-                        onPlayFromBeginningPressed: _restartSurahPlayback,
-                        onSettingsPressed: () {
-                          _hideActionDock();
-                          _openReaderSettings();
+                      Builder(
+                        builder: (context) {
+                          final favoriteProvider =
+                              context.watch<FavoriteSurahProvider>();
+                          final currentSurahNumber =
+                              controller.surahList.isNotEmpty &&
+                                  controller.index <
+                                      controller.surahList.length
+                              ? controller
+                                    .surahList[controller.index]
+                                    .surahNumber
+                              : null;
+                          return SurahActionDock(
+                            visible: _showActionDock,
+                            bottomPadding: actionDockBottomPadding,
+                            onHomePressed: () => _navigateToMainTab(0),
+                            onJumpToAyahPressed: () {
+                              _hideActionDock();
+                              _showJumpTo(context, _surahProv.arabicBlockList);
+                            },
+                            onPlayFromBeginningPressed: _restartSurahPlayback,
+                            onSettingsPressed: () {
+                              _hideActionDock();
+                              _openReaderSettings();
+                            },
+                            isFavorite: currentSurahNumber != null &&
+                                favoriteProvider.isFavorite(
+                                  currentSurahNumber,
+                                ),
+                            onFavoritePressed: currentSurahNumber == null
+                                ? null
+                                : () =>
+                                      favoriteProvider.toggle(
+                                        currentSurahNumber,
+                                      ),
+                          );
                         },
                       ),
                   ],
