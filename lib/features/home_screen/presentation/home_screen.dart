@@ -21,7 +21,6 @@ import 'package:the_message_of_the_quran/core/widgets/shimmer_asset_image.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/home_screen_list.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/juz_column.dart';
 import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/surah_chip_row.dart';
-import 'package:the_message_of_the_quran/features/home_screen/presentation/widgets/favorite_surahs_section.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/juz_hizb_provider.dart';
 import 'package:the_message_of_the_quran/features/home_screen/providers/last_read_provider.dart';
 import 'package:the_message_of_the_quran/features/mushaf/widgets/star_number.dart';
@@ -893,17 +892,12 @@ class _HomeScreenState extends State<HomeScreen>
                       surahList: surahProvider.surahList,
                       isLoading: surahProvider.isSurahLoading,
                     ),
-                    if (!hasActiveWebSearch) ...[
+                    if (!hasActiveWebSearch)
                       _buildWebPopularSection(
                         context,
                         isMalayalam: isMalayalam,
                         surahList: surahProvider.surahList,
                       ),
-                      FavoriteSurahsSection(
-                        onSurahTap: (surahNumber) =>
-                            _openSurah(context, surahNumber: surahNumber),
-                      ),
-                    ],
                   ],
                 ),
               ),
@@ -969,10 +963,6 @@ class _HomeScreenState extends State<HomeScreen>
     final homeContent = Column(
       children: [
         const SizedBox.shrink(),
-        FavoriteSurahsSection(
-          onSurahTap: (surahNumber) =>
-              _openSurah(context, surahNumber: surahNumber),
-        ),
         _buildTabBar(context),
         const SizedBox(height: 12),
         Expanded(child: _buildTabBody()),
