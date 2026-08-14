@@ -9,6 +9,7 @@ import 'package:the_message_of_the_quran/features/author_screen/presentation/eng
 import 'package:the_message_of_the_quran/features/author_screen/presentation/translator_screen.dart';
 import 'package:the_message_of_the_quran/features/ayah_of_the_day/presentation/ayah_of_the_day_screen.dart';
 import 'package:the_message_of_the_quran/features/bookmark_screen/presentation/bookmark_screen.dart';
+import 'package:the_message_of_the_quran/features/favorites/presentation/favorite_surahs_screen.dart';
 import 'package:the_message_of_the_quran/features/common_email/presentation/feature_request_screen.dart';
 import 'package:the_message_of_the_quran/features/common_email/presentation/feedback_screen.dart';
 import 'package:the_message_of_the_quran/features/contact_us_screen/presentation/contact_us_screen.dart';
@@ -172,6 +173,11 @@ GoRouter buildAppRouter() {
         path: '/prostration-verses',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const ProstrationVersesScreen(),
+      ),
+      GoRoute(
+        path: '/favorites',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const FavoriteSurahsScreen(),
       ),
       GoRoute(
         path: '/feedback',

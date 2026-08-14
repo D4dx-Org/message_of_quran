@@ -24,6 +24,12 @@ class DatabaseHelper {
       'UNIQUE(surah_number, ayah_id, navigation_target)'
       ')';
 
+  static const String _createFavoriteSurahsTableSql =
+      'CREATE TABLE IF NOT EXISTS favorite_surahs ('
+      'surah_number INTEGER PRIMARY KEY, '
+      'created_at INTEGER NOT NULL'
+      ')';
+
   factory DatabaseHelper() => _instance;
   DatabaseHelper._internal();
   static final DatabaseHelper _instance = DatabaseHelper._internal();
@@ -62,7 +68,7 @@ class DatabaseHelper {
     final userDbPath = await _databasePathFor(DbConstants.userDbName);
     userDatabase = await openDatabase(
       userDbPath,
-      version: 5,
+      version: 6,
       onConfigure: (db) async {
         await db.rawQuery('PRAGMA journal_mode=WAL');
       },
@@ -71,6 +77,7 @@ class DatabaseHelper {
         await db.execute(ProgressionDbHelper.createProgressionsTable);
         await db.execute(ProgressionDbHelper.createProgressionDaysTable);
         await db.execute(ProgressionDbHelper.createProgressionAyahsTable);
+        await db.execute(_createFavoriteSurahsTableSql);
       },
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
@@ -112,6 +119,9 @@ class DatabaseHelper {
             'FROM bookmarks_legacy',
           );
           await db.execute('DROP TABLE bookmarks_legacy');
+        }
+        if (oldVersion < 6) {
+          await db.execute(_createFavoriteSurahsTableSql);
         }
       },
     );

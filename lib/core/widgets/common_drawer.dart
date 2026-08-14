@@ -84,6 +84,16 @@ class CommonDrawer extends StatelessWidget {
                           context.go('/');
                         },
                       ),
+                      _DrawerTile(
+                        title: isMalayalam ? 'പ്രിയപ്പെട്ടവ' : 'Favourites',
+                        icon: Icons.favorite_border_rounded,
+                        isMalayalam: isMalayalam,
+                        url: '/favorites',
+                        onTap: () {
+                          Navigator.pop(context);
+                          _navigateFromDrawer(context, '/favorites');
+                        },
+                      ),
                       if (isMalayalam)
                         _DrawerExpansionTile(
                           title: 'ഖുർആന്റെ സന്ദേശം',
