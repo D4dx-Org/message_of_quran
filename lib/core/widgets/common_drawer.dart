@@ -12,6 +12,7 @@ import 'package:the_message_of_the_quran/features/author_screen/author_screen.da
 import 'package:the_message_of_the_quran/features/author_screen/presentation/english_translator_screen.dart';
 import 'package:the_message_of_the_quran/features/author_screen/presentation/translator_screen.dart';
 import 'package:the_message_of_the_quran/features/contact_us_screen/presentation/contact_us_screen.dart';
+import 'package:the_message_of_the_quran/features/favorites/presentation/favorite_surahs_screen.dart';
 import 'package:the_message_of_the_quran/features/library/presentation/appendix_screen.dart';
 import 'package:the_message_of_the_quran/features/library/presentation/foreword_screen.dart';
 import 'package:the_message_of_the_quran/features/library/presentation/works_of_reference_screen.dart';
@@ -80,6 +81,20 @@ class CommonDrawer extends StatelessWidget {
                           controller.changeIndex(0);
                           Navigator.pop(context);
                           Navigator.popUntil(context, (route) => route.isFirst);
+                        },
+                      ),
+                      _DrawerTile(
+                        title: isMalayalam ? 'പ്രിയപ്പെട്ടവ' : 'Favourites',
+                        icon: Icons.favorite_border_rounded,
+                        isMalayalam: isMalayalam,
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const FavoriteSurahsScreen(),
+                            ),
+                          );
                         },
                       ),
                       if (isMalayalam)
