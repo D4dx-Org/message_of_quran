@@ -11,7 +11,9 @@
     export PATH="$PATH:$(pwd)/flutter_sdk/bin" && \
     flutter_sdk/bin/flutter config --no-analytics && \
     flutter_sdk/bin/flutter pub get && \
-    flutter_sdk/bin/flutter build web --release
+    flutter_sdk/bin/flutter build web --release \
+      --dart-define=QURAN_ASAD_EMAIL_API_KEY=$QURAN_ASAD_EMAIL_API_KEY \
+      --dart-define=MOQ_API_BASE_URL=$MOQ_API_BASE_URL
   """
   publish = "build/web"
 
