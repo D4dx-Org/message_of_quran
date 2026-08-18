@@ -1,5 +1,3 @@
-import 'package:the_message_of_the_quran/core/constants/db_constants.dart';
-
 class PrefaceModel {
   final int id;
   final String prefaceSubTitle;
@@ -13,12 +11,15 @@ class PrefaceModel {
     required this.suraId,
   });
 
+  // The backend's /prefaces/:surahId route returns these exact camelCase
+  // keys (see MOQ Backend src/routes/content.js) — not the snake_case
+  // column names the old bundled sqlite `prefaces` table used.
   factory PrefaceModel.fromJson(Map<String, dynamic> json) {
     return PrefaceModel(
-      id: (json[DbConstants.prefaceId] as int?) ?? 0,
-      prefaceSubTitle: (json[DbConstants.prefaceSubTitle] ?? '').toString(),
-      prefaceText: (json[DbConstants.prefaceText] ?? '').toString(),
-      suraId: (json[DbConstants.prefaceSuraId] as int?) ?? 0,
+      id: (json['id'] as int?) ?? 0,
+      prefaceSubTitle: (json['prefaceSubTitle'] ?? '').toString(),
+      prefaceText: (json['prefaceText'] ?? '').toString(),
+      suraId: (json['suraId'] as int?) ?? 0,
     );
   }
 }
