@@ -32,16 +32,16 @@ const List<UsefulLinkSection> usefulLinksSections = [
     title: "English Translations",
     links: [
       UsefulLinkItem(
+        title: 'Muhammad Asad',
+        url: '',
+      ),
+      UsefulLinkItem(
         title: 'Abdullah Yusuf Ali',
         url: 'https://www.alim.org/translation/yusuf-ali/1/',
       ),
       UsefulLinkItem(
         title: 'Muhammad Marmaduke Pickthall',
         url: 'https://www.alim.org/translation/picktal/1/',
-      ),
-      UsefulLinkItem(
-        title: 'MAS Abdul Haleem',
-        url: '',
       ),
     ],
   ),
