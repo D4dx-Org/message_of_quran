@@ -104,6 +104,7 @@ class FavoriteSurahsScreen extends StatelessWidget {
                 color: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
+                  side: BorderSide(color: Colors.grey.shade300),
                 ),
                 child: ListTile(
                   contentPadding: const EdgeInsets.symmetric(
