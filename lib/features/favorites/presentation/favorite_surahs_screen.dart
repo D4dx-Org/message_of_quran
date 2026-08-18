@@ -14,8 +14,22 @@ import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_pr
 /// Standalone screen, reached from the drawer, listing every surah the
 /// reader has favourited. Tapping a row opens that surah; the heart icon
 /// unfavourites it in place.
-class FavoriteSurahsScreen extends StatelessWidget {
+class FavoriteSurahsScreen extends StatefulWidget {
   const FavoriteSurahsScreen({super.key});
+
+  @override
+  State<FavoriteSurahsScreen> createState() => _FavoriteSurahsScreenState();
+}
+
+class _FavoriteSurahsScreenState extends State<FavoriteSurahsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<SurahProvider>().getAllSurah();
+    });
+  }
 
   void _openSurah(BuildContext context, int surahNumber) {
     context.push('/surah/$surahNumber');
