@@ -51,7 +51,7 @@ DESCRIPTION = (
 
 ADDRESS = "Shadan, Check Post Road, Puthiyangadi, Kozhikode - 673021. Kerala. India."
 EMAIL = "kcsaleem07@gmail.com"
-MOBILE = "+91 9447 486930"
+MOBILE = "+91 8714983065"
 
 
 def main():
