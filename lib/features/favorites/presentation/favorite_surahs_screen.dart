@@ -116,7 +116,7 @@ class FavoriteSurahsScreen extends StatelessWidget {
               return Card(
                 margin: EdgeInsets.zero,
                 elevation: 0,
-                color: AppTheme.appThemeRawChips.withValues(alpha: 0.5),
+                color: Theme.of(context).cardColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
