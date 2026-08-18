@@ -26,6 +26,7 @@ class SurahChipRow extends StatelessWidget {
     (surahNumber: 55, ayahId: null),
     (surahNumber: 56, ayahId: null),
     (surahNumber: 18, ayahId: null),
+    (surahNumber: 75, ayahId: null),
   ];
 
   static String _chipLabel({
