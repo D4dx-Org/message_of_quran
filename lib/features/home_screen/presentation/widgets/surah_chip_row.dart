@@ -32,6 +32,11 @@ class SurahChipRow extends StatelessWidget {
       ayahId: null,
       malayalamFallbackLabel: 'അൽ കഹ്ഫ്',
     ),
+    (
+      surahNumber: 75,
+      ayahId: null,
+      malayalamFallbackLabel: 'അൽ ഖിയാമ',
+    ),
   ];
 
   static List<_SurahChipConfig> visibleChips({
