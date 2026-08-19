@@ -293,7 +293,15 @@ class CommonDrawer extends StatelessWidget {
                           await Future.delayed(
                             const Duration(milliseconds: 300),
                           );
+                          // The link comes first, on its own, so WhatsApp
+                          // and similar apps reliably unfurl it into a rich
+                          // preview card (title/description/icon) instead of
+                          // showing plain text — this breaks when a URL is
+                          // buried after other text or multiple links share
+                          // one message.
                           final buffer = StringBuffer()
+                            ..writeln(AppConstants.webEditionUrl)
+                            ..writeln()
                             ..writeln(
                               'Check out Quran Asad Malayalam – a beautiful Quran reader with Malayalam translation.',
                             )
