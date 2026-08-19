@@ -274,6 +274,28 @@ class CommonDrawer extends StatelessWidget {
                             sharePositionOrigin: sharePositionOrigin,
                           );
                         },
+                      )
+                      else
+                      _DrawerTile(
+                        title: 'Share Web',
+                        icon: Icons.share_outlined,
+                        onTapWithContext: (tileContext) async {
+                          final sharePositionOrigin =
+                              _sharePositionOriginFor(tileContext);
+                          Navigator.pop(context);
+                          await Future.delayed(
+                            const Duration(milliseconds: 300),
+                          );
+                          final buffer = StringBuffer()
+                            ..writeln(
+                              'Check out Quran Asad Malayalam – a beautiful Quran reader with Malayalam translation.',
+                            )
+                            ..writeln(AppConstants.webEditionUrl);
+                          await Share.share(
+                            buffer.toString().trimRight(),
+                            sharePositionOrigin: sharePositionOrigin,
+                          );
+                        },
                       ),
                       _DrawerTile(
                         title: 'Settings',
