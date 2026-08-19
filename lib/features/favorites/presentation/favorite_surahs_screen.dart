@@ -141,6 +141,7 @@ class _FavoriteSurahsScreenState extends State<FavoriteSurahsScreen> {
                     title,
                     style: AppTextTheme.localizedLabel(
                       isMalayalam: isMalayalam,
+                      color: Colors.black87,
                       fontWeight: FontWeight.w700,
                       fontSize: 15,
                     ),
@@ -151,6 +152,7 @@ class _FavoriteSurahsScreenState extends State<FavoriteSurahsScreen> {
                           subtitle,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(color: Colors.black54),
                         ),
                   trailing: IconButton(
                     tooltip: isMalayalam
