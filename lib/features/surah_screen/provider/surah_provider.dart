@@ -330,14 +330,20 @@ class SurahProvider extends ChangeNotifier {
     }
 
     buffer.writeln();
-    final iOSLine = AppConstants.iosStoreUrl.isEmpty
-      ? 'iOS :'
-      : 'iOS : ${AppConstants.iosStoreUrl}';
-    buffer.writeln('Source : ${AppConstants.appName}');
-    buffer.writeln('Android : ${AppConstants.androidStoreUrl}');
-    buffer.writeln(iOSLine);
-    buffer.writeln('powered by : D4DX Innovations');
+    buffer.write(_shareFooter());
     return buffer.toString().trimRight();
+  }
+
+  String _shareFooter() {
+    final iOSLine = AppConstants.iosStoreUrl.isEmpty
+        ? 'iOS :'
+        : 'iOS : ${AppConstants.iosStoreUrl}';
+    return [
+      'Source : ${AppConstants.appName}',
+      'Android : ${AppConstants.androidStoreUrl}',
+      iOSLine,
+      'powered by : D4DX Innovations',
+    ].join('\n');
   }
 
   String getAyahText(int ayahNumber) {
@@ -346,6 +352,52 @@ class SurahProvider extends ChangeNotifier {
 
   String getSelectedText() {
     return _buildAyahExportText(_selectedAyahs);
+  }
+
+  /// Builds share text for a single ayah looked up directly from the
+  /// database by surah/ayah number, independent of whatever surah this
+  /// provider currently has loaded — used by the Mushaf reader, which can
+  /// show a different surah than the one last opened via the surah screen.
+  Future<String> buildShareTextForVerse(
+    int surahNumber,
+    int ayahNumber,
+  ) async {
+    final surah = await SurahDbHelper.getSurahByNumber(surahNumber);
+    final arabicBlock = await ArabicBlockDbHelper.getArabicBlockByVerse(
+      surahNumber,
+      ayahNumber,
+    );
+    final translationBlock =
+        await TranslationBlockDbHelper.getTranslationBlockByVerse(
+      surahNumber,
+      ayahNumber,
+      malayalam: _isMalayalam,
+    );
+
+    final arabicText = (arabicBlock?.arabicText ?? '').trim();
+    final translationText = _stripLegacyTranslationPrefix(
+      _cleanTranslationText(translationBlock?.translationText ?? ''),
+    );
+    final surahName = _isMalayalam
+        ? (surah?.malayalamName ?? '')
+        : (surah?.name ?? '');
+
+    final buffer = StringBuffer();
+    if (surahName.isNotEmpty) {
+      buffer.writeln(surahName);
+      buffer.writeln();
+    }
+    buffer.writeln('Ayah $ayahNumber');
+    if (arabicText.isNotEmpty) {
+      buffer.writeln(_formatArabicTextForExport(arabicText));
+    }
+    if (translationText.isNotEmpty) {
+      if (arabicText.isNotEmpty) buffer.writeln();
+      buffer.writeln(translationText);
+    }
+    buffer.writeln();
+    buffer.write(_shareFooter());
+    return buffer.toString().trimRight();
   }
 
   SurahProvider() {

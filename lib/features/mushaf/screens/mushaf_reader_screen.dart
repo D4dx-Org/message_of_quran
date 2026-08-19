@@ -322,9 +322,10 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
   }
 
   void _shareVerse(int suraNo, int ayaNo) async {
-    const appName = 'Quran Asad Malayalam';
-    final shareText = 'Verse: $suraNo:$ayaNo\n\nShared via $appName';
     try {
+      final shareText = await context
+          .read<SurahProvider>()
+          .buildShareTextForVerse(suraNo, ayaNo);
       await Share.share(shareText);
     } catch (e) {
       if (mounted) {
