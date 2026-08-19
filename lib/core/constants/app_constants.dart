@@ -12,4 +12,7 @@ class AppConstants {
       'https://play.google.com/store/apps/details?id=com.d4dx.quranasadmalayalam';
   static const String iosStoreUrl =
       'https://apps.apple.com/in/app/quran-asad-malayalam/id6773297937';
+
+  /// Live web edition, opened from the drawer's "Web Edition" entry.
+  static const String webEditionUrl = 'https://quranasadmalayalam.in';
 }

@@ -310,6 +310,24 @@ class CommonDrawer extends StatelessWidget {
                         },
                       ),
                       _DrawerTile(
+                        title: isMalayalam ? 'വെബ് പതിപ്പ്' : 'Web Edition',
+                        icon: Icons.language_outlined,
+                        isMalayalam: isMalayalam,
+                        onTap: () async {
+                          Navigator.pop(context);
+                          try {
+                            await launchUrl(
+                              Uri.parse(AppConstants.webEditionUrl),
+                              mode: LaunchMode.externalApplication,
+                            );
+                          } catch (e) {
+                            debugPrint(
+                              'Drawer: failed to launch web edition URL — $e',
+                            );
+                          }
+                        },
+                      ),
+                      _DrawerTile(
                         title: 'Settings',
                         icon: Icons.settings_outlined,
                         assetPath: 'assets/icons/settings-img.png',
