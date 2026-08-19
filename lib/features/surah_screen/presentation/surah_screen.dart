@@ -1435,6 +1435,24 @@ class _SurahScreenState extends State<SurahScreen> {
                                     width: 36,
                                     child: IconButton(
                                       icon: const Icon(
+                                        Icons.share_outlined,
+                                        size: 20,
+                                      ),
+                                      tooltip: isMl ? 'പങ്കിടുക' : 'Share',
+                                      onPressed: () => _shareSurahInfo(
+                                        surahNumber: surah.surahNumber,
+                                        surahTitle: surahTitle,
+                                        isMl: isMl,
+                                      ),
+                                      padding: EdgeInsets.zero,
+                                      visualDensity: VisualDensity.compact,
+                                      color: primaryColor,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 36,
+                                    child: IconButton(
+                                      icon: const Icon(
                                         Icons.close_rounded,
                                         size: 20,
                                       ),
@@ -1525,6 +1543,17 @@ class _SurahScreenState extends State<SurahScreen> {
                                     itemCount: prefaceList.length,
                                     itemBuilder: (_, i) {
                                       final preface = prefaceList[i];
+                                      final bodyStyle =
+                                          AppTextTheme.localizedBody(
+                                            isMalayalam: isMl,
+                                            fontSize: 14,
+                                            height: 1.6,
+                                            color: colorScheme.onSurface,
+                                          );
+                                      final (firstSentence, rest) =
+                                          _splitFirstSentence(
+                                        preface.prefaceText,
+                                      );
                                       return Padding(
                                         padding: const EdgeInsets.only(
                                           bottom: 16,
@@ -1553,13 +1582,22 @@ class _SurahScreenState extends State<SurahScreen> {
                                                       ),
                                                 ),
                                               ),
-                                            SelectableText(
-                                              preface.prefaceText,
-                                              style: AppTextTheme.localizedBody(
-                                                isMalayalam: isMl,
-                                                fontSize: 14,
-                                                height: 1.6,
-                                                color: colorScheme.onSurface,
+                                            SelectableText.rich(
+                                              TextSpan(
+                                                children: [
+                                                  TextSpan(
+                                                    text: firstSentence,
+                                                    style: bodyStyle.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  if (rest.isNotEmpty)
+                                                    TextSpan(
+                                                      text: rest,
+                                                      style: bodyStyle,
+                                                    ),
+                                                ],
                                               ),
                                               textAlign: isMl
                                                   ? TextAlign.start
@@ -1585,6 +1623,47 @@ class _SurahScreenState extends State<SurahScreen> {
         );
       },
     );
+  }
+
+  /// Splits [text] into its first sentence (ending in `.`, `!`, or `?`) and
+  /// the remainder, so the caller can render the opening sentence bold.
+  /// Falls back to the first line, then the whole text, if no sentence
+  /// terminator is found.
+  (String, String) _splitFirstSentence(String text) {
+    final match = RegExp(r'^(.*?[.!?])(\s+|$)').firstMatch(text);
+    if (match != null) {
+      return (match.group(1)!, text.substring(match.end));
+    }
+    final newlineIndex = text.indexOf('\n');
+    if (newlineIndex != -1) {
+      return (
+        text.substring(0, newlineIndex),
+        text.substring(newlineIndex + 1),
+      );
+    }
+    return (text, '');
+  }
+
+  Future<void> _shareSurahInfo({
+    required int surahNumber,
+    required String surahTitle,
+    required bool isMl,
+  }) async {
+    final prefaceList = await PrefaceDbHelper.getPrefaceBySurahId(
+      surahNumber,
+      malayalam: isMl,
+    );
+    final buffer = StringBuffer()
+      ..writeln(surahTitle)
+      ..writeln();
+    for (final preface in prefaceList) {
+      if (preface.prefaceSubTitle.isNotEmpty) {
+        buffer.writeln(preface.prefaceSubTitle);
+      }
+      buffer.writeln(preface.prefaceText);
+      buffer.writeln();
+    }
+    await Share.share(buffer.toString().trimRight());
   }
 
   Widget _infoChip(
