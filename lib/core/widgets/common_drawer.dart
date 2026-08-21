@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
@@ -298,9 +300,15 @@ class CommonDrawer extends StatelessWidget {
                           // preview card (title/description/icon) instead of
                           // showing plain text — this breaks when a URL is
                           // buried after other text or multiple links share
-                          // one message.
+                          // one message. It must be the store link matching
+                          // this device's platform, not the website — this
+                          // tile shares the *app*.
+                          final primaryStoreUrl =
+                              Platform.isIOS && AppConstants.iosStoreUrl.isNotEmpty
+                              ? AppConstants.iosStoreUrl
+                              : AppConstants.androidStoreUrl;
                           final buffer = StringBuffer()
-                            ..writeln(AppConstants.webEditionUrl)
+                            ..writeln(primaryStoreUrl)
                             ..writeln()
                             ..writeln(
                               'Check out Quran Asad Malayalam – a beautiful Quran reader with Malayalam translation.',
