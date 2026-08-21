@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
@@ -265,16 +264,15 @@ class CommonDrawer extends StatelessWidget {
                           // preview card (title/description/icon) instead of
                           // showing plain text — this breaks when a URL is
                           // buried after other text or multiple links share
-                          // one message. It must be the store link matching
-                          // this device's platform, not the website — this
-                          // tile shares the *app*.
-                          final primaryStoreUrl =
-                              defaultTargetPlatform == TargetPlatform.iOS &&
-                                  AppConstants.iosStoreUrl.isNotEmpty
-                              ? AppConstants.iosStoreUrl
-                              : AppConstants.androidStoreUrl;
+                          // one message. It's the website link rather than a
+                          // direct store link because Google blocks
+                          // WhatsApp's preview bot from reading Play Store
+                          // pages' metadata (confirmed: even a bare Play
+                          // Store link typed directly into WhatsApp shows no
+                          // title/icon, only the raw URL) — the store links
+                          // still follow below for the recipient to tap.
                           final buffer = StringBuffer()
-                            ..writeln(primaryStoreUrl)
+                            ..writeln(AppConstants.webEditionUrl)
                             ..writeln()
                             ..writeln(
                               'Check out Quran Asad Malayalam – a beautiful Quran reader with Malayalam translation.',
