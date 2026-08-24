@@ -1,12 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
 
 enum PlayMode { singleBlock, continuous }
 
 class ReciterInfo {
   final String name;
   final String folderName;
-  const ReciterInfo({required this.name, required this.folderName});
+  /// Overrides the default everyayah.com URL pattern when a reciter's
+  /// audio is hosted elsewhere with a different naming scheme.
+  final String Function(int surahNumber, int ayahId)? urlBuilder;
+  const ReciterInfo({
+    required this.name,
+    required this.folderName,
+    this.urlBuilder,
+  });
+}
+
+String _thafheemAudioUrl(int surahNumber, int ayahId) {
+  final surah = surahNumber.toString().padLeft(3, '0');
+  final ayah = ayahId.toString().padLeft(3, '0');
+  return '${ApiConstants.thafheemAudioBaseUrl}/al-afasy/QA${surah}_$ayah.ogg';
 }
 
 class PlaySettingsProvider extends ChangeNotifier {
@@ -51,6 +65,10 @@ class PlaySettingsProvider extends ChangeNotifier {
         name: 'Muhammad Siddiq Al-Minshawi (Mujawwad)',
         folderName: 'Minshawy_Mujawwad_192kbps'),
     ReciterInfo(name: 'Saad Al-Ghamdi', folderName: 'Ghamadi_40kbps'),
+    ReciterInfo(
+        name: 'Mishary Rashid Al-Afasy',
+        folderName: 'al-afasy',
+        urlBuilder: _thafheemAudioUrl),
   ];
 
   PlayMode _playMode = PlayMode.continuous;
