@@ -641,48 +641,60 @@ class _DrawerLinkTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scale = ResponsiveHelper.scaleFactor(context);
+    // Muhammad Asad is this app's own translation, not an external site —
+    // an empty url means "go to our home page in English" instead of
+    // launching a link.
+    final isInternal = url.isEmpty;
 
-    return HoverLink(
-      url: url,
-      child: ListTile(
-        onTap: () async {
-          Navigator.pop(context);
-          try {
-            await launchUrl(
-              Uri.parse(url),
-              mode: LaunchMode.externalApplication,
-            );
-          } catch (e) {
-            debugPrint('Drawer: failed to launch link — $e');
-          }
-        },
-        leading: Text(
-          '•',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-            fontSize: 14,
-          ),
+    final tile = ListTile(
+      onTap: () async {
+        Navigator.pop(context);
+        if (isInternal) {
+          final languageProvider = context.read<LanguageProvider>();
+          await languageProvider.setLanguage(LanguageProvider.english);
+          if (!context.mounted) return;
+          _navigateFromDrawer(context, '/');
+          return;
+        }
+        try {
+          await launchUrl(
+            Uri.parse(url),
+            mode: LaunchMode.externalApplication,
+          );
+        } catch (e) {
+          debugPrint('Drawer: failed to launch link — $e');
+        }
+      },
+      leading: Text(
+        '•',
+        style: theme.textTheme.bodyMedium?.copyWith(
+          fontWeight: FontWeight.w700,
+          fontSize: 14,
         ),
-        title: Text(
-          title,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w400,
-            fontSize: 13,
-          ),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-        ),
-        trailing: Icon(
-          Icons.open_in_new,
-          size: 16 * scale,
-          color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
-        ),
-        contentPadding: EdgeInsets.only(left: 56 * scale, right: 16 * scale),
-        minLeadingWidth: 12 * scale,
-        horizontalTitleGap: 6 * scale,
-        dense: true,
-        visualDensity: const VisualDensity(vertical: -4),
       ),
+      title: Text(
+        title,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          fontWeight: FontWeight.w400,
+          fontSize: 13,
+        ),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+      trailing: isInternal
+          ? null
+          : Icon(
+              Icons.open_in_new,
+              size: 16 * scale,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
+            ),
+      contentPadding: EdgeInsets.only(left: 56 * scale, right: 16 * scale),
+      minLeadingWidth: 12 * scale,
+      horizontalTitleGap: 6 * scale,
+      dense: true,
+      visualDensity: const VisualDensity(vertical: -4),
     );
+
+    return isInternal ? tile : HoverLink(url: url, child: tile);
   }
 }
