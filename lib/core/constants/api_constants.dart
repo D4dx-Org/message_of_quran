@@ -1,5 +1,6 @@
 class ApiConstants {
   static const String everyAyahAudioBaseUrl = 'https://everyayah.com/data';
+  static const String thafheemAudioBaseUrl = 'https://thafheem.net/audio/qirath';
   static const String bookplusUrl = 'https://www.bookplus.co.in';
   static const String d4dxWebsiteUrl = 'https://d4dx.co/';
   static const String privacyPolicyUrl = 'https://d4dx.co/privacy-policy/';
