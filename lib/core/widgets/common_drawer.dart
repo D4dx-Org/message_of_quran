@@ -684,9 +684,23 @@ class _DrawerLinkTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scale = ResponsiveHelper.scaleFactor(context);
+    // Muhammad Asad is this app's own translation, not an external site —
+    // an empty url means "go to our home page in English" instead of
+    // launching a link.
+    final isInternal = url.isEmpty;
 
     return ListTile(
       onTap: () async {
+        if (isInternal) {
+          await context.read<LanguageProvider>().setLanguage(
+                LanguageProvider.english,
+              );
+          if (!context.mounted) return;
+          context.read<HomeProvider>().changeIndex(0);
+          Navigator.pop(context);
+          Navigator.popUntil(context, (route) => route.isFirst);
+          return;
+        }
         Navigator.pop(context);
         try {
           await launchUrl(
@@ -713,11 +727,13 @@ class _DrawerLinkTile extends StatelessWidget {
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
       ),
-      trailing: Icon(
-        Icons.open_in_new,
-        size: 16 * scale,
-        color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
-      ),
+      trailing: isInternal
+          ? null
+          : Icon(
+              Icons.open_in_new,
+              size: 16 * scale,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.55),
+            ),
       contentPadding: EdgeInsets.only(left: 56 * scale, right: 16 * scale),
       minLeadingWidth: 12 * scale,
       horizontalTitleGap: 6 * scale,
