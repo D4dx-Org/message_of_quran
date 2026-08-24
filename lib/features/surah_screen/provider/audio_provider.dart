@@ -69,6 +69,9 @@ class AudioProvider extends ChangeNotifier {
   }
 
   static String buildUrl(ReciterInfo reciter, int surahNumber, int ayahId) {
+    if (reciter.urlBuilder != null) {
+      return reciter.urlBuilder!(surahNumber, ayahId);
+    }
     final surah = surahNumber.toString().padLeft(3, '0');
     final ayah = ayahId.toString().padLeft(3, '0');
     return '${ApiConstants.everyAyahAudioBaseUrl}/${reciter.folderName}/$surah$ayah.mp3';
