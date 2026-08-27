@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
@@ -32,6 +33,13 @@ class _AboutScreenState extends State<AboutScreen> {
 
   Future<void> _launchD4dxUrl() async {
     final uri = Uri.parse('https://d4dx.co/');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  Future<void> _launchLink(LinkableElement link) async {
+    final uri = Uri.parse(link.url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
@@ -71,14 +79,25 @@ class _AboutScreenState extends State<AboutScreen> {
                     children: [
                       if (about.description != null &&
                           about.description!.isNotEmpty)
-                        Text(
-                          about.description!,
+                        Linkify(
+                          text: about.description!,
+                          onOpen: _launchLink,
                           textAlign: TextAlign.left,
                           style: AppTextTheme.localizedBody(
                             isMalayalam: isMalayalam,
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
                             height: 1.7,
+                          ),
+                          linkStyle: AppTextTheme.localizedBody(
+                            isMalayalam: isMalayalam,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            height: 1.7,
+                            color: Colors.blue,
+                          ).copyWith(
+                            decoration: TextDecoration.underline,
+                            decorationColor: Colors.blue,
                           ),
                         ),
                       const SizedBox(height: 16),

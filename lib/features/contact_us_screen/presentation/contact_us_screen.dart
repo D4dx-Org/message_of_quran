@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
@@ -47,6 +48,13 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
     }
   }
 
+  Future<void> _launchLink(LinkableElement link) async {
+    final uri = Uri.parse(link.url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isMalayalam =
@@ -80,12 +88,22 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (description != null) ...[
-                      Text(
-                        description,
+                      Linkify(
+                        text: description,
+                        onOpen: _launchLink,
                         style: AppTextTheme.localizedBody(
                           isMalayalam: isMalayalam,
                           fontSize: 15,
                           height: 1.8,
+                        ),
+                        linkStyle: AppTextTheme.localizedBody(
+                          isMalayalam: isMalayalam,
+                          fontSize: 15,
+                          height: 1.8,
+                          color: Colors.blue,
+                        ).copyWith(
+                          decoration: TextDecoration.underline,
+                          decorationColor: Colors.blue,
                         ),
                       ),
                       const SizedBox(height: 32),

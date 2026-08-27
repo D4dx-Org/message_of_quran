@@ -38,11 +38,26 @@ class BookmarkScreen extends StatelessWidget {
     return _isMushafBookmark(bookmark) ? "Mus'haf Block" : 'Quran Block';
   }
 
-  String _bookmarkTitle(AyahBookmarkModel bookmark) {
-    if (_isMushafPageBookmark(bookmark)) {
-      return bookmark.surahName ?? 'Surah ${bookmark.surahNumber}';
-    }
-    return bookmark.surahName ?? 'Surah ${bookmark.surahNumber}';
+  String? _liveSurahName(
+    AyahBookmarkModel bookmark,
+    SurahProvider surahProvider,
+  ) {
+    final idx = surahProvider.surahList.indexWhere(
+      (s) => s.surahNumber == bookmark.surahNumber,
+    );
+    if (idx < 0) return null;
+    final surah = surahProvider.surahList[idx];
+    final name = surahProvider.isMalayalam ? surah.malayalamName : surah.name;
+    return name.isNotEmpty ? name : null;
+  }
+
+  String _bookmarkTitle(
+    AyahBookmarkModel bookmark,
+    SurahProvider surahProvider,
+  ) {
+    return _liveSurahName(bookmark, surahProvider) ??
+        bookmark.surahName ??
+        'Surah ${bookmark.surahNumber}';
   }
 
   String _bookmarkDetails(AyahBookmarkModel bookmark) {
@@ -139,16 +154,20 @@ class BookmarkScreen extends StatelessWidget {
     );
   }
 
-  String _bookmarkSemanticsLabel(AyahBookmarkModel bookmark) {
+  String _bookmarkSemanticsLabel(
+    AyahBookmarkModel bookmark,
+    SurahProvider surahProvider,
+  ) {
+    final surahName = _bookmarkTitle(bookmark, surahProvider);
     if (_isMushafPageBookmark(bookmark)) {
       final page = bookmark.pageNumber;
       final pageLabel = page != null ? 'Page $page, ' : '';
       final label = bookmark.label;
       final labelSuffix = label != null && label.isNotEmpty ? ', $label' : '';
-      return '$pageLabel${bookmark.surahName ?? 'Surah ${bookmark.surahNumber}'}, Ayah ${bookmark.ayahId}$labelSuffix';
+      return '$pageLabel$surahName, Ayah ${bookmark.ayahId}$labelSuffix';
     }
 
-    return '${bookmark.surahName ?? 'Surah ${bookmark.surahNumber}'}, Ayah ${bookmark.ayahId}${bookmark.label != null && bookmark.label!.isNotEmpty ? ', ${bookmark.label}' : ''}';
+    return '$surahName, Ayah ${bookmark.ayahId}${bookmark.label != null && bookmark.label!.isNotEmpty ? ', ${bookmark.label}' : ''}';
   }
 
   String _editSemanticsLabel(AyahBookmarkModel bookmark) {
@@ -215,7 +234,7 @@ class BookmarkScreen extends StatelessWidget {
                             padding: const EdgeInsets.only(bottom: 8),
                             child: Semantics(
                               button: true,
-                              label: _bookmarkSemanticsLabel(bookmark),
+                              label: _bookmarkSemanticsLabel(bookmark, value),
                               hint:
                                   'Double tap to open. Use the action buttons to edit or delete.',
                               child: SettingsScreenCard(
@@ -338,7 +357,7 @@ class BookmarkScreen extends StatelessWidget {
                                                 ],
                                               ),
                                               Text(
-                                                _bookmarkTitle(bookmark),
+                                                _bookmarkTitle(bookmark, value),
                                                 softWrap: true,
                                                 style: theme
                                                     .textTheme
