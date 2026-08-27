@@ -46,6 +46,13 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
     final isValid = _formKey.currentState?.validate() ?? false;
     if (!isValid || _selectedRating == null) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text('Please fill in all required fields.'),
+          ),
+        );
       return;
     }
 
