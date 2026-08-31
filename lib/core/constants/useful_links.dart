@@ -25,7 +25,8 @@ class UsefulLinkSection {
 }
 
 /// External resources shown in the drawer as individual expandable sections.
-/// Order: English translations, Malayalam translations, Hadith collections.
+/// Order: English translations, Urdu translations, Malayalam translations,
+/// Hadith collections.
 const List<UsefulLinkSection> usefulLinksSections = [
   UsefulLinkSection(
     icon: Iconsax.book_1,
@@ -42,6 +43,20 @@ const List<UsefulLinkSection> usefulLinksSections = [
       UsefulLinkItem(
         title: 'Muhammad Marmaduke Pickthall',
         url: 'https://www.alim.org/translation/picktal/1/',
+      ),
+      UsefulLinkItem(
+        title: "Thafheemul Qur'an",
+        url: 'https://thafheem.net/?lang=E',
+      ),
+    ],
+  ),
+  UsefulLinkSection(
+    icon: Iconsax.book_1,
+    title: "Urdu Translations",
+    links: [
+      UsefulLinkItem(
+        title: "Thafheemul Qur'an",
+        url: 'https://thafheem.net/?lang=ur',
       ),
     ],
   ),
