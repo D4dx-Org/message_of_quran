@@ -140,8 +140,8 @@ class _TranslatorScreenState extends State<TranslatorScreen> with RouteAware {
                       ),
                     ),
                   BioWithFloatingImage(
-                    imagePath: '${ApiConstants.imageCdnBaseUrl}/kc-saleem.png',
-                    thumbnailPath: 'assets/images/kc-saleem_thumb.png',
+                    imagePath: '${ApiConstants.imageCdnBaseUrl}/kc-saleem-photo.jpeg',
+                    thumbnailPath: 'assets/images/kc-saleem-photo_thumb.jpeg',
                     bioText: (author.bio != null && author.bio!.isNotEmpty)
                         ? author.bio!
                             .split('\n')
