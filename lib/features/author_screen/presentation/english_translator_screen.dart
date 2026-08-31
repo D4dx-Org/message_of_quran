@@ -72,10 +72,14 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: Image.asset(
-                          'assets/images/kc-saleem.png',
+                          'assets/images/kc-saleem-photo.jpeg',
                           width: 300,
                           height: 300,
                           fit: BoxFit.cover,
+                          // Portrait headshot: the face sits high in the frame,
+                          // so anchor the square crop to the top rather than
+                          // letting a centred crop clip the top of the head.
+                          alignment: Alignment.topCenter,
                         ),
                       ),
                     ),
