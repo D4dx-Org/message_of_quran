@@ -119,65 +119,66 @@ class _TranslatorScreenState extends State<TranslatorScreen> with RouteAware {
               );
             }
             final author = provider.aboutAuthorList.first;
-            return SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (author.name != null && author.name!.isNotEmpty)
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: SelectableText(
-                          author.name!,
-                          textAlign: TextAlign.center,
-                          style: AppTextTheme.localizedTitle(
-                            isMalayalam: true,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: bodyColor,
-                          ),
+            // No scroll view here: with expandContentCard false
+            // BaseScreenLayout scrolls the page itself, and a second one
+            // would put a scrollbar inside the card.
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (author.name != null && author.name!.isNotEmpty)
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: SelectableText(
+                        author.name!,
+                        textAlign: TextAlign.center,
+                        style: AppTextTheme.localizedTitle(
+                          isMalayalam: true,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: bodyColor,
                         ),
                       ),
                     ),
-                  BioWithFloatingImage(
-                    imagePath: '${ApiConstants.imageCdnBaseUrl}/kc-saleem-photo-2026.jpeg',
-                    thumbnailPath: 'assets/images/kc-saleem-photo-2026_thumb.jpeg',
-                    bioText: (author.bio != null && author.bio!.isNotEmpty)
-                        ? author.bio!
-                            .split('\n')
-                            .where((p) => p.trim().isNotEmpty)
-                            .map((p) => p.trim())
-                            .join('\n\n')
-                        : '',
-                    textStyle: AppTextTheme.localizedBody(
-                      isMalayalam: true,
-                      fontSize: 15,
+                  ),
+                BioWithFloatingImage(
+                  imagePath: '${ApiConstants.imageCdnBaseUrl}/kc-saleem-photo-2026.jpeg',
+                  thumbnailPath: 'assets/images/kc-saleem-photo-2026_thumb.jpeg',
+                  bioText: (author.bio != null && author.bio!.isNotEmpty)
+                      ? author.bio!
+                          .split('\n')
+                          .where((p) => p.trim().isNotEmpty)
+                          .map((p) => p.trim())
+                          .join('\n\n')
+                      : '',
+                  textStyle: AppTextTheme.localizedBody(
+                    isMalayalam: true,
+                    fontSize: 15,
+                    color: bodyColor,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                   if (author.mobile != null && author.mobile!.isNotEmpty)
+                  SelectableText(
+                      author.mobile!,
+                    style: AppTextTheme.popinsDefault(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
                       color: bodyColor,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                     if (author.mobile != null && author.mobile!.isNotEmpty)
-                    SelectableText(
-                        author.mobile!,
-                      style: AppTextTheme.popinsDefault(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: bodyColor,
-                      ),
+                if (author.email != null && author.email!.isNotEmpty)
+                  SelectableText(
+                    'E-mail: ${author.email!}',
+                    style: AppTextTheme.popinsDefault(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: bodyColor,
                     ),
-                  if (author.email != null && author.email!.isNotEmpty)
-                    SelectableText(
-                      'E-mail: ${author.email!}',
-                      style: AppTextTheme.popinsDefault(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: bodyColor,
-                      ),
-                    ),
-               
-                  const SizedBox(height: 16),
-                ],
-              ),
+                  ),
+             
+                const SizedBox(height: 16),
+              ],
             );
           },
         ),

@@ -117,63 +117,64 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen>
               );
             }
             final translator = provider.translatorList.first;
-            return SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (translator.name != null && translator.name!.isNotEmpty)
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: SelectableText(
-                          translator.name!,
-                          textAlign: TextAlign.center,
-                          style: AppTextTheme.popinsDefault(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: bodyColor,
-                          ),
+            // No scroll view here: with expandContentCard false
+            // BaseScreenLayout scrolls the page itself, and a second one
+            // would put a scrollbar inside the card.
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (translator.name != null && translator.name!.isNotEmpty)
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: SelectableText(
+                        translator.name!,
+                        textAlign: TextAlign.center,
+                        style: AppTextTheme.popinsDefault(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: bodyColor,
                         ),
                       ),
                     ),
-                  BioWithFloatingImage(
-                    imagePath: '${ApiConstants.imageCdnBaseUrl}/kc-saleem-photo-2026.jpeg',
-                    thumbnailPath: 'assets/images/kc-saleem-photo-2026_thumb.jpeg',
-                    bioText: (translator.bio != null &&
-                            translator.bio!.isNotEmpty)
-                        ? translator.bio!
-                            .split('\n')
-                            .where((p) => p.trim().isNotEmpty)
-                            .map((p) => p.trim())
-                            .join('\n\n')
-                        : '',
-                    textStyle:
-                        AppTextTheme.popinsDefault(fontSize: 15, color: bodyColor),
                   ),
-                  const SizedBox(height: 16),
-                  if (translator.address != null &&
-                      translator.address!.isNotEmpty)
-                    SelectableText(
-                      'Address: ${translator.address!}',
+                BioWithFloatingImage(
+                  imagePath: '${ApiConstants.imageCdnBaseUrl}/kc-saleem-photo-2026.jpeg',
+                  thumbnailPath: 'assets/images/kc-saleem-photo-2026_thumb.jpeg',
+                  bioText: (translator.bio != null &&
+                          translator.bio!.isNotEmpty)
+                      ? translator.bio!
+                          .split('\n')
+                          .where((p) => p.trim().isNotEmpty)
+                          .map((p) => p.trim())
+                          .join('\n\n')
+                      : '',
+                  textStyle:
+                      AppTextTheme.popinsDefault(fontSize: 15, color: bodyColor),
+                ),
+                const SizedBox(height: 16),
+                if (translator.address != null &&
+                    translator.address!.isNotEmpty)
+                  SelectableText(
+                    'Address: ${translator.address!}',
+                    style: AppTextTheme.popinsDefault(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: bodyColor),
+                  ),
+                if (translator.email != null && translator.email!.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: SelectableText(
+                      'Email: ${translator.email!}',
                       style: AppTextTheme.popinsDefault(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: bodyColor),
                     ),
-                  if (translator.email != null && translator.email!.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: SelectableText(
-                        'Email: ${translator.email!}',
-                        style: AppTextTheme.popinsDefault(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: bodyColor),
-                      ),
-                    ),
-                  const SizedBox(height: 16),
-                ],
-              ),
+                  ),
+                const SizedBox(height: 16),
+              ],
             );
           },
         ),
