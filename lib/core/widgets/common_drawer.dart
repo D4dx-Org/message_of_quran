@@ -208,7 +208,7 @@ class CommonDrawer extends StatelessWidget {
                               _DrawerLinkTile(
                                 title: link.title,
                                 url: link.url,
-                                internalIsMalayalam: link.internalIsMalayalam,
+                                isMalayalam: link.isMalayalam,
                               ),
                           ],
                         ),
@@ -662,12 +662,12 @@ class _DrawerLinkTile extends StatelessWidget {
   const _DrawerLinkTile({
     required this.title,
     required this.url,
-    this.internalIsMalayalam = false,
+    this.isMalayalam = false,
   });
 
   final String title;
   final String url;
-  final bool internalIsMalayalam;
+  final bool isMalayalam;
 
   @override
   Widget build(BuildContext context) {
@@ -684,7 +684,7 @@ class _DrawerLinkTile extends StatelessWidget {
         if (isInternal) {
           final languageProvider = context.read<LanguageProvider>();
           await languageProvider.setLanguage(
-            internalIsMalayalam
+            isMalayalam
                     ? LanguageProvider.malayalam
                     : LanguageProvider.english,
           );
@@ -710,9 +710,11 @@ class _DrawerLinkTile extends StatelessWidget {
       ),
       title: Text(
         title,
-        style: theme.textTheme.bodyMedium?.copyWith(
-          fontWeight: FontWeight.w400,
+        style: AppTextTheme.localizedLabel(
+          isMalayalam: isMalayalam,
+          color: theme.textTheme.bodyMedium?.color,
           fontSize: 13,
+          fontWeight: FontWeight.w400,
         ),
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
