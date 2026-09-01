@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:go_router/go_router.dart';
+import 'package:the_message_of_the_quran/core/widgets/linked_body_text.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
@@ -51,8 +52,8 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
     }
   }
 
-  Future<void> _launchLink(LinkableElement link) async {
-    final uri = Uri.parse(link.url);
+  Future<void> _openUrl(String url) async {
+    final uri = Uri.parse(url.startsWith('http') ? url : 'https://$url');
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
@@ -91,9 +92,13 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (description != null) ...[
-                      SelectableLinkify(
+                      LinkedBodyText(
                         text: description,
-                        onOpen: _launchLink,
+                        onUrlTap: _openUrl,
+                        anchors: {
+                          'DONATE NOW': () => context.push('/donate'),
+                          "(Mus'haf)": () => context.push('/mushaf'),
+                        },
                         style: AppTextTheme.localizedBody(
                           isMalayalam: isMalayalam,
                           fontSize: 15,

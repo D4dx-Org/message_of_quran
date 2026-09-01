@@ -223,6 +223,15 @@ class CommonDrawer extends StatelessWidget {
                         ],
                       ),
                       _DrawerTile(
+                        title: 'Donate',
+                        icon: Icons.volunteer_activism_outlined,
+                        url: '/donate',
+                        onTap: () {
+                          Navigator.pop(context);
+                          _navigateFromDrawer(context, '/donate');
+                        },
+                      ),
+                      _DrawerTile(
                         title: 'Feedback',
                         icon: Icons.mail_outline,
                         url: '/feedback',
