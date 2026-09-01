@@ -248,6 +248,23 @@ class CommonDrawer extends StatelessWidget {
                               ),
                           ],
                         ),
+                      _DrawerTile(
+                        title: 'Compare Translations',
+                        icon: Icons.compare_arrows_rounded,
+                        onTap: () async {
+                          Navigator.pop(context);
+                          try {
+                            await launchUrl(
+                              Uri.parse(AppConstants.compareTranslationsUrl),
+                              mode: LaunchMode.externalApplication,
+                            );
+                          } catch (e) {
+                            debugPrint(
+                              'Drawer: failed to launch compare translations URL — $e',
+                            );
+                          }
+                        },
+                      ),
                     const  _DrawerExpansionTile(
                         title: 'Kids',
                         icon: Iconsax.magic_star,
