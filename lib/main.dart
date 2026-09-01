@@ -235,9 +235,18 @@ Future<void> _initializeDeferredMobileServices() async {
 
 Future<void> _initializeAppServices() async {
   await _runStartupStep(
+    'loading saved language',
+    LanguageProvider.loadSaved,
+  );
+
+  await _runStartupStep(
     'initializing database services',
+    // A first launch copies the bundled ~54 MB database out of the asset
+    // bundle before it can open it, which on a phone can take well over the
+    // 20 s this used to allow — and timing out here drops the user on the
+    // error screen.
     () => DatabaseHelper.initializeServices().timeout(
-      const Duration(seconds: 20),
+      const Duration(seconds: 120),
       onTimeout: () => throw TimeoutException(
         'Database initialization timed out.',
       ),

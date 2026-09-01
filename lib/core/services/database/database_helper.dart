@@ -83,6 +83,7 @@ class DatabaseHelper {
     quranAsadDb = await initDatabase(
       name: DbConstants.quranAsadDbName,
       dbName: DbConstants.quranAsadDbName,
+      sanityTable: DbConstants.asadVersesTable,
     );
     await prefs.setInt(
       DbConstants.quranAsadDbVersionKey,
@@ -170,6 +171,7 @@ class DatabaseHelper {
   static Future<Database> initDatabase({
     required String name,
     required String dbName,
+    String? sanityTable,
   }) async {
     final path = await _databasePathFor(name);
 
@@ -195,11 +197,40 @@ class DatabaseHelper {
     }
 
     try {
+      final db = await openDatabase(path, readOnly: !kIsWeb);
+      if (await _isUsable(db, sanityTable)) return db;
+      // The file opened but has no readable content — seen on a first launch
+      // where the freshly written copy was not complete. Queries against it
+      // return nothing rather than throwing, so the app comes up with empty
+      // surahs until the next launch reopens a settled file. Re-copy instead.
+      debugPrint("database helper : Re-copying asset — opened db is unusable");
+      await db.close();
+      await copyFromAsset();
       return await openDatabase(path, readOnly: !kIsWeb);
     } catch (e) {
       debugPrint("database helper : Re-copying asset due to open failure: $e");
       await copyFromAsset();
       return await openDatabase(path, readOnly: !kIsWeb);
+    }
+  }
+
+  /// True when [sanityTable] exists and holds rows. A copy that was cut short
+  /// still opens as a valid — but empty — database, so presence alone is not
+  /// enough to trust it.
+  static Future<bool> _isUsable(Database db, String? sanityTable) async {
+    if (sanityTable == null) return true;
+    try {
+      final rows = await db.rawQuery(
+        'SELECT COUNT(*) AS c FROM $sanityTable LIMIT 1',
+      );
+      final count = Sqflite.firstIntValue(rows) ?? 0;
+      if (count == 0) {
+        debugPrint("database helper : $sanityTable is empty");
+      }
+      return count > 0;
+    } catch (e) {
+      debugPrint("database helper : sanity check on $sanityTable failed — $e");
+      return false;
     }
   }
 
