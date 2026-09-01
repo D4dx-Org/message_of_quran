@@ -15,4 +15,8 @@ class AppConstants {
 
   /// Live web edition, shared via the drawer's "Share Web" entry.
   static const String webEditionUrl = 'https://quranasadmalayalam.in';
+
+  /// Alim's side-by-side translation comparison, opened from the drawer.
+  static const String compareTranslationsUrl =
+      'https://www.alim.org/quran/compare/surah/1/1/';
 }
