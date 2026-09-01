@@ -24,6 +24,7 @@ class AudioProvider extends ChangeNotifier {
   int _playGeneration = 0;
   SurahProvider? _surahProvider;
   PlaySettingsProvider? _playSettingsProvider;
+  double? _lastAppliedSpeed;
   bool _isProgrammaticSurahTransition = false;
 
   int? _currentSurahNumber;
@@ -61,7 +62,21 @@ class AudioProvider extends ChangeNotifier {
     required PlaySettingsProvider playSettings,
   }) {
     _surahProvider = surahProvider;
+    if (identical(_playSettingsProvider, playSettings)) return;
+    _playSettingsProvider?.removeListener(_onPlaySettingsChanged);
     _playSettingsProvider = playSettings;
+    _lastAppliedSpeed = playSettings.playbackSpeed;
+    playSettings.addListener(_onPlaySettingsChanged);
+  }
+
+  /// playAyah() applies the speed when playback starts, but changing it in
+  /// Settings has to reach whatever is already playing too — otherwise the
+  /// setting appears to do nothing until the next ayah is started.
+  void _onPlaySettingsChanged() {
+    final speed = _playSettingsProvider?.playbackSpeed;
+    if (speed == null || speed == _lastAppliedSpeed) return;
+    _lastAppliedSpeed = speed;
+    setSpeed(speed);
   }
 
   void setProgrammaticSurahTransition(bool value) {
@@ -156,6 +171,7 @@ class AudioProvider extends ChangeNotifier {
       await _setAudioSourceWithFallback(playlist);
       if (gen != _playGeneration) return;
       await _player.setSpeed(playbackSpeed);
+      _lastAppliedSpeed = playbackSpeed;
       if (gen != _playGeneration) return;
 
       // Subscribe AFTER setAudioSource so the BehaviorSubject replays
@@ -487,6 +503,7 @@ class AudioProvider extends ChangeNotifier {
   @override
   void dispose() {
     _isDisposed = true;
+    _playSettingsProvider?.removeListener(_onPlaySettingsChanged);
     _playerStateSub?.cancel();
     _indexSub?.cancel();
     _handler.clearSkipDelegate(owner: this);
