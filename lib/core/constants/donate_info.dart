@@ -31,10 +31,10 @@ class DonateInfo {
   /// Suggested amounts, shown as a hint for the transfer. Rupees only — the
   /// account is an Indian one and everything here settles in INR.
   static const List<String> suggestedAmounts = [
+    '₹100',
+    '₹200',
+    '₹500',
     '₹1,000',
-    '₹2,000',
-    '₹5,000',
-    '₹10,000',
   ];
 
   static const String amountsNote =
