@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
 import 'package:the_message_of_the_quran/core/constants/app_constants.dart';
 import 'package:the_message_of_the_quran/core/constants/useful_links.dart';
+import 'package:the_message_of_the_quran/features/donate_screen/presentation/donate_screen.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
@@ -57,15 +58,14 @@ class CommonDrawer extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _DrawerBrandHeader(
-                onSupportTap: () async {
-                  try {
-                    await launchUrl(
-                      Uri.parse(' '),
-                      mode: LaunchMode.externalApplication,
-                    );
-                  } catch (e) {
-                    debugPrint('Drawer: failed to launch donate URL - $e');
-                  }
+                onSupportTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DonateScreen(),
+                    ),
+                  );
                 },
               ),
               Expanded(

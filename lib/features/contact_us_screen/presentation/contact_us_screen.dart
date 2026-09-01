@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/contact_us_screen/presentation/provider/contact_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
+import 'package:the_message_of_the_quran/core/widgets/linked_body_text.dart';
+import 'package:the_message_of_the_quran/features/donate_screen/presentation/donate_screen.dart';
+import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ContactUsScreen extends StatefulWidget {
@@ -48,11 +50,25 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
     }
   }
 
-  Future<void> _launchLink(LinkableElement link) async {
-    final uri = Uri.parse(link.url);
+  Future<void> _openUrl(String url) async {
+    final uri = Uri.parse(url.startsWith('http') ? url : 'https://$url');
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
+  }
+
+  void _openDonate() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const DonateScreen()),
+    );
+  }
+
+  // The Mus'haf is a tab of the main screen rather than a pushed route, so
+  // switch to it and unwind back to that screen.
+  void _openMushaf() {
+    context.read<HomeProvider>().changeIndex(2);
+    Navigator.popUntil(context, (route) => route.isFirst);
   }
 
   @override
@@ -88,9 +104,13 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (description != null) ...[
-                      Linkify(
+                      LinkedBodyText(
                         text: description,
-                        onOpen: _launchLink,
+                        onUrlTap: _openUrl,
+                        anchors: {
+                          'DONATE NOW': _openDonate,
+                          "(Mus'haf)": _openMushaf,
+                        },
                         style: AppTextTheme.localizedBody(
                           isMalayalam: isMalayalam,
                           fontSize: 15,
