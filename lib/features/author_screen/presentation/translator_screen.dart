@@ -79,7 +79,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: Image.asset(
-                          'assets/images/kc-saleem-photo.jpeg',
+                          'assets/images/kc-saleem-photo-2026.jpeg',
                           width: 300,
                           height: 300,
                           fit: BoxFit.cover,

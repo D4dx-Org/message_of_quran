@@ -6,10 +6,16 @@ class UsefulLinkItem {
   const UsefulLinkItem({
     required this.title,
     required this.url,
+    this.internalIsMalayalam = false,
   });
 
   final String title;
   final String url;
+
+  /// Which language an internal entry (one with an empty [url]) should switch
+  /// to before going home. Our own translation is listed under both English
+  /// and Malayalam, and each entry has to land in its own language.
+  final bool internalIsMalayalam;
 }
 
 class UsefulLinkSection {
@@ -64,6 +70,11 @@ const List<UsefulLinkSection> usefulLinksSections = [
     icon: Iconsax.book_1,
     title: "Malayalam Translations",
     links: [
+      UsefulLinkItem(
+        title: 'Muhammad Asad മുഹമ്മദ് അസദ്',
+        url: '',
+        internalIsMalayalam: true,
+      ),
       UsefulLinkItem(
         title: "Thafheemul Qur'an",
         url: 'https://thafheem.net/',
