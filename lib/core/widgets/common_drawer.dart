@@ -208,6 +208,7 @@ class CommonDrawer extends StatelessWidget {
                               _DrawerLinkTile(
                                 title: link.title,
                                 url: link.url,
+                                internalIsMalayalam: link.internalIsMalayalam,
                               ),
                           ],
                         ),
@@ -632,18 +633,23 @@ class _DrawerSubTile extends StatelessWidget {
 
 
 class _DrawerLinkTile extends StatelessWidget {
-  const _DrawerLinkTile({required this.title, required this.url});
+  const _DrawerLinkTile({
+    required this.title,
+    required this.url,
+    this.internalIsMalayalam = false,
+  });
 
   final String title;
   final String url;
+  final bool internalIsMalayalam;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scale = ResponsiveHelper.scaleFactor(context);
     // Muhammad Asad is this app's own translation, not an external site —
-    // an empty url means "go to our home page in English" instead of
-    // launching a link.
+    // an empty url means "go to our home page" in that entry's own language
+    // instead of launching a link.
     final isInternal = url.isEmpty;
 
     final tile = ListTile(
@@ -651,7 +657,11 @@ class _DrawerLinkTile extends StatelessWidget {
         Navigator.pop(context);
         if (isInternal) {
           final languageProvider = context.read<LanguageProvider>();
-          await languageProvider.setLanguage(LanguageProvider.english);
+          await languageProvider.setLanguage(
+            internalIsMalayalam
+                    ? LanguageProvider.malayalam
+                    : LanguageProvider.english,
+          );
           if (!context.mounted) return;
           _navigateFromDrawer(context, '/');
           return;

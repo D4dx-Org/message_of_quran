@@ -137,8 +137,8 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen>
                       ),
                     ),
                   BioWithFloatingImage(
-                    imagePath: '${ApiConstants.imageCdnBaseUrl}/kc-saleem-photo.jpeg',
-                    thumbnailPath: 'assets/images/kc-saleem-photo_thumb.jpeg',
+                    imagePath: '${ApiConstants.imageCdnBaseUrl}/kc-saleem-photo-2026.jpeg',
+                    thumbnailPath: 'assets/images/kc-saleem-photo-2026_thumb.jpeg',
                     bioText: (translator.bio != null &&
                             translator.bio!.isNotEmpty)
                         ? translator.bio!
