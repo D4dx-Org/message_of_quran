@@ -6,7 +6,18 @@ class LanguageProvider extends ChangeNotifier {
   static const String english = 'en';
   static const String malayalam = 'ml';
 
-  String _currentLanguage = english;
+  /// Language read from disk before any widget builds. preload() only starts
+  /// the read, so without this the first frame still reported English and
+  /// anything that captured the language once — a bookmark list fetching its
+  /// translations, say — used English even with Malayalam saved.
+  static String? _seededLanguage;
+
+  static Future<void> loadSaved() async {
+    final prefs = await (_preloadedPrefs ??= SharedPreferences.getInstance());
+    _seededLanguage = prefs.getString(_languageKey) ?? english;
+  }
+
+  String _currentLanguage = _seededLanguage ?? english;
   SharedPreferences? _prefs;
   bool _isInitialized = false;
 
@@ -29,8 +40,10 @@ class LanguageProvider extends ChangeNotifier {
   Future<void> _initialize() async {
     if (_isInitialized) return;
     _prefs = await (_preloadedPrefs ??= SharedPreferences.getInstance());
-    _currentLanguage = _prefs?.getString(_languageKey) ?? english;
+    final saved = _prefs?.getString(_languageKey) ?? english;
     _isInitialized = true;
+    if (saved == _currentLanguage) return;
+    _currentLanguage = saved;
     notifyListeners();
   }
 

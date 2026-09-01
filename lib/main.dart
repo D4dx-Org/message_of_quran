@@ -48,9 +48,11 @@ String? pendingNotificationRoute;
 const String ayahOfTheDayNotificationRoute = 'ayah_of_the_day';
 const String surahAlKahfNotificationRoute = 'surah_18';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  LanguageProvider.preload();
+  // Awaited rather than merely started, so the first frame already knows the
+  // saved language instead of reporting English until the read lands.
+  await LanguageProvider.loadSaved();
   if (kIsWeb) {
     usePathUrlStrategy();
   }
