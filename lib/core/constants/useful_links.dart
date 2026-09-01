@@ -33,6 +33,10 @@ const List<UsefulLinkSection> usefulLinksSections = [
     title: "English Translations",
     links: [
       UsefulLinkItem(
+        title: "Thafheemul Qur'an",
+        url: 'https://thafheem.net/?lang=E',
+      ),
+      UsefulLinkItem(
         title: 'Muhammad Asad',
         url: '',
       ),
@@ -43,10 +47,6 @@ const List<UsefulLinkSection> usefulLinksSections = [
       UsefulLinkItem(
         title: 'Muhammad Marmaduke Pickthall',
         url: 'https://www.alim.org/translation/picktal/1/',
-      ),
-      UsefulLinkItem(
-        title: "Thafheemul Qur'an",
-        url: 'https://thafheem.net/?lang=E',
       ),
     ],
   ),
