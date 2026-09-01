@@ -6,16 +6,17 @@ class UsefulLinkItem {
   const UsefulLinkItem({
     required this.title,
     required this.url,
-    this.internalIsMalayalam = false,
+    this.isMalayalam = false,
   });
 
   final String title;
   final String url;
 
-  /// Which language an internal entry (one with an empty [url]) should switch
-  /// to before going home. Our own translation is listed under both English
-  /// and Malayalam, and each entry has to land in its own language.
-  final bool internalIsMalayalam;
+  /// Marks an entry as Malayalam: it is rendered in the Malayalam font, and
+  /// an internal entry (one with an empty [url]) switches the app to Malayalam
+  /// before going home. Our own translation is listed under both English and
+  /// Malayalam, and each entry has to land in its own language.
+  final bool isMalayalam;
 }
 
 class UsefulLinkSection {
@@ -71,9 +72,9 @@ const List<UsefulLinkSection> usefulLinksSections = [
     title: "Malayalam Translations",
     links: [
       UsefulLinkItem(
-        title: 'Muhammad Asad മുഹമ്മദ് അസദ്',
+        title: 'മുഹമ്മദ് അസദ്',
         url: '',
-        internalIsMalayalam: true,
+        isMalayalam: true,
       ),
       UsefulLinkItem(
         title: "Thafheemul Qur'an",
