@@ -5,8 +5,30 @@ import 'package:the_message_of_the_quran/core/constants/donate_info.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 
-class DonateScreen extends StatelessWidget {
+class DonateScreen extends StatefulWidget {
   const DonateScreen({super.key});
+
+  @override
+  State<DonateScreen> createState() => _DonateScreenState();
+}
+
+class _DonateScreenState extends State<DonateScreen> {
+  final TextEditingController _amountController = TextEditingController();
+
+  /// What the PayPal button should ask for: whatever was typed, else the
+  /// default. PayPal's page keeps it editable, but a donor should be able to
+  /// set the figure here rather than having to correct it over there.
+  int get _chosenAmount {
+    final typed = int.tryParse(_amountController.text.trim());
+    if (typed != null && typed > 0) return typed;
+    return DonateInfo.paypalDefaultAmount;
+  }
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,14 +72,17 @@ class DonateScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
+              Row(
                 children: [
-                  for (final amount in DonateInfo.suggestedAmounts)
-                    _AmountButton(amount: amount),
+                  for (final amount in DonateInfo.suggestedAmounts) ...[
+                    Expanded(child: _AmountButton(amount: amount)),
+                    if (amount != DonateInfo.suggestedAmounts.last)
+                      const SizedBox(width: 8),
+                  ],
                 ],
               ),
+              const SizedBox(height: 12),
+              _CustomAmountField(controller: _amountController),
               const SizedBox(height: 10),
               Text(
                 DonateInfo.amountsNote,
@@ -67,7 +92,7 @@ class DonateScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              const _PayPalButton(),
+              _PayPalButton(amount: _chosenAmount),
               const SizedBox(height: 24),
               _BankCard(bodyColor: bodyColor, isDark: isDark),
               const SizedBox(height: 16),
@@ -154,15 +179,15 @@ class _BankCard extends StatelessWidget {
 /// PayPal's own button styling — the yellow pill donors recognise — rather
 /// than our theme colours, so it reads as the PayPal route out of the page.
 class _PayPalButton extends StatelessWidget {
-  const _PayPalButton();
+  const _PayPalButton({required this.amount});
+
+  final int amount;
 
   static const Color _payPalYellow = Color(0xFFFFC439);
   static const Color _payPalNavy = Color(0xFF003087);
 
   Future<void> _open() async {
-    final uri = Uri.parse(
-      DonateInfo.paypalUrlFor(DonateInfo.paypalDefaultAmount),
-    );
+    final uri = Uri.parse(DonateInfo.paypalUrlFor(amount));
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
@@ -241,7 +266,7 @@ class _AmountButton extends StatelessWidget {
       onPressed: _pay,
       style: OutlinedButton.styleFrom(
         backgroundColor: isDark ? Colors.white10 : Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
         side: BorderSide(
           color: isDark ? Colors.white24 : const Color(0xFFDDDDDD),
         ),
@@ -255,7 +280,7 @@ class _AmountButton extends StatelessWidget {
           Text(
             DonateInfo.formatAmount(amount),
             style: AppTextTheme.popinsDefault(
-              fontSize: 20,
+              fontSize: 16,
               fontWeight: FontWeight.w500,
               color: labelColor,
             ),
@@ -263,11 +288,63 @@ class _AmountButton extends StatelessWidget {
           Text(
             'INR',
             style: AppTextTheme.popinsDefault(
-              fontSize: 12,
+              fontSize: 10,
               color: labelColor.withValues(alpha: 0.6),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Lets a donor set their own figure before leaving the app, instead of
+/// having to correct the amount on PayPal's page.
+class _CustomAmountField extends StatelessWidget {
+  const _CustomAmountField({required this.controller});
+
+  final TextEditingController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final labelColor = isDark ? Colors.white : Colors.black87;
+
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 260),
+      child: TextField(
+        controller: controller,
+        keyboardType: TextInputType.number,
+        style: AppTextTheme.popinsDefault(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: labelColor,
+        ),
+        decoration: InputDecoration(
+          isDense: true,
+          prefixText: '₹ ',
+          hintText: 'Other amount',
+          hintStyle: AppTextTheme.popinsDefault(
+            fontSize: 14,
+            color: labelColor.withValues(alpha: 0.5),
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 12,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(
+              color: isDark ? Colors.white24 : const Color(0xFFDDDDDD),
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(
+              color: isDark ? Colors.white24 : const Color(0xFFDDDDDD),
+            ),
+          ),
+        ),
       ),
     );
   }
