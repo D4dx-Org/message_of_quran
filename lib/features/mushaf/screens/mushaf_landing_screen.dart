@@ -2,6 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:the_message_of_the_quran/core/models/surah_model.dart';
+import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
+import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
@@ -153,6 +157,33 @@ const List<int> _revelationOrder = [
   110,
 ];
 
+/// The [_surahMeta] table below is English-only, so Malayalam has to come from
+/// the loaded surah list. Falls back to the table when that list is not ready.
+SurahListDisplayText _localizedSurah(
+  BuildContext context,
+  _SurahMeta meta,
+  bool isMalayalam,
+) {
+  SurahModel? match;
+  for (final surah in context.watch<SurahProvider>().surahList) {
+    if (surah.surahNumber == meta.no) {
+      match = surah;
+      break;
+    }
+  }
+  final display = formatSurahListDisplayText(
+    isMalayalam: isMalayalam,
+    surahName: match?.name ?? meta.name,
+    surahTranslation: match?.description ?? meta.meaning,
+    malayalamName: match?.malayalamName ?? '',
+    surahNumber: meta.no,
+  );
+  if (display.subtitle.isNotEmpty) return display;
+  // A Malayalam name without a bracketed meaning would otherwise leave the
+  // card with a blank second line.
+  return SurahListDisplayText(title: display.title, subtitle: meta.meaning);
+}
+
 const List<_SurahMeta> _surahMeta = [
   _SurahMeta(1, 'Al-Fatihah', 'The Opener', 7),
   _SurahMeta(2, 'Al-Baqarah', 'The Cow', 286),
@@ -303,6 +334,33 @@ const List<(String juzName, String startingSurah)> _juzMeta = [
   ('Amma', 'An-Naba 1'),
 ];
 
+/// Chip labels in Malayalam come from the surah list, so they read exactly as
+/// they do everywhere else rather than being transliterated a second time.
+String _quickAccessLabel(
+  BuildContext context,
+  _QuickAccessItem item,
+  bool isMalayalam,
+) {
+  if (!isMalayalam) return item.label;
+  if (item.surahNo == 2 && item.ayahNo == 255) {
+    return formatAyatulKursiLabel(isMalayalam: true);
+  }
+  final number = item.surahNo;
+  if (number == null) return item.label;
+  for (final surah in context.watch<SurahProvider>().surahList) {
+    if (surah.surahNumber == number) {
+      return formatSurahListDisplayText(
+        isMalayalam: true,
+        surahName: surah.name,
+        surahTranslation: surah.description,
+        malayalamName: surah.malayalamName,
+        surahNumber: number,
+      ).title;
+    }
+  }
+  return item.label;
+}
+
 const List<_QuickAccessItem> _quickAccessItems = [
   _QuickAccessItem(label: 'Ayatul Kursi', surahNo: 2, ayahNo: 255),
   _QuickAccessItem(label: 'Surah Yaseen', surahNo: 36),
@@ -389,6 +447,12 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
     _tabController = TabController(length: 3, vsync: this);
     _p = MushafLandingProvider();
     _downloadManager.addListener(_onDownloadStateChanged);
+    // Malayalam names come from the surah list, which nothing else on this
+    // tab loads — without this the screen falls back to English.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<SurahProvider>().getAllSurah();
+    });
   }
 
   @override
@@ -881,6 +945,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
     bool isDarkMode,
     bool isLandscape,
   ) {
+    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     final textColor = isDarkMode ? Colors.white : Colors.black;
     final subColor = isDarkMode ? Colors.white60 : Colors.black54;
     final cardBg = isDarkMode ? _kGrey3C : Colors.white;
@@ -901,7 +966,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
           _buildQuickAccessWrap(context, isDarkMode, isLandscape),
           SizedBox(height: isLandscape ? 6 : 8),
           Text(
-            'Recently Read',
+            isMalayalam ? 'അടുത്തിടെ വായിച്ചത്' : 'Recently Read',
             style: TextStyle(
               color: textColor,
               fontSize: isLandscape ? 12 : 14,
@@ -952,7 +1017,9 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'Surah ${meta.name}',
+                          isMalayalam
+                              ? _localizedSurah(context, meta, true).title
+                              : 'Surah ${meta.name}',
                           style: TextStyle(
                             color: textColor,
                             fontSize: isLandscape ? 13 : 14,
@@ -960,7 +1027,8 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                           ),
                         ),
                         Text(
-                          '${meta.meaning} • Ayah $ayaNo',
+                          '${isMalayalam ? _localizedSurah(context, meta, true).subtitle : meta.meaning}'
+                          ' • ${formatAyahReferenceLabel(ayaNo, isMalayalam: isMalayalam)}',
                           style: TextStyle(
                             color: subColor,
                             fontSize: isLandscape ? 10 : 11,
@@ -1024,6 +1092,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
         ? AppTheme.appIconTheme.withValues(alpha: 0.12)
         : Colors.white;
     final labelColor = isDarkMode ? Colors.white : Colors.black87;
+    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
 
     return Material(
       color: Colors.transparent,
@@ -1050,7 +1119,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
             border: Border.all(color: borderColor, width: 1.2),
           ),
           child: Text(
-            item.label,
+            _quickAccessLabel(context, item, isMalayalam),
             style: TextStyle(
               color: labelColor,
               fontSize: isLandscape ? 11 : 12,
@@ -1065,6 +1134,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
   // ─── Tab Bar ──────────────────────────────────────────────────────────────
 
   Widget _buildTabBar(BuildContext context, bool isDarkMode, bool isLandscape) {
+    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     final greyLineColor = isDarkMode
         ? Colors.grey.shade700
         : Colors.grey.shade300;
@@ -1105,7 +1175,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                 child: Container(
                   padding: const EdgeInsets.only(bottom: 6),
                   child: Text(
-                    'Surah',
+                    isMalayalam ? 'സൂറത്ത്' : 'Surah',
                     style: AppTextTheme.popinsDefault(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -1118,7 +1188,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                 child: Container(
                   padding: const EdgeInsets.only(bottom: 6),
                   child: Text(
-                    "Juz'",
+                    isMalayalam ? 'ജുസ്അ്' : "Juz'",
                     style: AppTextTheme.popinsDefault(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -1131,7 +1201,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                 child: Container(
                   padding: const EdgeInsets.only(bottom: 6),
                   child: Text(
-                    'Revelation',
+                    isMalayalam ? 'അവതരണക്രമം' : 'Revelation',
                     style: AppTextTheme.popinsDefault(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -1281,6 +1351,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
     bool isDarkMode, {
     int? revelationIndex,
   }) {
+    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     final textColor = isDarkMode ? _kWhite : _kBlack;
     final subColor = isDarkMode ? _kWhite70 : _kBlack54;
     final cardBg = isDarkMode ? _kGrey3C : Colors.white;
@@ -1330,7 +1401,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        meta.name,
+                        _localizedSurah(context, meta, isMalayalam).title,
                         style: AppTextTheme.popinsDefault(
                           color: textColor,
                           fontWeight: FontWeight.w500,
@@ -1364,7 +1435,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              meta.meaning,
+                              _localizedSurah(context, meta, isMalayalam).subtitle,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: AppTextTheme.popinsDefault(
