@@ -100,7 +100,7 @@ class _DonateScreenState extends State<DonateScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            _PayPalButton(amount: _chosenAmount),
+            _PayPalButton(amountAtTap: () => _chosenAmount),
             const SizedBox(height: 24),
             _BankCard(bodyColor: bodyColor, isDark: isDark),
             const SizedBox(height: 16),
@@ -187,15 +187,18 @@ class _BankCard extends StatelessWidget {
 /// PayPal's own button styling — the yellow pill donors recognise — rather
 /// than our theme colours, so it reads as the PayPal route out of the page.
 class _PayPalButton extends StatelessWidget {
-  const _PayPalButton({required this.amount});
+  const _PayPalButton({required this.amountAtTap});
 
-  final int amount;
+  /// Read when the button is pressed, not when it is built: typing in the
+  /// amount field does not rebuild this widget, so a value captured at build
+  /// time would always be the default.
+  final int Function() amountAtTap;
 
   static const Color _payPalYellow = Color(0xFFFFC439);
   static const Color _payPalNavy = Color(0xFF003087);
 
   Future<void> _open() async {
-    final uri = Uri.parse(DonateInfo.paypalUrlFor(amount));
+    final uri = Uri.parse(DonateInfo.paypalUrlFor(amountAtTap()));
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
