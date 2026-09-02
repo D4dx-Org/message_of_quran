@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/services/audio_handler.dart';
+import 'package:the_message_of_the_quran/core/constants/app_version.dart';
 import 'package:the_message_of_the_quran/core/services/database/database_helper.dart';
 import 'package:the_message_of_the_quran/core/theme/theme_provider.dart';
 import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
@@ -238,6 +239,8 @@ Future<void> _initializeAppServices() async {
     'loading saved language',
     LanguageProvider.loadSaved,
   );
+
+  await _runStartupStep('reading app version', AppVersion.load);
 
   await _runStartupStep(
     'initializing database services',
