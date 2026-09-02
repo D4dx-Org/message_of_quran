@@ -41,7 +41,7 @@ class SplashScreenLayout extends StatelessWidget {
             const ColoredBox(color: AppTheme.appThemeSplash),
             Positioned.fill(
               child: Image.asset(
-                'assets/images/main_splash.png',
+                'assets/images/main_splash.webp',
                 fit: BoxFit.cover,
                 alignment: Alignment.center,
               ),
