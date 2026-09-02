@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:simple_icons/simple_icons.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:the_message_of_the_quran/core/constants/donate_info.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
@@ -49,7 +49,17 @@ class DonatePayPalButton extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(SimpleIcons.paypal, size: 20, color: _payPalNavy),
+            // Just the one glyph, lifted out of the icon font: shipping the
+            // whole Simple Icons set for a single mark cost 1.3 MB.
+            SvgPicture.asset(
+              'assets/icons/paypal.svg',
+              width: 20,
+              height: 20,
+              colorFilter: const ColorFilter.mode(
+                _payPalNavy,
+                BlendMode.srcIn,
+              ),
+            ),
             const SizedBox(width: 10),
             Flexible(
               child: Text(
