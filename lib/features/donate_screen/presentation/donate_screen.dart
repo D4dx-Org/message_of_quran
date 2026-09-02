@@ -58,14 +58,12 @@ class _DonateScreenState extends State<DonateScreen> {
         title: 'Donate',
       ),
       drawer: const CommonDrawer(),
-      expandContentCard: false,
+      // Card expands and scrolls inside it, the shape every other page uses:
+      // opting out gave this page a different card height and corner
+      // treatment from the rest of the site.
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-        // No scroll view here: with expandContentCard false BaseScreenLayout
-        // scrolls the page itself, and a second one would put a scrollbar
-        // inside the card that no other page has.
-        child: Align(
-          alignment: Alignment.topLeft,
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+        child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
