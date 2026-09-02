@@ -54,7 +54,7 @@ class DonateScreen extends StatelessWidget {
                 runSpacing: 10,
                 children: [
                   for (final amount in DonateInfo.suggestedAmounts)
-                    _AmountButton(amount: amount, bodyColor: bodyColor),
+                    _AmountButton(amount: amount),
                 ],
               ),
               const SizedBox(height: 10),
@@ -199,10 +199,9 @@ class _PayPalButton extends StatelessWidget {
 /// Opens the payment app with the amount already filled in — UPI when a VPA
 /// is configured and the device can handle the scheme, PayPal otherwise.
 class _AmountButton extends StatelessWidget {
-  const _AmountButton({required this.amount, required this.bodyColor});
+  const _AmountButton({required this.amount});
 
   final int amount;
-  final Color bodyColor;
 
   Future<void> _pay() async {
     if (DonateInfo.upiId.isNotEmpty) {
@@ -221,21 +220,25 @@ class _AmountButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return OutlinedButton(
+    // Filled and raised rather than outlined: these pay money, and a thin
+    // border read as a text box rather than something to press.
+    return ElevatedButton(
       onPressed: _pay,
-      style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-        side: BorderSide(color: theme.primaryColor.withValues(alpha: 0.35)),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: theme.primaryColor,
+        foregroundColor: Colors.white,
+        elevation: 2,
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
       child: Text(
         DonateInfo.formatAmount(amount),
         style: AppTextTheme.popinsDefault(
           fontSize: 16,
-          fontWeight: FontWeight.w600,
-          color: bodyColor,
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
         ),
       ),
     );
