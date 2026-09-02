@@ -7,7 +7,9 @@ import 'package:the_message_of_the_quran/features/settings_screen/presentation/w
 import 'package:the_message_of_the_quran/features/settings_screen/presentation/widgets/settings_screen_selector_dropdown.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
 
-const int _fontVisibleItemCount = 4;
+// Every font in the list, so the last one — QuranTaha — is not left
+// below the fold with nothing to hint it exists.
+const int _fontVisibleItemCount = 5;
 
 class SettingsScreenFontBlock extends StatelessWidget {
   const SettingsScreenFontBlock({super.key});
