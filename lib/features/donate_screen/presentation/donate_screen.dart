@@ -50,67 +50,77 @@ class _DonateScreenState extends State<DonateScreen> {
     final bodyColor = isDark ? Colors.white70 : Colors.black87;
 
     return BaseScreenLayout(
-      appBar: AppBar(
-        title: Text('Donate', style: AppTextTheme.titleRegular),
-      ),
+      appBar: AppBar(title: Text('Donate', style: AppTextTheme.titleRegular)),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
         child: SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: kDonateContentMaxWidth),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  DonateInfo.heading,
-                  style: AppTextTheme.popinsDefault(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: bodyColor,
-                  ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                DonateInfo.heading,
+                style: AppTextTheme.popinsDefault(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: bodyColor,
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  DonateInfo.intro,
-                  style: AppTextTheme.popinsDefault(
-                    fontSize: 15,
-                    color: bodyColor,
-                  ).copyWith(height: 1.6),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                DonateInfo.intro,
+                style: AppTextTheme.popinsDefault(
+                  fontSize: 15,
+                  color: bodyColor,
+                ).copyWith(height: 1.6),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                DonateInfo.tagline,
+                style: AppTextTheme.popinsDefault(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: bodyColor,
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  DonateInfo.tagline,
-                  style: AppTextTheme.popinsDefault(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: bodyColor,
-                  ),
+              ),
+              const SizedBox(height: 24),
+              ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: kDonateContentMaxWidth,
                 ),
-                const SizedBox(height: 24),
-                DonateAmountSelector(
+                child: DonateAmountSelector(
                   selected: _selected,
                   controller: _amountController,
                   onSelect: _selectPreset,
                   onTyped: () => setState(() {}),
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 ),
-                const SizedBox(height: 18),
-                DonatePayPalButton(
+              ),
+              const SizedBox(height: 18),
+              ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: kDonateContentMaxWidth,
+                ),
+                child: DonatePayPalButton(
                   amount: _amount,
                   amountAtTap: () => _amount,
                 ),
-                const SizedBox(height: 24),
-                DonateBankCard(bodyColor: bodyColor, isDark: isDark),
-                const SizedBox(height: 16),
-                Text(
-                  DonateInfo.bankNote,
-                  style: AppTextTheme.popinsDefault(
-                    fontSize: 13,
-                    color: bodyColor.withValues(alpha: 0.8),
-                  ).copyWith(height: 1.5),
+              ),
+              const SizedBox(height: 24),
+              ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: kDonateContentMaxWidth,
                 ),
-              ],
-            ),
+                child: DonateBankCard(bodyColor: bodyColor, isDark: isDark),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                DonateInfo.bankNote,
+                style: AppTextTheme.popinsDefault(
+                  fontSize: 13,
+                  color: bodyColor.withValues(alpha: 0.8),
+                ).copyWith(height: 1.5),
+              ),
+            ],
           ),
         ),
       ),
