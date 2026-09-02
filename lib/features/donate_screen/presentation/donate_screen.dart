@@ -54,26 +54,7 @@ class DonateScreen extends StatelessWidget {
                 runSpacing: 10,
                 children: [
                   for (final amount in DonateInfo.suggestedAmounts)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 18,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: theme.primaryColor.withValues(alpha: 0.35),
-                        ),
-                      ),
-                      child: Text(
-                        amount,
-                        style: AppTextTheme.popinsDefault(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: bodyColor,
-                        ),
-                      ),
-                    ),
+                    _AmountButton(amount: amount, bodyColor: bodyColor),
                 ],
               ),
               const SizedBox(height: 10),
@@ -209,6 +190,52 @@ class _PayPalButton extends StatelessWidget {
               color: _payPalNavy,
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Opens the payment app with the amount already filled in — UPI when a VPA
+/// is configured and the device can handle the scheme, PayPal otherwise.
+class _AmountButton extends StatelessWidget {
+  const _AmountButton({required this.amount, required this.bodyColor});
+
+  final int amount;
+  final Color bodyColor;
+
+  Future<void> _pay() async {
+    if (DonateInfo.upiId.isNotEmpty) {
+      final upi = Uri.parse(DonateInfo.upiUrlFor(amount));
+      if (await canLaunchUrl(upi)) {
+        await launchUrl(upi, mode: LaunchMode.externalApplication);
+        return;
+      }
+    }
+    final paypal = Uri.parse(DonateInfo.paypalUrlFor(amount));
+    if (await canLaunchUrl(paypal)) {
+      await launchUrl(paypal, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return OutlinedButton(
+      onPressed: _pay,
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+        side: BorderSide(color: theme.primaryColor.withValues(alpha: 0.35)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      child: Text(
+        DonateInfo.formatAmount(amount),
+        style: AppTextTheme.popinsDefault(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: bodyColor,
         ),
       ),
     );
