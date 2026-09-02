@@ -76,6 +76,12 @@ class DonateInfo {
 
   static const String paypalLabel = 'Donate with PayPal';
 
+  /// The PayPal button carries an amount because paypal.me shows only a bare
+  /// "Send" without one, leaving the donor nothing to type into. With an
+  /// amount the page opens on an editable field they can change before
+  /// sending, so this is a starting point rather than a fixed price.
+  static const int paypalDefaultAmount = 100;
+
   static const String bankHeading = 'Donate by direct bank transfer';
 
   static const String bankNote =

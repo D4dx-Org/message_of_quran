@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:simple_icons/simple_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:the_message_of_the_quran/core/constants/donate_info.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
@@ -159,7 +160,9 @@ class _PayPalButton extends StatelessWidget {
   static const Color _payPalNavy = Color(0xFF003087);
 
   Future<void> _open() async {
-    final uri = Uri.parse(DonateInfo.paypalUrl);
+    final uri = Uri.parse(
+      DonateInfo.paypalUrlFor(DonateInfo.paypalDefaultAmount),
+    );
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
@@ -182,13 +185,24 @@ class _PayPalButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(30),
             ),
           ),
-          child: Text(
-            DonateInfo.paypalLabel,
-            style: AppTextTheme.popinsDefault(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: _payPalNavy,
-            ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                SimpleIcons.paypal,
+                size: 20,
+                color: _payPalNavy,
+              ),
+              const SizedBox(width: 10),
+              Text(
+                DonateInfo.paypalLabel,
+                style: AppTextTheme.popinsDefault(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: _payPalNavy,
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -219,27 +233,41 @@ class _AmountButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    // Filled and raised rather than outlined: these pay money, and a thin
-    // border read as a text box rather than something to press.
-    return ElevatedButton(
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final labelColor = isDark ? Colors.white : Colors.black87;
+    // Plain card with a light border, the amount over its currency — the
+    // shape PayPal's own donate page uses.
+    return OutlinedButton(
       onPressed: _pay,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: theme.primaryColor,
-        foregroundColor: Colors.white,
-        elevation: 2,
-        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
+      style: OutlinedButton.styleFrom(
+        backgroundColor: isDark ? Colors.white10 : Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        side: BorderSide(
+          color: isDark ? Colors.white24 : const Color(0xFFDDDDDD),
+        ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(8),
         ),
       ),
-      child: Text(
-        DonateInfo.formatAmount(amount),
-        style: AppTextTheme.popinsDefault(
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-          color: Colors.white,
-        ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            DonateInfo.formatAmount(amount),
+            style: AppTextTheme.popinsDefault(
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+              color: labelColor,
+            ),
+          ),
+          Text(
+            'INR',
+            style: AppTextTheme.popinsDefault(
+              fontSize: 12,
+              color: labelColor.withValues(alpha: 0.6),
+            ),
+          ),
+        ],
       ),
     );
   }
