@@ -40,6 +40,10 @@ class DonateInfo {
   static const String amountsNote =
       'Any amount is welcome — these are only suggestions.';
 
+  static const String paypalUrl = 'https://paypal.me/saleemkc';
+
+  static const String paypalLabel = 'Donate with PayPal';
+
   static const String bankHeading = 'Donate by direct bank transfer';
 
   static const String bankNote =

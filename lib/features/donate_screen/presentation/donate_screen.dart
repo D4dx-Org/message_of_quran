@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:the_message_of_the_quran/core/constants/donate_info.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
@@ -83,6 +84,8 @@ class DonateScreen extends StatelessWidget {
                   color: bodyColor.withValues(alpha: 0.8),
                 ),
               ),
+              const SizedBox(height: 20),
+              const _PayPalButton(),
               const SizedBox(height: 24),
               _BankCard(bodyColor: bodyColor, isDark: isDark),
               const SizedBox(height: 16),
@@ -161,6 +164,52 @@ class _BankCard extends StatelessWidget {
               ),
             ),
         ],
+      ),
+    );
+  }
+}
+
+/// PayPal's own button styling — the yellow pill donors recognise — rather
+/// than our theme colours, so it reads as the PayPal route out of the page.
+class _PayPalButton extends StatelessWidget {
+  const _PayPalButton();
+
+  static const Color _payPalYellow = Color(0xFFFFC439);
+  static const Color _payPalNavy = Color(0xFF003087);
+
+  Future<void> _open() async {
+    final uri = Uri.parse(DonateInfo.paypalUrl);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 560),
+      child: SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: _open,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: _payPalYellow,
+            foregroundColor: _payPalNavy,
+            elevation: 0,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
+            ),
+          ),
+          child: Text(
+            DonateInfo.paypalLabel,
+            style: AppTextTheme.popinsDefault(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: _payPalNavy,
+            ),
+          ),
+        ),
       ),
     );
   }
