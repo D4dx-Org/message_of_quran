@@ -94,6 +94,23 @@
     Cache-Control = "public, max-age=31536000, immutable"
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Crawler files. Real files win over the SPA fallback, but they must be served
+# with their own content type and a short cache so an updated sitemap is
+# picked up rather than held for a week.
+# ─────────────────────────────────────────────────────────────────────────────
+[[headers]]
+  for = "/robots.txt"
+  [headers.values]
+    Content-Type  = "text/plain; charset=utf-8"
+    Cache-Control = "public, max-age=3600"
+
+[[headers]]
+  for = "/sitemap.xml"
+  [headers.values]
+    Content-Type  = "application/xml; charset=utf-8"
+    Cache-Control = "public, max-age=3600"
+
+# ─────────────────────────────────────────────────────────────────────────────
 # SPA redirect — Flutter web is a single-page app.
 # All routes must fall back to index.html (200, not 301/302).
 # ─────────────────────────────────────────────────────────────────────────────

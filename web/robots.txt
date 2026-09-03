@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# App-internal routes with nothing to index: a splash screen, an update gate,
+# and the reader that only makes sense with a page argument.
+Disallow: /splash
+Disallow: /force-update
+Disallow: /mushaf-reader
+
+Sitemap: https://quranasadmalayalam.in/sitemap.xml

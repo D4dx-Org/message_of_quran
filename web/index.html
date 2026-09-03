@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <!--
     If you are serving your web app in a path other than the root, change the
@@ -18,7 +18,18 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="Read the Holy Qur'an with Muhammad Asad's translation and Malayalam translation, verse by verse, free on web, Android and iOS.">
+  <meta name="description" content="Read The Message of the Qur'an by Muhammad Asad with the Malayalam translation by K.C. Saleem — all 114 surahs verse by verse with footnotes, the full Mus'haf, recitations and hadith links. Free on web, Android and iOS.">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="canonical" href="https://quranasadmalayalam.in/">
+  <meta name="theme-color" content="#1B4571">
+  <meta name="author" content="D4DX Innovations LLP">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+  <link rel="alternate" hreflang="en" href="https://quranasadmalayalam.in/">
+  <link rel="alternate" hreflang="ml" href="https://quranasadmalayalam.in/">
+  <link rel="alternate" hreflang="x-default" href="https://quranasadmalayalam.in/">
+  <meta property="og:locale" content="en_IN">
+  <meta property="og:locale:alternate" content="ml_IN">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -41,10 +52,67 @@
   <meta name="twitter:description" content="Read the Holy Qur'an with Muhammad Asad's translation and Malayalam translation, verse by verse, free on web, Android and iOS.">
   <meta name="twitter:image" content="https://quranasadmalayalam.in/icons/Icon-512.png">
 
-  <title>Quran Asad Malayalam</title>
+  <title>Quran Asad Malayalam — The Message of the Qur'an in Malayalam &amp; English</title>
   <link rel="manifest" href="manifest.json">
+
+  <!-- Structured data. The app itself renders to a canvas, so this and the
+       tags above are the only description of the site a crawler can read. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://quranasadmalayalam.in/#website",
+        "url": "https://quranasadmalayalam.in/",
+        "name": "Quran Asad Malayalam",
+        "description": "The Message of the Qur'an by Muhammad Asad with the Malayalam translation by K.C. Saleem.",
+        "inLanguage": ["en", "ml"],
+        "publisher": { "@id": "https://quranasadmalayalam.in/#publisher" }
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://quranasadmalayalam.in/#publisher",
+        "name": "D4DX Innovations LLP",
+        "url": "https://d4dx.co"
+      },
+      {
+        "@type": "Book",
+        "name": "The Message of the Qur'an",
+        "author": { "@type": "Person", "name": "Muhammad Asad" },
+        "translator": { "@type": "Person", "name": "K.C. Saleem" },
+        "inLanguage": ["en", "ml"],
+        "url": "https://quranasadmalayalam.in/"
+      },
+      {
+        "@type": "WebApplication",
+        "name": "Quran Asad Malayalam",
+        "url": "https://quranasadmalayalam.in/",
+        "applicationCategory": "BookApplication",
+        "operatingSystem": "Web, Android, iOS",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "INR" }
+      }
+    ]
+  }
+  </script>
+
 </head>
 <body>
+  <noscript>
+    <h1>Quran Asad Malayalam</h1>
+    <p>
+      The Message of the Qur'an by Muhammad Asad, with the Malayalam
+      translation by K.C. Saleem: all 114 surahs verse by verse with Asad's
+      footnotes, the complete Mus'haf, recitations by renowned reciters, and
+      links to other Qur'an and hadith translations. Free to read, with no
+      advertising.
+    </p>
+    <p>
+      This site needs JavaScript. It is also available as an
+      <a href="https://play.google.com/store/apps/details?id=com.d4dx.quranasadmalayalam">Android app</a>
+      and an iOS app.
+    </p>
+  </noscript>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
