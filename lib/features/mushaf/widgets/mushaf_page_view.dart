@@ -17,7 +17,7 @@ import '../../settings_screen/providers/tajweed_provider.dart';
 import '../utils/mushaf_text_utils.dart';
 
 const _kSecondaryDarkColor = AppTheme.appIconTheme;
-const _kSurahHeader = 'assets/images/mushaf-title.png';
+const _kSurahHeader = 'assets/images/mushaf-title.webp';
 
 /// Renders a single Mushaf page using QCF page fonts.
 class MushafPageView extends StatefulWidget {

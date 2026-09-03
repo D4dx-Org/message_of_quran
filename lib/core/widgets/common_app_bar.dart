@@ -70,20 +70,20 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
 
   List<({String label, int pageIndex, String assetPath})> get _navItems => [
     if (widget.showHome)
-      (label: 'Home', pageIndex: 0, assetPath: 'assets/icons/home-img.png'),
+      (label: 'Home', pageIndex: 0, assetPath: 'assets/icons/home-img.webp'),
 
     // Clean, direct Collection-If implementation
     if (isBookmarkNeed)
       (
         label: 'Bookmarks',
         pageIndex: 1,
-        assetPath: 'assets/icons/bookmark-img.png',
+        assetPath: 'assets/icons/bookmark-img.webp',
       ),
 
     (
       label: 'Settings',
       pageIndex: 3,
-      assetPath: 'assets/icons/settings-img.png',
+      assetPath: 'assets/icons/settings-img.webp',
     ),
   ];
 
@@ -356,7 +356,7 @@ class CommonAppBar {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         ShimmerAssetImage(
-          'assets/images/symbol-logo.png',
+          'assets/images/symbol-logo.webp',
           height: logoHeight,
           aspectRatio: 165 / 276,
           filterQuality: appBarLogoFilterQuality,
@@ -365,7 +365,7 @@ class CommonAppBar {
         ),
         SizedBox(width: 2 * scale),
         ShimmerAssetImage(
-          'assets/images/symbol-logo-text.png',
+          'assets/images/symbol-logo-text.webp',
           height: logoHeight,
           aspectRatio: 258 / 154,
           filterQuality: appBarLogoFilterQuality,
@@ -411,7 +411,7 @@ class CommonAppBar {
       label: 'Open navigation menu',
       child: IconButton(
         icon: Image.asset(
-          'assets/images/menu-icon-new.png',
+          'assets/images/menu-icon-new.webp',
           height: AppConstants.appBarIconHeight * scale,
           width: AppConstants.appBarIconWidth * scale,
           fit: BoxFit.contain,
@@ -458,7 +458,7 @@ class CommonAppBar {
           top: ornamentTop,
           end: -ornamentOverflow,
           child: Image.asset(
-            'assets/images/home_side_image.png',
+            'assets/images/home_side_image.webp',
             width: ornamentWidth,
             height: ornamentHeight,
             fit: BoxFit.contain,

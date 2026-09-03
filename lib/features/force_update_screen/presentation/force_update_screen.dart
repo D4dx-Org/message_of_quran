@@ -22,7 +22,7 @@ class ForceUpdateScreen extends StatelessWidget {
               child: Column(
                 spacing: 10,
                 children: [
-                  Image.asset("assets/images/symbol-logo.png", height: 100),
+                  Image.asset("assets/images/symbol-logo.webp", height: 100),
                   Text("Update Available", style: AppTextTheme.titleRegular),
                   Text(
                     "New Version",
@@ -41,7 +41,7 @@ class ForceUpdateScreen extends StatelessWidget {
                     child: Row(
                       children: [
                         Image.asset(
-                          "assets/icons/warning.png",
+                          "assets/icons/warning.webp",
                           scale: 1,
                           height: 30,
                           width: 30,

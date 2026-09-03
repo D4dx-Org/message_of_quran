@@ -77,7 +77,7 @@ class CommonDrawer extends StatelessWidget {
                       _DrawerTile(
                         title: 'Home',
                         icon: Icons.home_outlined,
-                        assetPath: 'assets/icons/home-img.png',
+                        assetPath: 'assets/icons/home-img.webp',
                         url: '/',
                         onTap: () {
                           Navigator.pop(context);
@@ -342,7 +342,7 @@ class CommonDrawer extends StatelessWidget {
                       _DrawerTile(
                         title: 'Settings',
                         icon: Icons.settings_outlined,
-                        assetPath: 'assets/icons/settings-img.png',
+                        assetPath: 'assets/icons/settings-img.webp',
                         onTap: () {
                           Navigator.pop(context);
                           showSettingsDialog(context);
@@ -432,7 +432,7 @@ class _DrawerBrandHeader extends StatelessWidget {
                   child: Opacity(
                     opacity: isDarkMode(context: context) ? 0.16 : 0.12,
                     child: Image.asset(
-                      'assets/images/home_side_image.png',
+                      'assets/images/home_side_image.webp',
                       width: 118 * scale,
                       fit: BoxFit.contain,
                       color: headerAccent,
@@ -457,7 +457,7 @@ class _DrawerBrandHeader extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Image.asset(
-                            'assets/images/symbol-logo.png',
+                            'assets/images/symbol-logo.webp',
                             height: 52 * scale,
                             fit: BoxFit.contain,
                             filterQuality: FilterQuality.medium,
@@ -465,7 +465,7 @@ class _DrawerBrandHeader extends StatelessWidget {
                           ),
                           SizedBox(width: 4 * scale),
                           Image.asset(
-                            'assets/images/symbol-logo-text.png',
+                            'assets/images/symbol-logo-text.webp',
                             height: 46 * scale,
                             fit: BoxFit.contain,
                             filterQuality: FilterQuality.medium,

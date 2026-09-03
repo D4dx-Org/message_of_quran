@@ -67,8 +67,8 @@ class SplashBottomBranding extends StatelessWidget {
                         ),
                         SizedBox(height: 4 * scale),
                         BlurUpAssetImage(
-                          assetPath: 'assets/images/d4_logo.png',
-                          thumbnailPath: 'assets/images/d4_logo_thumb.png',
+                          assetPath: 'assets/images/d4_logo.webp',
+                          thumbnailPath: 'assets/images/d4_logo_thumb.webp',
                           width: logoWidth,
                           aspectRatio: 1936 / 2048,
                           fit: BoxFit.contain,

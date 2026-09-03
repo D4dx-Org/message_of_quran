@@ -27,12 +27,12 @@ class WebMobileBottomNavBar extends StatelessWidget {
 
   List<({String label, int? pageIndex, String? assetPath, bool isSearch})>
   get _items => [
-    (label: 'Home', pageIndex: 0, assetPath: 'assets/icons/home-img.png', isSearch: false),
+    (label: 'Home', pageIndex: 0, assetPath: 'assets/icons/home-img.webp', isSearch: false),
     if (isBookmarkNeeded)
-      (label: 'Bookmarks', pageIndex: 1, assetPath: 'assets/icons/bookmark-img.png', isSearch: false),
+      (label: 'Bookmarks', pageIndex: 1, assetPath: 'assets/icons/bookmark-img.webp', isSearch: false),
     if (showSearch)
       (label: 'Search', pageIndex: null, assetPath: null, isSearch: true),
-    (label: 'Settings', pageIndex: 3, assetPath: 'assets/icons/settings-img.png', isSearch: false),
+    (label: 'Settings', pageIndex: 3, assetPath: 'assets/icons/settings-img.webp', isSearch: false),
   ];
 
   @override

@@ -37,7 +37,7 @@ class SplashHeaderOverlay extends StatelessWidget {
                 child: Opacity(
                   opacity: 0.52,
                   child: Image.asset(
-                    'assets/images/home_side_image.png',
+                    'assets/images/home_side_image.webp',
                     width: ornamentWidth,
                     fit: BoxFit.contain,
                     color: SplashLayoutMetrics.ornamentTint,

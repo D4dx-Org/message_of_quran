@@ -1026,9 +1026,9 @@ class _WebBrandingLogoState extends State<_WebBrandingLogo> {
     super.didChangeDependencies();
     if (_ready) return;
     Future.wait([
-      precacheImage(const AssetImage('assets/images/symbol-logo.png'), context),
+      precacheImage(const AssetImage('assets/images/symbol-logo.webp'), context),
       precacheImage(
-        const AssetImage('assets/images/symbol-logo-text.png'),
+        const AssetImage('assets/images/symbol-logo-text.webp'),
         context,
       ),
     ]).then((_) {
@@ -1048,13 +1048,13 @@ class _WebBrandingLogoState extends State<_WebBrandingLogo> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Image.asset(
-          'assets/images/symbol-logo.png',
+          'assets/images/symbol-logo.webp',
           width: widget.emblemWidth,
           fit: BoxFit.contain,
           filterQuality: FilterQuality.high,
         ),
         Image.asset(
-          'assets/images/symbol-logo-text.png',
+          'assets/images/symbol-logo-text.webp',
           width: widget.titleWidth,
           fit: BoxFit.contain,
           filterQuality: FilterQuality.high,

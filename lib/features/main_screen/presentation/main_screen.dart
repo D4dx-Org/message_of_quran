@@ -34,17 +34,17 @@ class _MainScreenState extends State<MainScreen> {
 
   static const List<({String label, IconData? iconData, String? assetPath})>
   _navItems = [
-    (label: 'Home', iconData: null, assetPath: 'assets/icons/home-img.png'),
+    (label: 'Home', iconData: null, assetPath: 'assets/icons/home-img.webp'),
     (
       label: 'Bookmarks',
       iconData: null,
-      assetPath: 'assets/icons/bookmark-img.png',
+      assetPath: 'assets/icons/bookmark-img.webp',
     ),
-    (label: '', iconData: null, assetPath: 'assets/icons/mushaf-img-2.png'),
+    (label: '', iconData: null, assetPath: 'assets/icons/mushaf-img-2.webp'),
     (
       label: 'Settings',
       iconData: null,
-      assetPath: 'assets/icons/settings-img.png',
+      assetPath: 'assets/icons/settings-img.webp',
     ),
   ];
 

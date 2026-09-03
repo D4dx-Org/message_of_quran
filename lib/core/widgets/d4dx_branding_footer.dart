@@ -92,8 +92,8 @@ class D4dxBrandingFooter extends StatelessWidget {
                     vertical: 8 * scale,
                   ),
                   child: BlurUpAssetImage(
-                    assetPath: 'assets/images/d4_logo.png',
-                    thumbnailPath: 'assets/images/d4_logo_thumb.png',
+                    assetPath: 'assets/images/d4_logo.webp',
+                    thumbnailPath: 'assets/images/d4_logo_thumb.webp',
                     height: 46 * scale,
                     aspectRatio: 1936 / 2048,
                     fit: BoxFit.contain,
