@@ -15,7 +15,9 @@ class FontDownloadService {
 
   static final FontDownloadService instance = FontDownloadService._();
 
-  static const String _baseUrl = 'http://lalithasaram.net/downloads/qfonts/';
+  // Served over TLS: the same bytes are on https, and a font pack fetched in
+  // the clear is a font pack anyone on the network can swap out.
+  static const String _baseUrl = 'https://lalithasaram.net/downloads/qfonts/';
   static const int _maxRetries = 3;
   bool _isCancelled = false;
 
@@ -173,6 +175,10 @@ class FontDownloadService {
     for (final entry in archive) {
       if (!entry.isFile) continue;
       final rawName = entry.name.split('/').last;
+      // The packs were zipped on a Mac, so each font is shadowed by an
+      // AppleDouble "._NAME.ttf" resource stub. It ends in .ttf but is not a
+      // font, and writing it just litters the fonts directory.
+      if (rawName.startsWith('._') || entry.name.contains('__MACOSX')) continue;
       final name = rawName.toUpperCase();
       if (!name.endsWith('.TTF')) continue;
       final dynamic raw = entry.content;
