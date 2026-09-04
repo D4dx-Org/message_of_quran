@@ -60,7 +60,7 @@ class _AboutScreenState extends State<AboutScreen> {
               child: Text(
                 'No Data',
                 textAlign: TextAlign.center,
-                style: AppTextTheme.popinsDefault(
+                style: AppTextTheme.englishDefault(
                   fontSize: 14,
                   color: Colors.grey.shade500,
                   fontWeight: FontWeight.w400,
@@ -69,11 +69,16 @@ class _AboutScreenState extends State<AboutScreen> {
             );
           }
           return Padding(
-            padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
+            padding: const EdgeInsets.fromLTRB(20.0, 0, 20.0, 0),
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Two clear lines of air before the text starts, so it does
+                  // not begin hard against the top of the card.
+                  SizedBox(
+                    height: AppTextTheme.contentFontSize(context) * 1.7 * 2,
+                  ),
                   ...provider.aboutList.map((about) => Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -88,6 +93,7 @@ class _AboutScreenState extends State<AboutScreen> {
                             fontSize: AppTextTheme.contentFontSize(context),
                             fontWeight: FontWeight.w500,
                             height: 1.7,
+                            color: AppTextTheme.contentColor(context),
                           ),
                           linkStyle: AppTextTheme.localizedBody(
                             isMalayalam: isMalayalam,

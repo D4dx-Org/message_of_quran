@@ -438,7 +438,7 @@ class _SurahScreenState extends State<SurahScreen> {
         side: BorderSide(color: foregroundColor.withValues(alpha: 0.16)),
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        textStyle: AppTextTheme.popinsDefault(
+        textStyle: AppTextTheme.englishDefault(
           fontSize: 14,
           fontWeight: FontWeight.w600,
           color: foregroundColor,
@@ -1645,7 +1645,7 @@ class _SurahScreenState extends State<SurahScreen> {
                           padding: const EdgeInsets.all(24),
                           child: Text(
                             'Failed to load surah info.',
-                            style: AppTextTheme.popinsDefault(
+                            style: AppTextTheme.englishDefault(
                               fontSize: 14,
                               color: Colors.grey,
                             ),
@@ -1660,7 +1660,7 @@ class _SurahScreenState extends State<SurahScreen> {
                           padding: const EdgeInsets.all(24),
                           child: Text(
                             'No description available for this surah.',
-                            style: AppTextTheme.popinsDefault(
+                            style: AppTextTheme.englishDefault(
                               fontSize: 14,
                               color: Colors.grey,
                             ),
@@ -1671,10 +1671,10 @@ class _SurahScreenState extends State<SurahScreen> {
                     return ListView.builder(
                       controller: scrollCtrl,
                       padding: EdgeInsets.fromLTRB(
-                        16,
-                        16,
-                        16,
-                        16 + MediaQuery.of(context).padding.bottom,
+                        20,
+                        18,
+                        20,
+                        24 + MediaQuery.of(context).padding.bottom,
                       ),
                       itemCount: prefaceList.length,
                       itemBuilder: (_, i) {
@@ -1682,20 +1682,20 @@ class _SurahScreenState extends State<SurahScreen> {
                         final bodyStyle = AppTextTheme.localizedBody(
                           isMalayalam: isMl,
                           fontSize: AppTextTheme.contentFontSize(context),
-                          height: 1.6,
+                          height: 1.75,
                           color: colorScheme.onSurface,
                         );
                         final (firstSentence, rest) = _splitFirstSentence(
                           preface.prefaceText,
                         );
                         return Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
+                          padding: const EdgeInsets.only(bottom: 26),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               if (preface.prefaceSubTitle.isNotEmpty)
                                 Padding(
-                                  padding: const EdgeInsets.only(bottom: 8),
+                                  padding: const EdgeInsets.only(bottom: 12),
                                   child: Text(
                                     preface.prefaceSubTitle,
                                     style: AppTextTheme.localizedLabel(
@@ -1719,6 +1719,9 @@ class _SurahScreenState extends State<SurahScreen> {
                                       TextSpan(text: rest, style: bodyStyle),
                                   ],
                                 ),
+                                textAlign: isMl
+                                    ? TextAlign.start
+                                    : TextAlign.justify,
                               ),
                             ],
                           ),
@@ -1742,7 +1745,11 @@ class _SurahScreenState extends State<SurahScreen> {
   (String, String) _splitFirstSentence(String text) {
     final match = RegExp(r'^(.*?[.!?])(\s+|$)').firstMatch(text);
     if (match != null) {
-      return (match.group(1)!, text.substring(match.end));
+      // Cut at the end of the sentence, not the end of the match: the
+      // whitespace after it belongs to the remainder, or the bold opening
+      // runs straight into the next word.
+      final sentence = match.group(1)!;
+      return (sentence, text.substring(sentence.length));
     }
     final newlineIndex = text.indexOf('\n');
     if (newlineIndex != -1) {

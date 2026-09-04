@@ -37,7 +37,7 @@ class _HelpScreenState extends State<HelpScreen> {
             return Center(
               child: Text(
                 'No FAQ available',
-                style: AppTextTheme.popinsDefault(
+                style: AppTextTheme.englishDefault(
                   fontSize: 14,
                   color: Colors.grey,
                 ),
@@ -65,7 +65,7 @@ class _HelpScreenState extends State<HelpScreen> {
                 collapsedIconColor: AppTheme.appIconTheme,
                 title: Text(
                   category.categoryName,
-                  style: AppTextTheme.popinsDefault(
+                  style: AppTextTheme.englishDefault(
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
                   ),
@@ -87,7 +87,7 @@ class _HelpScreenState extends State<HelpScreen> {
                     collapsedIconColor: AppTheme.appIconTheme,
                     title: Text(
                       item.title ?? 'Title Unavailable',
-                      style: AppTextTheme.popinsDefault(
+                      style: AppTextTheme.englishDefault(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
                       ),
@@ -97,9 +97,9 @@ class _HelpScreenState extends State<HelpScreen> {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           item.description ?? 'Description Unavailable',
-                          style: AppTextTheme.popinsDefault(
+                          style: AppTextTheme.englishDefault(
                             fontSize: AppTextTheme.contentFontSize(context),
-                            color: Colors.grey,
+                            color: AppTextTheme.contentColor(context),
                             fontWeight: FontWeight.w400,
                           ),
                         ),

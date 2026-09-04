@@ -23,8 +23,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bodyColor = isDark ? Colors.white70 : Colors.black87;
+    final bodyColor = AppTextTheme.contentColor(context);
 
     return BaseScreenLayout(
       appBar: AppBar(
@@ -107,7 +106,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
                      if (author.mobile != null && author.mobile!.isNotEmpty)
                     Text(
                         author.mobile!,
-                      style: AppTextTheme.popinsDefault(
+                      style: AppTextTheme.englishDefault(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: bodyColor,
@@ -116,7 +115,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
                   if (author.email != null && author.email!.isNotEmpty)
                     Text(
                       'E-mail: ${author.email!}',
-                      style: AppTextTheme.popinsDefault(
+                      style: AppTextTheme.englishDefault(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: bodyColor,

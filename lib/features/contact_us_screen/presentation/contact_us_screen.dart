@@ -115,6 +115,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                           isMalayalam: isMalayalam,
                           fontSize: AppTextTheme.contentFontSize(context),
                           height: 1.8,
+                          color: AppTextTheme.contentColor(context),
                         ),
                         linkStyle: AppTextTheme.localizedBody(
                           isMalayalam: isMalayalam,
@@ -164,7 +165,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                         children: [
                                           Text(
                                             'Phone',
-                                            style: AppTextTheme.popinsDefault(
+                                            style: AppTextTheme.englishDefault(
                                               fontSize: 14,
                                               color: Colors.grey,
                                             ),
@@ -172,7 +173,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                           const SizedBox(height: 4),
                                           Text(
                                             mobile,
-                                            style: AppTextTheme.popinsDefault(
+                                            style: AppTextTheme.englishDefault(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w500,
                                             ),
@@ -206,7 +207,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                         children: [
                                           Text(
                                             'Email',
-                                            style: AppTextTheme.popinsDefault(
+                                            style: AppTextTheme.englishDefault(
                                               fontSize: 14,
                                               color: Colors.grey,
                                             ),
@@ -214,7 +215,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                           const SizedBox(height: 4),
                                           Text(
                                             email,
-                                            style: AppTextTheme.popinsDefault(
+                                            style: AppTextTheme.englishDefault(
                                               fontSize: 16,
                                               fontWeight: FontWeight.w500,
                                             ),
@@ -246,7 +247,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                       children: [
                                         Text(
                                           'Address',
-                                          style: AppTextTheme.popinsDefault(
+                                          style: AppTextTheme.englishDefault(
                                             fontSize: 14,
                                             color: Colors.grey,
                                           ),

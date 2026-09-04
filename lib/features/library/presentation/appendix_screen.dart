@@ -140,7 +140,7 @@ class _AppendixScreenState extends State<AppendixScreen> {
                     onChanged: _onSearchChanged,
                     decoration: InputDecoration(
                       hintText: 'Search appendix...',
-                      hintStyle: AppTextTheme.popinsDefault(
+                      hintStyle: AppTextTheme.englishDefault(
                         color: Colors.grey.shade400,
                         fontSize: 14,
                       ),
@@ -309,7 +309,7 @@ class _AppendixAccordionTile extends StatelessWidget {
                         isMalayalam: isMalayalam,
                         fontSize: AppTextTheme.contentFontSize(context),
                         height: 1.7,
-                        color: isDark ? Colors.white70 : Colors.black87,
+                        color: AppTextTheme.contentColor(context),
                       ),
                     ),
                   ),

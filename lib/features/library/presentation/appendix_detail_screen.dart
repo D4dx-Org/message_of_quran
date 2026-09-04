@@ -21,8 +21,7 @@ class AppendixDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const accentColor = AppTheme.appThemePrimary;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bodyColor = isDark ? Colors.white70 : Colors.black87;
+    final bodyColor = AppTextTheme.contentColor(context);
     final isMalayalam = Provider.of<LanguageProvider>(context).isMalayalam;
 
     return BaseScreenLayout(
