@@ -303,22 +303,11 @@ class _MalayalamPrefaceContentState extends State<_MalayalamPrefaceContent> {
       final hasFootnote =
           _footnotes.any((fn) => _extractFnNum(fn.text) == num);
       final isDark = Theme.of(context).brightness == Brightness.dark;
-      spans.add(WidgetSpan(
-        alignment: PlaceholderAlignment.top,
-        child: GestureDetector(
-          onTap: hasFootnote ? () => _scrollToFootnote(num) : null,
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 4),
-            child: Text(
-              num.toString(),
-              style: TextStyle(
-                fontSize: 9,
-                fontWeight: FontWeight.w700,
-                color: isDark ? Colors.white70 : Colors.black87,
-              ),
-            ),
-          ),
-        ),
+      spans.add(_forewordFootnoteRefSpan(
+        context: context,
+        label: num.toString(),
+        color: isDark ? Colors.white70 : Colors.black87,
+        onTap: hasFootnote ? () => _scrollToFootnote(num) : null,
       ));
       lastEnd = match.end;
     }
@@ -738,22 +727,11 @@ class _ForewordContentState extends State<_ForewordContent> {
     for (final part in parts) {
       if (part.isFootnoteRef) {
         spans.add(
-          WidgetSpan(
-            alignment: PlaceholderAlignment.top,
-            child: GestureDetector(
-              onTap: () => _scrollToFootnote(part.footnoteNumber!),
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text(
-                  part.text,
-                  style: const TextStyle(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w700,
-                    color: AppTheme.appThemePrimary,
-                  ),
-                ),
-              ),
-            ),
+          _forewordFootnoteRefSpan(
+            context: context,
+            label: part.text,
+            color: AppTheme.appThemePrimary,
+            onTap: () => _scrollToFootnote(part.footnoteNumber!),
           ),
         );
       } else {
@@ -857,4 +835,45 @@ class _OrnamentalDivider extends StatelessWidget {
       ),
     );
   }
+}
+
+/// The Foreword's footnote reference is a superscript numeral — the smallest
+/// tap target in the book. It keeps its place above the line, but sits inside
+/// a padded, opaque box so a finger that lands near it still opens the note.
+InlineSpan _forewordFootnoteRefSpan({
+  required BuildContext context,
+  required String label,
+  required Color color,
+  VoidCallback? onTap,
+}) {
+  final touchHeight = (AppTextTheme.contentFontSize(context) * 1.7).clamp(
+    30.0,
+    44.0,
+  );
+  return WidgetSpan(
+    alignment: PlaceholderAlignment.middle,
+    child: GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: SizedBox(
+        width: 26,
+        height: touchHeight,
+        child: Align(
+          alignment: Alignment.topLeft,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 1, top: 2),
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: color,
+                height: 1,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 }
