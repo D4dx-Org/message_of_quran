@@ -298,6 +298,10 @@ class _SurahScreenState extends State<SurahScreen> {
   final ScrollController _scrollController = ScrollController();
   List<GlobalKey> _itemKeys = [];
   bool _showScrollToTop = false;
+
+  /// The header folds away as the reader moves down the page and comes back
+  /// the moment they scroll up or reach the top.
+  bool _showAppBar = true;
   bool _showBottomSurahNavOverlay = false;
   bool _showActionDock = true;
   double? _deepLinkCacheExtent;
@@ -859,6 +863,18 @@ class _SurahScreenState extends State<SurahScreen> {
   }
 
   bool _onScrollNotification(ScrollNotification notification) {
+    if (notification is UserScrollNotification) {
+      if (notification.direction == ScrollDirection.reverse) {
+        _setAppBarVisible(false);
+      } else if (notification.direction == ScrollDirection.forward) {
+        _setAppBarVisible(true);
+      }
+    }
+    if (notification is ScrollUpdateNotification &&
+        notification.metrics.pixels <= 0) {
+      _setAppBarVisible(true);
+    }
+
     if (!_showActionDock) return false;
 
     if (notification is ScrollStartNotification ||
@@ -873,6 +889,13 @@ class _SurahScreenState extends State<SurahScreen> {
     }
 
     return false;
+  }
+
+  void _setAppBarVisible(bool visible) {
+    if (_showAppBar == visible || !mounted) return;
+    setState(() {
+      _showAppBar = visible;
+    });
   }
 
   void _toggleActionDock() {
@@ -2552,6 +2575,7 @@ class _SurahScreenState extends State<SurahScreen> {
           onSurahInfoTap: _hasPreface
               ? () => _showSurahInfo(context, controller)
               : null,
+          toolbarHeight: _showAppBar ? null : 0,
         ),
         headerContent: useDesktopWebReaderLayout
             ? _buildDesktopReaderHeader(context, controller)
@@ -2572,6 +2596,16 @@ class _SurahScreenState extends State<SurahScreen> {
         ),
         child: Column(
           children: [
+            if (!useDesktopWebReaderLayout)
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                  ResponsiveHelper.horizontalPadding(context),
+                  0,
+                  ResponsiveHelper.horizontalPadding(context),
+                  4,
+                ),
+                child: const SurahScreenInfoBar(),
+              ),
             Expanded(
               child: GestureDetector(
                 behavior: HitTestBehavior.translucent,
@@ -2648,12 +2682,9 @@ class _SurahScreenState extends State<SurahScreen> {
                                               controller: _scrollController,
                                               cacheExtent: _deepLinkCacheExtent,
                                               slivers: [
-                                                if (!useDesktopWebReaderLayout)
-                                                  const SurahScreenAppBar()
-                                                else
-                                                  const SliverToBoxAdapter(
-                                                    child: SizedBox(height: 12),
-                                                  ),
+                                                const SliverToBoxAdapter(
+                                                  child: SizedBox(height: 12),
+                                                ),
                                                 if (showDecorativeBismillah)
                                                   SliverToBoxAdapter(
                                                     child: _SurahBismillahHeader(

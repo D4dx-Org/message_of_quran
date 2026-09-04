@@ -481,9 +481,19 @@ class SurahScreenAppBar extends StatelessWidget {
   const SurahScreenAppBar({super.key});
 
   @override
+  Widget build(BuildContext context) =>
+      const SliverToBoxAdapter(child: SurahScreenInfoBar());
+}
+
+/// The badge on its own, for callers that keep it outside the scroll view so
+/// it stays in view while the verses move under it.
+class SurahScreenInfoBar extends StatelessWidget {
+  const SurahScreenInfoBar({super.key});
+
+  @override
   Widget build(BuildContext context) {
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
-    return SliverToBoxAdapter(
+    return SizedBox(
       child: Consumer<SurahProvider>(
         builder: (context, sp, _) {
           if (sp.surahList.isEmpty || sp.index >= sp.surahList.length) {

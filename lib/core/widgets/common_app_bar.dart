@@ -116,9 +116,11 @@ class CommonAppBar {
     bool showJump = true,
     VoidCallback? onSearchTap,
     VoidCallback? onLogoTap,
+    double? toolbarHeight,
   }) {
     final scale = ResponsiveHelper.scaleFactor(ctx);
     return AppBar(
+      toolbarHeight: toolbarHeight,
       automaticallyImplyLeading: false,
       backgroundColor: AppTheme.appThemePrimary,
       elevation: 0,
