@@ -2567,19 +2567,32 @@ class _SurahScreenState extends State<SurahScreen> {
         }
       },
       child: BaseScreenLayout(
-        appBar: CommonAppBar.appBar(
-          context,
-          showBrandLogo: true,
-          showSearch: widget.showSearchIcon,
-          onLogoTap: () => _navigateToMainTab(0),
-          onSurahInfoTap: _hasPreface
-              ? () => _showSurahInfo(context, controller)
-              : null,
-          toolbarHeight: _showAppBar ? null : 0,
-        ),
+        appBar: useDesktopWebReaderLayout
+            ? CommonAppBar.appBar(
+                context,
+                showBrandLogo: true,
+                showSearch: widget.showSearchIcon,
+                onLogoTap: () => _navigateToMainTab(0),
+                onSurahInfoTap: _hasPreface
+                    ? () => _showSurahInfo(context, controller)
+                    : null,
+              )
+            : null,
         headerContent: useDesktopWebReaderLayout
             ? _buildDesktopReaderHeader(context, controller)
-            : null,
+            : _CollapsingReaderHeader(
+                visible: _showAppBar,
+                child: CommonAppBar.appBar(
+                  context,
+                  showBrandLogo: true,
+                  showSearch: widget.showSearchIcon,
+                  onLogoTap: () => _navigateToMainTab(0),
+                  onSurahInfoTap: _hasPreface
+                      ? () => _showSurahInfo(context, controller)
+                      : null,
+                  primary: false,
+                ),
+              ),
         drawer: const CommonDrawer(),
         floatingActionButton: Column(
           mainAxisSize: MainAxisSize.min,
@@ -3339,6 +3352,43 @@ class _SurahScreenState extends State<SurahScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+
+/// The reader's header. It keeps the navy status-bar strip and slides the bar
+/// itself up out of view as the reader scrolls down, so the page rises into
+/// the space rather than jumping into it.
+class _CollapsingReaderHeader extends StatelessWidget {
+  const _CollapsingReaderHeader({required this.visible, required this.child});
+
+  final bool visible;
+  final PreferredSizeWidget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(height: MediaQuery.paddingOf(context).top),
+        TweenAnimationBuilder<double>(
+          tween: Tween<double>(begin: 1, end: visible ? 1 : 0),
+          duration: const Duration(milliseconds: 240),
+          curve: Curves.easeOutCubic,
+          builder: (context, t, barChild) => ClipRect(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              heightFactor: t,
+              child: barChild,
+            ),
+          ),
+          child: SizedBox(
+            height: child.preferredSize.height,
+            child: child,
+          ),
+        ),
+      ],
     );
   }
 }
