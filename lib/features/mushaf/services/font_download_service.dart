@@ -183,6 +183,10 @@ class FontDownloadService {
     for (final entry in archive) {
       if (!entry.isFile) continue;
       final rawName = entry.name.split('/').last;
+      // The packs were zipped on a Mac, so each font is shadowed by an
+      // AppleDouble "._NAME.ttf" resource stub. It ends in .ttf but is not a
+      // font, and writing it just litters the fonts directory.
+      if (rawName.startsWith('._') || entry.name.contains('__MACOSX')) continue;
       final name = rawName.toUpperCase();
       if (!name.endsWith('.TTF')) continue;
       final dynamic raw = entry.content;
