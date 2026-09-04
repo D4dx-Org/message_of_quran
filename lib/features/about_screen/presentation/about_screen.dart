@@ -85,13 +85,13 @@ class _AboutScreenState extends State<AboutScreen> {
                           textAlign: TextAlign.left,
                           style: AppTextTheme.localizedBody(
                             isMalayalam: isMalayalam,
-                            fontSize: 15,
+                            fontSize: AppTextTheme.contentFontSize(context),
                             fontWeight: FontWeight.w500,
                             height: 1.7,
                           ),
                           linkStyle: AppTextTheme.localizedBody(
                             isMalayalam: isMalayalam,
-                            fontSize: 15,
+                            fontSize: AppTextTheme.contentFontSize(context),
                             fontWeight: FontWeight.w500,
                             height: 1.7,
                             color: Colors.blue,

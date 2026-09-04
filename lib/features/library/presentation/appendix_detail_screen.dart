@@ -116,7 +116,7 @@ class AppendixDetailScreen extends StatelessWidget {
                   appendix.body,
                   style: AppTextTheme.localizedBody(
                     isMalayalam: isMalayalam,
-                    fontSize: 15,
+                    fontSize: AppTextTheme.contentFontSize(context),
                     height: 1.7,
                     color: bodyColor,
                   ),

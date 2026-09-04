@@ -97,7 +97,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
                         paragraph.trim(),
                         style: AppTextTheme.localizedBody(
                           isMalayalam: true,
-                          fontSize: 14,
+                          fontSize: AppTextTheme.contentFontSize(context),
                           color: bodyColor,
                         ),
                       ),

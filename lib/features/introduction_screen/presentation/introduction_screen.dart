@@ -54,7 +54,7 @@ class IntroductionScreen extends StatelessWidget {
                 preface.prefaceText,
                 style: AppTextTheme.localizedBody(
                   isMalayalam: true,
-                  fontSize: 16,
+                  fontSize: AppTextTheme.contentFontSize(context),
                   height: 1.6,
                 ),
               ),

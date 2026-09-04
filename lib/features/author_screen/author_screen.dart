@@ -103,12 +103,12 @@ class _AuthorScreenState extends State<AuthorScreen> {
         margin: Margins.zero,
         padding: HtmlPaddings.zero,
         color: bodyColor,
-        fontSize: FontSize(14),
+        fontSize: FontSize(AppTextTheme.contentFontSize(context)),
         fontFamily: fontFamily,
       ),
       'p': Style(
         color: bodyColor,
-        fontSize: FontSize(14),
+        fontSize: FontSize(AppTextTheme.contentFontSize(context)),
         fontFamily: fontFamily,
       ),
       'h2': Style(

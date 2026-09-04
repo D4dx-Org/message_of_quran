@@ -98,7 +98,7 @@ class _HelpScreenState extends State<HelpScreen> {
                         child: Text(
                           item.description ?? 'Description Unavailable',
                           style: AppTextTheme.popinsDefault(
-                            fontSize: 13,
+                            fontSize: AppTextTheme.contentFontSize(context),
                             color: Colors.grey,
                             fontWeight: FontWeight.w400,
                           ),

@@ -92,7 +92,7 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen> {
                               Text(
                                 paragraph.trim(),
                                 style: AppTextTheme.popinsDefault(
-                                    fontSize: 14, color: bodyColor),
+                                    fontSize: AppTextTheme.contentFontSize(context), color: bodyColor),
                               ),
                               const SizedBox(height: 14),
                             ]),
