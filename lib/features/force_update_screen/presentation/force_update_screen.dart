@@ -26,7 +26,7 @@ class ForceUpdateScreen extends StatelessWidget {
                   Text("Update Available", style: AppTextTheme.titleRegular),
                   Text(
                     "New Version",
-                    style: AppTextTheme.popinsDefault(
+                    style: AppTextTheme.englishDefault(
                       color: AppTheme.appIconTheme,
                       fontSize: 15,
                     ),

@@ -705,7 +705,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
                 children: [
                   Text(
                     "Mus'haf Reader",
-                    style: AppTextTheme.popinsDefault(
+                    style: AppTextTheme.englishDefault(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
                       color: titleColor,
@@ -714,7 +714,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
                   const SizedBox(height: 4),
                   Text(
                     'Page ${_p.currentPage} of $totalPages • ${_p.isListView ? 'List view' : 'Page view'}',
-                    style: AppTextTheme.popinsDefault(
+                    style: AppTextTheme.englishDefault(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
                       color: subtitleColor,
@@ -752,7 +752,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
                 ),
                 Text(
                   '${_p.currentPage}',
-                  style: AppTextTheme.popinsDefault(
+                  style: AppTextTheme.englishDefault(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: titleColor,

@@ -65,7 +65,7 @@ class DonatePayPalButton extends StatelessWidget {
               child: Text(
                 'Donate ${DonateInfo.formatAmount(amount)} with PayPal',
                 overflow: TextOverflow.ellipsis,
-                style: AppTextTheme.popinsDefault(
+                style: AppTextTheme.englishDefault(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: _payPalNavy,

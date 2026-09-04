@@ -68,7 +68,7 @@ class AppBarLanguageButton extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     isMalayalam ? 'ML' : 'EN',
-                    style: AppTextTheme.popinsDefault(
+                    style: AppTextTheme.englishDefault(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
                       color: buttonAccent,
@@ -119,7 +119,7 @@ class AppBarLanguageButton extends StatelessWidget {
               ),
               child: Text(
                 code,
-                style: AppTextTheme.popinsDefault(
+                style: AppTextTheme.englishDefault(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                   color: accentColor,

@@ -133,7 +133,7 @@ class HomeScreenBanner extends StatelessWidget {
                                     ),
                                     Text(
                                       'Last Read',
-                                      style: AppTextTheme.popinsDefault(
+                                      style: AppTextTheme.englishDefault(
                                         color: Colors.white
                                             .withValues(alpha: 0.8),
                                         fontSize: 12 * scale,
@@ -157,7 +157,7 @@ class HomeScreenBanner extends StatelessWidget {
                                   const SizedBox(height: 2),
                                   Text(
                                     'Ayah ${lastRead.ayahId}',
-                                    style: AppTextTheme.popinsDefault(
+                                    style: AppTextTheme.englishDefault(
                                       color: Colors.white
                                           .withValues(alpha: 0.75),
                                       fontSize: 13,
@@ -187,7 +187,7 @@ class HomeScreenBanner extends StatelessWidget {
                                   Center(
                                     child: Text(
                                       '$progressPct%',
-                                      style: AppTextTheme.popinsDefault(
+                                      style: AppTextTheme.englishDefault(
                                         color: Colors.white,
                                         fontSize: 13,
                                         fontWeight: FontWeight.w700,

@@ -57,7 +57,7 @@ class SplashHeaderOverlay extends StatelessWidget {
                   Text(
                     'MUHAMMAD ASAD',
                     textAlign: TextAlign.center,
-                    style: AppTextTheme.popinsDefault(
+                    style: AppTextTheme.englishDefault(
                       color: Colors.white,
                       fontSize: 17 * scale,
                       fontWeight: FontWeight.w700,
@@ -68,7 +68,7 @@ class SplashHeaderOverlay extends StatelessWidget {
                   Text(
                     'Leopold Weiss',
                     textAlign: TextAlign.center,
-                    style: AppTextTheme.popinsDefault(
+                    style: AppTextTheme.englishDefault(
                       color: const Color(0xFFD6D9E2),
                       fontSize: 15 * scale,
                       fontWeight: FontWeight.w400,

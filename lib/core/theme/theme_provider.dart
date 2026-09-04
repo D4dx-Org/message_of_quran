@@ -107,7 +107,7 @@ class ThemeProvider extends ChangeNotifier {
         final color = states.contains(WidgetState.selected)
             ? AppTheme.appThemePrimary
             : const Color(0xFF9E9E9E);
-        return AppTextTheme.popinsDefault(
+        return AppTextTheme.englishDefault(
           fontSize: 11,
           fontWeight: FontWeight.w500,
           color: color,
@@ -120,7 +120,7 @@ class ThemeProvider extends ChangeNotifier {
       centerTitle: false,
       elevation: 0,
       iconTheme: const IconThemeData(color: AppTheme.appBarForegroundColor),
-      titleTextStyle: AppTextTheme.popinsDefault(
+      titleTextStyle: AppTextTheme.englishDefault(
         color: AppTheme.appBarForegroundColor,
         fontSize: 18,
         fontWeight: FontWeight.w600,
@@ -169,7 +169,7 @@ class ThemeProvider extends ChangeNotifier {
         IconThemeData(color: Colors.white),
       ),
       labelTextStyle: WidgetStatePropertyAll(
-        AppTextTheme.popinsDefault(
+        AppTextTheme.englishDefault(
           fontSize: 11,
           fontWeight: FontWeight.w500,
           color: const Color(0xFFAEAEB2),
@@ -182,7 +182,7 @@ class ThemeProvider extends ChangeNotifier {
       centerTitle: false,
       elevation: 0,
       iconTheme: const IconThemeData(color: AppTheme.appBarForegroundColor),
-      titleTextStyle: AppTextTheme.popinsDefault(
+      titleTextStyle: AppTextTheme.englishDefault(
         color: AppTheme.appBarForegroundColor,
         fontSize: 18,
         fontWeight: FontWeight.w600,

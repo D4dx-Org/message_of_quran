@@ -39,7 +39,7 @@ class DonateAmountSelector extends StatelessWidget {
       children: [
         Text(
           'Choose an amount',
-          style: AppTextTheme.popinsDefault(
+          style: AppTextTheme.englishDefault(
             fontSize: 13,
             fontWeight: FontWeight.w600,
             color: labelColor.withValues(alpha: 0.7),
@@ -67,7 +67,7 @@ class DonateAmountSelector extends StatelessWidget {
           keyboardType: TextInputType.number,
           inputFormatters: inputFormatters,
           onChanged: (_) => onTyped(),
-          style: AppTextTheme.popinsDefault(
+          style: AppTextTheme.englishDefault(
             fontSize: 15,
             fontWeight: FontWeight.w600,
             color: labelColor,
@@ -78,7 +78,7 @@ class DonateAmountSelector extends StatelessWidget {
               padding: const EdgeInsets.only(left: 14, right: 8),
               child: Text(
                 '₹',
-                style: AppTextTheme.popinsDefault(
+                style: AppTextTheme.englishDefault(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: labelColor.withValues(alpha: 0.7),
@@ -87,7 +87,7 @@ class DonateAmountSelector extends StatelessWidget {
             ),
             prefixIconConstraints: const BoxConstraints(minWidth: 0),
             hintText: 'Enter another amount',
-            hintStyle: AppTextTheme.popinsDefault(
+            hintStyle: AppTextTheme.englishDefault(
               fontSize: 14,
               color: labelColor.withValues(alpha: 0.45),
             ),
@@ -164,7 +164,7 @@ class _AmountChip extends StatelessWidget {
             child: FittedBox(
               child: Text(
                 DonateInfo.formatAmount(amount),
-                style: AppTextTheme.popinsDefault(
+                style: AppTextTheme.englishDefault(
                   fontSize: 16,
                   fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                   color: labelColor,

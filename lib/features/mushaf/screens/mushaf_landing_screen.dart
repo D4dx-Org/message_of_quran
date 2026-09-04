@@ -562,7 +562,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                       ),
                       child: Text(
                         _downloadBannerMessage ?? '',
-                        style: AppTextTheme.popinsDefault(
+                        style: AppTextTheme.englishDefault(
                           color: isDarkMode
                               ? Colors.white
                               : const Color(0xFF22304A),
@@ -798,7 +798,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
               children: [
                 Text(
                   'Mushaf Reading',
-                  style: AppTextTheme.popinsDefault(
+                  style: AppTextTheme.englishDefault(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: isDarkMode ? Colors.white : _kGrey3C,
@@ -807,7 +807,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                 const SizedBox(height: 8),
                 Text(
                   'Open the last page you reached, browse by surah or juz, and keep the reader controls within easy reach on desktop.',
-                  style: AppTextTheme.popinsDefault(
+                  style: AppTextTheme.englishDefault(
                     fontSize: 13,
                     height: 1.5,
                     color: mutedColor,
@@ -831,7 +831,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                       _p.lastRead == null
                           ? 'Open Mushaf'
                           : 'Continue on page ${_p.lastRead?.page ?? 1}',
-                      style: AppTextTheme.popinsDefault(
+                      style: AppTextTheme.englishDefault(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: _kWhite,
@@ -858,7 +858,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                       icon: const Icon(Icons.download_rounded),
                       label: Text(
                         'Download full Mushaf',
-                        style: AppTextTheme.popinsDefault(
+                        style: AppTextTheme.englishDefault(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: isDarkMode ? Colors.white : _kSecondaryDark,
@@ -1176,7 +1176,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                   padding: const EdgeInsets.only(bottom: 6),
                   child: Text(
                     isMalayalam ? 'സൂറത്ത്' : 'Surah',
-                    style: AppTextTheme.popinsDefault(
+                    style: AppTextTheme.englishDefault(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -1189,7 +1189,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                   padding: const EdgeInsets.only(bottom: 6),
                   child: Text(
                     isMalayalam ? 'ജുസ്അ്' : "Juz'",
-                    style: AppTextTheme.popinsDefault(
+                    style: AppTextTheme.englishDefault(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -1202,7 +1202,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                   padding: const EdgeInsets.only(bottom: 6),
                   child: Text(
                     isMalayalam ? 'അവതരണക്രമം' : 'Revelation',
-                    style: AppTextTheme.popinsDefault(
+                    style: AppTextTheme.englishDefault(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -1402,7 +1402,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                     children: [
                       Text(
                         _localizedSurah(context, meta, isMalayalam).title,
-                        style: AppTextTheme.popinsDefault(
+                        style: AppTextTheme.englishDefault(
                           color: textColor,
                           fontWeight: FontWeight.w500,
                           fontSize: 14,
@@ -1427,7 +1427,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                           const SizedBox(width: 4),
                           Text(
                             '${meta.ayahs}',
-                            style: AppTextTheme.popinsDefault(
+                            style: AppTextTheme.englishDefault(
                               fontSize: 10,
                               color: subColor,
                             ),
@@ -1438,7 +1438,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                               _localizedSurah(context, meta, isMalayalam).subtitle,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: AppTextTheme.popinsDefault(
+                              style: AppTextTheme.englishDefault(
                                 fontSize: 10,
                                 color: subColor,
                               ),

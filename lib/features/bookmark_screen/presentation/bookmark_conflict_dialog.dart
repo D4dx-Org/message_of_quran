@@ -43,18 +43,18 @@ Future<BookmarkConflictResolution?> showBookmarkConflictDialog(
       final outlineColor = theme.colorScheme.outline.withValues(
         alpha: isDark ? 0.4 : 0.55,
       );
-      final titleStyle = AppTextTheme.popinsDefault(
+      final titleStyle = AppTextTheme.englishDefault(
         fontSize: 16.5 * scale,
         fontWeight: FontWeight.w700,
         color: accentColor,
       ).copyWith(height: 1.15);
-      final bodyStyle = AppTextTheme.popinsDefault(
+      final bodyStyle = AppTextTheme.englishDefault(
         fontSize: 13.5 * scale,
         color: theme.textTheme.bodyMedium?.color?.withValues(
           alpha: isDark ? 0.9 : 0.82,
         ),
       ).copyWith(height: 1.55);
-      final buttonLabelStyle = AppTextTheme.popinsDefault(
+      final buttonLabelStyle = AppTextTheme.englishDefault(
         fontSize: 12.8 * scale,
         fontWeight: FontWeight.w600,
       );

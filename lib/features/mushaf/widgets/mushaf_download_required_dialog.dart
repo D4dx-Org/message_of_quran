@@ -33,7 +33,7 @@ class MushafDownloadRequiredDialog extends StatelessWidget {
           Expanded(
             child: Text(
               'Download Required',
-              style: AppTextTheme.popinsDefault(
+              style: AppTextTheme.englishDefault(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
@@ -45,14 +45,14 @@ class MushafDownloadRequiredDialog extends StatelessWidget {
         'Pages 1–2 are available offline.\n'
         "Download the Mus'haf font pack to read the full Quran.\n\n"
         'The download will continue in the background.',
-        style: AppTextTheme.popinsDefault(fontSize: 14),
+        style: AppTextTheme.englishDefault(fontSize: 14),
       ),
       actions: [
         TextButton(
           onPressed: onCancel,
           child: Text(
             'Cancel',
-            style: AppTextTheme.popinsDefault(
+            style: AppTextTheme.englishDefault(
               fontSize: 14,
               fontWeight: FontWeight.w500,
               color: cancelActionColor,
@@ -70,7 +70,7 @@ class MushafDownloadRequiredDialog extends StatelessWidget {
           ),
           child: Text(
             'Download',
-            style: AppTextTheme.popinsDefault(
+            style: AppTextTheme.englishDefault(
               fontSize: 14,
               fontWeight: FontWeight.w500,
             ),

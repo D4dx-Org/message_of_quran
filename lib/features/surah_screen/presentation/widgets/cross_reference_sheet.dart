@@ -646,7 +646,7 @@ class _CrossReferenceSheetState extends State<CrossReferenceSheet> {
                         Center(
                           child: Text(
                             'Verse Range ${widget.ayahNumber}',
-                            style: AppTextTheme.popinsDefault(
+                            style: AppTextTheme.englishDefault(
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
                               color: sheetForegroundColor,

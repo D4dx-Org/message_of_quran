@@ -33,7 +33,7 @@ class DonateBankCard extends StatelessWidget {
         children: [
           Text(
             DonateInfo.bankHeading,
-            style: AppTextTheme.popinsDefault(
+            style: AppTextTheme.englishDefault(
               fontSize: 16,
               fontWeight: FontWeight.w600,
               color: bodyColor,
@@ -48,7 +48,7 @@ class DonateBankCard extends StatelessWidget {
                 children: [
                   Text(
                     label,
-                    style: AppTextTheme.popinsDefault(
+                    style: AppTextTheme.englishDefault(
                       fontSize: 12,
                       color: bodyColor.withValues(alpha: 0.7),
                     ),
@@ -58,7 +58,7 @@ class DonateBankCard extends StatelessWidget {
                   // copied out rather than retyped from the screen.
                   SelectableText(
                     value,
-                    style: AppTextTheme.popinsDefault(
+                    style: AppTextTheme.englishDefault(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                       color: bodyColor,

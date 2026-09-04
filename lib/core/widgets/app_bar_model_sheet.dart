@@ -160,7 +160,7 @@ class _JumpToSheetState extends State<_JumpToSheet> {
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Text(
                     'Jump to Surah',
-                    style: AppTextTheme.popinsDefault(
+                    style: AppTextTheme.englishDefault(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
                     ),
@@ -207,7 +207,7 @@ class _JumpToSheetState extends State<_JumpToSheet> {
                             _query.isEmpty
                                 ? 'Loading surahs…'
                                 : 'No surah found for "$_query"',
-                            style: AppTextTheme.popinsDefault(
+                            style: AppTextTheme.englishDefault(
                               color: Colors.grey,
                               fontSize: 14,
                             ),
