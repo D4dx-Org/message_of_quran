@@ -63,7 +63,9 @@ void main() {
 
     expect(
       popupButton.constraints?.maxHeight,
-      settingsSelectorPopupMaxHeight(4),
+      settingsSelectorPopupMaxHeight(
+        FontSizeChangerProvider.availableFonts.length,
+      ),
     );
     expect(popupButton.constraints?.minWidth, expectedPopupWidth);
     expect(popupButton.constraints?.maxWidth, expectedPopupWidth);
@@ -258,5 +260,44 @@ void main() {
 
     final context = tester.element(find.byType(SettingsScreenFontBlock));
     expect(context.read<FontSizeChangerProvider>().fontType, targetFont);
+  });
+
+  testWidgets('one size row governs every piece of readable content', (
+    tester,
+  ) async {
+    await pumpFontBlock(tester);
+
+    expect(find.text('Translation Font Size'), findsOneWidget);
+    expect(find.text('Interpretation Font Size'), findsNothing);
+    expect(find.text('18'), findsOneWidget);
+  });
+
+  testWidgets('changing the content size saves it', (tester) async {
+    await pumpFontBlock(tester);
+
+    // The Qur'an row comes first, so the second stepper is the content one.
+    await tester.tap(find.byIcon(Icons.add_circle_outline).last);
+    await tester.pumpAndSettle();
+
+    final context = tester.element(find.byType(SettingsScreenFontBlock));
+    expect(context.read<FontSizeChangerProvider>().contentFontSize, 19);
+    expect(find.text('19'), findsOneWidget);
+
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getInt('content_font_size'), 19);
+  });
+
+  testWidgets('a saved content size is restored', (tester) async {
+    await pumpFontBlock(
+      tester,
+      initialValues: const {
+        'quran_font_type': 'Scheherazade',
+        'content_font_size': 24,
+      },
+    );
+
+    final context = tester.element(find.byType(SettingsScreenFontBlock));
+    expect(context.read<FontSizeChangerProvider>().contentFontSize, 24);
+    expect(find.text('24'), findsOneWidget);
   });
 }
