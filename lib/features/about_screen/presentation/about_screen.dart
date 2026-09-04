@@ -74,11 +74,9 @@ class _AboutScreenState extends State<AboutScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Two clear lines of air before the text starts, so it does
+                  // A clear line of air before the text starts, so it does
                   // not begin hard against the top of the card.
-                  SizedBox(
-                    height: AppTextTheme.contentFontSize(context) * 1.7 * 2,
-                  ),
+                  SizedBox(height: AppTextTheme.contentFontSize(context) * 1.7),
                   ...provider.aboutList.map((about) => Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
