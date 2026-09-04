@@ -24,7 +24,7 @@ class FontSizeChangerProvider extends ChangeNotifier {
   };
 
   int quranFontSize = 22;
-  int quranTransaltionFontSize = 15;
+  int quranTransaltionFontSize = 18;
   int interpretationFontSize = 14;
   bool translationJustify = true;
   bool interpretationJustify = true;
