@@ -94,7 +94,7 @@ class SettingsScreenFontBlock extends StatelessWidget {
                     return SizedBox(
                       width: 28,
                       child: Text(
-                        '${value.quranTransaltionFontSize}',
+                        '${value.contentFontSize}',
                         textAlign: TextAlign.center,
                         style: AppTextTheme.surahTitle.copyWith(
                           color: accentColor,
@@ -105,42 +105,6 @@ class SettingsScreenFontBlock extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: () => controller.increment(false),
-                  icon: const Icon(Icons.add_circle_outline),
-                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                  padding: EdgeInsets.zero,
-                ),
-              ],
-            ),
-          ),
-          const Divider(height: 1, indent: 16, endIndent: 16),
-          SettingsScreenListTile(
-            title: 'Interpretation Font Size',
-            icon: Icons.menu_book_outlined,
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  onPressed: () => controller.decrementInterpretation(),
-                  icon: const Icon(Icons.remove_circle_outline_rounded),
-                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
-                  padding: EdgeInsets.zero,
-                ),
-                Consumer<FontSizeChangerProvider>(
-                  builder: (context, value, child) {
-                    return SizedBox(
-                      width: 28,
-                      child: Text(
-                        '${value.interpretationFontSize}',
-                        textAlign: TextAlign.center,
-                        style: AppTextTheme.surahTitle.copyWith(
-                          color: accentColor,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                IconButton(
-                  onPressed: () => controller.incrementInterpretation(),
                   icon: const Icon(Icons.add_circle_outline),
                   constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
                   padding: EdgeInsets.zero,

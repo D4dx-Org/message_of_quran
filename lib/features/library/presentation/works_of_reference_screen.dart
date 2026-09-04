@@ -13,18 +13,21 @@ import 'package:url_launcher/url_launcher.dart';
 class WorksOfReferenceScreen extends StatelessWidget {
   const WorksOfReferenceScreen({super.key});
 
-  Map<String, Style> _htmlStyles({required Color bodyColor}) {
+  Map<String, Style> _htmlStyles(
+    BuildContext context, {
+    required Color bodyColor,
+  }) {
     return {
       'body': Style(
         margin: Margins.zero,
         padding: HtmlPaddings.zero,
         color: bodyColor,
-        fontSize: FontSize(15),
+        fontSize: FontSize(AppTextTheme.contentFontSize(context)),
         fontFamily: AppTextTheme.englishFontFamily,
       ),
       'p': Style(
         color: bodyColor,
-        fontSize: FontSize(15),
+        fontSize: FontSize(AppTextTheme.contentFontSize(context)),
         fontFamily: AppTextTheme.englishFontFamily,
       ),
       'h2': Style(
@@ -115,7 +118,7 @@ class WorksOfReferenceScreen extends StatelessWidget {
                             }
                           },
                           style: {
-                            ..._htmlStyles(bodyColor: bodyColor),
+                            ..._htmlStyles(context, bodyColor: bodyColor),
                           },
                         )
                       : SelectableText(

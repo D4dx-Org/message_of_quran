@@ -79,7 +79,7 @@ class _DonateScreenState extends State<DonateScreen> {
               Text(
                 DonateInfo.intro,
                 style: AppTextTheme.popinsDefault(
-                  fontSize: 15,
+                  fontSize: AppTextTheme.contentFontSize(context),
                   color: bodyColor,
                 ).copyWith(height: 1.6),
               ),
@@ -87,7 +87,7 @@ class _DonateScreenState extends State<DonateScreen> {
               Text(
                 DonateInfo.tagline,
                 style: AppTextTheme.popinsDefault(
-                  fontSize: 15,
+                  fontSize: AppTextTheme.contentFontSize(context),
                   fontWeight: FontWeight.w600,
                   color: bodyColor,
                 ),

@@ -153,7 +153,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> with RouteAware {
                       : '',
                   textStyle: AppTextTheme.localizedBody(
                     isMalayalam: true,
-                    fontSize: 15,
+                    fontSize: AppTextTheme.contentFontSize(context),
                     color: bodyColor,
                   ),
                 ),

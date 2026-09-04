@@ -101,12 +101,12 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                         },
                         style: AppTextTheme.localizedBody(
                           isMalayalam: isMalayalam,
-                          fontSize: 15,
+                          fontSize: AppTextTheme.contentFontSize(context),
                           height: 1.8,
                         ),
                         linkStyle: AppTextTheme.localizedBody(
                           isMalayalam: isMalayalam,
-                          fontSize: 15,
+                          fontSize: AppTextTheme.contentFontSize(context),
                           height: 1.8,
                           color: Colors.blue,
                         ).copyWith(

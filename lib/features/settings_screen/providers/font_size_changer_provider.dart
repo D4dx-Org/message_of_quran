@@ -3,6 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class FontSizeChangerProvider extends ChangeNotifier {
   static const _fontTypeKey = 'quran_font_type';
+  static const _quranFontSizeKey = 'quran_font_size';
+  static const _contentFontSizeKey = 'content_font_size';
   static const _translationJustifyKey = 'translation_justify';
   static const _interpretationJustifyKey = 'interpretation_justify';
   static const _quranJustifyKey = 'quran_justify';
@@ -25,9 +27,15 @@ class FontSizeChangerProvider extends ChangeNotifier {
     'QuranTaha': 'QuranTaha',
   };
 
+  static const int minFontSize = 10;
+  static const int maxFontSize = 30;
+
   int quranFontSize = 22;
-  int quranTransaltionFontSize = 15;
-  int interpretationFontSize = 14;
+
+  /// One size for every piece of readable content: the verse translations, the
+  /// footnotes, and the prose on the Translator, Foreword, Appendix and Works
+  /// of Reference pages. Titles, headers and list rows are not affected.
+  int contentFontSize = 18;
   bool translationJustify = true;
   bool interpretationJustify = true;
   bool quranJustify = true;
@@ -45,6 +53,10 @@ class FontSizeChangerProvider extends ChangeNotifier {
     if (savedFont != fontType) {
       await prefs.setString(_fontTypeKey, fontType);
     }
+    quranFontSize = _clamp(prefs.getInt(_quranFontSizeKey) ?? quranFontSize);
+    contentFontSize = _clamp(
+      prefs.getInt(_contentFontSizeKey) ?? contentFontSize,
+    );
     translationJustify = prefs.getBool(_translationJustifyKey) ?? true;
     interpretationJustify = prefs.getBool(_interpretationJustifyKey) ?? true;
     quranJustify = prefs.getBool(_quranJustifyKey) ?? true;
@@ -59,37 +71,36 @@ class FontSizeChangerProvider extends ChangeNotifier {
     return availableFonts.contains(savedFont) ? savedFont : defaultFont;
   }
 
+  int _clamp(int size) => size.clamp(minFontSize, maxFontSize);
+
+  Future<void> _save(String key, int size) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(key, size);
+  }
+
   void increment(bool isQuran) {
     if (isQuran) {
-      if (quranFontSize > 29) return;
+      if (quranFontSize >= maxFontSize) return;
       quranFontSize++;
+      _save(_quranFontSizeKey, quranFontSize);
     } else {
-      if (quranTransaltionFontSize > 29) return;
-      quranTransaltionFontSize++;
+      if (contentFontSize >= maxFontSize) return;
+      contentFontSize++;
+      _save(_contentFontSizeKey, contentFontSize);
     }
     notifyListeners();
   }
 
   void decrement(bool isQuran) {
     if (isQuran) {
-      if (quranFontSize < 11) return;
+      if (quranFontSize <= minFontSize) return;
       quranFontSize--;
+      _save(_quranFontSizeKey, quranFontSize);
     } else {
-      if (quranTransaltionFontSize < 11) return;
-      quranTransaltionFontSize--;
+      if (contentFontSize <= minFontSize) return;
+      contentFontSize--;
+      _save(_contentFontSizeKey, contentFontSize);
     }
-    notifyListeners();
-  }
-
-  void incrementInterpretation() {
-    if (interpretationFontSize > 29) return;
-    interpretationFontSize++;
-    notifyListeners();
-  }
-
-  void decrementInterpretation() {
-    if (interpretationFontSize < 11) return;
-    interpretationFontSize--;
     notifyListeners();
   }
 
