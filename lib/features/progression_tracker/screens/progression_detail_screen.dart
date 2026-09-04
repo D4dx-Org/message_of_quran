@@ -46,7 +46,7 @@ class _ProgressionDetailScreenState extends State<ProgressionDetailScreen> {
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
               'Delete',
-              style: AppTextTheme.popinsDefault(color: Colors.red),
+              style: AppTextTheme.englishDefault(color: Colors.red),
             ),
           ),
         ],

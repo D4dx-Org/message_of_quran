@@ -75,7 +75,7 @@ class AyahPosterWidget extends StatelessWidget {
                     Text(
                       ayah.translationText,
                       textAlign: TextAlign.center,
-                      style: AppTextTheme.popinsDefault(
+                      style: AppTextTheme.englishDefault(
                         fontSize: 13,
                         color: _textDark.withValues(alpha: 0.78),
                         height: 1.7,
@@ -95,7 +95,7 @@ class AyahPosterWidget extends StatelessWidget {
                       child: Text(
                         '${ayah.surahNameArabic}  ┃  Ayah ${ayah.ayahNo}',
                         textAlign: TextAlign.center,
-                        style: AppTextTheme.popinsDefault(
+                        style: AppTextTheme.englishDefault(
                           fontSize: 11,
                           color: _gold,
                           fontWeight: FontWeight.w500,
@@ -107,7 +107,7 @@ class AyahPosterWidget extends StatelessWidget {
                     const SizedBox(height: 8),
                     Text(
                       'Quran Asad Malayalam',
-                      style: AppTextTheme.popinsDefault(
+                      style: AppTextTheme.englishDefault(
                         fontSize: 9,
                         color: _gold.withValues(alpha: 0.5),
                         letterSpacing: 2,
@@ -131,7 +131,7 @@ class AyahPosterWidget extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           'AYAH OF THE DAY',
-          style: AppTextTheme.popinsDefault(
+          style: AppTextTheme.englishDefault(
             fontSize: 10,
             fontWeight: FontWeight.w600,
             color: _gold,

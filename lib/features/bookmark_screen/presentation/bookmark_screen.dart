@@ -137,7 +137,7 @@ class BookmarkScreen extends StatelessWidget {
     return Column(
       children: [
        const SizedBox(height: 10,)
-,         Text(isMalayalam?"ബുക്ക്മാർക്ക്":"Bookmarks", style: AppTextTheme.popinsDefault(fontSize: 16,fontWeight: FontWeight.w600),),
+,         Text(isMalayalam?"ബുക്ക്മാർക്ക്":"Bookmarks", style: AppTextTheme.englishDefault(fontSize: 16,fontWeight: FontWeight.w600),),
         Expanded(
           child: BaseScreenLayout(
             contentCardBoxShadows: const [],

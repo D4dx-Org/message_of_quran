@@ -34,7 +34,7 @@ class _AyahOfTheDayScreenState extends State<AyahOfTheDayScreen> {
           header: true,
           child: Text(
             'Ayah of the Day',
-            style: AppTextTheme.popinsDefault(
+            style: AppTextTheme.englishDefault(
               fontWeight: FontWeight.w600,
               fontSize: 18,
             ),

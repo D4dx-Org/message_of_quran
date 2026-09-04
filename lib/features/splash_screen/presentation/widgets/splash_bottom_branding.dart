@@ -58,7 +58,7 @@ class SplashBottomBranding extends StatelessWidget {
                         Text(
                           'Powered By',
                           textAlign: TextAlign.center,
-                          style: AppTextTheme.popinsDefault(
+                          style: AppTextTheme.englishDefault(
                             color: const Color(0xFFE0E5F5),
                             fontSize: (compact ? 8.0 : 8.8) * scale,
                             fontWeight: FontWeight.w500,

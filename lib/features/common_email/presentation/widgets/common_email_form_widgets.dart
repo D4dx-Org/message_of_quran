@@ -116,7 +116,7 @@ class CommonEmailHeaderCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: AppTextTheme.popinsDefault(
+                  style: AppTextTheme.englishDefault(
                     fontSize: 20 * scale,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
@@ -125,7 +125,7 @@ class CommonEmailHeaderCard extends StatelessWidget {
                 SizedBox(height: 6 * scale),
                 Text(
                   subtitle,
-                  style: AppTextTheme.popinsDefault(
+                  style: AppTextTheme.englishDefault(
                     fontSize: 13 * scale,
                     color: Colors.white.withValues(alpha: 0.86),
                     fontWeight: FontWeight.w400,
@@ -202,7 +202,7 @@ class CommonEmailTextField extends StatelessWidget {
       children: [
         Text(
           label,
-          style: AppTextTheme.popinsDefault(
+          style: AppTextTheme.englishDefault(
             fontSize: 14,
             fontWeight: FontWeight.w600,
             color: theme.textTheme.bodyMedium?.color,
@@ -288,7 +288,7 @@ class CommonEmailChoiceGroupField<T> extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: AppTextTheme.popinsDefault(
+                style: AppTextTheme.englishDefault(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                   color: theme.textTheme.titleMedium?.color,
@@ -298,7 +298,7 @@ class CommonEmailChoiceGroupField<T> extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   subtitle!,
-                  style: AppTextTheme.popinsDefault(
+                  style: AppTextTheme.englishDefault(
                     fontSize: 13,
                     color: theme.textTheme.bodySmall?.color,
                   ),
@@ -358,7 +358,7 @@ class CommonEmailChoiceGroupField<T> extends StatelessWidget {
                             children: [
                               Text(
                                 options[index].label,
-                                style: AppTextTheme.popinsDefault(
+                                style: AppTextTheme.englishDefault(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w500,
                                   color: theme.textTheme.bodyLarge?.color,
@@ -369,7 +369,7 @@ class CommonEmailChoiceGroupField<T> extends StatelessWidget {
                                   padding: const EdgeInsets.only(top: 2),
                                   child: Text(
                                     options[index].description!,
-                                    style: AppTextTheme.popinsDefault(
+                                    style: AppTextTheme.englishDefault(
                                       fontSize: 12,
                                       color: theme.textTheme.bodySmall?.color,
                                     ),
@@ -390,7 +390,7 @@ class CommonEmailChoiceGroupField<T> extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(8, 12, 8, 4),
                   child: Text(
                     field.errorText!,
-                    style: AppTextTheme.popinsDefault(
+                    style: AppTextTheme.englishDefault(
                       fontSize: 12,
                       color: theme.colorScheme.error,
                     ),
@@ -443,7 +443,7 @@ class CommonEmailSubmitButton extends StatelessWidget {
               )
             : Text(
                 label,
-                style: AppTextTheme.popinsDefault(
+                style: AppTextTheme.englishDefault(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Colors.white,

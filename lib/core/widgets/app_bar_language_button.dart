@@ -78,7 +78,7 @@ class _AppBarLanguageButtonState extends State<AppBarLanguageButton> {
                     const SizedBox(width: 4),
                     Text(
                       isMalayalam ? 'ML' : 'EN',
-                      style: AppTextTheme.popinsDefault(
+                      style: AppTextTheme.englishDefault(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
                         color: buttonAccent,
@@ -166,7 +166,7 @@ class _AppBarLanguageButtonState extends State<AppBarLanguageButton> {
               ),
               child: Text(
                 code,
-                style: AppTextTheme.popinsDefault(
+                style: AppTextTheme.englishDefault(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                   color: accentColor,

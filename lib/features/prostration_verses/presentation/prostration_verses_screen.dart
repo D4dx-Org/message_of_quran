@@ -273,7 +273,7 @@ class _ProstrationVerseTile extends StatelessWidget {
                     alignment: Alignment.center,
                     child: Text(
                       '${verse.order}',
-                      style: AppTextTheme.popinsDefault(
+                      style: AppTextTheme.englishDefault(
                         color: accentColor,
                         fontSize: 14 * scale,
                         fontWeight: FontWeight.w700,
