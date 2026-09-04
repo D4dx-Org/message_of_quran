@@ -1514,7 +1514,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                         padding: const EdgeInsets.all(24),
                                         child: SelectableText(
                                           'Failed to load surah info.',
-                                          style: AppTextTheme.popinsDefault(
+                                          style: AppTextTheme.englishDefault(
                                             fontSize: 14,
                                             color: Colors.grey,
                                           ),
@@ -1529,7 +1529,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                         padding: const EdgeInsets.all(24),
                                         child: SelectableText(
                                           'No description available for this surah.',
-                                          style: AppTextTheme.popinsDefault(
+                                          style: AppTextTheme.englishDefault(
                                             fontSize: 14,
                                             color: Colors.grey,
                                           ),
@@ -1539,7 +1539,12 @@ class _SurahScreenState extends State<SurahScreen> {
                                   }
                                   return ListView.builder(
                                     shrinkWrap: true,
-                                    padding: const EdgeInsets.all(16),
+                                    padding: const EdgeInsets.fromLTRB(
+                                      20,
+                                      18,
+                                      20,
+                                      24,
+                                    ),
                                     itemCount: prefaceList.length,
                                     itemBuilder: (_, i) {
                                       final preface = prefaceList[i];
@@ -1550,7 +1555,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                                 AppTextTheme.contentFontSize(
                                                   context,
                                                 ),
-                                            height: 1.6,
+                                            height: 1.75,
                                             color: colorScheme.onSurface,
                                           );
                                       final (firstSentence, rest) =
@@ -1559,7 +1564,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                       );
                                       return Padding(
                                         padding: const EdgeInsets.only(
-                                          bottom: 16,
+                                          bottom: 26,
                                         ),
                                         child: Column(
                                           crossAxisAlignment:
@@ -1570,7 +1575,7 @@ class _SurahScreenState extends State<SurahScreen> {
                                                 .isNotEmpty)
                                               Padding(
                                                 padding: const EdgeInsets.only(
-                                                  bottom: 8,
+                                                  bottom: 12,
                                                 ),
                                                 child: SelectableText(
                                                   preface.prefaceSubTitle,
@@ -1635,7 +1640,11 @@ class _SurahScreenState extends State<SurahScreen> {
   (String, String) _splitFirstSentence(String text) {
     final match = RegExp(r'^(.*?[.!?])(\s+|$)').firstMatch(text);
     if (match != null) {
-      return (match.group(1)!, text.substring(match.end));
+      // Cut at the end of the sentence, not the end of the match: the
+      // whitespace after it belongs to the remainder, or the bold opening
+      // runs straight into the next word.
+      final sentence = match.group(1)!;
+      return (sentence, text.substring(sentence.length));
     }
     final newlineIndex = text.indexOf('\n');
     if (newlineIndex != -1) {

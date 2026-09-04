@@ -103,6 +103,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                           isMalayalam: isMalayalam,
                           fontSize: AppTextTheme.contentFontSize(context),
                           height: 1.8,
+                          color: AppTextTheme.contentColor(context),
                         ),
                         linkStyle: AppTextTheme.localizedBody(
                           isMalayalam: isMalayalam,
@@ -155,7 +156,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                             SelectableText(
                                               'Phone',
                                               style:
-                                                  AppTextTheme.popinsDefault(
+                                                  AppTextTheme.englishDefault(
                                                 fontSize: 14,
                                                 color: Colors.grey,
                                               ),
@@ -164,7 +165,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                             Text(
                                               mobile,
                                               style:
-                                                  AppTextTheme.popinsDefault(
+                                                  AppTextTheme.englishDefault(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w500,
                                               ),
@@ -202,7 +203,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                             SelectableText(
                                               'Email',
                                               style:
-                                                  AppTextTheme.popinsDefault(
+                                                  AppTextTheme.englishDefault(
                                                 fontSize: 14,
                                                 color: Colors.grey,
                                               ),
@@ -211,7 +212,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                             Text(
                                               email,
                                               style:
-                                                  AppTextTheme.popinsDefault(
+                                                  AppTextTheme.englishDefault(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w500,
                                               ),
@@ -244,7 +245,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                       children: [
                                         SelectableText(
                                           'Address',
-                                          style: AppTextTheme.popinsDefault(
+                                          style: AppTextTheme.englishDefault(
                                             fontSize: 14,
                                             color: Colors.grey,
                                           ),

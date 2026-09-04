@@ -86,8 +86,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bodyColor = isDark ? Colors.white70 : Colors.black87;
+    final bodyColor = AppTextTheme.contentColor(context);
     final dbLoading =
         context.watch<DatabaseReadyNotifier>().status == DbInitStatus.loading;
 
@@ -161,7 +160,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> with RouteAware {
                    if (author.mobile != null && author.mobile!.isNotEmpty)
                   SelectableText(
                       author.mobile!,
-                    style: AppTextTheme.popinsDefault(
+                    style: AppTextTheme.englishDefault(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: bodyColor,
@@ -170,7 +169,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> with RouteAware {
                 if (author.email != null && author.email!.isNotEmpty)
                   SelectableText(
                     'E-mail: ${author.email!}',
-                    style: AppTextTheme.popinsDefault(
+                    style: AppTextTheme.englishDefault(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: bodyColor,

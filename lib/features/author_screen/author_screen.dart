@@ -145,8 +145,7 @@ class _AuthorScreenState extends State<AuthorScreen> {
   @override
   Widget build(BuildContext context) {
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bodyColor = isDark ? Colors.white70 : Colors.black87;
+    final bodyColor = AppTextTheme.contentColor(context);
     final dbLoading =
         context.watch<DatabaseReadyNotifier>().status == DbInitStatus.loading;
     return BaseScreenLayout(
@@ -168,7 +167,7 @@ class _AuthorScreenState extends State<AuthorScreen> {
               return Center(
                 child: Text(
                   'No author information available',
-                  style: AppTextTheme.popinsDefault(
+                  style: AppTextTheme.englishDefault(
                     fontSize: 14,
                     color: Colors.grey,
                   ),
@@ -255,7 +254,7 @@ class _AuthorScreenState extends State<AuthorScreen> {
                         )
                       : Text(
                           'No Content available',
-                          style: AppTextTheme.popinsDefault(
+                          style: AppTextTheme.englishDefault(
                             fontSize: 15,
                             color: bodyColor,
                             fontWeight: FontWeight.w500,

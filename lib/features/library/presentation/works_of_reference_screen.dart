@@ -54,8 +54,7 @@ class WorksOfReferenceScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bodyColor = isDark ? Colors.white70 : Colors.black87;
+    final bodyColor = AppTextTheme.contentColor(context);
     return BaseScreenLayout(
       appBar: CommonAppBar.homeAppBar(
         context,
@@ -74,7 +73,7 @@ class WorksOfReferenceScreen extends StatelessWidget {
             return Center(
               child: SelectableText(
                 'Failed to load works of reference.',
-                style: AppTextTheme.popinsDefault(
+                style: AppTextTheme.englishDefault(
                   fontSize: 14,
                   color: Colors.grey,
                 ),
@@ -87,7 +86,7 @@ class WorksOfReferenceScreen extends StatelessWidget {
             return Center(
               child: SelectableText(
                 'No works of reference available',
-                style: AppTextTheme.popinsDefault(
+                style: AppTextTheme.englishDefault(
                   fontSize: 14,
                   color: Colors.grey,
                 ),
@@ -123,7 +122,7 @@ class WorksOfReferenceScreen extends StatelessWidget {
                         )
                       : SelectableText(
                           'No Content available',
-                          style: AppTextTheme.popinsDefault(
+                          style: AppTextTheme.englishDefault(
                             fontSize: 15,
                             color: bodyColor,
                             fontWeight: FontWeight.w500,

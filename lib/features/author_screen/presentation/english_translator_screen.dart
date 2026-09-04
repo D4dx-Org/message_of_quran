@@ -87,8 +87,7 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bodyColor = isDark ? Colors.white70 : Colors.black87;
+    final bodyColor = AppTextTheme.contentColor(context);
     final dbLoading =
         context.watch<DatabaseReadyNotifier>().status == DbInitStatus.loading;
 
@@ -111,7 +110,7 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen>
               return Center(
                 child: SelectableText(
                   'No translator information available.',
-                  style: AppTextTheme.popinsDefault(
+                  style: AppTextTheme.englishDefault(
                       fontSize: 14, color: Colors.grey),
                 ),
               );
@@ -130,7 +129,7 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen>
                       child: SelectableText(
                         translator.name!,
                         textAlign: TextAlign.center,
-                        style: AppTextTheme.popinsDefault(
+                        style: AppTextTheme.englishDefault(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                           color: bodyColor,
@@ -150,14 +149,14 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen>
                           .join('\n\n')
                       : '',
                   textStyle:
-                      AppTextTheme.popinsDefault(fontSize: AppTextTheme.contentFontSize(context), color: bodyColor),
+                      AppTextTheme.englishDefault(fontSize: AppTextTheme.contentFontSize(context), color: bodyColor),
                 ),
                 const SizedBox(height: 16),
                 if (translator.address != null &&
                     translator.address!.isNotEmpty)
                   SelectableText(
                     'Address: ${translator.address!}',
-                    style: AppTextTheme.popinsDefault(
+                    style: AppTextTheme.englishDefault(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: bodyColor),
@@ -167,7 +166,7 @@ class _EnglishTranslatorScreenState extends State<EnglishTranslatorScreen>
                     padding: const EdgeInsets.only(top: 4),
                     child: SelectableText(
                       'Email: ${translator.email!}',
-                      style: AppTextTheme.popinsDefault(
+                      style: AppTextTheme.englishDefault(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: bodyColor),

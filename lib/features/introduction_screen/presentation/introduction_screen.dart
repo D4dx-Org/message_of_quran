@@ -56,6 +56,7 @@ class IntroductionScreen extends StatelessWidget {
                   isMalayalam: true,
                   fontSize: AppTextTheme.contentFontSize(context),
                   height: 1.6,
+                  color: AppTextTheme.contentColor(context),
                 ),
               ),
             ),

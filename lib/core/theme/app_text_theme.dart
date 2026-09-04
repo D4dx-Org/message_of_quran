@@ -29,7 +29,7 @@ class AppTextTheme {
     fontWeight: FontWeight.w500,
     // color: Colors.black,
   );
-  static TextStyle popinsDefault({
+  static TextStyle englishDefault({
     double? fontSize,
     Color? color,
     FontWeight? fontWeight,
@@ -161,6 +161,14 @@ class AppTextTheme {
     fontWeight: FontWeight.w500,
   );
 
+  /// Readable content is ink on paper: black in light mode, near-white in
+  /// dark. The rest of the chrome inherits the navy body colour from the
+  /// theme, which is right for labels and wrong for prose.
+  static Color contentColor(BuildContext ctx) =>
+      Theme.of(ctx).brightness == Brightness.dark
+      ? const Color(0xFFF2F2F7)
+      : Colors.black;
+
   /// The reader's chosen size for every piece of readable content — verse
   /// translations, footnotes and the prose on the content pages. Listens, so
   /// the text resizes as soon as the setting changes.
@@ -175,7 +183,7 @@ class AppTextTheme {
     return font(
       fontSize: contentFontSize(ctx),
       fontWeight: FontWeight.w400,
-      color: Theme.of(ctx).brightness == Brightness.dark ? null : Colors.black,
+      color: contentColor(ctx),
     );
   }
 
@@ -191,7 +199,7 @@ class AppTextTheme {
     return font(
       fontSize: contentFontSize(ctx),
       fontWeight: FontWeight.w400,
-      color: Theme.of(ctx).brightness == Brightness.dark ? null : Colors.black,
+      color: contentColor(ctx),
     );
   }
 
@@ -356,12 +364,11 @@ class AppTextTheme {
   }
 
   static TextStyle forewordBody(BuildContext ctx, {bool isMalayalam = false}) {
-    final isDark = Theme.of(ctx).brightness == Brightness.dark;
     return localizedBody(
       isMalayalam: isMalayalam,
       fontSize: AppTextTheme.contentFontSize(ctx),
       height: 1.8,
-      color: isDark ? Colors.white70 : Colors.black87,
+      color: contentColor(ctx),
     );
   }
 
@@ -376,13 +383,12 @@ class AppTextTheme {
   }
 
   static TextStyle forewordQuote(BuildContext ctx, {bool isMalayalam = false}) {
-    final isDark = Theme.of(ctx).brightness == Brightness.dark;
     return localizedBody(
       isMalayalam: isMalayalam,
       fontSize: AppTextTheme.contentFontSize(ctx),
       fontStyle: FontStyle.italic,
       height: 1.8,
-      color: isDark ? Colors.white70 : Colors.black87,
+      color: contentColor(ctx),
     );
   }
 
@@ -390,12 +396,11 @@ class AppTextTheme {
     BuildContext ctx, {
     bool isMalayalam = false,
   }) {
-    final isDark = Theme.of(ctx).brightness == Brightness.dark;
     return localizedBody(
       isMalayalam: isMalayalam,
       fontSize: AppTextTheme.contentFontSize(ctx),
       height: 1.7,
-      color: isDark ? Colors.white70 : Colors.black87,
+      color: contentColor(ctx),
     );
   }
 

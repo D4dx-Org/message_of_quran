@@ -49,7 +49,7 @@ class _DonateScreenState extends State<DonateScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final bodyColor = isDark ? Colors.white70 : Colors.black87;
+    final bodyColor = AppTextTheme.contentColor(context);
 
     return BaseScreenLayout(
       appBar: CommonAppBar.homeAppBar(
@@ -69,7 +69,7 @@ class _DonateScreenState extends State<DonateScreen> {
             children: [
               Text(
                 DonateInfo.heading,
-                style: AppTextTheme.popinsDefault(
+                style: AppTextTheme.englishDefault(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                   color: bodyColor,
@@ -78,7 +78,7 @@ class _DonateScreenState extends State<DonateScreen> {
               const SizedBox(height: 16),
               Text(
                 DonateInfo.intro,
-                style: AppTextTheme.popinsDefault(
+                style: AppTextTheme.englishDefault(
                   fontSize: AppTextTheme.contentFontSize(context),
                   color: bodyColor,
                 ).copyWith(height: 1.6),
@@ -86,7 +86,7 @@ class _DonateScreenState extends State<DonateScreen> {
               const SizedBox(height: 16),
               Text(
                 DonateInfo.tagline,
-                style: AppTextTheme.popinsDefault(
+                style: AppTextTheme.englishDefault(
                   fontSize: AppTextTheme.contentFontSize(context),
                   fontWeight: FontWeight.w600,
                   color: bodyColor,
@@ -125,7 +125,7 @@ class _DonateScreenState extends State<DonateScreen> {
               const SizedBox(height: 16),
               Text(
                 DonateInfo.bankNote,
-                style: AppTextTheme.popinsDefault(
+                style: AppTextTheme.englishDefault(
                   fontSize: 13,
                   color: bodyColor.withValues(alpha: 0.8),
                 ).copyWith(height: 1.5),
