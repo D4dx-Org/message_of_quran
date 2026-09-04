@@ -1681,7 +1681,7 @@ class _SurahScreenState extends State<SurahScreen> {
                         final preface = prefaceList[i];
                         final bodyStyle = AppTextTheme.localizedBody(
                           isMalayalam: isMl,
-                          fontSize: 14,
+                          fontSize: AppTextTheme.contentFontSize(context),
                           height: 1.6,
                           color: colorScheme.onSurface,
                         );
