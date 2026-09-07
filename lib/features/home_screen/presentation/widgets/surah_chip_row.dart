@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/theme/app_theme.dart';
+import 'package:the_message_of_the_quran/core/utils/responsive_helper.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/core/widgets/link_hover/hover_link.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
@@ -92,30 +93,38 @@ class SurahChipRow extends StatelessWidget {
       );
     }
 
-    return SizedBox(
-      height: 40,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: chips.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          final chip = chips[index];
-          final label = _chipLabel(
-            isMalayalam: isMalayalam,
-            surahList: surahList,
-            surahNumber: chip.surahNumber,
-            ayahId: chip.ayahId,
-          );
+    // The inset is on the viewport, not on the list: as list padding it
+    // scrolls with the content, so chips ran out to the screen edge and were
+    // clipped there instead of at the margin the rest of the screen keeps.
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: ResponsiveHelper.horizontalPadding(context),
+      ),
+      child: SizedBox(
+        height: 40,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          padding: EdgeInsets.zero,
+          itemCount: chips.length,
+          separatorBuilder: (_, _) => const SizedBox(width: 8),
+          itemBuilder: (context, index) {
+            final chip = chips[index];
+            final label = _chipLabel(
+              isMalayalam: isMalayalam,
+              surahList: surahList,
+              surahNumber: chip.surahNumber,
+              ayahId: chip.ayahId,
+            );
 
-          return _SurahChip(
-            label: label,
-            isMalayalam: isMalayalam,
-            ayahId: chip.ayahId,
-            surahNumber: chip.surahNumber,
-            compact: false,
-          );
-        },
+            return _SurahChip(
+              label: label,
+              isMalayalam: isMalayalam,
+              ayahId: chip.ayahId,
+              surahNumber: chip.surahNumber,
+              compact: false,
+            );
+          },
+        ),
       ),
     );
   }
