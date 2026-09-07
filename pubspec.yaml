@@ -138,6 +138,9 @@ flutter:
       fonts:
         - asset: assets/fonts/QuranTaha.ttf
 
+    - family: sura_names
+      fonts:
+        - asset: assets/fonts/sura_names.ttf
 
     - family: AmiriQuran
       fonts:
