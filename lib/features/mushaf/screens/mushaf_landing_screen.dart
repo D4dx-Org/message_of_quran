@@ -1523,7 +1523,13 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                   ),
                 ),
                 const SizedBox(width: 8),
-                Flexible(
+                // Not Flexible: a flex child would split the leftover width
+                // with the title's Expanded and leave the name floating in
+                // the middle of the row. A plain box keeps it flush against
+                // the card's trailing edge, and the cap plus the widget's
+                // own FittedBox handle the few names long enough to need it.
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 160),
                   child: SurahNameGlyph(
                     surahNumber: meta.no,
                     fontSize: 26,
