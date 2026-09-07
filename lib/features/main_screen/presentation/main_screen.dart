@@ -48,6 +48,25 @@ class _MainScreenState extends State<MainScreen> {
     ),
   ];
 
+  bool? _lastMalayalam;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Every path that changes the language has to reach the reader's content,
+    // not just the labels: Settings, the app-bar picker, and the drawer links
+    // that open a translation in its own language. Syncing here means no
+    // caller can forget, which is how the surah list and the verse
+    // translations used to stay in the old language until a restart.
+    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
+    if (_lastMalayalam == isMalayalam) return;
+    _lastMalayalam = isMalayalam;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<SurahProvider>().setMalayalam(isMalayalam);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
