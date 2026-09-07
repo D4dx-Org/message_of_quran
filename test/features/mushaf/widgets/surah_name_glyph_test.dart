@@ -3,81 +3,70 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:the_message_of_the_quran/features/mushaf/widgets/surah_name_glyph.dart';
 
 void main() {
-  test('the heavy opening surahs are trimmed, the light ones left alone', () {
-    // Al-Fatihah and Al-Baqarah are the heaviest glyphs in the font.
-    expect(SurahNameGlyph.strokeDelta(1), greaterThan(0));
-    expect(SurahNameGlyph.strokeDelta(2), greaterThan(0));
-    // An-Nisa, directly below them, is among the lightest; it is measured as
-    // light but not touched.
-    expect(SurahNameGlyph.strokeDelta(4), lessThan(0));
-    expect(SurahNameGlyph.overlayWidth(4, 30), 0);
-    // A glyph already at the target is left alone.
-    expect(SurahNameGlyph.strokeDelta(7), 0);
-    expect(SurahNameGlyph.overlayWidth(7, 30), 0);
+  test('the two opening surahs are the heaviest and get trimmed', () {
+    expect(SurahNameGlyph.weightRatio(2), greaterThan(0.25));
+    expect(SurahNameGlyph.weightRatio(1), greaterThan(0.15));
+    expect(SurahNameGlyph.overlayWidth(2, 30), greaterThan(0.8));
   });
 
-  test('the overlay scales with the font size', () {
+  test('Al-Humazah and Quraysh sit at the median and are left alone', () {
+    // The pair that showed the old max-stroke table was wrong: one has a fat
+    // dot and thin letters, the other is plain, and both are ordinary weight.
+    expect(SurahNameGlyph.weightRatio(104).abs(), lessThan(0.05));
+    expect(SurahNameGlyph.weightRatio(106).abs(), lessThan(0.05));
+    expect(SurahNameGlyph.overlayWidth(104, 30), lessThan(0.15));
+  });
+
+  test('the lightest glyph is fattened, and the overlay scales with size', () {
+    expect(SurahNameGlyph.weightRatio(26), lessThan(-0.1));
     expect(
-      SurahNameGlyph.overlayWidth(1, 60),
-      closeTo(SurahNameGlyph.overlayWidth(1, 30) * 2, 1e-9),
+      SurahNameGlyph.overlayWidth(26, 60),
+      closeTo(SurahNameGlyph.overlayWidth(26, 30) * 2, 1e-9),
     );
-    // Three erosion units at 30px is still a hairline, not a smear.
-    expect(SurahNameGlyph.overlayWidth(1, 30), closeTo(0.9, 1e-9));
   });
 
-  testWidgets('a median glyph is a single Text, a corrected one is stacked', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      const MaterialApp(
-        home: Scaffold(
-          body: Column(
-            children: [
-              SurahNameGlyph(
-                surahNumber: 7,
-                fontSize: 30,
-                color: Colors.black,
-                background: Colors.white,
-              ),
-              SurahNameGlyph(
-                surahNumber: 1,
-                fontSize: 30,
-                color: Colors.black,
-                background: Colors.white,
-              ),
-            ],
+  testWidgets(
+    'heavy is trimmed in the background colour, light fattened in ink',
+    (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: Column(
+              children: [
+                SurahNameGlyph(
+                  surahNumber: 2,
+                  fontSize: 30,
+                  color: Colors.black,
+                  background: Colors.white,
+                ),
+                SurahNameGlyph(
+                  surahNumber: 26,
+                  fontSize: 30,
+                  color: Colors.black,
+                  background: Colors.white,
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    final glyphs = find.byType(SurahNameGlyph);
-    final median = glyphs.first;
-    final heavy = glyphs.last;
+      Paint overlayOf(Finder glyph) {
+        final texts = tester
+            .widgetList<Text>(
+              find.descendant(of: glyph, matching: find.byType(Text)),
+            )
+            .toList();
+        expect(texts, hasLength(2));
+        return texts.last.style!.foreground!;
+      }
 
-    expect(
-      find.descendant(of: median, matching: find.byType(Text)),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(of: median, matching: find.byType(Stack)),
-      findsNothing,
-    );
-    expect(
-      find.descendant(of: heavy, matching: find.byType(Text)),
-      findsNWidgets(2),
-    );
-    expect(
-      find.descendant(of: heavy, matching: find.byType(Stack)),
-      findsOneWidget,
-    );
+      final heavy = overlayOf(find.byType(SurahNameGlyph).first);
+      expect(heavy.style, PaintingStyle.stroke);
+      expect(heavy.color, Colors.white);
 
-    final texts = tester
-        .widgetList<Text>(find.descendant(of: heavy, matching: find.byType(Text)))
-        .toList();
-    final overlay = texts.last.style!.foreground!;
-    expect(overlay.style, PaintingStyle.stroke);
-    // Heavy glyph: trimmed in the background colour.
-    expect(overlay.color, Colors.white);
-  });
+      final light = overlayOf(find.byType(SurahNameGlyph).last);
+      expect(light.color, Colors.black);
+    },
+  );
 }
