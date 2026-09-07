@@ -1001,7 +1001,6 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                     surahNumber: suraNo,
                     fontSize: isLandscape ? 18 : 22,
                     color: textColor,
-                    background: cardBg,
                     height: 1.1,
                   ),
                   SizedBox(width: isLandscape ? 8 : 10),
@@ -1447,13 +1446,14 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                   ),
                 ),
                 const SizedBox(width: 8),
-                SurahNameGlyph(
-                  surahNumber: meta.no,
-                  fontSize: 30,
-                  color: isDarkMode
-                      ? _kWhite70.withValues(alpha: 0.87)
-                      : _kBlack,
-                  background: cardBg,
+                Flexible(
+                  child: SurahNameGlyph(
+                    surahNumber: meta.no,
+                    fontSize: 26,
+                    color: isDarkMode
+                        ? _kWhite70.withValues(alpha: 0.87)
+                        : _kBlack,
+                  ),
                 ),
                 const SizedBox(width: 8),
               ],
