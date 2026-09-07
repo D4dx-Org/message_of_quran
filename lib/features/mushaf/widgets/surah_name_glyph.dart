@@ -4,15 +4,13 @@ import 'package:the_message_of_the_quran/features/mushaf/utils/surah_unicode.dar
 /// A surah's calligraphic name from the `sura_names` font, with its stroke
 /// weight evened out.
 ///
-/// The font (the same file quran.com ships) was not drawn to one weight: the
-/// outlines for Al-Fatihah, Al-Baqarah and a few dozen others are noticeably
-/// heavier than the rest, so a list of names reads as a mix of bold and
-/// regular. There is no lighter copy of the font to switch to, so the
-/// correction is done here: each glyph's stroke was measured, and the heavy
-/// ones are drawn with a hairline overlay in the background colour that trims
-/// them back to the median. Light glyphs are left as drawn — thickening them
-/// made them look heavier than the trimmed ones, and a light name never read
-/// as wrong the way a bold one did.
+/// The font (the same file quran.com ships) was not drawn to one weight: by
+/// typical stroke, the names run from a sixth lighter than the median to a
+/// third heavier, and the two heaviest are the first two in the book. There
+/// is no lighter copy of the font to switch to, so the correction is done
+/// here: each glyph is drawn with a hairline overlay sized to its measured
+/// excess — in the background colour to trim a heavy glyph, in the text
+/// colour to fatten a light one — so the whole list sits at one weight.
 class SurahNameGlyph extends StatelessWidget {
   const SurahNameGlyph({
     super.key,
@@ -32,150 +30,151 @@ class SurahNameGlyph extends StatelessWidget {
   final Color background;
   final double? height;
 
-  /// Maximum stroke thickness of each glyph, measured as the number of
-  /// one-pixel erosions needed to make it vanish when rendered at 200px, so
-  /// roughly half the stroke width in pixels at that size.
+  /// Typical stroke half-width of each glyph, in hundredths of a pixel when
+  /// rendered at 200px. Measured by eroding the glyph one pixel at a time and
+  /// noting when half its ink is gone — the thickness of its ordinary strokes,
+  /// not of its thickest knot, which is what an earlier max-stroke measure
+  /// tracked and why it thinned Al-Humazah (one fat dot, thin letters) into
+  /// something that read as broken.
   static const Map<int, int> _strokeAt200 = {
-    1: 11,
-    2: 11,
-    3: 10,
-    4: 7,
-    5: 9,
-    6: 9,
-    7: 8,
-    8: 8,
-    9: 8,
-    10: 7,
-    11: 8,
-    12: 8,
-    13: 9,
-    14: 8,
-    15: 10,
-    16: 10,
-    17: 7,
-    18: 11,
-    19: 9,
-    20: 7,
-    21: 8,
-    22: 9,
-    23: 9,
-    24: 8,
-    25: 9,
-    26: 9,
-    27: 9,
-    28: 8,
-    29: 8,
-    30: 7,
-    31: 9,
-    32: 10,
-    33: 10,
-    34: 7,
-    35: 7,
-    36: 7,
-    37: 8,
-    38: 9,
-    39: 8,
-    40: 8,
-    41: 9,
-    42: 9,
-    43: 9,
-    44: 10,
-    45: 10,
-    46: 9,
-    47: 11,
-    48: 10,
-    49: 10,
-    50: 7,
-    51: 7,
-    52: 8,
-    53: 10,
-    54: 10,
-    55: 11,
-    56: 10,
-    57: 11,
-    58: 10,
-    59: 9,
-    60: 11,
-    61: 9,
-    62: 10,
-    63: 9,
-    64: 9,
-    65: 8,
-    66: 9,
-    67: 9,
-    68: 10,
-    69: 10,
-    70: 10,
-    71: 9,
-    72: 10,
-    73: 8,
-    74: 8,
-    75: 8,
-    76: 10,
-    77: 10,
-    78: 8,
-    79: 9,
-    80: 9,
-    81: 8,
-    82: 9,
-    83: 10,
-    84: 10,
-    85: 9,
-    86: 9,
-    87: 9,
-    88: 10,
-    89: 10,
-    90: 8,
-    91: 9,
-    92: 7,
-    93: 10,
-    94: 10,
-    95: 7,
-    96: 9,
-    97: 9,
-    98: 7,
-    99: 7,
-    100: 9,
-    101: 9,
-    102: 8,
-    103: 9,
-    104: 12,
-    105: 8,
-    106: 8,
-    107: 10,
-    108: 9,
-    109: 8,
-    110: 9,
-    111: 9,
-    112: 9,
-    113: 9,
-    114: 7,
+    1: 221,
+    2: 239,
+    3: 193,
+    4: 175,
+    5: 176,
+    6: 175,
+    7: 177,
+    8: 167,
+    9: 167,
+    10: 156,
+    11: 197,
+    12: 154,
+    13: 189,
+    14: 173,
+    15: 193,
+    16: 193,
+    17: 169,
+    18: 182,
+    19: 166,
+    20: 161,
+    21: 190,
+    22: 182,
+    23: 190,
+    24: 180,
+    25: 177,
+    26: 150,
+    27: 169,
+    28: 163,
+    29: 166,
+    30: 153,
+    31: 168,
+    32: 174,
+    33: 174,
+    34: 164,
+    35: 173,
+    36: 160,
+    37: 165,
+    38: 165,
+    39: 183,
+    40: 157,
+    41: 178,
+    42: 179,
+    43: 178,
+    44: 172,
+    45: 170,
+    46: 201,
+    47: 189,
+    48: 193,
+    49: 206,
+    50: 172,
+    51: 158,
+    52: 178,
+    53: 178,
+    54: 187,
+    55: 192,
+    56: 194,
+    57: 201,
+    58: 187,
+    59: 176,
+    60: 181,
+    61: 183,
+    62: 184,
+    63: 173,
+    64: 171,
+    65: 166,
+    66: 171,
+    67: 191,
+    68: 175,
+    69: 192,
+    70: 191,
+    71: 199,
+    72: 180,
+    73: 172,
+    74: 170,
+    75: 200,
+    76: 181,
+    77: 177,
+    78: 186,
+    79: 168,
+    80: 167,
+    81: 189,
+    82: 178,
+    83: 194,
+    84: 181,
+    85: 188,
+    86: 170,
+    87: 183,
+    88: 166,
+    89: 197,
+    90: 181,
+    91: 178,
+    92: 179,
+    93: 200,
+    94: 186,
+    95: 176,
+    96: 183,
+    97: 188,
+    98: 169,
+    99: 175,
+    100: 172,
+    101: 174,
+    102: 181,
+    103: 179,
+    104: 184,
+    105: 177,
+    106: 182,
+    107: 195,
+    108: 186,
+    109: 183,
+    110: 177,
+    111: 182,
+    112: 183,
+    113: 177,
+    114: 160,
   };
 
-  /// The weight the heavy glyphs are trimmed down to. The font's median is 9,
-  /// but on a phone screen the heavy names still read a step bolder than the
-  /// rest after trimming to 9, so aim one unit lighter; the 8-and-below
-  /// glyphs are untouched either way.
-  static const int _target = 8;
+  /// The median of the table; every glyph is pulled towards it.
+  static const int _target = 178;
 
-  /// How far this glyph's stroke sits from the target, in the same erosion
-  /// units. Exposed for tests.
-  static int strokeDelta(int surahNumber) =>
-      (_strokeAt200[surahNumber] ?? _target) - _target;
+  /// How far this glyph's stroke sits from the median, as a fraction of the
+  /// median: +0.34 is a third heavier, -0.16 a sixth lighter. Exposed for
+  /// tests.
+  static double weightRatio(int surahNumber) =>
+      ((_strokeAt200[surahNumber] ?? _target) - _target) / _target;
 
-  /// Width of the trimming stroke needed to bring a heavy glyph down to the
-  /// target at [fontSize]: an erosion at 200px is half a pixel of stroke per
-  /// side, so one unit of delta is `fontSize / 100` of full stroke width.
-  /// Zero for glyphs at or below the target.
-  static double overlayWidth(int surahNumber, double fontSize) {
-    final delta = strokeDelta(surahNumber);
-    return delta > 0 ? delta * fontSize / 100 : 0;
-  }
+  /// Width of the correcting stroke at [fontSize]. Calibrated on device: a
+  /// glyph a third heavier than the median needed roughly a pixel of trim at
+  /// 30px to sit level with its neighbours, so the scale is a tenth of the
+  /// font size per 100% of excess. Positive ratios are trimmed, negative
+  /// ones fattened, so the sign of [weightRatio] picks the overlay colour.
+  static double overlayWidth(int surahNumber, double fontSize) =>
+      weightRatio(surahNumber).abs() * fontSize / 10;
 
   @override
   Widget build(BuildContext context) {
     final glyph = SurahUnicodeData.getSurahNameUnicode(surahNumber);
-    final delta = strokeDelta(surahNumber);
+    final ratio = weightRatio(surahNumber);
+    final width = overlayWidth(surahNumber, fontSize);
 
     final fill = Text(
       glyph,
@@ -186,7 +185,8 @@ class SurahNameGlyph extends StatelessWidget {
         color: color,
       ),
     );
-    if (delta <= 0) return fill;
+    // Below a twentieth of a pixel the overlay is invisible; skip the Stack.
+    if (width < 0.05) return fill;
 
     final overlay = Text(
       glyph,
@@ -196,9 +196,9 @@ class SurahNameGlyph extends StatelessWidget {
         height: height,
         foreground: Paint()
           ..style = PaintingStyle.stroke
-          ..strokeWidth = overlayWidth(surahNumber, fontSize)
+          ..strokeWidth = width
           ..strokeJoin = StrokeJoin.round
-          ..color = background,
+          ..color = ratio > 0 ? background : color,
       ),
     );
 
