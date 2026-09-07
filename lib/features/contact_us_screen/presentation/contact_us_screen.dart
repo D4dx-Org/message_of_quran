@@ -109,6 +109,8 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // A clear line of air before the text starts, as on About.
+                    SizedBox(height: AppTextTheme.contentFontSize(context) * 1.7),
                     if (description != null) ...[
                       LinkedBodyText(
                         text: description,
