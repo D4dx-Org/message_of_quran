@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:the_message_of_the_quran/features/mushaf/widgets/surah_name_glyph.dart';
 import 'package:the_message_of_the_quran/core/utils/surah_name_localizer.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
@@ -16,7 +17,6 @@ import '../../../core/widgets/base_screen_layout.dart';
 import '../../../core/widgets/responsive_content_wrapper.dart';
 import '../provider/mushaf_landing_provider.dart';
 import '../services/mushaf_download_manager.dart';
-import '../utils/surah_unicode.dart';
 import '../../../core/theme/app_theme.dart';
 import '../widgets/mushaf_download_required_dialog.dart';
 import '../widgets/star_number.dart';
@@ -626,7 +626,9 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
       return;
     }
     _p.saveMushafSurahSelection(suraNo);
-    context.push('/mushaf-reader?page=$page').then((_) => _p.refreshAfterReader());
+    context
+        .push('/mushaf-reader?page=$page')
+        .then((_) => _p.refreshAfterReader());
   }
 
   Future<void> _openRevelationSurah(BuildContext context, int suraNo) async {
@@ -637,7 +639,9 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
       return;
     }
     _p.saveMushafRevelationSelection(suraNo);
-    context.push('/mushaf-reader?page=$page').then((_) => _p.refreshAfterReader());
+    context
+        .push('/mushaf-reader?page=$page')
+        .then((_) => _p.refreshAfterReader());
   }
 
   void _openJuz(BuildContext context, int juzNo, int firstPage) {
@@ -667,7 +671,9 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
       _handleUndownloadedPage(context);
       return;
     }
-    context.push('/mushaf-reader?page=$page').then((_) => _p.refreshAfterReader());
+    context
+        .push('/mushaf-reader?page=$page')
+        .then((_) => _p.refreshAfterReader());
   }
 
   void _handleUndownloadedPage(BuildContext context) {
@@ -717,10 +723,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
   Widget _buildScreenBody(BuildContext context) {
     return Stack(
       fit: StackFit.expand,
-      children: [
-        _buildBody(context),
-        _buildDownloadBanner(context),
-      ],
+      children: [_buildBody(context), _buildDownloadBanner(context)],
     );
   }
 
@@ -769,11 +772,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
     final overviewPanel = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buildRecentlyReadSection(
-          context,
-          isDarkMode,
-          useTwoColumns,
-        ),
+        _buildRecentlyReadSection(context, isDarkMode, useTwoColumns),
         const SizedBox(height: 18),
         DecoratedBox(
           decoration: BoxDecoration(
@@ -843,9 +842,12 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                     child: OutlinedButton.icon(
                       onPressed: () => _showDownloadDialog(context),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: isDarkMode ? Colors.white : _kSecondaryDark,
+                        foregroundColor: isDarkMode
+                            ? Colors.white
+                            : _kSecondaryDark,
                         side: BorderSide(
-                          color: (isDarkMode ? Colors.white : _kSecondaryDark).withValues(alpha: 0.16),
+                          color: (isDarkMode ? Colors.white : _kSecondaryDark)
+                              .withValues(alpha: 0.16),
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
@@ -853,7 +855,9 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                         ),
                       ),
                       icon: const Icon(
-                        kIsWeb ? Icons.info_outline_rounded : Icons.download_rounded,
+                        kIsWeb
+                            ? Icons.info_outline_rounded
+                            : Icons.download_rounded,
                       ),
                       label: Text(
                         kIsWeb ? 'Preview only on web' : 'Download full Mushaf',
@@ -924,11 +928,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
         padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            overviewPanel,
-            const SizedBox(height: 24),
-            browserPanel,
-          ],
+          children: [overviewPanel, const SizedBox(height: 24), browserPanel],
         ),
       ),
     );
@@ -958,12 +958,11 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
     final meta = suraNo >= 1 && suraNo <= 114
         ? _surahMeta[suraNo - 1]
         : _surahMeta[0];
-    final arabicGlyph = SurahUnicodeData.getSurahNameUnicode(suraNo);
     final hPad = ResponsiveHelper.horizontalPadding(context);
     final topSpacing = isLandscape ? 12.0 : 20.0;
     final sectionGap = SizedBox(height: isLandscape ? 6 : 8);
     const quickAccessPadding = kIsWeb
-      ? EdgeInsets.only(left: 16, right: 20)
+        ? EdgeInsets.only(left: 16, right: 20)
         : EdgeInsets.zero;
 
     final recentlyReadContent = Column(
@@ -1005,14 +1004,12 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
             ),
             child: Row(
               children: [
-                Text(
-                  arabicGlyph,
-                  style: TextStyle(
-                    fontSize: isLandscape ? 18 : 22,
-                    fontFamily: 'sura_names',
-                    color: textColor,
-                    height: 1.1,
-                  ),
+                SurahNameGlyph(
+                  surahNumber: suraNo,
+                  fontSize: isLandscape ? 18 : 22,
+                  color: textColor,
+                  background: cardBg,
+                  height: 1.1,
                 ),
                 SizedBox(width: isLandscape ? 8 : 10),
                 Expanded(
@@ -1074,7 +1071,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
       );
     }
 
-        return Padding(
+    return Padding(
       padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1319,9 +1316,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
 
     final surahList = ListView.builder(
       shrinkWrap: !useInnerScroll,
-      physics: useInnerScroll
-          ? null
-          : const NeverScrollableScrollPhysics(),
+      physics: useInnerScroll ? null : const NeverScrollableScrollPhysics(),
       padding: EdgeInsets.fromLTRB(
         ResponsiveHelper.horizontalPadding(context),
         0,
@@ -1347,10 +1342,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
     return ResponsiveContentWrapper(
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
-          sortRow,
-          surahList,
-        ],
+        children: [sortRow, surahList],
       ),
     );
   }
@@ -1369,9 +1361,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
     return ResponsiveContentWrapper(
       child: ListView.builder(
         shrinkWrap: !useInnerScroll,
-        physics: useInnerScroll
-            ? null
-            : const NeverScrollableScrollPhysics(),
+        physics: useInnerScroll ? null : const NeverScrollableScrollPhysics(),
         padding: EdgeInsets.fromLTRB(hPad, 8, hPad, bottomPadding),
         itemCount: 30,
         itemBuilder: (context, i) {
@@ -1411,9 +1401,7 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
     return ResponsiveContentWrapper(
       child: ListView.builder(
         shrinkWrap: !useInnerScroll,
-        physics: useInnerScroll
-            ? null
-            : const NeverScrollableScrollPhysics(),
+        physics: useInnerScroll ? null : const NeverScrollableScrollPhysics(),
         padding: EdgeInsets.fromLTRB(hPad, 8, hPad, bottomPadding),
         itemCount: surahs.length,
         itemBuilder: (context, i) => _buildSurahCard(
@@ -1439,7 +1427,6 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
     final subColor = isDarkMode ? _kWhite70 : _kBlack54;
     final cardBg = isDarkMode ? _kGrey3C : Colors.white;
     final metaIcon = _madinanSurahs.contains(meta.no) ? _kMaddina : _kMakkah;
-    final arabicGlyph = SurahUnicodeData.getSurahNameUnicode(meta.no);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -1518,7 +1505,11 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              _localizedSurah(context, meta, isMalayalam).subtitle,
+                              _localizedSurah(
+                                context,
+                                meta,
+                                isMalayalam,
+                              ).subtitle,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: AppTextTheme.englishDefault(
@@ -1533,16 +1524,13 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                   ),
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  arabicGlyph,
-                  style: TextStyle(
-                    color: isDarkMode
-                        ? _kWhite70.withValues(alpha: 0.87)
-                        : _kBlack,
-                    fontWeight: FontWeight.w500,
-                    fontFamily: 'sura_names',
-                    fontSize: 30,
-                  ),
+                SurahNameGlyph(
+                  surahNumber: meta.no,
+                  fontSize: 30,
+                  color: isDarkMode
+                      ? _kWhite70.withValues(alpha: 0.87)
+                      : _kBlack,
+                  background: cardBg,
                 ),
                 const SizedBox(width: 8),
               ],
@@ -1620,19 +1608,16 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
                   ],
                 ),
               ),
-               const SizedBox(width: 12),
-               Text(
-                 startsSurah,
-                 style: TextStyle(
-                   color: subColor,
-                   fontSize: 11,
-                 ),
-                 textAlign: TextAlign.end,
-               ),
-             ],
-           ),
-         ),
-       ),
-     );
-   }
+              const SizedBox(width: 12),
+              Text(
+                startsSurah,
+                style: TextStyle(color: subColor, fontSize: 11),
+                textAlign: TextAlign.end,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
