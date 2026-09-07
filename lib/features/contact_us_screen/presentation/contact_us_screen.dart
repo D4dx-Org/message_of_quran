@@ -20,12 +20,18 @@ class ContactUsScreen extends StatefulWidget {
 }
 
 class _ContactUsScreenState extends State<ContactUsScreen> {
+  bool? _lastMalayalam;
+
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // The content itself comes from the database per language, so it has to be
+    // re-read when the reader switches language — not only on first open.
+    final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
+    if (_lastMalayalam == isMalayalam) return;
+    _lastMalayalam = isMalayalam;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final isMalayalam =
-          Provider.of<LanguageProvider>(context, listen: false).isMalayalam;
+      if (!mounted) return;
       await Provider.of<ContactProvider>(
         context,
         listen: false,
