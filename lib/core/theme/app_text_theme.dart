@@ -8,12 +8,12 @@ class AppTextTheme {
   AppTextTheme._();
 
   static const _malayalamFont = GoogleFonts.notoSerifMalayalam;
-  static const _englishFont = GoogleFonts.roboto;
+  static const _englishFont = GoogleFonts.poppins;
   static String get englishFontFamily => _englishFont().fontFamily!;
   static String get malayalamFontFamily => _malayalamFont().fontFamily!;
 
   static TextTheme englishTextTheme(TextTheme base) =>
-      GoogleFonts.robotoTextTheme(base);
+      GoogleFonts.poppinsTextTheme(base);
 
   //////////////////// English fonts ////////////////////
 
