@@ -70,26 +70,26 @@ class QcfFontService {
     return family;
   }
 
-  Future<String> ensureBsmlFont() async {
-    if (_loadedFamilies.contains(bsmlFamily)) return bsmlFamily;
+  Future<String>? _bsmlLoad;
 
-    if (_loading.contains(bsmlFamily)) {
-      while (_loading.contains(bsmlFamily)) {
-        await Future<void>.delayed(const Duration(milliseconds: 50));
+  /// Registers the bismillah face, once. Hands back the same Future on every
+  /// call: a FutureBuilder restarts in its waiting state whenever it is given
+  /// a different Future, and with a fresh one per build the bismillah stayed
+  /// blank for as long as its parent kept rebuilding (the whole page-enter
+  /// animation, on the surah screen).
+  Future<String> ensureBsmlFont() {
+    return _bsmlLoad ??= () async {
+      try {
+        final loader = FontLoader(bsmlFamily);
+        loader.addFont(_loadFromAsset('assets/fonts/QCF_BSML.TTF'));
+        await loader.load();
+        _loadedFamilies.add(bsmlFamily);
+        return bsmlFamily;
+      } catch (e) {
+        _bsmlLoad = null; // let a later attempt retry
+        rethrow;
       }
-      return bsmlFamily;
-    }
-
-    _loading.add(bsmlFamily);
-    try {
-      final loader = FontLoader(bsmlFamily);
-      loader.addFont(_loadFromAsset('assets/fonts/QCF_BSML.TTF'));
-      await loader.load();
-      _loadedFamilies.add(bsmlFamily);
-    } finally {
-      _loading.remove(bsmlFamily);
-    }
-    return bsmlFamily;
+    }();
   }
 
   /// Families that ship as assets but are registered only when a screen that
@@ -128,6 +128,26 @@ class QcfFontService {
         rethrow;
       }
     });
+  }
+
+  /// Registers, in the background, every face the reader will need: the
+  /// selected Arabic face first, then the Tajweed face, the surah-name glyphs
+  /// and the bismillah. Meant to run once the home screen is up, so that
+  /// opening a surah finds its fonts already there instead of painting in a
+  /// fallback face and swapping when the real one lands.
+  ///
+  /// Sequential on purpose: one download at a time leaves the connection to
+  /// whatever the user is actually doing. Failures are logged by the
+  /// individual loaders and do not stop the rest.
+  Future<void> warmUpReaderFonts(String readingFace) async {
+    for (final family in <String>{readingFace, 'QuranTaha', 'sura_names'}) {
+      try {
+        await ensureFamily(family);
+      } catch (_) {}
+    }
+    try {
+      await ensureBsmlFont();
+    } catch (_) {}
   }
 
   Future<void> preloadAdjacent(int pageNo, {int totalPages = 604}) async {

@@ -18,6 +18,9 @@ import 'package:the_message_of_the_quran/features/settings_screen/providers/lang
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 import 'package:the_message_of_the_quran/main.dart' as app;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
+import 'package:the_message_of_the_quran/features/mushaf/services/qcf_font_service.dart';
+import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key, required this.shell});
@@ -100,6 +103,20 @@ class _MainScreenState extends State<MainScreen> {
       } else {
         unawaited(surahProvider.getAllSurah());
       }
+
+      // With the home screen up and its own requests away, fetch the fonts
+      // the reader will want -- the Arabic faces, the surah-name glyphs, the
+      // bismillah and the Malayalam face -- so that opening a surah does not
+      // paint in a fallback face and swap when the real one lands. A short
+      // pause keeps this behind the surah list rather than in front of it.
+      // ignore: use_build_context_synchronously
+      final readingFace = context.read<FontSizeChangerProvider>().fontType;
+      unawaited(Future<void>.delayed(const Duration(seconds: 1), () async {
+        await QcfFontService.instance.warmUpReaderFonts(readingFace);
+        try {
+          await AppTextTheme.warmMalayalamFont();
+        } catch (_) {}
+      }));
 
       if (!mounted) return;
       if (pendingRoute == null) {

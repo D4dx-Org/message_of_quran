@@ -297,6 +297,7 @@ class _SurahScreenState extends State<SurahScreen> {
   bool _showScrollToTop = false;
   bool _showBottomSurahNavOverlay = false;
   double? _deepLinkCacheExtent;
+  bool _fontsReady = false;
 
   /// Cached provider references — safe to use in dispose().
   late SurahProvider _surahProv;
@@ -707,12 +708,19 @@ class _SurahScreenState extends State<SurahScreen> {
   void initState() {
     super.initState();
     // The Arabic face this reader is set to, and the Tajweed fallback face,
-    // are registered on demand now rather than fetched during startup. Not
-    // awaited: loading a font clears the text layout cache, so the verses
-    // repaint in the real face as soon as it lands.
+    // are registered on demand rather than fetched during startup. The verses
+    // wait for them (see the loading branch in build) instead of painting in
+    // a fallback face and swapping once the real one lands, which read as a
+    // glitch. Normally they are already registered by the warm-up the home
+    // screen starts; the timeout is for the case where they never arrive.
     final fontPrefs = context.read<FontSizeChangerProvider>();
-    unawaited(QcfFontService.instance.ensureFamily(fontPrefs.fontType));
-    unawaited(QcfFontService.instance.ensureFamily('QuranTaha'));
+    Future.wait(<Future<void>>[
+      QcfFontService.instance.ensureFamily(fontPrefs.fontType),
+      QcfFontService.instance.ensureFamily('QuranTaha'),
+      QcfFontService.instance.ensureBsmlFont(),
+    ]).timeout(const Duration(seconds: 8)).then<void>((_) {}, onError: (_) {}).whenComplete(() {
+      if (mounted) setState(() => _fontsReady = true);
+    });
     // Note: we deliberately do NOT show a loading overlay for deep-link
     // opens. The surah opens at ayah 1 like any normal surah open
     // (matching the behaviour of the other chips like Yaseen, Al Mulk,
@@ -2572,7 +2580,7 @@ class _SurahScreenState extends State<SurahScreen> {
                 child: Stack(
                   children: [
                     Positioned.fill(
-                      child: controller.arabicBlockList.isEmpty
+                      child: controller.arabicBlockList.isEmpty || !_fontsReady
                           ? const Center(child: CircularProgressIndicator())
                           : Builder(
                               builder: (_) {

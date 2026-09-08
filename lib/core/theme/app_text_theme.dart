@@ -12,6 +12,14 @@ class AppTextTheme {
   static String get englishFontFamily => _englishFont().fontFamily!;
   static String get malayalamFontFamily => _malayalamFont().fontFamily!;
 
+  /// Fetches the Malayalam face ahead of the first Malayalam text on screen.
+  /// google_fonts loads it from Google's servers the first time a style asks
+  /// for it, and until then the text paints in whatever the system has.
+  static Future<void> warmMalayalamFont() {
+    malayalamFontFamily; // asks google_fonts for the face, which starts the load
+    return GoogleFonts.pendingFonts();
+  }
+
   static TextTheme englishTextTheme(TextTheme base) =>
       GoogleFonts.poppinsTextTheme(base);
 
