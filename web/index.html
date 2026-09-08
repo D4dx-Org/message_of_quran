@@ -63,28 +63,10 @@
   <link rel="preload" as="script" href="main.dart.js">
 
   <style>
-    /* Critical CSS only — everything the first paint needs, inline, so the
-       shell appears with the HTML rather than after a stylesheet round trip. */
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
-      background: #194874; /* AppTheme.appThemeSplash, so the handoff to the
-                              Flutter splash is invisible */
-    }
-    #app-shell {
-      position: fixed;
-      inset: 0;
-      background: #194874;
-      z-index: 2147483647;
-      transition: opacity 220ms ease-out;
-      /* Painted by the browser's compositor, so the fade cannot jank the
-         first Flutter frame underneath it. */
-      will-change: opacity;
-    }
-    #app-shell.is-done { opacity: 0; pointer-events: none; }
-    @media (prefers-reduced-motion: reduce) {
-      #app-shell { transition: none; }
     }
   </style>
 
@@ -146,32 +128,6 @@
       and an iOS app.
     </p>
   </noscript>
-  <!-- A bare pane in the app's own colour, painted from the HTML alone so the
-       browser is not left on a white page until Flutter's first frame. It
-       carries no branding: the app shows its own splash once it boots. -->
-  <div id="app-shell"></div>
-
-  <script>
-    (function () {
-      var shell = document.getElementById('app-shell');
-      if (!shell) return;
-      var removed = false;
-      function dismiss() {
-        if (removed) return;
-        removed = true;
-        shell.classList.add('is-done');
-        // Outlast the fade, then stop paying for the element at all.
-        setTimeout(function () {
-          if (shell.parentNode) shell.parentNode.removeChild(shell);
-        }, 260);
-      }
-      window.addEventListener('flutter-first-frame', dismiss);
-      // If the engine never gets that far the app shows its own error screen,
-      // which the shell would otherwise cover forever.
-      setTimeout(dismiss, 20000);
-    })();
-  </script>
-
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
