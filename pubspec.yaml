@@ -101,6 +101,14 @@ flutter:
     - assets/google_fonts/
     - assets/data/
     - shorebird.yaml
+    # Registered at runtime by QcfFontService.ensureFamily rather than
+    # declared under fonts:, so startup does not fetch the reader's fonts.
+    - assets/fonts/Amiri-Regular.ttf
+    - assets/fonts/AmiriQuran-Regular.ttf
+    - assets/fonts/ScheherazadeNew-Regular.ttf
+    - assets/fonts/Lateef-Regular.ttf
+    - assets/fonts/QuranTaha.ttf
+    - assets/fonts/sura_names.ttf
     - assets/fonts/QCF_BSML.TTF
     - assets/fonts/QCF_P1.TTF
     - assets/fonts/QCF_P2.TTF
@@ -117,54 +125,10 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  fonts:
-    - family: Scheherazade
-      fonts:
-        - asset: assets/fonts/ScheherazadeNew-Regular.ttf
-
-    - family: Lateef
-      fonts:
-        - asset: assets/fonts/Lateef-Regular.ttf
-
-    - family: QuranTaha
-      fonts:
-        - asset: assets/fonts/QuranTaha.ttf
-
-    - family: sura_names
-      fonts:
-        - asset: assets/fonts/sura_names.ttf
-
-    - family: AmiriQuran
-      fonts:
-        - asset: assets/fonts/AmiriQuran-Regular.ttf
-
-    - family: Amiri
-      fonts:
-        - asset: assets/fonts/Amiri-Regular.ttf
-
-    - family: QCF_BSML
-      fonts:
-        - asset: assets/fonts/QCF_BSML.TTF
-
-    - family: QCF_P1
-      fonts:
-        - asset: assets/fonts/QCF_P1.TTF
-
-    - family: QCF_P2
-      fonts:
-        - asset: assets/fonts/QCF_P2.TTF
-
-    - family: QCF_P305
-      fonts:
-        - asset: assets/fonts/QCF_P305.ttf
-
-    - family: QCF_P603
-      fonts:
-        - asset: assets/fonts/QCF_P603.TTF
-
-    - family: QCF_P604
-      fonts:
-        - asset: assets/fonts/QCF_P604.TTF
+  # No fonts are declared here on purpose: every family this app uses is
+  # either fetched by google_fonts from assets/google_fonts or registered
+  # on demand by QcfFontService.ensureFamily. Declaring them here makes the
+  # engine fetch all of them before the first frame.
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

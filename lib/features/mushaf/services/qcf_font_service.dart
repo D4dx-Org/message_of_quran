@@ -14,7 +14,8 @@ class FontNotInstalledError implements Exception {
   final int pageNo;
 
   @override
-  String toString() => 'Font for page $pageNo is not installed. '
+  String toString() =>
+      'Font for page $pageNo is not installed. '
       'Please download the Mushaf font pack.';
 }
 
@@ -91,6 +92,44 @@ class QcfFontService {
     return bsmlFamily;
   }
 
+  /// Families that ship as assets but are registered only when a screen that
+  /// needs them appears. Declaring them under pubspec's `fonts:` made the
+  /// engine fetch all of them during startup — around 1.4 MB the home screen
+  /// never draws with.
+  static const Map<String, String> deferredFamilies = {
+    'Amiri': 'assets/fonts/Amiri-Regular.ttf',
+    'AmiriQuran': 'assets/fonts/AmiriQuran-Regular.ttf',
+    'Scheherazade': 'assets/fonts/ScheherazadeNew-Regular.ttf',
+    'Lateef': 'assets/fonts/Lateef-Regular.ttf',
+    'QuranTaha': 'assets/fonts/QuranTaha.ttf',
+    'sura_names': 'assets/fonts/sura_names.ttf',
+  };
+
+  final Map<String, Future<void>> _familyLoads = <String, Future<void>>{};
+
+  /// Registers one of [deferredFamilies], once. Safe to call on every build:
+  /// repeat calls return the in-flight or completed future.
+  ///
+  /// Loading a font clears Flutter's text layout cache, so text already on
+  /// screen in a fallback face repaints itself in the real one as soon as this
+  /// completes — callers only need to await it where a fallback would be
+  /// unreadable, as it is for the glyph-mapped families.
+  Future<void> ensureFamily(String family) {
+    final asset = deferredFamilies[family];
+    if (asset == null) return Future<void>.value();
+    return _familyLoads.putIfAbsent(family, () async {
+      try {
+        final loader = FontLoader(family);
+        loader.addFont(_loadFromAsset(asset));
+        await loader.load();
+      } catch (e) {
+        _familyLoads.remove(family); // let a later attempt retry
+        log('QcfFont: could not load $family — $e');
+        rethrow;
+      }
+    });
+  }
+
   Future<void> preloadAdjacent(int pageNo, {int totalPages = 604}) async {
     final neighbours = <int>[
       if (pageNo > 1) pageNo - 1,
@@ -120,8 +159,7 @@ class QcfFontService {
   Future<ByteData> _resolveFontBytes(int pageNo) async {
     if (kIsWeb) {
       // Try IndexedDB-backed store first (populated after download).
-      final bytes =
-          await MushafFontStore.loadFont('QCF_P${_pad(pageNo)}.TTF');
+      final bytes = await MushafFontStore.loadFont('QCF_P${_pad(pageNo)}.TTF');
       if (bytes != null) return ByteData.sublistView(bytes);
     } else {
       final local = await _localFile(pageNo);

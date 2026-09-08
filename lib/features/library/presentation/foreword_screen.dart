@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:the_message_of_the_quran/features/mushaf/services/qcf_font_service.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/foreword_model.dart';
 import 'package:the_message_of_the_quran/core/models/ml_preface_model.dart';
@@ -539,14 +540,23 @@ class _ForewordContentState extends State<_ForewordContent> {
           // ─── Bismillah ───
           Center(
             child: widget.bismillahGlyph.isNotEmpty
-                ? Text(
-                    widget.bismillahGlyph,
-                    textDirection: TextDirection.ltr,
-                    style: AppTextTheme.forewordBismillah(context).copyWith(
-                      fontFamily: 'QCF_BSML',
-                      fontSize: 30,
-                      height: 1.4,
-                    ),
+                ? FutureBuilder<String>(
+                    // QCF_BSML is registered on demand; hold the line's height
+                    // until it is in rather than drawing an empty box.
+                    future: QcfFontService.instance.ensureBsmlFont(),
+                    builder: (context, snapshot) =>
+                        snapshot.connectionState != ConnectionState.done
+                            ? const SizedBox(height: 42)
+                            : Text(
+                                widget.bismillahGlyph,
+                                textDirection: TextDirection.ltr,
+                                style: AppTextTheme.forewordBismillah(context)
+                                    .copyWith(
+                                  fontFamily: 'QCF_BSML',
+                                  fontSize: 30,
+                                  height: 1.4,
+                                ),
+                              ),
                   )
                 : Text(
                     'بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ',

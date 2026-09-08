@@ -35,6 +35,7 @@ import 'package:the_message_of_the_quran/features/surah_screen/presentation/widg
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/show_translation_gate.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/widgets/interpretation_note_marker.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_auto_advance.dart';
+import 'package:the_message_of_the_quran/features/mushaf/services/qcf_font_service.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/font_size_changer_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/play_settings_provider.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/tajweed_provider.dart';
@@ -67,19 +68,31 @@ class _SurahBismillahHeader extends StatelessWidget {
     final trimmedGlyph = glyphText.trim();
     final hasGlyph = trimmedGlyph.isNotEmpty;
 
+    final bismillah = Text(
+      hasGlyph ? trimmedGlyph : _fallbackText,
+      textAlign: TextAlign.center,
+      textDirection: hasGlyph ? TextDirection.ltr : TextDirection.rtl,
+      style: AppTextTheme.forewordBismillah(context).copyWith(
+        fontFamily: hasGlyph ? 'QCF_BSML' : null,
+        fontSize: hasGlyph ? 30 : 28,
+        height: hasGlyph ? 1.35 : 1.6,
+      ),
+    );
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 2, 12, 12),
       child: Center(
-        child: Text(
-          hasGlyph ? trimmedGlyph : _fallbackText,
-          textAlign: TextAlign.center,
-          textDirection: hasGlyph ? TextDirection.ltr : TextDirection.rtl,
-          style: AppTextTheme.forewordBismillah(context).copyWith(
-            fontFamily: hasGlyph ? 'QCF_BSML' : null,
-            fontSize: hasGlyph ? 30 : 28,
-            height: hasGlyph ? 1.35 : 1.6,
-          ),
-        ),
+        // The glyph form comes from QCF_BSML, registered on demand; the plain
+        // Arabic fallback needs no font of its own.
+        child: hasGlyph
+            ? FutureBuilder<String>(
+                future: QcfFontService.instance.ensureBsmlFont(),
+                builder: (context, snapshot) =>
+                    snapshot.connectionState == ConnectionState.done
+                        ? bismillah
+                        : const SizedBox(height: 41),
+              )
+            : bismillah,
       ),
     );
   }
@@ -693,6 +706,13 @@ class _SurahScreenState extends State<SurahScreen> {
   @override
   void initState() {
     super.initState();
+    // The Arabic face this reader is set to, and the Tajweed fallback face,
+    // are registered on demand now rather than fetched during startup. Not
+    // awaited: loading a font clears the text layout cache, so the verses
+    // repaint in the real face as soon as it lands.
+    final fontPrefs = context.read<FontSizeChangerProvider>();
+    unawaited(QcfFontService.instance.ensureFamily(fontPrefs.fontType));
+    unawaited(QcfFontService.instance.ensureFamily('QuranTaha'));
     // Note: we deliberately do NOT show a loading overlay for deep-link
     // opens. The surah opens at ayah 1 like any normal surah open
     // (matching the behaviour of the other chips like Yaseen, Al Mulk,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:the_message_of_the_quran/features/mushaf/services/qcf_font_service.dart';
 
 class FontSizeChangerProvider extends ChangeNotifier {
   static const _fontTypeKey = 'quran_font_type';
@@ -109,6 +110,9 @@ class FontSizeChangerProvider extends ChangeNotifier {
     fontType = font;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_fontTypeKey, font);
+    // Registered on demand rather than at startup, so the newly picked face
+    // has to be fetched before the reader can draw with it.
+    await QcfFontService.instance.ensureFamily(font);
     notifyListeners();
   }
 

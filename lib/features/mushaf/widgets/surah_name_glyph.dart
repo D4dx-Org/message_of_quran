@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:the_message_of_the_quran/features/mushaf/services/qcf_font_service.dart';
 import 'package:the_message_of_the_quran/features/mushaf/utils/surah_unicode.dart';
 
 /// A surah's calligraphic name from the `sura_names` font, with its stroke
@@ -172,6 +173,21 @@ class SurahNameGlyph extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // sura_names is registered on demand, and its glyphs live in the private
+    // use area: with the font missing the row would show empty boxes rather
+    // than a readable fallback, so hold the space until it is in.
+    return FutureBuilder<void>(
+      future: QcfFontService.instance.ensureFamily('sura_names'),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return SizedBox(height: fontSize * (height ?? 1.2));
+        }
+        return _buildGlyph(context);
+      },
+    );
+  }
+
+  Widget _buildGlyph(BuildContext context) {
     final glyph = SurahUnicodeData.getSurahNameUnicode(surahNumber);
     final ratio = weightRatio(surahNumber);
     final width = overlayWidth(surahNumber, fontSize);
