@@ -55,6 +55,98 @@
   <title>Quran Asad Malayalam — The Message of the Qur'an in Malayalam &amp; English</title>
   <link rel="manifest" href="manifest.json">
 
+  <!-- The engine and the app bundle are the whole critical path, and the
+       browser only discovers main.dart.js after flutter_bootstrap.js has run.
+       Preloading starts that 1.26 MB download while the HTML is still being
+       parsed. canvaskit is deliberately not preloaded: which variant the
+       engine picks depends on the browser, and guessing wrong costs 1.9 MB. -->
+  <link rel="preload" as="script" href="main.dart.js">
+
+  <style>
+    /* Critical CSS only — everything the first paint needs, inline, so the
+       shell appears with the HTML rather than after a stylesheet round trip. */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #194874; /* AppTheme.appThemeSplash, so the handoff to the
+                              Flutter splash is invisible */
+    }
+    #app-shell {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #194874;
+      color: #F4F7FF;
+      font-family: Georgia, 'Times New Roman', serif;
+      text-align: center;
+      z-index: 2147483647;
+      transition: opacity 220ms ease-out;
+      /* Painted by the browser's compositor, so the fade cannot jank the
+         first Flutter frame underneath it. */
+      will-change: opacity;
+    }
+    #app-shell.is-done { opacity: 0; pointer-events: none; }
+    #app-shell .shell-mark {
+      font-size: 13px;
+      letter-spacing: 3px;
+      opacity: 0.75;
+      margin-bottom: 10px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    #app-shell .shell-title {
+      font-size: clamp(26px, 7vw, 44px);
+      line-height: 1.18;
+      letter-spacing: 1px;
+      margin: 0;
+      font-weight: 700;
+    }
+    #app-shell .shell-title span {
+      display: block;
+      font-size: 0.42em;
+      letter-spacing: 4px;
+      font-weight: 400;
+      opacity: 0.8;
+      margin: 6px 0;
+    }
+    #app-shell .shell-progress {
+      width: min(220px, 52vw);
+      height: 2px;
+      margin-top: 34px;
+      background: rgba(244, 247, 255, 0.18);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    #app-shell .shell-progress::after {
+      content: '';
+      display: block;
+      width: 40%;
+      height: 100%;
+      background: #E4B95B;
+      border-radius: 2px;
+      animation: shell-slide 1.15s ease-in-out infinite;
+    }
+    @keyframes shell-slide {
+      0%   { transform: translateX(-100%); }
+      100% { transform: translateX(350%); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #app-shell .shell-progress::after { animation: none; width: 100%; }
+      #app-shell { transition: none; }
+    }
+    #app-shell .shell-footer {
+      position: absolute;
+      bottom: 26px;
+      font-size: 11px;
+      letter-spacing: 1px;
+      opacity: 0.55;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+  </style>
+
   <!-- Structured data. The app itself renders to a canvas, so this and the
        tags above are the only description of the site a crawler can read. -->
   <script type="application/ld+json">
@@ -113,6 +205,38 @@
       and an iOS app.
     </p>
   </noscript>
+  <!-- The shell the browser can paint from the HTML alone: same colour and
+       wording as the Flutter splash that replaces it, so the transition is a
+       cross-fade rather than a jump. No images and no webfonts, so it costs
+       no extra request and appears as soon as the document arrives. -->
+  <div id="app-shell">
+    <div class="shell-mark">THE</div>
+    <h1 class="shell-title">MESSAGE<span>OF THE</span>QURAN</h1>
+    <div class="shell-progress" role="progressbar" aria-label="Loading"></div>
+    <div class="shell-footer">Powered by D4DX</div>
+  </div>
+
+  <script>
+    (function () {
+      var shell = document.getElementById('app-shell');
+      if (!shell) return;
+      var removed = false;
+      function dismiss() {
+        if (removed) return;
+        removed = true;
+        shell.classList.add('is-done');
+        // Outlast the fade, then stop paying for the element at all.
+        setTimeout(function () {
+          if (shell.parentNode) shell.parentNode.removeChild(shell);
+        }, 260);
+      }
+      window.addEventListener('flutter-first-frame', dismiss);
+      // If the engine never gets that far the app shows its own error screen,
+      // which the shell would otherwise cover forever.
+      setTimeout(dismiss, 20000);
+    })();
+  </script>
+
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
