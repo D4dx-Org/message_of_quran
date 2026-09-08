@@ -231,58 +231,105 @@ def surah_page(meta, ml_meta, arabic, english, malayalam):
 """ % (attr(title), attr(description), SITE, slug, STYLE, body, HANDOFF)
 
 
-def home_markup(surahs):
-    """The surah list, as the home screen shows it, in plain HTML."""
-    items = []
-    for s in surahs:
-        items.append(
-            '<a class="row" href="surah/%d">'
-            '<span class="n">%d</span>'
-            '<span class="nm"><b>%s</b><i>%s</i></span>'
-            '<span class="mt">%s<br>%s verses</span></a>'
-            % (s['number'], s['number'], esc(s['name']),
-               esc(s.get('translation') or ''), esc(s.get('period') or ''),
-               s.get('ayath_count') or 0))
-    return """<div class="wrap">
-<div class="top"><b>THE MESSAGE OF THE QURAN</b></div>
-<p class="sub">Muhammad Asad's translation with the Malayalam translation
-by K.C. Saleem — all 114 surahs.</p>
-<div class="list">%s</div>
-<div class="loading">Loading the app…</div>
-</div>""" % ('\n'.join(items))
+def home_markup():
+    """The app's splash screen, as plain HTML.
+
+    Mirrors SplashScreenLayout: the painted background, the ornament and
+    author names at the top, the gold emblem over the wordmark, and the
+    "Powered By D4DX" ellipse rising from the bottom. The artwork comes from
+    web/splash (see tool/make_splash_assets.py).
+    """
+    return """<img class="bg" src="splash/bg.webp" alt="" fetchpriority="high" decoding="async">
+<div class="shade"></div>
+<img class="orn" src="splash/ornament.webp" alt="" decoding="async">
+<div class="who"><b>MUHAMMAD ASAD</b><span>Leopold Weiss</span></div>
+<div class="brand">
+<img class="emblem" src="splash/emblem.webp" alt="" fetchpriority="high" decoding="async">
+<img class="mark" src="splash/wordmark.webp" alt="The Message of the Quran" decoding="async">
+</div>
+<div class="foot"><div class="foot-in"><span>Powered By</span><img class="d4" src="splash/d4.webp" alt="D4DX" decoding="async"></div></div>"""
 
 
-HOME_STYLE = """
-#prerender .list { display:flex; flex-direction:column; }
-#prerender .row {
-  display:flex; align-items:center; gap:.85rem; padding:.7rem .2rem;
-  border-bottom:1px solid #efe9dd; color:inherit; text-decoration:none;
+# The splash is always dark, whatever the colour scheme, exactly as in the
+# app. Sizes follow the phone layout's proportions but are driven by viewport
+# height so a desktop window gets the same composition rather than a phone
+# layout stretched to 1920px. Poppins is the app's own English face; the files
+# are the ones the Flutter bundle fetches anyway, so they cost nothing extra
+# and swap in as soon as they arrive.
+SPLASH_STYLE = """
+@font-face { font-family:"Poppins"; font-weight:700; font-display:swap;
+  src:url("assets/assets/google_fonts/Poppins-Bold.ttf") format("truetype"); }
+@font-face { font-family:"Poppins"; font-weight:500; font-display:swap;
+  src:url("assets/assets/google_fonts/Poppins-Medium.ttf") format("truetype"); }
+@font-face { font-family:"Poppins"; font-weight:400; font-display:swap;
+  src:url("assets/assets/google_fonts/Poppins-Regular.ttf") format("truetype"); }
+html, body { margin:0; padding:0; height:100%; background:#194874; }
+#prerender {
+  position:fixed; inset:0; overflow:hidden; z-index:1000;
+  background:#194874; color:#fff;
+  font-family:"Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  transition:opacity 220ms ease-out; will-change:opacity;
+  -webkit-user-select:none; user-select:none;
 }
-#prerender .row .n {
-  flex:0 0 2rem; height:2rem; border-radius:50%; background:#1b4571;
-  color:#fff; font-size:.8rem; display:flex; align-items:center;
-  justify-content:center;
+#prerender.is-done { opacity:0; pointer-events:none; }
+#prerender img { display:block; -webkit-user-drag:none; }
+#prerender .bg {
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover; object-position:center;
 }
-#prerender .row .nm { flex:1 1 auto; display:flex; flex-direction:column; }
-#prerender .row .nm b { font-size:1rem; }
-#prerender .row .nm i { font-style:normal; font-size:.82rem; color:#777; }
-#prerender .row .mt { text-align:right; font-size:.76rem; color:#8a8a8a; }
-@media (prefers-color-scheme: dark) {
-  #prerender .row { border-bottom-color:#222a33; }
-  #prerender .row .nm i, #prerender .row .mt { color:#9aa4ae; }
+#prerender .shade {
+  position:absolute; inset:0;
+  background:linear-gradient(to bottom, rgba(0,0,0,.07) 0%, rgba(0,0,0,0) 42%, rgba(0,0,0,.48) 100%);
 }
+#prerender .orn {
+  position:absolute; left:50%; top:0; transform:translate(-50%,-46%);
+  width:clamp(86px, 24vw, 116px); opacity:.52;
+}
+#prerender .who {
+  position:absolute; left:0; right:0; top:clamp(44px, 6.4vh, 60px);
+  text-align:center; line-height:1.25;
+}
+#prerender .who b { display:block; font-weight:700; font-size:clamp(16px, 1.9vh, 19px); letter-spacing:.7px; }
+#prerender .who span { display:block; font-weight:400; font-size:clamp(14px, 1.7vh, 17px); color:#D6D9E2; margin-top:.2em; letter-spacing:.15px; }
+#prerender .brand {
+  position:absolute; left:0; right:0; top:clamp(104px, 15vh, 150px); bottom:25vh;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+#prerender .emblem { width:clamp(230px, min(84vw, 42vh), 400px); height:auto; }
+#prerender .mark { width:clamp(200px, min(72vw, 36vh), 345px); height:auto; margin-top:calc(-1 * clamp(10px, 2.4vh, 22px)); }
+#prerender .foot {
+  position:absolute; left:50%; bottom:-24vh; transform:translateX(-50%);
+  width:max(122vw, 620px); height:48vh; border-radius:50% 50% 0 0 / 100% 100% 0 0;
+  background:linear-gradient(to bottom, rgba(14,31,73,.47), rgba(14,31,73,.63));
+}
+#prerender .foot-in {
+  position:absolute; left:0; right:0; top:15%; text-align:center;
+}
+#prerender .foot-in span { display:block; font-weight:500; font-size:clamp(10px, 1.3vh, 12px); color:#E0E5F5; letter-spacing:.2px; }
+#prerender .d4 {
+  width:clamp(72px, 9vh, 86px); height:auto; margin:.35em auto 0;
+  filter:brightness(0) invert(1) drop-shadow(0 0 9px rgba(255,255,255,.55));
+}
+@media (max-height: 560px) {
+  #prerender .brand { top:96px; bottom:22vh; }
+  #prerender .foot { height:44vh; bottom:-22vh; }
+}
+@media (prefers-reduced-motion: reduce) { #prerender { transition:none; } }
 """
 
 
-def write_home(surahs):
-    """Put the surah list into the Flutter template's body."""
+def write_home():
+    """Put the splash into the Flutter template's body."""
     s = io.open(INDEX, encoding='utf-8', newline='').read()
     marker_open = '<!-- prerender:start -->'
     marker_close = '<!-- prerender:end -->'
-    block = ('%s\n<style>%s%s</style>\n<div id="prerender">%s</div>\n'
+    block = ('%s\n<link rel="preload" as="image" href="splash/bg.webp">\n'
+             '<link rel="preload" as="image" href="splash/emblem.webp">\n'
+             '<style>%s</style>\n'
+             '<div id="prerender" role="img" aria-label="The Message of the Quran is loading">%s</div>\n'
              '<script>%s</script>\n%s'
-             % (marker_open, STYLE, HOME_STYLE, home_markup(surahs),
-                HANDOFF, marker_close))
+             % (marker_open, SPLASH_STYLE, home_markup(), HANDOFF,
+                marker_close))
 
     if marker_open in s:
         start = s.index(marker_open)
@@ -294,7 +341,7 @@ def write_home(surahs):
             raise SystemExit('index.html: bootstrap script tag not found')
         s = s.replace(anchor, block + '\n' + anchor, 1)
     io.open(INDEX, 'w', encoding='utf-8', newline='').write(s)
-    print('home markup written into %s' % INDEX)
+    print('splash written into %s' % INDEX)
 
 
 def main():
@@ -327,7 +374,7 @@ def main():
         sys.stdout.flush()
     print('\nwrote 114 surah pages into %s' % OUT_ROOT)
 
-    write_home(surahs)
+    write_home()
 
 
 if __name__ == '__main__':
