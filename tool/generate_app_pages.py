@@ -15,7 +15,10 @@ first frame the static layer is removed and the real screen takes over.
 
 Netlify serves a matching file before falling back to the SPA redirect, so
 /surah/2 resolves to the generated page while every other app route still
-falls through to index.html as before.
+falls through to index.html as before. The pages are written as <n>.html
+rather than <n>/index.html because Netlify answers a directory request with
+a 301 to its trailing-slash form, and that redirect costs a round trip on
+exactly the request this is meant to make fast.
 
     python tool/generate_app_pages.py
 """
@@ -316,10 +319,8 @@ def main():
         malayalam = {r['verse_number']: r.get('malayalam_translation', '')
                      for r in get('/surahs/%d/verses' % number,
                                   {'malayalam': 'true'})}
-        out_dir = os.path.join(OUT_ROOT, str(number))
-        os.makedirs(out_dir, exist_ok=True)
-        io.open(os.path.join(out_dir, 'index.html'), 'w', encoding='utf-8',
-                newline='\n').write(
+        io.open(os.path.join(OUT_ROOT, '%d.html' % number), 'w',
+                encoding='utf-8', newline='\n').write(
             surah_page(meta, ml_by_number.get(number, {}), arabic, english,
                        malayalam))
         sys.stdout.write('\r  %d/114' % number)
