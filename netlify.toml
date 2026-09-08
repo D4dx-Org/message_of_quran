@@ -12,7 +12,6 @@
     flutter_sdk/bin/flutter config --no-analytics && \
     flutter_sdk/bin/flutter pub get && \
     flutter_sdk/bin/flutter build web --release \
-      --no-web-resources-cdn \
       --dart-define=QURAN_ASAD_EMAIL_API_KEY=$QURAN_ASAD_EMAIL_API_KEY \
       --dart-define=MOQ_API_BASE_URL=$MOQ_API_BASE_URL
   """
@@ -72,11 +71,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # Static asset caching — images/icons/data aren't filename-hashed, so 1 week
 # balances instant repeat loads against a redeployed asset going stale.
-# canvaskit/* now comes from this site instead of gstatic, whose copy was
-# taking ~3.8s to arrive with the first frame waiting on it. Our copy is not
-# filename-versioned and the build clones Flutter stable, so it cannot be
-# "immutable": a day helps repeat visits without letting an SDK bump leave a
-# stale engine paired with fresh app code.
+# canvaskit/* is versioned by the Flutter SDK build itself, safe to cache hard.
 # ─────────────────────────────────────────────────────────────────────────────
 [[headers]]
   for = "/assets/images/*"
@@ -96,7 +91,7 @@
 [[headers]]
   for = "/canvaskit/*"
   [headers.values]
-    Cache-Control = "public, max-age=86400"
+    Cache-Control = "public, max-age=31536000, immutable"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Crawler files. Real files win over the SPA fallback, but they must be served
