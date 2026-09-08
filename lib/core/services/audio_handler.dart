@@ -41,22 +41,24 @@ class QuranAudioHandler extends BaseAudioHandler with SeekHandler {
 
     try {
       final session = await AudioSession.instance;
-      await session.configure(const AudioSessionConfiguration(
-        avAudioSessionCategory: AVAudioSessionCategory.playback,
-        avAudioSessionCategoryOptions:
-            AVAudioSessionCategoryOptions.mixWithOthers,
-        avAudioSessionMode: AVAudioSessionMode.defaultMode,
-        avAudioSessionRouteSharingPolicy:
-            AVAudioSessionRouteSharingPolicy.defaultPolicy,
-        avAudioSessionSetActiveOptions: AVAudioSessionSetActiveOptions.none,
-        androidAudioAttributes: AndroidAudioAttributes(
-          contentType: AndroidAudioContentType.music,
-          flags: AndroidAudioFlags.none,
-          usage: AndroidAudioUsage.media,
+      await session.configure(
+        const AudioSessionConfiguration(
+          avAudioSessionCategory: AVAudioSessionCategory.playback,
+          avAudioSessionCategoryOptions:
+              AVAudioSessionCategoryOptions.mixWithOthers,
+          avAudioSessionMode: AVAudioSessionMode.defaultMode,
+          avAudioSessionRouteSharingPolicy:
+              AVAudioSessionRouteSharingPolicy.defaultPolicy,
+          avAudioSessionSetActiveOptions: AVAudioSessionSetActiveOptions.none,
+          androidAudioAttributes: AndroidAudioAttributes(
+            contentType: AndroidAudioContentType.music,
+            flags: AndroidAudioFlags.none,
+            usage: AndroidAudioUsage.media,
+          ),
+          androidAudioFocusGainType: AndroidAudioFocusGainType.gain,
+          androidWillPauseWhenDucked: false,
         ),
-        androidAudioFocusGainType: AndroidAudioFocusGainType.gain,
-        androidWillPauseWhenDucked: false,
-      ));
+      );
     } catch (e) {
       debugPrint('QuranAudioHandler: audio session config failed — $e');
     }
@@ -82,27 +84,48 @@ class QuranAudioHandler extends BaseAudioHandler with SeekHandler {
         ProcessingState.completed => AudioProcessingState.completed,
       };
 
-      playbackState.add(playbackState.value.copyWith(
-        controls: [
-          MediaControl.skipToPrevious,
-          if (playing) MediaControl.pause else MediaControl.play,
-          MediaControl.stop,
-          MediaControl.skipToNext,
-        ],
-        systemActions: const {
-          MediaAction.seek,
-          MediaAction.seekForward,
-          MediaAction.seekBackward,
-          MediaAction.skipToNext,
-          MediaAction.skipToPrevious,
-        },
-        androidCompactActionIndices: const [0, 1, 3],
-        processingState: audioProcessingState,
-        playing: playing,
-        updatePosition: _player.position,
-        bufferedPosition: _player.bufferedPosition,
-        speed: _player.speed,
-      ));
+      // Idle means stopped: hand audio_service a bare state with no controls
+      // so it tears the notification down instead of re-posting one. Without
+      // this the listener keeps pushing a full control set after stop() and
+      // the notification comes back with no media item behind it, which
+      // Android renders as the bare "<app> is running" row.
+      if (audioProcessingState == AudioProcessingState.idle) {
+        playbackState.add(
+          playbackState.value.copyWith(
+            controls: const [],
+            systemActions: const {},
+            processingState: AudioProcessingState.idle,
+            playing: false,
+            updatePosition: Duration.zero,
+            bufferedPosition: Duration.zero,
+          ),
+        );
+        return;
+      }
+
+      playbackState.add(
+        playbackState.value.copyWith(
+          controls: [
+            MediaControl.skipToPrevious,
+            if (playing) MediaControl.pause else MediaControl.play,
+            MediaControl.stop,
+            MediaControl.skipToNext,
+          ],
+          systemActions: const {
+            MediaAction.seek,
+            MediaAction.seekForward,
+            MediaAction.seekBackward,
+            MediaAction.skipToNext,
+            MediaAction.skipToPrevious,
+          },
+          androidCompactActionIndices: const [0, 1, 3],
+          processingState: audioProcessingState,
+          playing: playing,
+          updatePosition: _player.position,
+          bufferedPosition: _player.bufferedPosition,
+          speed: _player.speed,
+        ),
+      );
     });
 
     _indexSub = _player.currentIndexStream.listen((index) {
@@ -118,9 +141,12 @@ class QuranAudioHandler extends BaseAudioHandler with SeekHandler {
     });
 
     _positionSub = _player.positionStream.listen((position) {
-      playbackState.add(playbackState.value.copyWith(
-        updatePosition: position,
-      ));
+      // A stopped player still emits a final position; pushing it would
+      // revive the notification we just dismissed.
+      if (playbackState.value.processingState == AudioProcessingState.idle) {
+        return;
+      }
+      playbackState.add(playbackState.value.copyWith(updatePosition: position));
     });
   }
 
@@ -166,10 +192,22 @@ class QuranAudioHandler extends BaseAudioHandler with SeekHandler {
   @override
   Future<void> stop() async {
     await _player.stop();
-    playbackState.add(playbackState.value.copyWith(
-      processingState: AudioProcessingState.idle,
-      playing: false,
-    ));
+    // Drop the media item as well as the controls: audio_service keeps the
+    // notification alive while either survives, which is why stopping from
+    // the notification used to leave a dead bar behind until it was swiped
+    // away. The next play sets a fresh item and the notification returns.
+    mediaItem.add(null);
+    playbackState.add(
+      playbackState.value.copyWith(
+        controls: const [],
+        systemActions: const {},
+        processingState: AudioProcessingState.idle,
+        playing: false,
+        updatePosition: Duration.zero,
+        bufferedPosition: Duration.zero,
+      ),
+    );
+    await super.stop();
   }
 
   @override
@@ -200,9 +238,7 @@ class QuranAudioHandler extends BaseAudioHandler with SeekHandler {
   @override
   Future<void> setSpeed(double speed) async {
     await _player.setSpeed(speed);
-    playbackState.add(playbackState.value.copyWith(
-      speed: speed,
-    ));
+    playbackState.add(playbackState.value.copyWith(speed: speed));
   }
 
   @override
