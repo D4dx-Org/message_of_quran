@@ -128,6 +128,208 @@
       and an iOS app.
     </p>
   </noscript>
+<!-- prerender:start -->
+<style>
+:root { color-scheme: light dark; }
+html, body { margin:0; padding:0; height:100%; }
+#prerender {
+  position:fixed; inset:0; overflow-y:auto; z-index:1000;
+  background:#fffdf7; color:#1a1a1a;
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  transition:opacity 200ms ease-out;
+  -webkit-overflow-scrolling:touch;
+}
+#prerender.is-done { opacity:0; pointer-events:none; }
+#prerender .wrap { max-width:44rem; margin:0 auto; padding:1.25rem 1.25rem 5rem; }
+#prerender .top {
+  display:flex; align-items:center; gap:.6rem;
+  border-bottom:1px solid #e8e3d8; padding-bottom:.9rem; margin-bottom:1.5rem;
+}
+#prerender .top b { font-size:.95rem; letter-spacing:.02em; color:#1b4571; }
+#prerender h1 { font-size:1.45rem; line-height:1.3; margin:0 0 .3rem; }
+#prerender .sub { color:#555; margin:0 0 1.6rem; font-size:.92rem; }
+#prerender .verse { padding:.9rem 0; border-bottom:1px solid #efe9dd; }
+#prerender .num { font-size:.75rem; color:#8a8a8a; letter-spacing:.04em; }
+#prerender .ar {
+  font-size:1.5rem; line-height:2.15; direction:rtl; text-align:right;
+  margin:.5rem 0; font-family:"Traditional Arabic","Scheherazade New",serif;
+}
+#prerender .en { margin:.5rem 0; }
+#prerender .ml { margin:.5rem 0; color:#333; }
+#prerender .more { display:block; margin:1.8rem 0 0; font-size:.92rem; }
+#prerender .loading {
+  position:sticky; bottom:0; padding:.6rem 0;
+  background:linear-gradient(to top,#fffdf7 65%,transparent);
+  color:#777; font-size:.82rem; text-align:center;
+}
+@media (prefers-color-scheme: dark) {
+  #prerender { background:#12181f; color:#e8e8e8; }
+  #prerender .top { border-bottom-color:#2a323b; }
+  #prerender .top b { color:#7fb2e5; }
+  #prerender .verse { border-bottom-color:#222a33; }
+  #prerender .sub, #prerender .num, #prerender .loading { color:#9aa4ae; }
+  #prerender .ml { color:#ccc; }
+  #prerender .loading { background:linear-gradient(to top,#12181f 65%,transparent); }
+}
+@media (prefers-reduced-motion: reduce) { #prerender { transition:none; } }
+
+#prerender .list { display:flex; flex-direction:column; }
+#prerender .row {
+  display:flex; align-items:center; gap:.85rem; padding:.7rem .2rem;
+  border-bottom:1px solid #efe9dd; color:inherit; text-decoration:none;
+}
+#prerender .row .n {
+  flex:0 0 2rem; height:2rem; border-radius:50%; background:#1b4571;
+  color:#fff; font-size:.8rem; display:flex; align-items:center;
+  justify-content:center;
+}
+#prerender .row .nm { flex:1 1 auto; display:flex; flex-direction:column; }
+#prerender .row .nm b { font-size:1rem; }
+#prerender .row .nm i { font-style:normal; font-size:.82rem; color:#777; }
+#prerender .row .mt { text-align:right; font-size:.76rem; color:#8a8a8a; }
+@media (prefers-color-scheme: dark) {
+  #prerender .row { border-bottom-color:#222a33; }
+  #prerender .row .nm i, #prerender .row .mt { color:#9aa4ae; }
+}
+</style>
+<div id="prerender"><div class="wrap">
+<div class="top"><b>THE MESSAGE OF THE QURAN</b></div>
+<p class="sub">Muhammad Asad's translation with the Malayalam translation
+by K.C. Saleem — all 114 surahs.</p>
+<div class="list"><a class="row" href="surah/1"><span class="n">1</span><span class="nm"><b>Al-Fatihah</b><i>The Opening</i></span><span class="mt">Makkah<br>7 verses</span></a>
+<a class="row" href="surah/2"><span class="n">2</span><span class="nm"><b>Al-Baqarah</b><i>The Cow</i></span><span class="mt">Madinah<br>286 verses</span></a>
+<a class="row" href="surah/3"><span class="n">3</span><span class="nm"><b>Al-'Imran</b><i>The House of 'Imran</i></span><span class="mt">Madinah<br>200 verses</span></a>
+<a class="row" href="surah/4"><span class="n">4</span><span class="nm"><b>An-Nisa</b><i>Women</i></span><span class="mt">Madinah<br>176 verses</span></a>
+<a class="row" href="surah/5"><span class="n">5</span><span class="nm"><b>Al-Ma'idah</b><i>The Repast</i></span><span class="mt">Madinah<br>120 verses</span></a>
+<a class="row" href="surah/6"><span class="n">6</span><span class="nm"><b>Al-An'am</b><i>Cattle</i></span><span class="mt">Makkah<br>165 verses</span></a>
+<a class="row" href="surah/7"><span class="n">7</span><span class="nm"><b>Al-A'raf</b><i>The Faculty Of Discernment</i></span><span class="mt">Makkah<br>206 verses</span></a>
+<a class="row" href="surah/8"><span class="n">8</span><span class="nm"><b>Al-Anfal</b><i>Spoils Of War</i></span><span class="mt">Madinah<br>75 verses</span></a>
+<a class="row" href="surah/9"><span class="n">9</span><span class="nm"><b>At-Tawbah</b><i>Repentance</i></span><span class="mt">Madinah<br>129 verses</span></a>
+<a class="row" href="surah/10"><span class="n">10</span><span class="nm"><b>Yunus</b><i>Jonah</i></span><span class="mt">Makkah<br>109 verses</span></a>
+<a class="row" href="surah/11"><span class="n">11</span><span class="nm"><b>Hud</b><i></i></span><span class="mt">Makkah<br>123 verses</span></a>
+<a class="row" href="surah/12"><span class="n">12</span><span class="nm"><b>Yusuf</b><i>Joseph</i></span><span class="mt">Makkah<br>111 verses</span></a>
+<a class="row" href="surah/13"><span class="n">13</span><span class="nm"><b>Ar-Ra'd</b><i>Thunder</i></span><span class="mt">Period Uncertain<br>43 verses</span></a>
+<a class="row" href="surah/14"><span class="n">14</span><span class="nm"><b>Ibrahim</b><i>Abraham</i></span><span class="mt">Makkah<br>52 verses</span></a>
+<a class="row" href="surah/15"><span class="n">15</span><span class="nm"><b>Al-Hijr</b><i></i></span><span class="mt">Makkah<br>99 verses</span></a>
+<a class="row" href="surah/16"><span class="n">16</span><span class="nm"><b>An-Nahl</b><i>The Bee</i></span><span class="mt">Makkah<br>128 verses</span></a>
+<a class="row" href="surah/17"><span class="n">17</span><span class="nm"><b>Al-Isra'</b><i>The Night Journey</i></span><span class="mt">Makkah<br>111 verses</span></a>
+<a class="row" href="surah/18"><span class="n">18</span><span class="nm"><b>Al-Kahf</b><i>The Cave</i></span><span class="mt">Makkah<br>110 verses</span></a>
+<a class="row" href="surah/19"><span class="n">19</span><span class="nm"><b>Maryam</b><i>Mary</i></span><span class="mt">Makkah<br>98 verses</span></a>
+<a class="row" href="surah/20"><span class="n">20</span><span class="nm"><b>Ta Ha</b><i>O Man</i></span><span class="mt">Makkah<br>135 verses</span></a>
+<a class="row" href="surah/21"><span class="n">21</span><span class="nm"><b>Al-Anbiya</b><i>The Prophets</i></span><span class="mt">Makkah<br>112 verses</span></a>
+<a class="row" href="surah/22"><span class="n">22</span><span class="nm"><b>Al-Hajj</b><i>The Pilgrimage</i></span><span class="mt">Period Uncertain<br>78 verses</span></a>
+<a class="row" href="surah/23"><span class="n">23</span><span class="nm"><b>Al-Mu'minun</b><i>The Believers</i></span><span class="mt">Makkah<br>118 verses</span></a>
+<a class="row" href="surah/24"><span class="n">24</span><span class="nm"><b>An-Nur</b><i>The Light</i></span><span class="mt">Madinah<br>64 verses</span></a>
+<a class="row" href="surah/25"><span class="n">25</span><span class="nm"><b>Al-Furqan</b><i>The Standard Of True And False</i></span><span class="mt">Makkah<br>77 verses</span></a>
+<a class="row" href="surah/26"><span class="n">26</span><span class="nm"><b>Ash-Shu'ara'</b><i>The Poets</i></span><span class="mt">Makkah<br>227 verses</span></a>
+<a class="row" href="surah/27"><span class="n">27</span><span class="nm"><b>An-Naml</b><i>The Ants</i></span><span class="mt">Makkah<br>93 verses</span></a>
+<a class="row" href="surah/28"><span class="n">28</span><span class="nm"><b>Al-Qasas,</b><i>The Story</i></span><span class="mt">Makkah<br>88 verses</span></a>
+<a class="row" href="surah/29"><span class="n">29</span><span class="nm"><b>Al-'Ankabut</b><i>The Spider</i></span><span class="mt">Period Uncertain<br>69 verses</span></a>
+<a class="row" href="surah/30"><span class="n">30</span><span class="nm"><b>Ar-Rum</b><i>The Byzantines</i></span><span class="mt">Makkah<br>60 verses</span></a>
+<a class="row" href="surah/31"><span class="n">31</span><span class="nm"><b>Luqman</b><i></i></span><span class="mt">Makkah<br>34 verses</span></a>
+<a class="row" href="surah/32"><span class="n">32</span><span class="nm"><b>As-Sajdah</b><i>Prostration</i></span><span class="mt">Makkah<br>30 verses</span></a>
+<a class="row" href="surah/33"><span class="n">33</span><span class="nm"><b>Al-Ahzab</b><i>The Confederates</i></span><span class="mt">Madinah<br>73 verses</span></a>
+<a class="row" href="surah/34"><span class="n">34</span><span class="nm"><b>Saba-</b><i>Sheba</i></span><span class="mt">Makkah<br>54 verses</span></a>
+<a class="row" href="surah/35"><span class="n">35</span><span class="nm"><b>Al-Fatir</b><i>The Originator</i></span><span class="mt">Makkah<br>45 verses</span></a>
+<a class="row" href="surah/36"><span class="n">36</span><span class="nm"><b>Ya Sin</b><i>O Thou Human Being</i></span><span class="mt">Makkah<br>83 verses</span></a>
+<a class="row" href="surah/37"><span class="n">37</span><span class="nm"><b>As-Saffat</b><i>Those Ranged In Ranks</i></span><span class="mt">Makkah<br>182 verses</span></a>
+<a class="row" href="surah/38"><span class="n">38</span><span class="nm"><b>Sad</b><i></i></span><span class="mt">Makkah<br>88 verses</span></a>
+<a class="row" href="surah/39"><span class="n">39</span><span class="nm"><b>Az-Zumar</b><i>The Throngs</i></span><span class="mt">Makkah<br>75 verses</span></a>
+<a class="row" href="surah/40"><span class="n">40</span><span class="nm"><b>Ghafir</b><i>Forgiving</i></span><span class="mt">Makkah<br>85 verses</span></a>
+<a class="row" href="surah/41"><span class="n">41</span><span class="nm"><b>Fussilat</b><i>Clearly Spelled Out</i></span><span class="mt">Makkah<br>54 verses</span></a>
+<a class="row" href="surah/42"><span class="n">42</span><span class="nm"><b>Ash-Shura</b><i>Consultation</i></span><span class="mt">Makkah<br>53 verses</span></a>
+<a class="row" href="surah/43"><span class="n">43</span><span class="nm"><b>Zukhruf</b><i>Gold</i></span><span class="mt">Makkah<br>89 verses</span></a>
+<a class="row" href="surah/44"><span class="n">44</span><span class="nm"><b>Ad-Dukhan</b><i>Smoke</i></span><span class="mt">Makkah<br>59 verses</span></a>
+<a class="row" href="surah/45"><span class="n">45</span><span class="nm"><b>Al-Jathiyah</b><i>Kneeling Down</i></span><span class="mt">Makkah<br>37 verses</span></a>
+<a class="row" href="surah/46"><span class="n">46</span><span class="nm"><b>Al-Ahqaf</b><i>The Sand-Dunes</i></span><span class="mt">Makkah<br>35 verses</span></a>
+<a class="row" href="surah/47"><span class="n">47</span><span class="nm"><b>Muhammad</b><i></i></span><span class="mt">Madinah<br>38 verses</span></a>
+<a class="row" href="surah/48"><span class="n">48</span><span class="nm"><b>Al-Fath</b><i>Victory</i></span><span class="mt">Madinah<br>29 verses</span></a>
+<a class="row" href="surah/49"><span class="n">49</span><span class="nm"><b>Al-Hujurat</b><i>The Private Apartments</i></span><span class="mt">Madinah<br>18 verses</span></a>
+<a class="row" href="surah/50"><span class="n">50</span><span class="nm"><b>Qaf</b><i></i></span><span class="mt">Makkah<br>45 verses</span></a>
+<a class="row" href="surah/51"><span class="n">51</span><span class="nm"><b>Adh-Dhariyat</b><i>The Dust-Scattering Winds</i></span><span class="mt">Makkah<br>60 verses</span></a>
+<a class="row" href="surah/52"><span class="n">52</span><span class="nm"><b>At-Tur</b><i>Mount Sinai</i></span><span class="mt">Makkah<br>49 verses</span></a>
+<a class="row" href="surah/53"><span class="n">53</span><span class="nm"><b>An-Najm</b><i>The Unfolding</i></span><span class="mt">Makkah<br>62 verses</span></a>
+<a class="row" href="surah/54"><span class="n">54</span><span class="nm"><b>Al-Qamar</b><i>The Moon</i></span><span class="mt">Makkah<br>55 verses</span></a>
+<a class="row" href="surah/55"><span class="n">55</span><span class="nm"><b>Ar-Rahman</b><i>The Most Gracious</i></span><span class="mt">Period Uncertain<br>78 verses</span></a>
+<a class="row" href="surah/56"><span class="n">56</span><span class="nm"><b>Al-Waqiah</b><i>That Which Must Come To Pass</i></span><span class="mt">Makkah<br>96 verses</span></a>
+<a class="row" href="surah/57"><span class="n">57</span><span class="nm"><b>Al-Hadid</b><i>Iron</i></span><span class="mt">Madinah<br>29 verses</span></a>
+<a class="row" href="surah/58"><span class="n">58</span><span class="nm"><b>Al-Mujadalah</b><i>The Pleading</i></span><span class="mt">Madinah<br>22 verses</span></a>
+<a class="row" href="surah/59"><span class="n">59</span><span class="nm"><b>Al-Hashr</b><i>The Gathering</i></span><span class="mt">Madinah<br>24 verses</span></a>
+<a class="row" href="surah/60"><span class="n">60</span><span class="nm"><b>Al-Mumtahanah</b><i>The Examined One</i></span><span class="mt">Madinah<br>13 verses</span></a>
+<a class="row" href="surah/61"><span class="n">61</span><span class="nm"><b>As-Saff</b><i>The Ranks</i></span><span class="mt">Madinah<br>14 verses</span></a>
+<a class="row" href="surah/62"><span class="n">62</span><span class="nm"><b>Al-Jumu'ah</b><i>The Congregation</i></span><span class="mt">Madinah<br>11 verses</span></a>
+<a class="row" href="surah/63"><span class="n">63</span><span class="nm"><b>Al-Munafiqun</b><i>The Hypocrites</i></span><span class="mt">Madinah<br>11 verses</span></a>
+<a class="row" href="surah/64"><span class="n">64</span><span class="nm"><b>At-Taghabun</b><i>Loss And Gain</i></span><span class="mt">Period Uncertain<br>18 verses</span></a>
+<a class="row" href="surah/65"><span class="n">65</span><span class="nm"><b>At-Talaq</b><i>Divorce</i></span><span class="mt">Madinah<br>12 verses</span></a>
+<a class="row" href="surah/66"><span class="n">66</span><span class="nm"><b>At-Tahrim</b><i>Prohibition</i></span><span class="mt">Madinah<br>12 verses</span></a>
+<a class="row" href="surah/67"><span class="n">67</span><span class="nm"><b>Al-Mulk</b><i>Dominion</i></span><span class="mt">Madinah<br>30 verses</span></a>
+<a class="row" href="surah/68"><span class="n">68</span><span class="nm"><b>Al-Qalam</b><i>The Pen</i></span><span class="mt">Makkah<br>52 verses</span></a>
+<a class="row" href="surah/69"><span class="n">69</span><span class="nm"><b>Al-Haqqah</b><i>The Laying-Bare Of The Truth</i></span><span class="mt">Makkah<br>52 verses</span></a>
+<a class="row" href="surah/70"><span class="n">70</span><span class="nm"><b>Al-Ma'Arij</b><i>The Ways Of Ascent</i></span><span class="mt">Makkah<br>44 verses</span></a>
+<a class="row" href="surah/71"><span class="n">71</span><span class="nm"><b>Nuh</b><i>Noah</i></span><span class="mt">Makkah<br>28 verses</span></a>
+<a class="row" href="surah/72"><span class="n">72</span><span class="nm"><b>Al-Jinn</b><i>The Unseen Beings</i></span><span class="mt">Makkah<br>28 verses</span></a>
+<a class="row" href="surah/73"><span class="n">73</span><span class="nm"><b>Al-Muzzammil</b><i>The Enwrapped One</i></span><span class="mt">Makkah<br>20 verses</span></a>
+<a class="row" href="surah/74"><span class="n">74</span><span class="nm"><b>Al-Muddaththir</b><i>The Enfolded One</i></span><span class="mt">Makkah<br>56 verses</span></a>
+<a class="row" href="surah/75"><span class="n">75</span><span class="nm"><b>Al-Qiyamah</b><i>Resurrection</i></span><span class="mt">Makkah<br>40 verses</span></a>
+<a class="row" href="surah/76"><span class="n">76</span><span class="nm"><b>Al-Insan</b><i>Man</i></span><span class="mt">Period Uncertain<br>31 verses</span></a>
+<a class="row" href="surah/77"><span class="n">77</span><span class="nm"><b>Al-Mursalat</b><i>Those Sent Forth</i></span><span class="mt">Makkah<br>50 verses</span></a>
+<a class="row" href="surah/78"><span class="n">78</span><span class="nm"><b>An-Naba</b><i>The Tiding</i></span><span class="mt">Makkah<br>40 verses</span></a>
+<a class="row" href="surah/79"><span class="n">79</span><span class="nm"><b>An-Nazi'at</b><i>Those That Rise</i></span><span class="mt">Makkah<br>46 verses</span></a>
+<a class="row" href="surah/80"><span class="n">80</span><span class="nm"><b>'Abasa</b><i>He Frowned</i></span><span class="mt">Makkah<br>42 verses</span></a>
+<a class="row" href="surah/81"><span class="n">81</span><span class="nm"><b>At-Takwir</b><i>Shrouding In Darkness</i></span><span class="mt">Makkah<br>29 verses</span></a>
+<a class="row" href="surah/82"><span class="n">82</span><span class="nm"><b>Al-Infitar</b><i>The Cleaving Asunder</i></span><span class="mt">Makkah<br>19 verses</span></a>
+<a class="row" href="surah/83"><span class="n">83</span><span class="nm"><b>Al-Mutaffifin</b><i>Those Who Give Short Measure</i></span><span class="mt">Period Uncertain<br>36 verses</span></a>
+<a class="row" href="surah/84"><span class="n">84</span><span class="nm"><b>Al-Inshiqaq</b><i>The Splitting Asunder</i></span><span class="mt">Makkah<br>25 verses</span></a>
+<a class="row" href="surah/85"><span class="n">85</span><span class="nm"><b>Al-Buruj</b><i>The Great Constellations</i></span><span class="mt">Makkah<br>22 verses</span></a>
+<a class="row" href="surah/86"><span class="n">86</span><span class="nm"><b>At-Tariq</b><i>That Which Comes In The Night</i></span><span class="mt">Makkah<br>17 verses</span></a>
+<a class="row" href="surah/87"><span class="n">87</span><span class="nm"><b>Al-A'La</b><i>The All-Highest</i></span><span class="mt">Makkah<br>19 verses</span></a>
+<a class="row" href="surah/88"><span class="n">88</span><span class="nm"><b>Al-Ghashiyah</b><i>The Overshadowing Event</i></span><span class="mt">Makkah<br>26 verses</span></a>
+<a class="row" href="surah/89"><span class="n">89</span><span class="nm"><b>Al-Fajr</b><i>The Daybreak</i></span><span class="mt">Makkah<br>30 verses</span></a>
+<a class="row" href="surah/90"><span class="n">90</span><span class="nm"><b>Al-Balad</b><i>The Land</i></span><span class="mt">Makkah<br>20 verses</span></a>
+<a class="row" href="surah/91"><span class="n">91</span><span class="nm"><b>Ash-Shams</b><i>The Sun</i></span><span class="mt">Makkah<br>15 verses</span></a>
+<a class="row" href="surah/92"><span class="n">92</span><span class="nm"><b>Al-Layl</b><i>The Night</i></span><span class="mt">Makkah<br>21 verses</span></a>
+<a class="row" href="surah/93"><span class="n">93</span><span class="nm"><b>Ad-Duha</b><i>The Bright Morning Hours</i></span><span class="mt">Makkah<br>11 verses</span></a>
+<a class="row" href="surah/94"><span class="n">94</span><span class="nm"><b>Ash-Sharh</b><i>The Opening-Up Of The Heart</i></span><span class="mt">Makkah<br>8 verses</span></a>
+<a class="row" href="surah/95"><span class="n">95</span><span class="nm"><b>At-Tin</b><i>The Fig</i></span><span class="mt">Makkah<br>8 verses</span></a>
+<a class="row" href="surah/96"><span class="n">96</span><span class="nm"><b>Al-Alaq</b><i>The Germ-Cell</i></span><span class="mt">Makkah<br>19 verses</span></a>
+<a class="row" href="surah/97"><span class="n">97</span><span class="nm"><b>Al-Qadr</b><i>Destiny</i></span><span class="mt">Makkah<br>5 verses</span></a>
+<a class="row" href="surah/98"><span class="n">98</span><span class="nm"><b>Al-Bayyinah</b><i>The Evidence Of The Truth</i></span><span class="mt">Period Uncertain<br>8 verses</span></a>
+<a class="row" href="surah/99"><span class="n">99</span><span class="nm"><b>Al-Zalzalah</b><i>The Earthquake</i></span><span class="mt">Period Uncertain<br>8 verses</span></a>
+<a class="row" href="surah/100"><span class="n">100</span><span class="nm"><b>Al-Adiyat</b><i>The Chargers</i></span><span class="mt">Makkah<br>11 verses</span></a>
+<a class="row" href="surah/101"><span class="n">101</span><span class="nm"><b>Al-Qariah</b><i>The Sudden Calamity</i></span><span class="mt">Makkah<br>11 verses</span></a>
+<a class="row" href="surah/102"><span class="n">102</span><span class="nm"><b>At-Takathur</b><i>Greed For More And More</i></span><span class="mt">Makkah<br>8 verses</span></a>
+<a class="row" href="surah/103"><span class="n">103</span><span class="nm"><b>Al-Asr</b><i>The Flight Of Time</i></span><span class="mt">Makkah<br>3 verses</span></a>
+<a class="row" href="surah/104"><span class="n">104</span><span class="nm"><b>Al-Humazah</b><i>The Slanderer</i></span><span class="mt">Makkah<br>9 verses</span></a>
+<a class="row" href="surah/105"><span class="n">105</span><span class="nm"><b>Al-Fil</b><i>The Elephant</i></span><span class="mt">Makkah<br>5 verses</span></a>
+<a class="row" href="surah/106"><span class="n">106</span><span class="nm"><b>Quraysh</b><i></i></span><span class="mt">Makkah<br>4 verses</span></a>
+<a class="row" href="surah/107"><span class="n">107</span><span class="nm"><b>Al-Ma'Un</b><i>Assistance</i></span><span class="mt">Makkah<br>7 verses</span></a>
+<a class="row" href="surah/108"><span class="n">108</span><span class="nm"><b>Al-Kawthar</b><i>Good In Abundance</i></span><span class="mt">Period Uncertain<br>3 verses</span></a>
+<a class="row" href="surah/109"><span class="n">109</span><span class="nm"><b>Al-Kafirun</b><i>Those Who Deny The Truth</i></span><span class="mt">Makkah<br>6 verses</span></a>
+<a class="row" href="surah/110"><span class="n">110</span><span class="nm"><b>An-Nasr</b><i>Succour</i></span><span class="mt">Makkah<br>3 verses</span></a>
+<a class="row" href="surah/111"><span class="n">111</span><span class="nm"><b>Al-Masad</b><i>The Twisted Strands</i></span><span class="mt">Makkah<br>5 verses</span></a>
+<a class="row" href="surah/112"><span class="n">112</span><span class="nm"><b>Al-Ikhlas</b><i>The Declaration Of [God's] Perfection</i></span><span class="mt">Makkah<br>4 verses</span></a>
+<a class="row" href="surah/113"><span class="n">113</span><span class="nm"><b>Al-Falaq</b><i>The Rising Dawn</i></span><span class="mt">Makkah<br>5 verses</span></a>
+<a class="row" href="surah/114"><span class="n">114</span><span class="nm"><b>An-Nas</b><i>Men</i></span><span class="mt">Makkah<br>6 verses</span></a></div>
+<div class="loading">Loading the app…</div>
+</div></div>
+<script>
+(function () {
+  var el = document.getElementById('prerender');
+  if (!el) return;
+  var gone = false;
+  function dismiss() {
+    if (gone) return;
+    gone = true;
+    el.classList.add('is-done');
+    setTimeout(function () {
+      if (el.parentNode) el.parentNode.removeChild(el);
+    }, 240);
+  }
+  window.addEventListener('flutter-first-frame', dismiss);
+  setTimeout(dismiss, 20000);
+})();
+</script>
+<!-- prerender:end -->
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
