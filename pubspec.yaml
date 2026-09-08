@@ -46,7 +46,6 @@ dependencies:
   package_info_plus: ^9.0.1
   google_fonts: ^8.0.0
   http: ^1.6.0
-  iconsax: ^0.0.8
   just_audio: ^0.9.43
   onesignal_flutter: ^5.4.1
   path: ^1.9.0

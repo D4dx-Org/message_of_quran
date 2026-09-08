@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/constants/api_constants.dart';
 import 'package:the_message_of_the_quran/core/constants/app_version.dart';
@@ -268,7 +267,7 @@ class CommonDrawer extends StatelessWidget {
                       ),
                     const  _DrawerExpansionTile(
                         title: 'Kids',
-                        icon: Iconsax.magic_star,
+                        icon: Icons.auto_awesome_outlined,
                         children: [
                           _DrawerLinkTile(
                             title: "Kids Qur'an",
