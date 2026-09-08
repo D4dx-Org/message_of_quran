@@ -20,4 +20,12 @@ class AppVersion {
     final info = await PackageInfo.fromPlatform();
     _version = info.version;
   }
+
+  /// The version, loading it first if the caller runs before [load] does.
+  /// The splash is on screen while the startup steps are still running, so it
+  /// cannot assume the version is there yet.
+  static Future<String> ensureLoaded() async {
+    if (_version.isEmpty) await load();
+    return _version;
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:the_message_of_the_quran/core/constants/app_version.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/features/splash_screen/presentation/widgets/splash_layout_metrics.dart';
 
@@ -72,6 +73,24 @@ class SplashBottomBranding extends StatelessWidget {
                           color: Colors.white,
                           colorBlendMode: BlendMode.srcIn,
                           filterQuality: FilterQuality.high,
+                        ),
+                        SizedBox(height: 3 * scale),
+                        FutureBuilder<String>(
+                          initialData: AppVersion.current,
+                          future: AppVersion.ensureLoaded(),
+                          builder: (context, snapshot) {
+                            final version = snapshot.data ?? '';
+                            return Text(
+                              version.isEmpty ? '' : 'v$version',
+                              textAlign: TextAlign.center,
+                              style: AppTextTheme.englishDefault(
+                                color: const Color(0xFFE0E5F5),
+                                fontSize: (compact ? 7.0 : 7.8) * scale,
+                                fontWeight: FontWeight.w400,
+                                letterSpacing: 0.2,
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),
