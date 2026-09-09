@@ -61,7 +61,13 @@ class _FavoriteSurahsScreenState extends State<FavoriteSurahsScreen> {
                     Icon(
                       Icons.favorite_border_rounded,
                       size: 48,
-                      color: AppTheme.appIconTheme.withValues(alpha: 0.4),
+                      // The icon colour is the app's navy, which all but
+                      // disappears against the dark theme's background. Dark
+                      // mode draws the outline in the foreground colour
+                      // instead, at the same weight relative to the page.
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white.withValues(alpha: 0.45)
+                          : AppTheme.appIconTheme.withValues(alpha: 0.4),
                     ),
                     const SizedBox(height: 12),
                     Text(

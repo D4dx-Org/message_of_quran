@@ -30,6 +30,23 @@ class WorksOfReferenceScreen extends StatelessWidget {
         fontSize: FontSize(AppTextTheme.contentFontSize(context)),
         fontFamily: AppTextTheme.englishFontFamily,
       ),
+      // The bold runs are Asad's own citation keys -- the short name each
+      // work is referred to by in the notes -- so they stay bold. Without an
+      // entry of their own they fell back to the package's defaults for face
+      // and size, which is what made the list look unevenly set; pinning them
+      // to the body's leaves weight as the only difference.
+      'strong': Style(
+        color: bodyColor,
+        fontSize: FontSize(AppTextTheme.contentFontSize(context)),
+        fontFamily: AppTextTheme.englishFontFamily,
+        fontWeight: FontWeight.w600,
+      ),
+      'b': Style(
+        color: bodyColor,
+        fontSize: FontSize(AppTextTheme.contentFontSize(context)),
+        fontFamily: AppTextTheme.englishFontFamily,
+        fontWeight: FontWeight.w600,
+      ),
       'h2': Style(
         display: Display.none,
         fontFamily: AppTextTheme.englishFontFamily,
