@@ -75,9 +75,18 @@ class QuranAudioHandler extends BaseAudioHandler with SeekHandler {
       final playing = state.playing;
       final processingState = state.processingState;
 
-      // Map just_audio ProcessingState → audio_service AudioProcessingState
+      // Map just_audio ProcessingState → audio_service AudioProcessingState.
+      // just_audio is idle whenever no source is loaded, which includes the
+      // gap while a newly tapped ayah's source is being set. Reporting that
+      // as idle tells audio_service the session stopped: it tears the
+      // notification down and, worse, both it and the Android service then
+      // think they are already idle, so the *real* stop that follows is a
+      // no-op and its notification is left stranded. Only a stop we asked for
+      // is idle; an unasked-for one means a source is on its way.
       final audioProcessingState = switch (processingState) {
-        ProcessingState.idle => AudioProcessingState.idle,
+        ProcessingState.idle => _stopRequested
+            ? AudioProcessingState.idle
+            : AudioProcessingState.loading,
         ProcessingState.loading => AudioProcessingState.loading,
         ProcessingState.buffering => AudioProcessingState.buffering,
         ProcessingState.ready => AudioProcessingState.ready,
@@ -152,7 +161,12 @@ class QuranAudioHandler extends BaseAudioHandler with SeekHandler {
 
   /// Replaces the underlying player after a catastrophic failure.
   /// Used by the fallback logic in providers.
+  /// Whether the idle the player is about to report was asked for. See the
+  /// mapping in [_subscribeToPlayer].
+  bool _stopRequested = false;
+
   AudioPlayer recreatePlayer() {
+    _stopRequested = false;
     _player = AudioPlayer(
       androidApplyAudioAttributes: false,
       handleAudioSessionActivation: false,
@@ -181,6 +195,7 @@ class QuranAudioHandler extends BaseAudioHandler with SeekHandler {
 
   @override
   Future<void> play() async {
+    _stopRequested = false;
     await _player.play();
   }
 
@@ -191,12 +206,31 @@ class QuranAudioHandler extends BaseAudioHandler with SeekHandler {
 
   @override
   Future<void> stop() async {
+    _stopRequested = true;
     await _player.stop();
-    // Drop the media item as well as the controls: audio_service keeps the
-    // notification alive while either survives, which is why stopping from
-    // the notification used to leave a dead bar behind until it was swiped
-    // away. The next play sets a fresh item and the notification returns.
-    mediaItem.add(null);
+    // The media item is deliberately left alone. Clearing it here raced the
+    // teardown below and lost: audio_service handles a media-item change on
+    // its own executor and finishes by re-posting the notification, so a null
+    // arriving just after the stop had cancelled it put the bar back with
+    // nothing behind it and nothing left to remove it. What actually ends the
+    // notification is the idle state below; the next play sets a fresh item.
+
+    // Both halves of audio_service only tear the notification down when idle
+    // *follows* a non-idle state. Pausing drops the service out of the
+    // foreground, and a service that Android then restarts begins life
+    // already idle -- so a lone idle here is a no-op and the notification is
+    // stranded with nothing left to remove it. Announce a live state first so
+    // there is always a transition to make. The pause is what makes it count:
+    // audio_service reads its stream with `await for`, which drops whatever
+    // arrives while it is awaiting the platform, and back-to-back events lose
+    // one of the pair.
+    playbackState.add(
+      playbackState.value.copyWith(
+        processingState: AudioProcessingState.ready,
+        playing: false,
+      ),
+    );
+    await Future<void>.delayed(const Duration(milliseconds: 150));
     playbackState.add(
       playbackState.value.copyWith(
         controls: const [],
