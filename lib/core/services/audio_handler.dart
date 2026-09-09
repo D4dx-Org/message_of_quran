@@ -208,12 +208,10 @@ class QuranAudioHandler extends BaseAudioHandler with SeekHandler {
   Future<void> stop() async {
     _stopRequested = true;
     await _player.stop();
-    // The media item is deliberately left alone. Clearing it here raced the
-    // teardown below and lost: audio_service handles a media-item change on
-    // its own executor and finishes by re-posting the notification, so a null
-    // arriving just after the stop had cancelled it put the bar back with
-    // nothing behind it and nothing left to remove it. What actually ends the
-    // notification is the idle state below; the next play sets a fresh item.
+    // The media item is deliberately left alone. Clearing it here did nothing
+    // for the notification anyway -- audio_service drops a null media item
+    // before it reaches either platform -- and what actually ends the
+    // notification is the idle state below. The next play sets a fresh item.
 
     // Both halves of audio_service only tear the notification down when idle
     // *follows* a non-idle state. Pausing drops the service out of the
