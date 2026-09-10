@@ -38,12 +38,12 @@ const List<UsefulLinkSection> usefulLinksSections = [
     title: "English Translations",
     links: [
       UsefulLinkItem(
-        title: "Thafheemul Qur'an",
-        url: 'https://thafheem.net/?lang=E',
-      ),
-      UsefulLinkItem(
         title: 'Muhammad Asad',
         url: '',
+      ),
+      UsefulLinkItem(
+        title: "Thafheemul Qur'an",
+        url: 'https://thafheem.net/?lang=E',
       ),
       UsefulLinkItem(
         title: 'Abdullah Yusuf Ali',
@@ -70,13 +70,13 @@ const List<UsefulLinkSection> usefulLinksSections = [
     title: "Malayalam Translations",
     links: [
       UsefulLinkItem(
-        title: "Thafheemul Qur'an",
-        url: 'https://thafheem.net/',
-      ),
-      UsefulLinkItem(
         title: 'Muhammad Asad',
         url: '',
         internalIsMalayalam: true,
+      ),
+      UsefulLinkItem(
+        title: "Thafheemul Qur'an",
+        url: 'https://thafheem.net/',
       ),
       UsefulLinkItem(
         title: 'Thafseer Amani',
