@@ -1,8 +1,17 @@
 enum SurahPlaceKind { makkah, madinah }
 
-bool _isEnglishUncertainPeriod(String place) {
+/// Whether [place] is one of the various ways the source data marks a
+/// surah's revelation period as unresolved, in either language. The
+/// Malayalam data alone has five different phrasings for this -- e.g.
+/// 'കാലഘട്ടം അവ്യക്തം', 'അവതരണകാലം നിർണിതമല്ല', 'കാലം നിർണിതമല്ല' -- so a
+/// raw pass-through showed a different sentence on almost every uncertain
+/// surah instead of one consistent label.
+bool _isUncertainPeriod(String place) {
   final normalized = place.trim().toLowerCase();
-  return normalized == 'uncertain' || normalized == 'period uncertain';
+  if (normalized.isEmpty) return false;
+  return normalized.contains('uncertain') ||
+      normalized.contains('അവ്യക്തം') ||
+      normalized.contains('നിർണിത');
 }
 
 bool _isCompletePeriodPhrase(String place, {required bool isMalayalam}) {
@@ -52,8 +61,13 @@ String localizeSurahPlace(
     case SurahPlaceKind.madinah:
       return isMalayalam ? 'മദീന' : 'Madinah';
     case null:
-      if (!isMalayalam && _isEnglishUncertainPeriod(place)) {
-        return preferBareUncertain ? 'Uncertain' : 'Period Uncertain';
+      if (_isUncertainPeriod(place)) {
+        // One canonical phrase for every surah the source marks uncertain,
+        // in place of whichever of the five Malayalam variants that
+        // particular row happened to carry.
+        return isMalayalam
+            ? 'കാലഘട്ടം അവ്യക്തം'
+            : (preferBareUncertain ? 'Uncertain' : 'Period Uncertain');
       }
 
       return place.trim();
