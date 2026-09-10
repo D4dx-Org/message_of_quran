@@ -166,9 +166,9 @@ class ProgressionTrackerScreen extends StatelessWidget {
                           ),
                         )
                       else
-                        const Icon(
+                        Icon(
                           Icons.directions_run_rounded,
-                          color: AppTheme.appIconTheme,
+                          color: AppTheme.contentIconColor(context),
                           size: 22,
                         ),
                     ],
