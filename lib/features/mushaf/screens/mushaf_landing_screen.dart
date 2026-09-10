@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:the_message_of_the_quran/features/main_screen/providers/home_provider.dart';
 import 'package:the_message_of_the_quran/features/mushaf/widgets/surah_name_glyph.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
@@ -696,8 +698,32 @@ class _MushafLandingScreenState extends State<MushafLandingScreen>
       value: _p,
       child: Consumer<MushafLandingProvider>(
         builder: (context, p, _) {
-          if (widget.embedded) return _buildScreenBody(context);
-          return _buildScaffold(context);
+          final child = widget.embedded
+              ? _buildScreenBody(context)
+              : _buildScaffold(context);
+          // Any of the tabs' lists will do -- the notification carries the
+          // direction whichever one the reader is working through -- so the
+          // navigation folds away here the way it does on the surah list.
+          return NotificationListener<UserScrollNotification>(
+            onNotification: (notification) {
+              if (notification.depth != 0) return false;
+              if (MediaQuery.orientationOf(context) !=
+                  Orientation.landscape) {
+                context.read<HomeProvider>().setChromeVisible(true);
+                return false;
+              }
+              switch (notification.direction) {
+                case ScrollDirection.reverse:
+                  context.read<HomeProvider>().setChromeVisible(false);
+                case ScrollDirection.forward:
+                  context.read<HomeProvider>().setChromeVisible(true);
+                case ScrollDirection.idle:
+                  break;
+              }
+              return false;
+            },
+            child: child,
+          );
         },
       ),
     );

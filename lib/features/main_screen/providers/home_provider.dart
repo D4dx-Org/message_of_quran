@@ -9,7 +9,24 @@ class HomeProvider extends ChangeNotifier {
 
   int get currentIndex => _currentIndex;
 
+  /// Whether the app bar, the quick-ayah chips and the bottom navigation are
+  /// showing. The home list hides them as the reader scrolls down so the list
+  /// has the screen to itself, and brings them back on the first scroll up --
+  /// on a phone held sideways the chrome is most of the height, so this is the
+  /// difference between two surahs on screen and eight.
+  bool _chromeVisible = true;
+
+  bool get chromeVisible => _chromeVisible;
+
+  void setChromeVisible(bool visible) {
+    if (_chromeVisible == visible) return;
+    _chromeVisible = visible;
+    notifyListeners();
+  }
+
   void changeIndex(int newIndex) {
+    // Whatever the last screen left hidden, a tab arrives with its chrome.
+    _chromeVisible = true;
     if (newIndex < 0 || newIndex > 4) return;
     _currentIndex = newIndex;
     notifyListeners();

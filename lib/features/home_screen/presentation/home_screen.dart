@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/surah_model.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
@@ -53,7 +54,36 @@ class _HomeScreenState extends State<HomeScreen>
     return kIsWeb;
   }
 
+  /// Hides the chrome while the reader is working down the list, and brings
+  /// it back on the first pull the other way. Driven by scroll direction
+  /// rather than offset so it answers the gesture immediately.
+  void _updateChrome() {
+    if (!mounted || !_listController.hasClients) return;
+    // Only sideways does anything fold away, so upright this leaves the flag
+    // set -- otherwise a scroll here would follow the reader into landscape
+    // and start them off with the chrome already gone.
+    if (MediaQuery.orientationOf(context) != Orientation.landscape) {
+      context.read<HomeProvider>().setChromeVisible(true);
+      return;
+    }
+    final position = _listController.position;
+    final atTop = position.pixels <= position.minScrollExtent + 4;
+    final direction = position.userScrollDirection;
+    final bool visible;
+    if (atTop || _tabController.index != 0) {
+      visible = true;
+    } else if (direction == ScrollDirection.reverse) {
+      visible = false;
+    } else if (direction == ScrollDirection.forward) {
+      visible = true;
+    } else {
+      return;
+    }
+    context.read<HomeProvider>().setChromeVisible(visible);
+  }
+
   void _onScroll() {
+    _updateChrome();
     final offset = _listController.hasClients ? _listController.offset : 0.0;
     final shouldShow = offset > 200;
     if (mounted && _useWebHome(context)) {
@@ -75,6 +105,9 @@ class _HomeScreenState extends State<HomeScreen>
 
   void _handleTabChange() {
     if (_tabController.indexIsChanging) return;
+    // Leaving the surah list, or coming back to it, always restores the
+    // chrome: the other tab has its own scroll position and its own reasons.
+    if (mounted) context.read<HomeProvider>().setChromeVisible(true);
     if (_tabController.index != 0) {
       if (_showScrollToTop) {
         setState(() => _showScrollToTop = false);
@@ -901,14 +934,23 @@ class _HomeScreenState extends State<HomeScreen>
       headerContent: Container(
         width: double.infinity,
         color: AppTheme.appThemePrimary,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 8, bottom: 16),
-          child: homeContentMaxWidth == null
-              ? const SurahChipRow()
-              : ResponsiveContentWrapper(
-                  maxWidth: homeContentMaxWidth,
-                  child: const SurahChipRow(),
-                ),
+        // The chips fold away with the app bar and the navigation while the
+        // list is being scrolled, and unfold again on the way back up.
+        child: _CollapsingChrome(
+          // Upright the chips stay put; sideways they fold away with the rest
+          // of the chrome while the list is being scrolled.
+          visible:
+              MediaQuery.orientationOf(context) != Orientation.landscape ||
+              context.watch<HomeProvider>().chromeVisible,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8, bottom: 16),
+            child: homeContentMaxWidth == null
+                ? const SurahChipRow()
+                : ResponsiveContentWrapper(
+                    maxWidth: homeContentMaxWidth,
+                    child: const SurahChipRow(),
+                  ),
+          ),
         ),
       ),
       child: homeContentMaxWidth == null
@@ -917,6 +959,32 @@ class _HomeScreenState extends State<HomeScreen>
               maxWidth: homeContentMaxWidth,
               child: homeContent,
             ),
+    );
+  }
+}
+
+/// Folds a strip of chrome away along its own height, so what sits below it
+/// takes the space rather than the strip merely fading in place.
+class _CollapsingChrome extends StatelessWidget {
+  const _CollapsingChrome({required this.visible, required this.child});
+
+  final bool visible;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 1, end: visible ? 1 : 0),
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeOutCubic,
+      builder: (context, t, animatedChild) => ClipRect(
+        child: Align(
+          alignment: Alignment.topCenter,
+          heightFactor: t,
+          child: Opacity(opacity: t, child: animatedChild),
+        ),
+      ),
+      child: child,
     );
   }
 }

@@ -440,6 +440,13 @@ class _MainScreenState extends State<MainScreen> {
     final displayIndex = controller.currentIndex;
     final isMalayalam = context.watch<LanguageProvider>().isMalayalam;
     final tablet = ResponsiveHelper.isTablet(context);
+    // Upright the bar and the navigation simply stay. Sideways there is so
+    // little height to spare that they fold away while a list is being
+    // scrolled, and come back the moment it stops or turns around.
+    final landscape =
+        MediaQuery.orientationOf(context) == Orientation.landscape;
+    final chromeVisible =
+        !landscape || context.watch<HomeProvider>().chromeVisible;
     final scale = ResponsiveHelper.scaleFactor(context);
       final navCornerRadius = 28.0 * scale;
 
@@ -543,7 +550,7 @@ class _MainScreenState extends State<MainScreen> {
                           )
                         : _buildNavItemIcon(
                             index: index,
-                            color: AppTheme.appIconTheme,
+                            color: AppTheme.contentIconColor(context),
                             size: _navItemSize(index) * scale,
                           ),
                     label: Text(item.label),
@@ -566,10 +573,13 @@ class _MainScreenState extends State<MainScreen> {
       },
       child: Scaffold(
         key: _scaffoldKey,
-        appBar: appBar,
+        appBar: _CollapsingAppBar(visible: chromeVisible, child: appBar),
         floatingActionButton: Transform.translate(
           offset: Offset(0, 10 * scale),
-          child: FloatingActionButton(
+          child: _CollapsingChrome(
+            visible: chromeVisible,
+            alignment: Alignment.topCenter,
+            child: FloatingActionButton(
             onPressed: () {
               _onItemTapped(2);
             },
@@ -579,13 +589,17 @@ class _MainScreenState extends State<MainScreen> {
               height: _navIconSize * scale,
               color: isDarkMode && displayIndex != 2 ? inactiveColor : Colors.white,
             ),
+            ),
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
         drawer: const CommonDrawer(),
         body: pageBody,
-        bottomNavigationBar: Stack(
+        bottomNavigationBar: _CollapsingChrome(
+          visible: chromeVisible,
+          alignment: Alignment.topCenter,
+          child: Stack(
           fit: StackFit.passthrough,
           children: [
             Positioned.fill(
@@ -684,6 +698,7 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );
@@ -940,6 +955,109 @@ class _MushafSurahSearchDelegate extends SearchDelegate<void> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+
+/// Folds a strip of chrome away along its own height, so what sits beside it
+/// takes the space instead of the strip merely fading where it stands.
+class _CollapsingChrome extends StatelessWidget {
+  const _CollapsingChrome({
+    required this.visible,
+    required this.child,
+    this.alignment = Alignment.topCenter,
+  });
+
+  final bool visible;
+  final Widget child;
+  final Alignment alignment;
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 1, end: visible ? 1 : 0),
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeOutCubic,
+      builder: (context, t, animatedChild) => ClipRect(
+        child: Align(
+          alignment: alignment,
+          heightFactor: t,
+          child: Opacity(opacity: t, child: animatedChild),
+        ),
+      ),
+      child: child,
+    );
+  }
+}
+
+/// The app bar equivalent. The height the scaffold reserves has to shrink
+/// with it -- collapsing only the contents would leave a band of empty bar
+/// where the body should be -- so this reports the height it is currently
+/// drawn at, and rebuilds as that changes.
+class _CollapsingAppBar extends StatefulWidget implements PreferredSizeWidget {
+  const _CollapsingAppBar({required this.visible, required this.child});
+
+  final bool visible;
+  final PreferredSizeWidget child;
+
+  @override
+  State<_CollapsingAppBar> createState() => _CollapsingAppBarState();
+
+  @override
+  Size get preferredSize => child.preferredSize;
+}
+
+class _CollapsingAppBarState extends State<_CollapsingAppBar>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 220),
+    value: widget.visible ? 1 : 0,
+  );
+
+  @override
+  void didUpdateWidget(covariant _CollapsingAppBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.visible != oldWidget.visible) {
+      widget.visible ? _controller.forward() : _controller.reverse();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final topInset = MediaQuery.paddingOf(context).top;
+    final barHeight = widget.child.preferredSize.height;
+    // The status bar sits on top of this, and its icons are drawn for a dark
+    // background. Fading the bar out would take that background with it and
+    // leave the icons on bare white, so the strip keeps the bar's colour
+    // whether the bar itself is showing or not.
+    final barColor = Theme.of(context).appBarTheme.backgroundColor ??
+        AppTheme.appThemePrimary;
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        final t = Curves.easeOutCubic.transform(_controller.value);
+        return ColoredBox(
+          color: barColor,
+          child: SizedBox(
+            height: topInset + (barHeight * t),
+            child: ClipRect(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                heightFactor: 1,
+                child: Opacity(opacity: t, child: child),
+              ),
+            ),
+          ),
+        );
+      },
+      child: SizedBox(height: topInset + barHeight, child: widget.child),
+    );
+  }
+}
 
 class _NavCornerFillPainter extends CustomPainter {
   const _NavCornerFillPainter({required this.color, required this.radius});

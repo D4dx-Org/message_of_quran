@@ -28,6 +28,7 @@ class BaseScreenLayout extends StatelessWidget {
     this.drawer,
     this.useScaffold = true,
     this.topBorderRadius = 40,
+    this.surroundMatchesContent = false,
     this.endDrawer,
     this.resizeToAvoidBottomInset,
     this.contentTopInset = defaultContentTopInset,
@@ -61,6 +62,12 @@ class BaseScreenLayout extends StatelessWidget {
 
   /// The border radius for the top corners of the content card.
   final double topBorderRadius;
+
+  /// Paint whatever falls outside the content column in the content's own
+  /// colour rather than the app's navy. Set on the screens that show the
+  /// Qur'an itself, where the navy either side of a landscape column frames
+  /// the text instead of letting it sit on the page.
+  final bool surroundMatchesContent;
 
   /// Whether the body should resize when the keyboard appears.
   final bool? resizeToAvoidBottomInset;
@@ -132,10 +139,18 @@ class BaseScreenLayout extends StatelessWidget {
 
     if (!useScaffold) return body;
 
+    // Sideways the content is held to a centred column, and on a reading
+    // screen the strips either side of it read better as more page than as
+    // two navy bars framing the words.
+    final isDark = theme.brightness == Brightness.dark;
+    final landscape =
+        MediaQuery.orientationOf(context) == Orientation.landscape;
     return Scaffold(
       backgroundColor: kIsWeb
           ? theme.scaffoldBackgroundColor
-          : AppTheme.appThemePrimary,
+          : (landscape && surroundMatchesContent)
+              ? _contentSurfaceColor(isDarkMode: isDark)
+              : AppTheme.appThemePrimary,
       appBar: appBar,
       drawer: drawer,
       endDrawer: endDrawer,

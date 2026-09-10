@@ -27,11 +27,15 @@ class ResponsiveHelper {
   }
 
   /// Maximum width for reading content (Arabic text, translations, etc.).
-  /// Phone: unrestricted. Tablet: 720. Desktop: 900.
+  /// Phone upright: unrestricted. Phone sideways: held to a column, because a
+  /// row run the full width of a landscape phone leaves its title at one edge
+  /// and its detail at the other with a gulf between them. Tablet: 720.
+  /// Desktop: 900.
   static double contentMaxWidth(BuildContext context) {
-    if (usesPhoneLayoutOnTablet(context)) return double.infinity;
     if (isDesktop(context)) return 900.0;
     if (isTablet(context)) return 720.0;
+    final size = MediaQuery.sizeOf(context);
+    if (size.width > size.height) return min(size.width, 720.0);
     return double.infinity;
   }
 
