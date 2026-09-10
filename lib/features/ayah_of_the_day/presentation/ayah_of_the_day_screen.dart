@@ -173,13 +173,13 @@ class _AyahOfTheDayScreenState extends State<AyahOfTheDayScreen> {
                 //     onPressed: () => provider.shareAsText(),
                 //     icon: Icon(
                 //       Icons.text_snippet_outlined,
-                //       color: AppTheme.appIconTheme,
+                //       color: AppTheme.contentIconColor(context),
                 //       size: 20,
                 //     ),
                 //     label: Text(
                 //       'Share as Text',
                 //       style: TextStyle(
-                //         color: AppTheme.appIconTheme,
+                //         color: AppTheme.contentIconColor(context),
                 //         fontWeight: FontWeight.w600,
                 //       ),
                 //     ),

@@ -336,7 +336,7 @@ class _MainScreenState extends State<MainScreen> {
                           )
                         : _buildNavItemIcon(
                             index: index,
-                            color: AppTheme.appIconTheme,
+                            color: AppTheme.contentIconColor(context),
                             size: _navItemSize(index) * scale,
                           ),
                     label: Text(item.label),

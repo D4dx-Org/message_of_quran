@@ -5,6 +5,15 @@ class AppTheme {
   static const Color appThemePrimary = Color(0xff234B7D);
   static const Color appThemeSecondary = Color.fromRGBO(255, 252, 247, 1);
   static const Color appIconTheme = Color(0xff234B7D);
+
+  /// Icon colour for anything drawn on a content surface. The navy reads
+  /// well on the light page, but the dark theme's own background is navy
+  /// too and icons in it all but vanish -- so dark mode draws them in the
+  /// foreground colour instead.
+  static Color contentIconColor(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+          ? Colors.white.withValues(alpha: 0.85)
+          : appIconTheme;
   static const double desktopContentCardRadius = 18;
   static const Color appThemeSplash = Color(0xFF194874);
   static const Color appThemeSplashCenter = Color.fromRGBO(130, 60, 40, 0);

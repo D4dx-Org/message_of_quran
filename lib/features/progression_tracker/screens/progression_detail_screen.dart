@@ -354,9 +354,9 @@ class _ProgressionDetailScreenState extends State<ProgressionDetailScreen> {
                           color: AppTheme.appIconTheme.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.notifications_outlined,
-                          color: AppTheme.appIconTheme,
+                          color: AppTheme.contentIconColor(context),
                           size: 18,
                         ),
                       ),
@@ -477,10 +477,10 @@ class _ProgressionDetailScreenState extends State<ProgressionDetailScreen> {
                                     ),
                                     if (isReading) ...[
                                       const SizedBox(width: 6),
-                                      const Icon(
+                                      Icon(
                                         Icons.menu_book_rounded,
                                         size: 14,
-                                        color: AppTheme.appIconTheme,
+                                        color: AppTheme.contentIconColor(context),
                                       ),
                                     ],
                                   ],

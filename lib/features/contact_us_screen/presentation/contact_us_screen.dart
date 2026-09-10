@@ -150,9 +150,9 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                   onTap: () => _launchPhone(mobile),
                                   child: Row(
                                     children: [
-                                      const Icon(
+                                      Icon(
                                         Icons.phone_outlined,
-                                        color: AppTheme.appIconTheme,
+                                        color: AppTheme.contentIconColor(context),
                                         size: 24,
                                       ),
                                       const SizedBox(width: 15),
@@ -197,9 +197,9 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                                   onTap: () => _launchEmail(email),
                                   child: Row(
                                     children: [
-                                      const Icon(
+                                      Icon(
                                         Icons.email_outlined,
-                                        color: AppTheme.appIconTheme,
+                                        color: AppTheme.contentIconColor(context),
                                         size: 24,
                                       ),
                                       const SizedBox(width: 15),
@@ -240,9 +240,9 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                             if (address != null)
                               Row(
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.location_on_outlined,
-                                    color: AppTheme.appIconTheme,
+                                    color: AppTheme.contentIconColor(context),
                                     size: 24,
                                   ),
                                   const SizedBox(width: 15),
