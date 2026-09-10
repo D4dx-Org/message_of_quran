@@ -426,7 +426,12 @@ class _MushafPageViewState extends State<MushafPageView> {
     final displayText = segments.isNotEmpty ? segments.first.text : '';
     final isPotrait = MediaQuery.of(context).orientation == Orientation.portrait;
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 2, horizontal: isPotrait ? 10 : 50),
+      // A surah heading is the one place a page should open up: it
+      // separates the end of one surah from the start of the next.
+      padding: EdgeInsets.symmetric(
+        vertical: 10,
+        horizontal: isPotrait ? 10 : 50,
+      ),
       child: Center(
         child: GestureDetector(
           onTap: () => widget.onAyaTap?.call(),
