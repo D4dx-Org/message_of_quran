@@ -646,6 +646,11 @@ class _SurahScreenState extends State<SurahScreen> {
     });
   }
 
+  /// Height of the sticky mini-player bar: its six points of padding either
+  /// side of a 48-point control row, plus whatever the system reserves below.
+  double _miniPlayerBarHeight(BuildContext context) =>
+      60 + MediaQuery.viewPaddingOf(context).bottom;
+
   @override
   void initState() {
     super.initState();
@@ -2567,6 +2572,9 @@ class _SurahScreenState extends State<SurahScreen> {
         }
       },
       child: BaseScreenLayout(
+        // The verses are the page here, so sideways the column sits on
+        // more of the same rather than between two navy margins.
+        surroundMatchesContent: true,
         appBar: useDesktopWebReaderLayout
             ? CommonAppBar.appBar(
                 context,
@@ -2594,18 +2602,28 @@ class _SurahScreenState extends State<SurahScreen> {
                 ),
               ),
         drawer: const CommonDrawer(),
-        floatingActionButton: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ScrollToTopButton(
-              visible: _showScrollToTop,
-              onPressed: () => _scrollController.animateTo(
-                0,
-                duration: const Duration(milliseconds: 400),
-                curve: Curves.easeInOut,
-              ),
+        floatingActionButton: Consumer<AudioProvider>(
+          builder: (context, audio, _) => Padding(
+            // The mini-player is part of the page while this button floats
+            // over it, so at the bar's right end the button sat on top of the
+            // speed control. Lift it clear for as long as the player is up.
+            padding: EdgeInsets.only(
+              bottom: audio.isActive ? _miniPlayerBarHeight(context) : 0,
             ),
-          ],
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ScrollToTopButton(
+                  visible: _showScrollToTop,
+                  onPressed: () => _scrollController.animateTo(
+                    0,
+                    duration: const Duration(milliseconds: 400),
+                    curve: Curves.easeInOut,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
         child: Column(
           children: [
@@ -3197,9 +3215,9 @@ class _SurahScreenState extends State<SurahScreen> {
                                     );
                                   }
                                 : null,
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.skip_previous,
-                              color: AppTheme.appIconTheme,
+                              color: AppTheme.contentIconColor(context),
                             ),
                           ),
                           // Play / Pause
@@ -3208,16 +3226,16 @@ class _SurahScreenState extends State<SurahScreen> {
                             onPressed: () => audio.togglePlayPause(),
                             icon: Icon(
                               audio.isPlaying ? Icons.pause : Icons.play_arrow,
-                              color: AppTheme.appIconTheme,
+                              color: AppTheme.contentIconColor(context),
                             ),
                           ),
                           // Stop
                           IconButton(
                             tooltip: 'Stop',
                             onPressed: () => audio.stopAudio(),
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.stop,
-                              color: AppTheme.appIconTheme,
+                              color: AppTheme.contentIconColor(context),
                             ),
                           ),
                           // Next
@@ -3247,9 +3265,9 @@ class _SurahScreenState extends State<SurahScreen> {
                                     );
                                   }
                                 : null,
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.skip_next,
-                              color: AppTheme.appIconTheme,
+                              color: AppTheme.contentIconColor(context),
                             ),
                           ),
                           // Speed
