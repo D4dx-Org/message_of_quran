@@ -30,6 +30,33 @@ void main() {
       expect(localizeSurahPlace('مكية', isMalayalam: true), 'മക്ക');
       expect(localizeSurahPlace('مدنية', isMalayalam: true), 'മദീന');
     });
+
+    test(
+      'canonicalizes every Malayalam uncertain-period variant the source '
+      'data carries, to one consistent phrase',
+      () {
+        for (final variant in [
+          'കാലഘട്ടം അവ്യക്തം',
+          'അവതരണകാലം നിർണിതമല്ല',
+          'കാലഘട്ടം നിർണിതമല്ല',
+          'അവതരണ കാലം നിർണിതമല്ല',
+          'കാലം നിർണിതമല്ല',
+        ]) {
+          expect(
+            localizeSurahPlace(variant, isMalayalam: true),
+            'കാലഘട്ടം അവ്യക്തം',
+            reason: 'source variant: $variant',
+          );
+        }
+      },
+    );
+
+    test('uncertain-period detection also matches the English source', () {
+      expect(
+        localizeSurahPlace('Period Uncertain', isMalayalam: true),
+        'കാലഘട്ടം അവ്യക്തം',
+      );
+    });
   });
 
   group('localizeSurahPeriodLabel', () {
@@ -52,6 +79,15 @@ void main() {
       );
       expect(
         localizeSurahPeriodLabel('കാലഘട്ടം അവ്യക്തം', isMalayalam: true),
+        'കാലഘട്ടം അവ്യക്തം',
+      );
+      // The full label path, not just localizeSurahPlace: a raw variant that
+      // doesn't already read as a complete phrase must still come out
+      // canonical rather than being wrapped a second time (e.g. '...
+      // കാലഘട്ടം' appended to a sentence that already ends in a different
+      // word for period).
+      expect(
+        localizeSurahPeriodLabel('അവതരണകാലം നിർണിതമല്ല', isMalayalam: true),
         'കാലഘട്ടം അവ്യക്തം',
       );
     });
