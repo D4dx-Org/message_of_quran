@@ -2,13 +2,18 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/models/ayah_bookmark_model.dart';
 import 'package:the_message_of_the_quran/core/services/audio_handler.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:the_message_of_the_quran/features/bookmark_screen/presentation/bookmark_conflict_dialog.dart';
 
+import '../../../core/models/surah_model.dart';
+import '../../../core/services/database/surah_db_helper.dart';
 import '../../../core/utils/responsive_helper.dart';
+import '../../../core/utils/surah_name_localizer.dart';
+import '../../settings_screen/providers/language_provider.dart';
 import '../provider/mushaf_reader_provider.dart';
 import '../services/mushaf_download_manager.dart';
 import '../../../core/widgets/base_screen_layout.dart';
@@ -130,14 +135,6 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
         )
         .closed
         .then((_) => _p.resolveScrollConfirmation(stopFollowing: false));
-  }
-
-  void _setJumpTarget(int page) {
-    _jumpTargetPage = page;
-    _jumpClearTimer?.cancel();
-    _jumpClearTimer = Timer(const Duration(milliseconds: 700), () {
-      _jumpTargetPage = null;
-    });
   }
 
   void _onPageChanged(int index) {
@@ -445,20 +442,48 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
     }
   }
 
-  void _toggleReaderViewMode() {
-    final wasListView = _p.isListView;
-    final targetPage = _p.currentPage;
-    _p.isAutoNavigating = true;
-    _setJumpTarget(targetPage);
-    _p.toggleListView();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!wasListView) {
-        _scrollListToPage(targetPage);
-      } else {
-        _p.pageController?.jumpToPage(targetPage - 1);
-        _p.isAutoNavigating = false;
-      }
-    });
+  /// Resolves a surah + ayah to its page in this same continuous, page-based
+  /// reader and jumps there -- the reader itself makes no distinction between
+  /// a surah opened from the Surah list or the Juz list, so this works
+  /// identically no matter which one the reader was entered from.
+  Future<void> _jumpToAyah(int surahNo, int ayaNo) async {
+    final continuesAyaId = await _p.repository.getContinuesAyaId(
+      surahNo,
+      ayaNo,
+    );
+    if (continuesAyaId <= 0) return;
+    final page = await _p.repository.getPageForAya(continuesAyaId);
+    if (page <= 0) return;
+    _p.tryNavigateTo(page);
+  }
+
+  void _showJumpToAyah(BuildContext context) {
+    final isMl = context.read<LanguageProvider>().isMalayalam;
+    final bsMaxWidth = ResponsiveHelper.bottomSheetMaxWidth(context);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      constraints: bsMaxWidth != null
+          ? BoxConstraints(maxWidth: bsMaxWidth)
+          : null,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.4,
+        maxChildSize: 0.92,
+        expand: false,
+        builder: (_, scrollCtrl) => _MushafJumpToAyahSheet(
+          isMalayalam: isMl,
+          scrollController: scrollCtrl,
+          onJump: (surahNo, ayaNo) async {
+            Navigator.pop(context);
+            await _jumpToAyah(surahNo, ayaNo);
+          },
+        ),
+      ),
+    );
   }
 
   double _landscapeFontSize(BuildContext context) {
@@ -616,17 +641,6 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
                   Row(
                     children: [
                       playButton,
-                      const SizedBox(width: 4),
-                      IconButton(
-                        tooltip: 'Switch view',
-                        onPressed: _toggleReaderViewMode,
-                        icon: Icon(
-                          _p.isListView
-                              ? Icons.view_day_rounded
-                              : Icons.view_carousel_rounded,
-                          color: titleColor,
-                        ),
-                      ),
                       const Spacer(),
                       paginationRow,
                     ],
@@ -645,17 +659,6 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
                 const SizedBox(width: 8),
                 titleBlock,
                 playButton,
-                const SizedBox(width: 4),
-                IconButton(
-                  tooltip: 'Switch view',
-                  onPressed: _toggleReaderViewMode,
-                  icon: Icon(
-                    _p.isListView
-                        ? Icons.view_day_rounded
-                        : Icons.view_carousel_rounded,
-                    color: titleColor,
-                  ),
-                ),
                 const SizedBox(width: 12),
                 paginationRow,
               ],
@@ -808,15 +811,6 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
               ),
             ),
           ),
-          IconButton(
-            icon: Icon(
-              _p.isListView
-                  ? Icons.view_day_rounded
-                  : Icons.view_carousel_rounded,
-              color: textColor,
-            ),
-            onPressed: _toggleReaderViewMode,
-          ),
         ],
       ),
     );
@@ -839,6 +833,10 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
         left: hPad,
         right: hPad,
       ),
+      // Previous page, jump to ayah, the page indicator with play beside
+      // it, next page -- the play control sits next to the page number
+      // rather than beside jump, so the two navigation icons (jump, next)
+      // bookend a single reading-status cluster in the middle.
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -854,6 +852,17 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
             )
           else
             SizedBox(width: 48 * ResponsiveHelper.scaleFactor(context)),
+          IconButton(
+            icon: const Icon(Icons.format_list_numbered),
+            color: textColor,
+            tooltip: 'Jump to Ayah',
+            onPressed: () => _showJumpToAyah(context),
+          ),
+          // Page indicator
+          Text(
+            '${_p.currentPage} / ${_p.fontsInstalled ? MushafReaderProvider.totalPages : MushafReaderProvider.previewLimit}',
+            style: const TextStyle(color: textColor, fontSize: 13),
+          ),
           // Play/pause audio
           if (_p.isLoadingAudio)
             const SizedBox(
@@ -881,11 +890,6 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
                 ),
               ),
             ),
-          // Page indicator
-          Text(
-            '${_p.currentPage} / ${_p.fontsInstalled ? MushafReaderProvider.totalPages : MushafReaderProvider.previewLimit}',
-            style: const TextStyle(color: textColor, fontSize: 13),
-          ),
           // Next page (hidden on first page)
           if (_p.currentPage > 1)
             IconButton(
@@ -954,6 +958,264 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
               );
             },
           ),
+        );
+      },
+    );
+  }
+}
+class _MushafJumpToAyahSheet extends StatefulWidget {
+  const _MushafJumpToAyahSheet({
+    required this.isMalayalam,
+    required this.scrollController,
+    required this.onJump,
+  });
+
+  final bool isMalayalam;
+  final ScrollController scrollController;
+
+  /// Called with the chosen surah number and ayah number once confirmed.
+  final void Function(int surahNo, int ayaNo) onJump;
+
+  @override
+  State<_MushafJumpToAyahSheet> createState() =>
+      _MushafJumpToAyahSheetState();
+}
+
+class _MushafJumpToAyahSheetState extends State<_MushafJumpToAyahSheet> {
+  final TextEditingController _searchController = TextEditingController();
+  List<SurahModel>? _surahs;
+  SurahModel? _selectedSurah;
+
+  @override
+  void initState() {
+    super.initState();
+    SurahDbHelper.getAllSuras(malayalam: widget.isMalayalam).then((list) {
+      if (mounted) setState(() => _surahs = list);
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isMl = widget.isMalayalam;
+    final surah = _selectedSurah;
+
+    return Column(
+      children: [
+        // Drag handle
+        Padding(
+          padding: const EdgeInsets.only(top: 10, bottom: 4),
+          child: Container(
+            height: 4,
+            width: 40,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade400,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (surah != null)
+                IconButton(
+                  icon: const Icon(Icons.arrow_back, size: 20),
+                  visualDensity: VisualDensity.compact,
+                  onPressed: () => setState(() {
+                    _selectedSurah = null;
+                    _searchController.clear();
+                  }),
+                ),
+              Text(
+                surah == null
+                    ? (isMl ? 'ആയത്തിലേക്ക് പോകുക' : 'Jump to Ayah')
+                    : (isMl ? surah.malayalamName : surah.name),
+                style: AppTextTheme.localizedLabel(
+                  isMalayalam: isMl,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+        // The surah step searches by name or number; the ayah step -- once a
+        // surah is picked -- searches by ayah number. Same field, same
+        // ListView-of-rows shape, so picking an ayah reads as one continuous
+        // list rather than a text-entry step bolted on afterwards, matching
+        // how the translation screen's own "Jump to Ayah" picker already
+        // works: select from a list, never type a number to submit.
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+          child: TextField(
+            key: ValueKey(surah?.surahNumber),
+            controller: _searchController,
+            keyboardType:
+                surah == null ? TextInputType.text : TextInputType.number,
+            inputFormatters: surah == null
+                ? null
+                : [FilteringTextInputFormatter.digitsOnly],
+            onChanged: (_) => setState(() {}),
+            style:
+                AppTextTheme.localizedLabel(isMalayalam: isMl, fontSize: 14),
+            decoration: InputDecoration(
+              isDense: true,
+              hintText: surah == null
+                  ? (isMl ? 'സൂറത്ത് തിരയുക' : 'Search surah')
+                  : (isMl ? 'ആയത്ത് തിരയുക' : 'Search ayah'),
+              hintStyle: AppTextTheme.localizedLabel(
+                isMalayalam: isMl,
+                fontSize: 14,
+              ),
+              prefixIcon: const Icon(Icons.search, size: 20),
+              suffixIcon: _searchController.text.isEmpty
+                  ? null
+                  : IconButton(
+                      icon: const Icon(Icons.clear, size: 18),
+                      onPressed: () {
+                        _searchController.clear();
+                        setState(() {});
+                      },
+                    ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 10,
+              ),
+            ),
+          ),
+        ),
+        const Divider(height: 1),
+        Expanded(
+          child: surah == null
+              ? (_surahs == null
+                    ? const Center(child: CircularProgressIndicator())
+                    : _buildSurahList(isMl))
+              : _buildAyahList(isMl, surah),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSurahList(bool isMl) {
+    final query = _searchController.text.trim().toLowerCase();
+    final typed = int.tryParse(query);
+    final surahs = _surahs!.where((s) {
+      if (query.isEmpty) return true;
+      if (typed != null) return s.surahNumber == typed;
+      final name = (isMl ? s.malayalamName : s.name).toLowerCase();
+      return name.contains(query);
+    }).toList();
+
+    if (surahs.isEmpty) {
+      return Center(
+        child: Text(
+          isMl ? 'സൂറത്ത് കണ്ടെത്തിയില്ല' : 'No surah found',
+          style: AppTextTheme.localizedLabel(isMalayalam: isMl, fontSize: 14),
+        ),
+      );
+    }
+
+    return ListView.separated(
+      controller: widget.scrollController,
+      itemCount: surahs.length,
+      separatorBuilder: (_, _) => const Divider(height: 1, indent: 64),
+      itemBuilder: (_, index) {
+        final s = surahs[index];
+        return ListTile(
+          leading: Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: AppTheme.appThemePrimary,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              '${s.surahNumber}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          title: Text(
+            isMl ? s.malayalamName : s.name,
+            style: AppTextTheme.localizedLabel(
+              isMalayalam: isMl,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          trailing: Text(
+            isMl ? '${s.ayathCount} ആയത്ത്' : '${s.ayathCount} Ayahs',
+            style: AppTextTheme.localizedLabel(isMalayalam: isMl, fontSize: 12),
+          ),
+          onTap: () => setState(() => _selectedSurah = s),
+        );
+      },
+    );
+  }
+
+  Widget _buildAyahList(bool isMl, SurahModel surah) {
+    final query = _searchController.text.trim();
+    final typed = int.tryParse(query);
+    final ayahNumbers = List<int>.generate(surah.ayathCount, (i) => i + 1)
+        .where((n) => query.isEmpty || (typed != null && n.toString().contains(query)))
+        .toList();
+
+    if (ayahNumbers.isEmpty) {
+      return Center(
+        child: Text(
+          isMl ? 'ആയത്ത് കണ്ടെത്തിയില്ല' : 'No ayah found',
+          style: AppTextTheme.localizedLabel(isMalayalam: isMl, fontSize: 14),
+        ),
+      );
+    }
+
+    return ListView.separated(
+      controller: widget.scrollController,
+      itemCount: ayahNumbers.length,
+      separatorBuilder: (_, _) => const Divider(height: 1, indent: 64),
+      itemBuilder: (_, index) {
+        final ayaNo = ayahNumbers[index];
+        return ListTile(
+          leading: Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: AppTheme.appThemePrimary,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              "$ayaNo",
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          title: Text(
+            formatAyahReferenceLabel(ayaNo, isMalayalam: isMl),
+            style: AppTextTheme.localizedLabel(
+              isMalayalam: isMl,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          onTap: () => widget.onJump(surah.surahNumber, ayaNo),
         );
       },
     );
