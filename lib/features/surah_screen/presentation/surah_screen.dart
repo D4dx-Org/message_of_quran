@@ -700,7 +700,7 @@ class _SurahScreenState extends State<SurahScreen> {
       _temporarilyHighlightedAyahId = ayahId;
     });
 
-    _temporaryAyahHighlightTimer = Timer(const Duration(seconds: 3), () {
+    _temporaryAyahHighlightTimer = Timer(const Duration(milliseconds: 1500), () {
       if (!mounted) return;
       setState(() {
         _temporarilyHighlightedAyahId = null;
@@ -2839,13 +2839,17 @@ class _SurahScreenState extends State<SurahScreen> {
                                                                       8,
                                                                     ),
                                                                 decoration: BoxDecoration(
-                                                                  color: isBlockPlaying || isBlockJumpHighlighted
-                                                                      ? blockHighlightColor
-                                                                            .withValues(
-                                                                              alpha:
-                                                                                  0.15,
-                                                                            )
-                                                                      : null,
+                                                                  color: isBlockJumpHighlighted
+                                                                      ? jumpHighlightColor(
+                                                                          highlightCtx,
+                                                                        )
+                                                                      : (isBlockPlaying
+                                                                            ? blockHighlightColor
+                                                                                  .withValues(
+                                                                                    alpha:
+                                                                                        0.15,
+                                                                                  )
+                                                                            : null),
                                                                   borderRadius:
                                                                       BorderRadius.circular(
                                                                         12,

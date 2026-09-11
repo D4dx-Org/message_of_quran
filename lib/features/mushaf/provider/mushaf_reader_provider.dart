@@ -47,6 +47,23 @@ class MushafReaderProvider extends ChangeNotifier {
   int? selectedSuraNo;
   int? selectedAyaNo;
 
+  /// The ayah a jump-to-ayah pick just landed on, highlighted briefly and
+  /// then cleared -- separate from [selectedAyaId], which is a tap-to-select
+  /// that opens the action row and stays until the reader dismisses it.
+  int? jumpHighlightAyaId;
+  Timer? _jumpHighlightTimer;
+
+  void showTemporaryJumpHighlight(int ayaId) {
+    _jumpHighlightTimer?.cancel();
+    jumpHighlightAyaId = ayaId;
+    notifyListeners();
+    _jumpHighlightTimer = Timer(const Duration(milliseconds: 1500), () {
+      jumpHighlightAyaId = null;
+      _jumpHighlightTimer = null;
+      notifyListeners();
+    });
+  }
+
   bool isLoadingAudio = false;
   bool isPlaying = false;
   String? playingLabel;
@@ -519,6 +536,7 @@ class MushafReaderProvider extends ChangeNotifier {
   @override
   void dispose() {
     _isDisposed = true;
+    _jumpHighlightTimer?.cancel();
     _playerStateSub?.cancel();
     _playlistIndexSub?.cancel();
     // Don't dispose the player – it's shared via the handler
