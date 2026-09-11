@@ -637,7 +637,7 @@ class _SurahScreenState extends State<SurahScreen> {
       _temporarilyHighlightedAyahId = ayahId;
     });
 
-    _temporaryAyahHighlightTimer = Timer(const Duration(seconds: 3), () {
+    _temporaryAyahHighlightTimer = Timer(const Duration(milliseconds: 1500), () {
       if (!mounted) return;
       setState(() {
         _temporarilyHighlightedAyahId = null;
@@ -1864,7 +1864,7 @@ class _SurahScreenState extends State<SurahScreen> {
     required SurahProvider controller,
   }) {
     if (_temporarilyHighlightedAyahId == ayahNumber) {
-      return appBarAccentFillColor(context, alpha: 0.22);
+      return jumpHighlightColor(context);
     }
 
     if (controller.isAyahSelected(ayahNumber)) {

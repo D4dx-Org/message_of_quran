@@ -20,6 +20,17 @@ Color appBarAccentColor(BuildContext context) {
       : AppTheme.appIconTheme;
 }
 
+/// Background flash shown briefly behind an ayah the reader was just taken
+/// to by a jump-to-ayah pick. The opposite of the page's own text colour --
+/// dark on the light theme's cream page, light on the dark theme's own dark
+/// page -- so it reads as a highlight rather than blending into the text
+/// it is meant to draw the eye to.
+Color jumpHighlightColor(BuildContext context, {double alpha = 0.22}) {
+  final clampedAlpha = alpha.clamp(0.0, 1.0).toDouble();
+  final base = isDarkMode(context: context) ? Colors.white : Colors.black;
+  return base.withValues(alpha: clampedAlpha);
+}
+
 Color appBarAccentFillColor(BuildContext context, {double alpha = 0.12}) {
   final clampedAlpha = alpha.clamp(0.0, 1.0).toDouble();
   return appBarAccentColor(context).withValues(alpha: clampedAlpha);

@@ -616,6 +616,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
     final page = await _p.repository.getPageForAya(continuesAyaId);
     if (page <= 0) return;
     _p.tryNavigateTo(page);
+    _p.showTemporaryJumpHighlight(continuesAyaId);
   }
 
   void _showJumpToAyah(BuildContext context) {
@@ -684,6 +685,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
                 repository: _p.repository,
                 selectedAyaId: _p.selectedAyaId,
                 playingAyaId: _p.audioPlayingAyaId,
+                jumpHighlightAyaId: _p.jumpHighlightAyaId,
                 onAyaTap: _toggleBars,
                 onAyaLongPress: _p.onAyaTap,
                 onDismissSelection: _p.clearSelection,
@@ -1237,6 +1239,7 @@ class _MushafReaderScreenState extends State<MushafReaderScreen>
                   repository: _p.repository,
                   selectedAyaId: _p.selectedAyaId,
                   playingAyaId: _p.audioPlayingAyaId,
+                  jumpHighlightAyaId: _p.jumpHighlightAyaId,
                   onAyaTap: _toggleBars,
                   onAyaLongPress: _p.onAyaTap,
                   onDismissSelection: _p.clearSelection,

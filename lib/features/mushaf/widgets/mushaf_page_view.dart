@@ -8,6 +8,7 @@ import '../models/page_meta.dart';
 import '../services/mushaf_download_manager.dart';
 import '../services/qcf_font_service.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/theme/theme_provider.dart';
 import '../../../core/widgets/pinch_zoom_view.dart';
 import '../utils/mushaf_text_utils.dart';
 
@@ -23,6 +24,7 @@ class MushafPageView extends StatefulWidget {
     this.beforeFirstAya,
     this.selectedAyaId,
     this.playingAyaId,
+    this.jumpHighlightAyaId,
     this.onAyaTap,
     this.onAyaLongPress,
     this.onDismissSelection,
@@ -35,6 +37,11 @@ class MushafPageView extends StatefulWidget {
   final Widget? beforeFirstAya;
   final int? selectedAyaId;
   final int? playingAyaId;
+
+  /// The ayah a jump-to-ayah pick just landed on, painted with a brief
+  /// background flash rather than [selectedAyaId]'s text-colour treatment --
+  /// this is a "you are here" flash, not a tap-to-select state.
+  final int? jumpHighlightAyaId;
   final VoidCallback? onAyaTap;
   final void Function(int ayaId, int suraId)? onAyaLongPress;
   final VoidCallback? onDismissSelection;
@@ -490,6 +497,7 @@ class _MushafPageViewState extends State<MushafPageView> {
       final thisAyaId = lineAyaId + segmentIndex;
       final isHighlighted = thisAyaId == widget.selectedAyaId;
       final isPlayingAya = thisAyaId == widget.playingAyaId;
+      final isJumpHighlighted = thisAyaId == widget.jumpHighlightAyaId;
       final ayaNoForSegment = line.lineId + segmentIndex;
       final continuesOnNextLine = nextAyaLine != null && nextAyaLine.lineId == ayaNoForSegment;
 
@@ -498,20 +506,29 @@ class _MushafPageViewState extends State<MushafPageView> {
         if (continuesOnNextLine) selectedAyaContinues = true;
       }
 
+      Widget textWidget = Text(
+        text,
+        textAlign: TextAlign.center,
+        maxLines: 1,
+        softWrap: false,
+        style: TextStyle(
+          fontFamily: _pageFontFamily,
+          fontSize: sizes.ayaTextSize,
+          height: sizes.lineHeightFactor,
+          color: isHighlighted ? _highlightColor : (isPlayingAya ? _playingColor : _textColor),
+        ),
+      );
+
+      if (isJumpHighlighted) {
+        textWidget = DecoratedBox(
+          decoration: BoxDecoration(color: jumpHighlightColor(context)),
+          child: textWidget,
+        );
+      }
+
       Widget segmentWidget = GestureDetector(
         onLongPress: () => widget.onAyaLongPress?.call(thisAyaId, line.suraId),
-        child: Text(
-          text,
-          textAlign: TextAlign.center,
-          maxLines: 1,
-          softWrap: false,
-          style: TextStyle(
-            fontFamily: _pageFontFamily,
-            fontSize: sizes.ayaTextSize,
-            height: sizes.lineHeightFactor,
-            color: isHighlighted ? _highlightColor : (isPlayingAya ? _playingColor : _textColor),
-          ),
-        ),
+        child: textWidget,
       );
 
       if (isHighlighted && tooltipLink != null) {
