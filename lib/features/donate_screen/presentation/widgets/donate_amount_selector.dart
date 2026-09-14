@@ -83,7 +83,7 @@ class DonateAmountSelector extends StatelessWidget {
               ),
             ),
             prefixIconConstraints: const BoxConstraints(minWidth: 0),
-            hintText: 'Enter another amount',
+            hintText: 'Enter amount in rupees',
             hintStyle: AppTextTheme.englishDefault(
               fontSize: 14,
               color: labelColor.withValues(alpha: 0.45),
