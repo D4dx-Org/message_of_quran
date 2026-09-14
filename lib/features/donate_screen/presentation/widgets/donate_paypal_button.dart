@@ -4,11 +4,12 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:the_message_of_the_quran/core/constants/donate_info.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 
-/// PayPal's own button styling — the yellow pill donors recognise — rather
-/// than our theme colours, so it reads as the PayPal route out of the page.
-/// Matches PayPal's published button spec: #FFC439 fill, #001C64 label, a
-/// soft navy-tinted shadow, and the official two-tone "PP" monogram traced
-/// from PayPal's own exported vector, not a hand-drawn approximation.
+/// The PayPal donate button, styled in the app's own navy/white rather than
+/// PayPal's yellow branding, so it reads as part of this page instead of a
+/// jarringly different-colored block dropped into it. The monogram keeps its
+/// real brand colors (in a small white chip, so they stay legible against the
+/// navy fill) since that's what makes it recognizable as "pay with PayPal";
+/// everything else -- fill, text, shadow -- follows the site's own palette.
 class DonatePayPalButton extends StatelessWidget {
   const DonatePayPalButton({
     super.key,
@@ -24,9 +25,6 @@ class DonatePayPalButton extends StatelessWidget {
   /// build time would always be the default.
   final int Function() amountAtTap;
 
-  static const Color _payPalYellow = Color(0xFFFFC439);
-  static const Color _payPalLabel = Color(0xFF001C64);
-
   Future<void> _open() async {
     final uri = Uri.parse(DonateInfo.paypalUrlFor(amountAtTap()));
     if (await canLaunchUrl(uri)) {
@@ -36,6 +34,8 @@ class DonatePayPalButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       width: double.infinity,
       height: 48,
@@ -43,7 +43,7 @@ class DonatePayPalButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF001C64).withValues(alpha: 0.141176),
+            color: Colors.black.withValues(alpha: 0.16),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -52,7 +52,7 @@ class DonatePayPalButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: _open,
         style: ElevatedButton.styleFrom(
-          backgroundColor: _payPalYellow,
+          backgroundColor: theme.primaryColor,
           elevation: 0,
           padding: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
@@ -62,10 +62,17 @@ class DonatePayPalButton extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SvgPicture.asset(
-              'assets/icons/paypal_mark.svg',
-              width: 18,
-              height: 22,
+            Container(
+              padding: const EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: SvgPicture.asset(
+                'assets/icons/paypal_mark.svg',
+                width: 15,
+                height: 18,
+              ),
             ),
             const SizedBox(width: 10),
             Flexible(
@@ -74,8 +81,8 @@ class DonatePayPalButton extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: AppTextTheme.englishDefault(
                   fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: _payPalLabel,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
                 ),
               ),
             ),
