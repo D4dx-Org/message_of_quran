@@ -15,23 +15,34 @@ class DonateScreen extends StatefulWidget {
 }
 
 class _DonateScreenState extends State<DonateScreen> {
+  /// The free-entry field is always rupees -- the presets are the dollar
+  /// quick-picks instead, so typing here is how a donor gives in INR.
   final TextEditingController _amountController = TextEditingController();
 
-  /// Picking an amount selects it rather than paying straight away, so the
+  /// Picking a preset selects it rather than paying straight away, so the
   /// donor can see on the button what they are about to send before leaving
   /// the app.
-  int? _selected = DonateInfo.suggestedAmounts.first;
+  int? _selectedUsd = DonateInfo.suggestedAmountsUsd.first;
 
-  int? get _typed {
+  int? get _typedInr {
     final value = int.tryParse(_amountController.text.trim());
     return (value != null && value > 0) ? value : null;
   }
 
-  int get _amount => _typed ?? _selected ?? DonateInfo.paypalDefaultAmount;
+  bool get _isCustomInr => _typedInr != null;
 
-  void _selectPreset(int amount) {
+  int get _amount =>
+      _typedInr ?? _selectedUsd ?? DonateInfo.paypalDefaultAmount;
+
+  String get _currency => _isCustomInr ? 'INR' : 'USD';
+
+  String get _formattedAmount => _isCustomInr
+      ? DonateInfo.formatAmount(_amount)
+      : DonateInfo.formatUsdAmount(_amount);
+
+  void _selectPreset(int amountUsd) {
     setState(() {
-      _selected = amount;
+      _selectedUsd = amountUsd;
       _amountController.clear();
     });
     FocusScope.of(context).unfocus();
@@ -94,12 +105,13 @@ class _DonateScreenState extends State<DonateScreen> {
               DonateSupportPanel(
                 bodyColor: bodyColor,
                 isDark: isDark,
-                selected: _selected,
+                selected: _selectedUsd,
                 controller: _amountController,
                 onSelect: _selectPreset,
                 onTyped: () => setState(() {}),
-                amount: _amount,
+                formattedAmount: _formattedAmount,
                 amountAtTap: () => _amount,
+                currencyAtTap: () => _currency,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               ),
             ],

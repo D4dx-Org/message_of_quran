@@ -17,8 +17,9 @@ class DonatePayPanel extends StatelessWidget {
     required this.controller,
     required this.onSelect,
     required this.onTyped,
-    required this.amount,
+    required this.formattedAmount,
     required this.amountAtTap,
+    required this.currencyAtTap,
     this.inputFormatters,
   });
 
@@ -28,8 +29,9 @@ class DonatePayPanel extends StatelessWidget {
   final TextEditingController controller;
   final void Function(int amount) onSelect;
   final VoidCallback onTyped;
-  final int amount;
+  final String formattedAmount;
   final int Function() amountAtTap;
+  final String Function() currencyAtTap;
   final List<TextInputFormatter>? inputFormatters;
 
   @override
@@ -121,7 +123,11 @@ class DonatePayPanel extends StatelessWidget {
           inputFormatters: inputFormatters,
         ),
         const SizedBox(height: 16),
-        DonatePayPalButton(amount: amount, amountAtTap: amountAtTap),
+        DonatePayPalButton(
+          formattedAmount: formattedAmount,
+          amountAtTap: amountAtTap,
+          currencyAtTap: currencyAtTap,
+        ),
       ],
     );
   }
