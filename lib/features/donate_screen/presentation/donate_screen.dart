@@ -98,44 +98,13 @@ class _DonateScreenState extends State<DonateScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: kDonateContentMaxWidth,
-                ),
-                child: DonateAmountSelector(
-                  selected: _selected,
-                  controller: _amountController,
-                  onSelect: _selectPreset,
-                  onTyped: () => setState(() {}),
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                ),
-              ),
-              const SizedBox(height: 18),
-              ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: kDonateContentMaxWidth,
-                ),
-                child: DonatePayPalButton(
-                  amount: _amount,
-                  amountAtTap: () => _amount,
-                ),
-              ),
-              const SizedBox(height: 24),
               LayoutBuilder(
                 builder: (context, constraints) {
                   final bankColumn = Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          maxWidth: kDonateContentMaxWidth,
-                        ),
-                        child: DonateBankCard(
-                          bodyColor: bodyColor,
-                          isDark: isDark,
-                        ),
-                      ),
+                      DonateBankCard(bodyColor: bodyColor, isDark: isDark),
                       const SizedBox(height: 16),
                       Text(
                         DonateInfo.bankNote,
@@ -146,18 +115,43 @@ class _DonateScreenState extends State<DonateScreen> {
                       ),
                     ],
                   );
-                  final upiCard = SizedBox(
-                    width: 260,
-                    child: DonateUpiCard(bodyColor: bodyColor, isDark: isDark),
+                  final payColumn = Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      DonateUpiCard(bodyColor: bodyColor, isDark: isDark),
+                      const SizedBox(height: 18),
+                      DonateAmountSelector(
+                        selected: _selected,
+                        controller: _amountController,
+                        onSelect: _selectPreset,
+                        onTyped: () => setState(() {}),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      DonatePayPalButton(
+                        amount: _amount,
+                        amountAtTap: () => _amount,
+                      ),
+                    ],
                   );
 
                   if (constraints.maxWidth >= _kDonateTwoColumnBreakpoint) {
                     return Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(child: bankColumn),
+                        Expanded(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(
+                              maxWidth: kDonateContentMaxWidth,
+                            ),
+                            child: bankColumn,
+                          ),
+                        ),
                         const SizedBox(width: 24),
-                        upiCard,
+                        SizedBox(width: 300, child: payColumn),
                       ],
                     );
                   }
@@ -165,13 +159,18 @@ class _DonateScreenState extends State<DonateScreen> {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      bankColumn,
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: kDonateContentMaxWidth,
+                        ),
+                        child: bankColumn,
+                      ),
                       const SizedBox(height: 24),
                       ConstrainedBox(
                         constraints: const BoxConstraints(
                           maxWidth: kDonateContentMaxWidth,
                         ),
-                        child: DonateUpiCard(bodyColor: bodyColor, isDark: isDark),
+                        child: payColumn,
                       ),
                     ],
                   );
