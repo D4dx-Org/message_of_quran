@@ -51,6 +51,8 @@ class DonateInfo {
 
   static const String upiNote = 'Scan to pay with any UPI app';
 
+  static const String paypalEyebrow = 'PAY ONLINE';
+
   static const String paypalHeading = 'Donate via PayPal';
 
   static const String paypalNote =
