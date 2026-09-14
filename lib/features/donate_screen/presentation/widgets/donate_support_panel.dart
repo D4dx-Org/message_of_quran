@@ -18,8 +18,9 @@ class DonateSupportPanel extends StatelessWidget {
     required this.controller,
     required this.onSelect,
     required this.onTyped,
-    required this.amount,
+    required this.formattedAmount,
     required this.amountAtTap,
+    required this.currencyAtTap,
     this.inputFormatters,
   });
 
@@ -29,8 +30,9 @@ class DonateSupportPanel extends StatelessWidget {
   final TextEditingController controller;
   final void Function(int amount) onSelect;
   final VoidCallback onTyped;
-  final int amount;
+  final String formattedAmount;
   final int Function() amountAtTap;
+  final String Function() currencyAtTap;
   final List<TextInputFormatter>? inputFormatters;
 
   @override
@@ -60,8 +62,9 @@ class DonateSupportPanel extends StatelessWidget {
         controller: controller,
         onSelect: onSelect,
         onTyped: onTyped,
-        amount: amount,
+        formattedAmount: formattedAmount,
         amountAtTap: amountAtTap,
+        currencyAtTap: currencyAtTap,
         inputFormatters: inputFormatters,
       ),
     );

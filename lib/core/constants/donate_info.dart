@@ -28,9 +28,12 @@ class DonateInfo {
   static const String tagline =
       'One of the most useful Islamic knowledge resource.';
 
-  /// Suggested amounts in rupees — the account is an Indian one and
-  /// everything here settles in INR.
-  static const List<int> suggestedAmounts = [100, 200, 500, 1000];
+  /// Suggested preset amounts, in US dollars — the default currency for the
+  /// quick-pick chips. A donor who wants to give in rupees instead uses the
+  /// free-entry field, which is always INR.
+  static const List<int> suggestedAmountsUsd = [10, 20, 50, 100];
+
+  static String formatUsdAmount(int dollars) => '\$$dollars';
 
   static String formatAmount(int rupees) {
     final digits = rupees.toString();
@@ -58,10 +61,12 @@ class DonateInfo {
   static const String paypalNote =
       'Choose an amount and pay securely with PayPal.';
 
-  /// PayPal with the amount filled in. The currency is stated explicitly:
-  /// `paypal.me/<name>/100` renders in the *sender's* currency, so a rupee
-  /// button could otherwise present a donor with 100 dollars.
-  static String paypalUrlFor(int rupees) => '$paypalUrl/${rupees}INR';
+  /// PayPal with the amount and currency filled in. The currency is stated
+  /// explicitly: `paypal.me/<name>/100` renders in the *sender's* currency,
+  /// so an unmarked amount could otherwise present a donor with the wrong
+  /// one. [currency] is an ISO code such as 'USD' or 'INR'.
+  static String paypalUrlFor(int amount, {required String currency}) =>
+      '$paypalUrl/$amount$currency';
 
   /// UPI deep link. Handled by any UPI app on the device; desktop browsers
   /// have nothing registered for the scheme, which is why the amount buttons
@@ -90,8 +95,10 @@ class DonateInfo {
   /// The PayPal button carries an amount because paypal.me shows only a bare
   /// "Send" without one, leaving the donor nothing to type into. With an
   /// amount the page opens on an editable field they can change before
-  /// sending, so this is a starting point rather than a fixed price.
-  static const int paypalDefaultAmount = 100;
+  /// sending, so this is a starting point rather than a fixed price. Falls
+  /// back to the first USD preset in practice; this only matters if that
+  /// list is ever emptied.
+  static const int paypalDefaultAmount = 10;
 
   static const String bankHeading = 'Donate by direct bank transfer';
 

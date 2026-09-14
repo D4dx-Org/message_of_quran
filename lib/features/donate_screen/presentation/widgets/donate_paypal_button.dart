@@ -13,20 +13,28 @@ import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 class DonatePayPalButton extends StatelessWidget {
   const DonatePayPalButton({
     super.key,
-    required this.amount,
+    required this.formattedAmount,
     required this.amountAtTap,
+    required this.currencyAtTap,
   });
 
-  /// Shown on the label, so the donor can see what they are about to send.
-  final int amount;
+  /// Already-formatted for its currency ("$10" or "₹500"), shown on the
+  /// label so the donor can see what they are about to send.
+  final String formattedAmount;
 
   /// Read when the button is pressed rather than when it is built: typing in
   /// the amount field does not rebuild this widget, so a value captured at
   /// build time would always be the default.
   final int Function() amountAtTap;
 
+  /// The ISO currency code ('USD' for a preset, 'INR' for a typed amount),
+  /// read at tap time for the same reason as [amountAtTap].
+  final String Function() currencyAtTap;
+
   Future<void> _open() async {
-    final uri = Uri.parse(DonateInfo.paypalUrlFor(amountAtTap()));
+    final uri = Uri.parse(
+      DonateInfo.paypalUrlFor(amountAtTap(), currency: currencyAtTap()),
+    );
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
@@ -77,7 +85,7 @@ class DonatePayPalButton extends StatelessWidget {
             const SizedBox(width: 10),
             Flexible(
               child: Text(
-                'Donate ${DonateInfo.formatAmount(amount)} with PayPal',
+                'Donate $formattedAmount with PayPal',
                 overflow: TextOverflow.ellipsis,
                 style: AppTextTheme.englishDefault(
                   fontSize: 16,

@@ -45,7 +45,7 @@ class DonateAmountSelector extends StatelessWidget {
         const SizedBox(height: 10),
         Row(
           children: [
-            for (final amount in DonateInfo.suggestedAmounts) ...[
+            for (final amount in DonateInfo.suggestedAmountsUsd) ...[
               Expanded(
                 child: _AmountChip(
                   amount: amount,
@@ -53,7 +53,7 @@ class DonateAmountSelector extends StatelessWidget {
                   onTap: () => onSelect(amount),
                 ),
               ),
-              if (amount != DonateInfo.suggestedAmounts.last)
+              if (amount != DonateInfo.suggestedAmountsUsd.last)
                 const SizedBox(width: 8),
             ],
           ],
@@ -160,7 +160,7 @@ class _AmountChip extends StatelessWidget {
             // quarter of a small phone screen.
             child: FittedBox(
               child: Text(
-                DonateInfo.formatAmount(amount),
+                DonateInfo.formatUsdAmount(amount),
                 style: AppTextTheme.englishDefault(
                   fontSize: 16,
                   fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
