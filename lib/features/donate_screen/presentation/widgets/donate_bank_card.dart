@@ -155,6 +155,8 @@ class _UpiCopyRowState extends State<_UpiCopyRow> {
               icon: Icon(_copied ? Icons.check_rounded : Icons.copy_rounded, size: 16),
               label: Text(_copied ? 'Copied' : 'Copy'),
               style: FilledButton.styleFrom(
+                backgroundColor: theme.primaryColor,
+                foregroundColor: Colors.white,
                 visualDensity: VisualDensity.compact,
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 textStyle: AppTextTheme.englishDefault(
