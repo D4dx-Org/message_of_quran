@@ -3,10 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:the_message_of_the_quran/core/constants/donate_info.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
-import 'package:the_message_of_the_quran/features/donate_screen/presentation/widgets/donate_amount_selector.dart';
-import 'package:the_message_of_the_quran/features/donate_screen/presentation/widgets/donate_bank_card.dart';
-import 'package:the_message_of_the_quran/features/donate_screen/presentation/widgets/donate_paypal_button.dart';
-import 'package:the_message_of_the_quran/features/donate_screen/presentation/widgets/donate_upi_card.dart';
+import 'package:the_message_of_the_quran/features/donate_screen/presentation/widgets/donate_support_panel.dart';
 
 class DonateScreen extends StatefulWidget {
   const DonateScreen({super.key});
@@ -84,49 +81,16 @@ class _DonateScreenState extends State<DonateScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: kDonateContentMaxWidth,
-                ),
-                child: DonateBankCard(bodyColor: bodyColor, isDark: isDark),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                DonateInfo.bankNote,
-                style: AppTextTheme.englishDefault(
-                  fontSize: 13,
-                  color: bodyColor.withValues(alpha: 0.8),
-                ).copyWith(height: 1.5),
-              ),
-              const SizedBox(height: 24),
-              ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: kDonateContentMaxWidth,
-                ),
-                child: DonateUpiCard(bodyColor: bodyColor, isDark: isDark),
-              ),
-              const SizedBox(height: 18),
-              ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: kDonateContentMaxWidth,
-                ),
-                child: DonateAmountSelector(
-                  selected: _selected,
-                  controller: _amountController,
-                  onSelect: _selectPreset,
-                  onTyped: () => setState(() {}),
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                ),
-              ),
-              const SizedBox(height: 14),
-              ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: kDonateContentMaxWidth,
-                ),
-                child: DonatePayPalButton(
-                  amount: _amount,
-                  amountAtTap: () => _amount,
-                ),
+              DonateSupportPanel(
+                bodyColor: bodyColor,
+                isDark: isDark,
+                selected: _selected,
+                controller: _amountController,
+                onSelect: _selectPreset,
+                onTyped: () => setState(() {}),
+                amount: _amount,
+                amountAtTap: () => _amount,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               ),
             ],
           ),

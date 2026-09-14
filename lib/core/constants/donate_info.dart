@@ -47,9 +47,14 @@ class DonateInfo {
 
   static const String upiPayeeName = 'Saleem K C';
 
-  static const String upiHeading = 'Donate by UPI';
+  static const String upiHeading = 'Scan to Contribute';
 
   static const String upiNote = 'Scan to pay with any UPI app';
+
+  static const String paypalHeading = 'Donate via PayPal';
+
+  static const String paypalNote =
+      'Choose an amount and pay securely with PayPal.';
 
   /// PayPal with the amount filled in. The currency is stated explicitly:
   /// `paypal.me/<name>/100` renders in the *sender's* currency, so a rupee
