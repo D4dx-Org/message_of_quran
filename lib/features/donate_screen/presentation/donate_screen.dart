@@ -6,6 +6,7 @@ import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/features/donate_screen/presentation/widgets/donate_amount_selector.dart';
 import 'package:the_message_of_the_quran/features/donate_screen/presentation/widgets/donate_bank_card.dart';
 import 'package:the_message_of_the_quran/features/donate_screen/presentation/widgets/donate_paypal_button.dart';
+import 'package:the_message_of_the_quran/features/donate_screen/presentation/widgets/donate_upi_card.dart';
 
 class DonateScreen extends StatefulWidget {
   const DonateScreen({super.key});
@@ -119,6 +120,13 @@ class _DonateScreenState extends State<DonateScreen> {
                   fontSize: 13,
                   color: bodyColor.withValues(alpha: 0.8),
                 ).copyWith(height: 1.5),
+              ),
+              const SizedBox(height: 24),
+              ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: kDonateContentMaxWidth,
+                ),
+                child: DonateUpiCard(bodyColor: bodyColor, isDark: isDark),
               ),
             ],
           ),
