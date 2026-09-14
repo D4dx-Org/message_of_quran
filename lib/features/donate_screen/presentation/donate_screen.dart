@@ -88,29 +88,6 @@ class _DonateScreenState extends State<DonateScreen> {
                 constraints: const BoxConstraints(
                   maxWidth: kDonateContentMaxWidth,
                 ),
-                child: DonateAmountSelector(
-                  selected: _selected,
-                  controller: _amountController,
-                  onSelect: _selectPreset,
-                  onTyped: () => setState(() {}),
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                ),
-              ),
-              const SizedBox(height: 18),
-              ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: kDonateContentMaxWidth,
-                ),
-                child: DonatePayPalButton(
-                  amount: _amount,
-                  amountAtTap: () => _amount,
-                ),
-              ),
-              const SizedBox(height: 24),
-              ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: kDonateContentMaxWidth,
-                ),
                 child: DonateBankCard(bodyColor: bodyColor, isDark: isDark),
               ),
               const SizedBox(height: 16),
@@ -127,6 +104,29 @@ class _DonateScreenState extends State<DonateScreen> {
                   maxWidth: kDonateContentMaxWidth,
                 ),
                 child: DonateUpiCard(bodyColor: bodyColor, isDark: isDark),
+              ),
+              const SizedBox(height: 18),
+              ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: kDonateContentMaxWidth,
+                ),
+                child: DonateAmountSelector(
+                  selected: _selected,
+                  controller: _amountController,
+                  onSelect: _selectPreset,
+                  onTyped: () => setState(() {}),
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                ),
+              ),
+              const SizedBox(height: 14),
+              ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: kDonateContentMaxWidth,
+                ),
+                child: DonatePayPalButton(
+                  amount: _amount,
+                  amountAtTap: () => _amount,
+                ),
               ),
             ],
           ),
