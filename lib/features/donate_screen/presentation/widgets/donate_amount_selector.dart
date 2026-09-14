@@ -3,9 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:the_message_of_the_quran/core/constants/donate_info.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 
-/// Keeps the donate column from stretching into slabs on a wide screen.
-const double kDonateContentMaxWidth = 560;
-
 /// The preset amounts and the free-entry field, as one control.
 ///
 /// Presets select rather than pay, so the amount can be checked on the donate

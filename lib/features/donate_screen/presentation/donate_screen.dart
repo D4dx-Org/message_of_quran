@@ -5,14 +5,7 @@ import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_app_bar.dart';
 import 'package:the_message_of_the_quran/core/widgets/common_drawer.dart';
-import 'package:the_message_of_the_quran/features/donate_screen/presentation/widgets/donate_amount_selector.dart';
-import 'package:the_message_of_the_quran/features/donate_screen/presentation/widgets/donate_bank_card.dart';
-import 'package:the_message_of_the_quran/features/donate_screen/presentation/widgets/donate_paypal_button.dart';
-import 'package:the_message_of_the_quran/features/donate_screen/presentation/widgets/donate_upi_card.dart';
-
-/// Below this width there is no room for a second column, so the UPI card
-/// moves below the bank card instead of beside it.
-const double _kDonateTwoColumnBreakpoint = 760;
+import 'package:the_message_of_the_quran/features/donate_screen/presentation/widgets/donate_support_panel.dart';
 
 class DonateScreen extends StatefulWidget {
   const DonateScreen({super.key});
@@ -98,83 +91,16 @@ class _DonateScreenState extends State<DonateScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final bankColumn = Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      DonateBankCard(bodyColor: bodyColor, isDark: isDark),
-                      const SizedBox(height: 16),
-                      Text(
-                        DonateInfo.bankNote,
-                        style: AppTextTheme.englishDefault(
-                          fontSize: 13,
-                          color: bodyColor.withValues(alpha: 0.8),
-                        ).copyWith(height: 1.5),
-                      ),
-                    ],
-                  );
-                  final payColumn = Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      DonateUpiCard(bodyColor: bodyColor, isDark: isDark),
-                      const SizedBox(height: 18),
-                      DonateAmountSelector(
-                        selected: _selected,
-                        controller: _amountController,
-                        onSelect: _selectPreset,
-                        onTyped: () => setState(() {}),
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                        ],
-                      ),
-                      const SizedBox(height: 14),
-                      DonatePayPalButton(
-                        amount: _amount,
-                        amountAtTap: () => _amount,
-                      ),
-                    ],
-                  );
-
-                  if (constraints.maxWidth >= _kDonateTwoColumnBreakpoint) {
-                    return Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(
-                              maxWidth: kDonateContentMaxWidth,
-                            ),
-                            child: bankColumn,
-                          ),
-                        ),
-                        const SizedBox(width: 24),
-                        SizedBox(width: 300, child: payColumn),
-                      ],
-                    );
-                  }
-
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          maxWidth: kDonateContentMaxWidth,
-                        ),
-                        child: bankColumn,
-                      ),
-                      const SizedBox(height: 24),
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          maxWidth: kDonateContentMaxWidth,
-                        ),
-                        child: payColumn,
-                      ),
-                    ],
-                  );
-                },
+              DonateSupportPanel(
+                bodyColor: bodyColor,
+                isDark: isDark,
+                selected: _selected,
+                controller: _amountController,
+                onSelect: _selectPreset,
+                onTyped: () => setState(() {}),
+                amount: _amount,
+                amountAtTap: () => _amount,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               ),
             ],
           ),
