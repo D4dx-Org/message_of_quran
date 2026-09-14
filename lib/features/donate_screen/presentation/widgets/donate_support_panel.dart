@@ -36,13 +36,26 @@ class DonateSupportPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final payTint = theme.primaryColor.withValues(alpha: isDark ? 0.14 : 0.06);
-    final borderColor = theme.primaryColor.withValues(alpha: isDark ? 0.3 : 0.15);
+    final borderColor = theme.primaryColor.withValues(alpha: isDark ? 0.28 : 0.12);
+    final payGradient = LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: isDark
+          ? [
+              theme.primaryColor.withValues(alpha: 0.32),
+              theme.primaryColor.withValues(alpha: 0.14),
+            ]
+          : [
+              theme.primaryColor.withValues(alpha: 0.10),
+              theme.primaryColor.withValues(alpha: 0.03),
+            ],
+    );
 
     final payPanel = Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.fromLTRB(28, 32, 28, 32),
       child: DonatePayPanel(
         bodyColor: bodyColor,
+        isDark: isDark,
         selected: selected,
         controller: controller,
         onSelect: onSelect,
@@ -54,7 +67,7 @@ class DonateSupportPanel extends StatelessWidget {
     );
 
     final bankPanel = Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.fromLTRB(28, 32, 28, 32),
       child: DonateBankCard(bodyColor: bodyColor, isDark: isDark),
     );
 
@@ -62,10 +75,20 @@ class DonateSupportPanel extends StatelessWidget {
       builder: (context, constraints) {
         final isWide = constraints.maxWidth >= kDonateTwoColumnBreakpoint;
 
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: Container(
-            decoration: BoxDecoration(border: Border.all(color: borderColor)),
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: borderColor),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.28 : 0.06),
+                blurRadius: 32,
+                offset: const Offset(0, 12),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
             child: isWide
                 ? IntrinsicHeight(
                     child: Row(
@@ -73,7 +96,10 @@ class DonateSupportPanel extends StatelessWidget {
                       children: [
                         Expanded(
                           flex: 4,
-                          child: ColoredBox(color: payTint, child: payPanel),
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(gradient: payGradient),
+                            child: payPanel,
+                          ),
                         ),
                         VerticalDivider(width: 1, color: borderColor),
                         Expanded(flex: 6, child: bankPanel),
@@ -83,7 +109,10 @@ class DonateSupportPanel extends StatelessWidget {
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      ColoredBox(color: payTint, child: payPanel),
+                      DecoratedBox(
+                        decoration: BoxDecoration(gradient: payGradient),
+                        child: payPanel,
+                      ),
                       Divider(height: 1, color: borderColor),
                       bankPanel,
                     ],

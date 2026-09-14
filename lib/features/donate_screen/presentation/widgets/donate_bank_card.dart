@@ -18,27 +18,30 @@ class DonateBankCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dividerColor = bodyColor.withValues(alpha: 0.08);
+    const rows = DonateInfo.bankDetails;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           DonateInfo.bankHeading,
           style: AppTextTheme.englishDefault(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
+            fontSize: 22,
+            fontWeight: FontWeight.w800,
             color: bodyColor,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
         Text(
           DonateInfo.bankNote,
           style: AppTextTheme.englishDefault(
-            fontSize: 13,
-            color: bodyColor.withValues(alpha: 0.7),
-          ).copyWith(height: 1.5),
+            fontSize: 14,
+            color: bodyColor.withValues(alpha: 0.65),
+          ).copyWith(height: 1.55),
         ),
-        const SizedBox(height: 20),
-        for (final (label, value) in DonateInfo.bankDetails)
+        const SizedBox(height: 24),
+        for (final (label, value) in rows)
           Padding(
             padding: const EdgeInsets.only(bottom: 14),
             child: Column(
@@ -48,24 +51,29 @@ class DonateBankCard extends StatelessWidget {
                   label,
                   style: AppTextTheme.englishDefault(
                     fontSize: 12,
-                    color: bodyColor.withValues(alpha: 0.6),
+                    color: bodyColor.withValues(alpha: 0.55),
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 3),
                 // Selectable so an account number, IFSC or SWIFT code can be
                 // copied out rather than retyped from the screen.
                 SelectableText(
                   value,
                   style: AppTextTheme.englishDefault(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 15.5,
+                    fontWeight: FontWeight.w700,
                     color: bodyColor,
                   ),
                 ),
+                if ((label, value) != rows.last)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 14),
+                    child: Divider(height: 1, color: dividerColor),
+                  ),
               ],
             ),
           ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 10),
         _UpiCopyRow(bodyColor: bodyColor, isDark: isDark),
       ],
     );
@@ -99,64 +107,63 @@ class _UpiCopyRowState extends State<_UpiCopyRow> {
     final theme = Theme.of(context);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
       decoration: BoxDecoration(
-        color: widget.isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.03),
-        borderRadius: BorderRadius.circular(10),
+        color: widget.isDark ? Colors.white10 : theme.primaryColor.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: theme.primaryColor.withValues(alpha: widget.isDark ? 0.3 : 0.15),
+          color: theme.primaryColor.withValues(alpha: widget.isDark ? 0.28 : 0.14),
         ),
       ),
       child: Row(
         children: [
           Icon(
-            Icons.qr_code_2_outlined,
-            size: 18,
-            color: widget.bodyColor.withValues(alpha: 0.6),
+            Icons.qr_code_2_rounded,
+            size: 20,
+            color: theme.primaryColor.withValues(alpha: widget.isDark ? 0.85 : 0.7),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 10),
           Expanded(
-            child: Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'UPI ID: ',
-                    style: AppTextTheme.englishDefault(
-                      fontSize: 13,
-                      color: widget.bodyColor.withValues(alpha: 0.7),
-                    ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'UPI ID',
+                  style: AppTextTheme.englishDefault(
+                    fontSize: 11,
+                    color: widget.bodyColor.withValues(alpha: 0.55),
                   ),
-                  TextSpan(
-                    text: DonateInfo.upiId,
-                    style: AppTextTheme.englishDefault(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: widget.bodyColor,
-                    ),
+                ),
+                Text(
+                  DonateInfo.upiId,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextTheme.englishDefault(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: widget.bodyColor,
                   ),
-                ],
-              ),
-              overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
           ),
           const SizedBox(width: 8),
-          OutlinedButton(
-            onPressed: _copy,
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              side: BorderSide(color: theme.primaryColor.withValues(alpha: 0.4)),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            child: Text(
-              _copied ? 'Copied' : 'Copy',
-              style: AppTextTheme.englishDefault(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: theme.primaryColor,
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 150),
+            child: FilledButton.tonalIcon(
+              key: ValueKey(_copied),
+              onPressed: _copy,
+              icon: Icon(_copied ? Icons.check_rounded : Icons.copy_rounded, size: 16),
+              label: Text(_copied ? 'Copied' : 'Copy'),
+              style: FilledButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                textStyle: AppTextTheme.englishDefault(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w700,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
               ),
             ),
           ),
