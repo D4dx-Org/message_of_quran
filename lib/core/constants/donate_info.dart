@@ -43,9 +43,13 @@ class DonateInfo {
   /// UPI VPA that the amount buttons pay into. While this is empty the
   /// buttons fall back to PayPal, so a wrong or guessed id can never collect
   /// money.
-  static const String upiId = '';
+  static const String upiId = 'kcsaleem07@oksbi';
 
   static const String upiPayeeName = 'Saleem K C';
+
+  static const String upiHeading = 'Donate by UPI';
+
+  static const String upiNote = 'Scan to pay with any UPI app';
 
   /// PayPal with the amount filled in. The currency is stated explicitly:
   /// `paypal.me/<name>/100` renders in the *sender's* currency, so a rupee
