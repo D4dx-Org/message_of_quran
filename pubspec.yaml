@@ -41,6 +41,7 @@ dependencies:
   flutter_html: ^3.0.0
   flutter_islamic_icons: ^1.0.2
   flutter_linkify: ^6.0.0
+  linkify: ^5.0.0
   flutter_local_notifications: ^20.0.0
   flutter_svg: ^2.2.3
   package_info_plus: ^9.0.1
