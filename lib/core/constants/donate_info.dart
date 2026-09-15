@@ -6,7 +6,8 @@
 class DonateInfo {
   DonateInfo._();
 
-  static const String heading = 'Donate to www.quranasadmalayalam.in';
+  static const String heading =
+      'SUPPORT US with Sadaqa Jaariya to: www.quranasadmalayalam.in';
 
   static const String intro =
       'This website, based in India, is a free non-profit Islamic knowledge '
