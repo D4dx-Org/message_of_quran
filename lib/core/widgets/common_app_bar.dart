@@ -31,6 +31,7 @@ class CommonWebAppBarActions extends StatefulWidget {
     this.showThemeButton = true,
     this.showHome = true,
     this.settingsLast = false,
+    this.showSupportUs = false,
   });
 
   final int? selectedPageIndex;
@@ -42,6 +43,11 @@ class CommonWebAppBarActions extends StatefulWidget {
   final bool isBookmarkNeeded;
   final bool showLanguageButton;
   final bool showThemeButton;
+
+  /// Whether to show a "Support Us" nav item, positioned right before
+  /// Settings. Off by default since this row is reused for compact toolbars
+  /// (e.g. the surah reader's) that have no room for an extra destination.
+  final bool showSupportUs;
 
   /// Whether to include the Home nav item. Set `false` where the app bar's
   /// brand logo already navigates home (e.g. narrow mobile-web views, where
@@ -90,6 +96,7 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
   final Set<int> _hoveredPageIndices = <int>{};
   bool _isSearchHovered = false;
   bool _isThemeHovered = false;
+  bool _isSupportUsHovered = false;
 
   void _setHoveredPage(int pageIndex, bool hovered) {
     final isTracked = _hoveredPageIndices.contains(pageIndex);
@@ -115,6 +122,13 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
     if (_isThemeHovered == hovered) return;
     setState(() {
       _isThemeHovered = hovered;
+    });
+  }
+
+  void _setSupportUsHovered(bool hovered) {
+    if (_isSupportUsHovered == hovered) return;
+    setState(() {
+      _isSupportUsHovered = hovered;
     });
   }
 
@@ -227,6 +241,30 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
     );
   }
 
+  Widget _buildSupportUsButton({
+    required double iconSize,
+    required Color accentColor,
+  }) {
+    final isSelected = GoRouter.of(context).state.uri.path == '/donate';
+    return _buildToolbarButton(
+      label: 'Support Us',
+      isSelected: isSelected,
+      isHovered: _isSupportUsHovered,
+      onTap: () {
+        if (!isSelected) context.push('/donate');
+      },
+      onHover: _setSupportUsHovered,
+      url: '/donate',
+      icon: Icon(
+        Icons.volunteer_activism_outlined,
+        size: iconSize,
+        color: accentColor.withValues(
+          alpha: isSelected || _isSupportUsHovered ? 1.0 : 0.78,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     const accentColor = AppTheme.appBarForegroundColor;
@@ -254,12 +292,18 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (!isMobileWidth) ...[
-          for (final item in leadingItems)
+          for (final item in leadingItems) ...[
+            if (widget.showSupportUs && item.pageIndex == _settingsPageIndex)
+              _buildSupportUsButton(
+                iconSize: iconSize,
+                accentColor: accentColor,
+              ),
             _buildNavItemButton(
               item,
               iconSize: iconSize,
               accentColor: accentColor,
             ),
+          ],
           if (widget.showSearch)
             _buildToolbarButton(
               label: 'Search',
@@ -278,12 +322,18 @@ class _CommonWebAppBarActionsState extends State<CommonWebAppBarActions> {
                 height: iconSize,
               ),
             ),
-          for (final item in trailingItems)
+          for (final item in trailingItems) ...[
+            if (widget.showSupportUs && item.pageIndex == _settingsPageIndex)
+              _buildSupportUsButton(
+                iconSize: iconSize,
+                accentColor: accentColor,
+              ),
             _buildNavItemButton(
               item,
               iconSize: iconSize,
               accentColor: accentColor,
             ),
+          ],
         ],
         if (widget.showThemeButton)
           _buildToolbarButton(

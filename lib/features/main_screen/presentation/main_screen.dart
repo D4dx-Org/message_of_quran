@@ -205,6 +205,7 @@ class _MainScreenState extends State<MainScreen> {
       settingsLast: isNarrow,
       showThemeButton: !isNarrow,
       showLanguageButton: !isNarrow,
+      showSupportUs: !isNarrow,
       onSearchPressed: () => showWebFullTextSearchDialog(context),
     );
 
