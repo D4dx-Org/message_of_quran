@@ -31,6 +31,7 @@ import 'package:the_message_of_the_quran/features/splash_screen/presentation/spl
 import 'package:the_message_of_the_quran/features/surah_screen/presentation/surah_screen.dart';
 import 'package:the_message_of_the_quran/features/surah_screen/provider/surah_provider.dart';
 import 'package:the_message_of_the_quran/features/donate_screen/presentation/donate_screen.dart';
+import 'package:the_message_of_the_quran/features/about_screen/presentation/about_screen.dart';
 
 // Extra-data marker: pass as `extra` to pushReplacement() between
 // '/translator' and '/translator-en' to request an instant, transition-free
@@ -189,6 +190,11 @@ GoRouter buildAppRouter() {
         path: '/donate',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const DonateScreen(),
+      ),
+      GoRoute(
+        path: '/about',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const AboutScreen(),
       ),
       GoRoute(
         path: '/contact-us',

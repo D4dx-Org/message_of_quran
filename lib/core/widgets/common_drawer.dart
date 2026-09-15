@@ -270,6 +270,16 @@ class CommonDrawer extends StatelessWidget {
                           _navigateFromDrawer(context, '/contact-us');
                         },
                       ),
+                      _DrawerTile(
+                        title: isMalayalam ? 'ഞങ്ങളെക്കുറിച്ച്' : 'About Us',
+                        icon: Icons.info_outline,
+                        isMalayalam: isMalayalam,
+                        url: '/about',
+                        onTap: () {
+                          Navigator.pop(context);
+                          _navigateFromDrawer(context, '/about');
+                        },
+                      ),
                       if (!PlatformHelper.isWeb)
                       _DrawerTile(
                         title: 'Share App',
