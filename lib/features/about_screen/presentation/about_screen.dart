@@ -8,6 +8,16 @@ import 'package:the_message_of_the_quran/features/donate_screen/presentation/don
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+/// Section headings embedded in the Malayalam About Us copy that should
+/// render bold instead of as plain paragraph text.
+const Set<String> _malayalamHeadings = {
+  'ഇംഗ്ലീഷ്',
+  'മലയാളം',
+  'ഹദീസ് പഠന സൗകര്യം',
+  'പ്രധാന സവിശേഷതകൾ',
+  'ഞങ്ങളുടെ കാഴ്ചപ്പാട്',
+};
+
 class AboutScreen extends StatefulWidget {
   const AboutScreen({super.key});
 
@@ -97,6 +107,7 @@ class _AboutScreenState extends State<AboutScreen> {
                             'SUPPORT US': _openSupportUs,
                             '(D4DX Innovations LLP)': _launchD4dxUrl,
                           },
+                          boldPhrases: _malayalamHeadings,
                           style: AppTextTheme.localizedBody(
                             isMalayalam: isMalayalam,
                             fontSize: AppTextTheme.contentFontSize(context),
@@ -113,26 +124,6 @@ class _AboutScreenState extends State<AboutScreen> {
                           ).copyWith(
                             decoration: TextDecoration.underline,
                             decorationColor: Colors.blue,
-                          ),
-                        ),
-                      const SizedBox(height: 16),
-                      if (about.signedBy != null && about.signedBy!.isNotEmpty)
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: GestureDetector(
-                            onTap: _launchD4dxUrl,
-                            child: Text(
-                              '- ${about.signedBy!}',
-                              style: AppTextTheme.localizedLabel(
-                                isMalayalam: isMalayalam,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.blue,
-                              ).copyWith(
-                                decoration: TextDecoration.underline,
-                                decorationColor: Colors.blue,
-                              ),
-                            ),
                           ),
                         ),
                       const SizedBox(height: 20),
