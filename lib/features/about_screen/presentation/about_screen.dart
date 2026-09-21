@@ -55,6 +55,7 @@ class AboutScreen extends StatelessWidget {
                 onUrlTap: _openUrl,
                 anchors: {
                   AboutInfo.supportUsPhrase: () => context.push('/donate'),
+                  AboutInfo.d4dxPhrase: _launchD4dxUrl,
                 },
                 style: AppTextTheme.localizedBody(
                   isMalayalam: isMalayalam,

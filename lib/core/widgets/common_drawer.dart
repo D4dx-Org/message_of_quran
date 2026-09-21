@@ -244,6 +244,16 @@ class CommonDrawer extends StatelessWidget {
                         ],
                       ),
                       _DrawerTile(
+                        title: isMalayalam ? 'ഞങ്ങളെക്കുറിച്ച്' : 'About Us',
+                        icon: Icons.info_outline,
+                        isMalayalam: isMalayalam,
+                        url: '/about',
+                        onTap: () {
+                          Navigator.pop(context);
+                          _navigateFromDrawer(context, '/about');
+                        },
+                      ),
+                      _DrawerTile(
                         title: 'Feedback',
                         icon: Icons.mail_outline,
                         url: '/feedback',
@@ -268,16 +278,6 @@ class CommonDrawer extends StatelessWidget {
                         onTap: () {
                           Navigator.pop(context);
                           _navigateFromDrawer(context, '/contact-us');
-                        },
-                      ),
-                      _DrawerTile(
-                        title: isMalayalam ? 'ഞങ്ങളെക്കുറിച്ച്' : 'About Us',
-                        icon: Icons.info_outline,
-                        isMalayalam: isMalayalam,
-                        url: '/about',
-                        onTap: () {
-                          Navigator.pop(context);
-                          _navigateFromDrawer(context, '/about');
                         },
                       ),
                       if (!PlatformHelper.isWeb)
