@@ -57,6 +57,7 @@ class AboutScreen extends StatelessWidget {
                   AboutInfo.supportUsPhrase: () => context.push('/donate'),
                   AboutInfo.d4dxPhrase: _launchD4dxUrl,
                 },
+                boldPhrases: AboutInfo.malayalamHeadings,
                 style: AppTextTheme.localizedBody(
                   isMalayalam: isMalayalam,
                   fontSize: AppTextTheme.contentFontSize(context),
@@ -73,25 +74,6 @@ class AboutScreen extends StatelessWidget {
                 ).copyWith(
                   decoration: TextDecoration.underline,
                   decorationColor: Colors.blue,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: GestureDetector(
-                  onTap: _launchD4dxUrl,
-                  child: Text(
-                    '- ${AboutInfo.signedBy}',
-                    style: AppTextTheme.localizedLabel(
-                      isMalayalam: isMalayalam,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.blue,
-                    ).copyWith(
-                      decoration: TextDecoration.underline,
-                      decorationColor: Colors.blue,
-                    ),
-                  ),
                 ),
               ),
               const SizedBox(height: 16),
