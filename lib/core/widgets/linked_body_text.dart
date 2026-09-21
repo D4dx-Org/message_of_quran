@@ -81,7 +81,12 @@ class _LinkedBodyTextState extends State<LinkedBodyText> {
       spans.add(TextSpan(text: widget.text.substring(index)));
     }
 
-    return SelectableText.rich(
+    // Text.rich, not SelectableText.rich: on Android touch, SelectableText's
+    // own selection gesture wins the gesture arena over a span's embedded
+    // TapGestureRecognizer, so links inside it silently stop registering
+    // taps -- confirmed on-device (mouse clicks on web are unaffected,
+    // which is why this slipped through until tested on a phone).
+    return Text.rich(
       TextSpan(style: widget.style, children: spans),
     );
   }
