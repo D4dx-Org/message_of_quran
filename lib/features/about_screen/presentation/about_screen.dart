@@ -1,18 +1,12 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:linkify/linkify.dart' show linkify;
 import 'package:provider/provider.dart';
 import 'package:the_message_of_the_quran/core/theme/app_text_theme.dart';
 import 'package:the_message_of_the_quran/core/widgets/base_screen_layout.dart';
+import 'package:the_message_of_the_quran/core/widgets/linked_body_text.dart';
 import 'package:the_message_of_the_quran/features/about_screen/provider/about_providers.dart';
 import 'package:the_message_of_the_quran/features/donate_screen/presentation/donate_screen.dart';
 import 'package:the_message_of_the_quran/features/settings_screen/providers/language_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-/// The phrase in the About Us copy that should read as a link to the Donate
-/// screen instead of plain text.
-const String _supportUsPhrase = 'SUPPORT US';
 
 class AboutScreen extends StatefulWidget {
   const AboutScreen({super.key});
@@ -46,52 +40,14 @@ class _AboutScreenState extends State<AboutScreen> {
   }
 
   void _openSupportUs() {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => const DonateScreen()));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const DonateScreen()),
+    );
   }
 
-  /// Splits [text] the way [Linkify] would (auto-detecting URLs/emails),
-  /// then further splits any plain-text segment on [_supportUsPhrase] so
-  /// that phrase becomes its own tappable span alongside the real links.
-  List<InlineSpan> _buildDescriptionSpans({
-    required String text,
-    required TextStyle textStyle,
-    required TextStyle linkStyle,
-  }) {
-    final spans = <InlineSpan>[];
-    for (final element in linkify(text)) {
-      if (element is LinkableElement) {
-        spans.add(
-          TextSpan(
-            text: element.text,
-            style: linkStyle,
-            recognizer: TapGestureRecognizer()
-              ..onTap = () => _launchLink(element),
-          ),
-        );
-        continue;
-      }
-
-      final parts = element.text.split(_supportUsPhrase);
-      for (var i = 0; i < parts.length; i++) {
-        if (parts[i].isNotEmpty) {
-          spans.add(TextSpan(text: parts[i], style: textStyle));
-        }
-        if (i != parts.length - 1) {
-          spans.add(
-            TextSpan(
-              text: _supportUsPhrase,
-              style: linkStyle,
-              recognizer: TapGestureRecognizer()..onTap = _openSupportUs,
-            ),
-          );
-        }
-      }
-    }
-    return spans;
-  }
-
-  Future<void> _launchLink(LinkableElement link) async {
-    final uri = Uri.parse(link.url);
+  Future<void> _openUrl(String url) async {
+    final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
@@ -134,30 +90,30 @@ class _AboutScreenState extends State<AboutScreen> {
                     children: [
                       if (about.description != null &&
                           about.description!.isNotEmpty)
-                        Text.rich(
-                          TextSpan(
-                            children: _buildDescriptionSpans(
-                              text: about.description!,
-                              textStyle: AppTextTheme.localizedBody(
-                                isMalayalam: isMalayalam,
-                                fontSize: AppTextTheme.contentFontSize(context),
-                                fontWeight: FontWeight.w500,
-                                height: 1.7,
-                                color: AppTextTheme.contentColor(context),
-                              ),
-                              linkStyle: AppTextTheme.localizedBody(
-                                isMalayalam: isMalayalam,
-                                fontSize: AppTextTheme.contentFontSize(context),
-                                fontWeight: FontWeight.w500,
-                                height: 1.7,
-                                color: Colors.blue,
-                              ).copyWith(
-                                decoration: TextDecoration.underline,
-                                decorationColor: Colors.blue,
-                              ),
-                            ),
+                        LinkedBodyText(
+                          text: about.description!,
+                          onUrlTap: _openUrl,
+                          anchors: {
+                            'SUPPORT US': _openSupportUs,
+                            '(D4DX Innovations LLP)': _launchD4dxUrl,
+                          },
+                          style: AppTextTheme.localizedBody(
+                            isMalayalam: isMalayalam,
+                            fontSize: AppTextTheme.contentFontSize(context),
+                            fontWeight: FontWeight.w500,
+                            height: 1.7,
+                            color: AppTextTheme.contentColor(context),
                           ),
-                          textAlign: TextAlign.left,
+                          linkStyle: AppTextTheme.localizedBody(
+                            isMalayalam: isMalayalam,
+                            fontSize: AppTextTheme.contentFontSize(context),
+                            fontWeight: FontWeight.w500,
+                            height: 1.7,
+                            color: Colors.blue,
+                          ).copyWith(
+                            decoration: TextDecoration.underline,
+                            decorationColor: Colors.blue,
+                          ),
                         ),
                       const SizedBox(height: 16),
                       if (about.signedBy != null && about.signedBy!.isNotEmpty)
