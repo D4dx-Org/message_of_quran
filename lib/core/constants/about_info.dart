@@ -24,8 +24,6 @@ class AboutInfo {
   /// Section headings within [descriptionMalayalam] that should render
   /// bold instead of as plain paragraph text.
   static const Set<String> malayalamHeadings = {
-    'ഇംഗ്ലീഷ്',
-    'മലയാളം',
     'ഹദീസ് പഠന സൗകര്യം',
     'പ്രധാന സവിശേഷതകൾ',
     'ഞങ്ങളുടെ കാഴ്ചപ്പാട്',
