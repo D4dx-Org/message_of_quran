@@ -11,8 +11,6 @@ import 'package:url_launcher/url_launcher.dart';
 /// Section headings embedded in the Malayalam About Us copy that should
 /// render bold instead of as plain paragraph text.
 const Set<String> _malayalamHeadings = {
-  'ഇംഗ്ലീഷ്',
-  'മലയാളം',
   'ഹദീസ് പഠന സൗകര്യം',
   'പ്രധാന സവിശേഷതകൾ',
   'ഞങ്ങളുടെ കാഴ്ചപ്പാട്',
