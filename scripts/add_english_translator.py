@@ -17,7 +17,7 @@ He authored four books, Thankunju Ponkunju, a book on Islamic parenting, Nanmayu
 
 In addition, he translated three books by the U.A.E. Vice President, Prime Minister and Ruler of Dubai Sheikh Mohammed bin Rashid Al Maktoum - My Vision, Flashes of Thought and Reflections on Happiness and Positivity, two books by Ismail Raji Al Farooqui, Tawheed: Its Implications for Thought and Life and Islamization of Knowledge, Muhammed Asad's Principles of State and Government in Islam, and Mohammed A.J. Al Fahim's From Rags to Riches: A Story of Abu Dhabi.
 
-His wife is Shameem, who was a teacher and head in various government high schools. Children are Shauqeen Mizaj, engineer, writer, and journalist by profession and wife of Riyas Babu, a senior officer in the Indian Information Service, senior data engineer Javed Farzan in Ottawa, Canada who married Dr. Labeeba Mahmood, and audiologist Farishtha Thahseen in Toronto, wife of Inswaf Rahmatullah (Bell, Canada)."""
+His wife is Shameem, who was a teacher and head in various government high schools. Children are Shauqeen Mizaj, engineer, writer, and journalist by profession and wife of Riyas Babu, a senior officer in the Indian Information Service, senior data engineer Javed Farzan in Ottawa, Canada who married Dr. Labiba Mahamood, and audiologist Farishtha Thahseen in Toronto, wife of Inswaf Rahmatullah (Bell, Canada)."""
 
 EMAIL = "kcsaleem07@gmail.com"
 ADDRESS = "Shadan, Check Post Road, Puthiyangadi, Kozhikode - 673021. Kerala. India."
