@@ -1,2 +1,5 @@
 #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
 #include "Generated.xcconfig"
+
+// Xcode 27 lipo fails -verify_arch with multiple archs, breaking Flutter's simulator framework check.
+ARCHS[sdk=iphonesimulator*] = arm64
