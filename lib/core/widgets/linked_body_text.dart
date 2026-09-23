@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 /// [Linkify] only knows how to find URLs, but some of our copy also names a
 /// destination in words — "DONATE NOW", "(Mus'haf)" — and those words should
 /// be tappable too. Rather than nesting widgets and breaking the paragraph
-/// flow, this builds one span tree: URLs are matched the same way Linkify
-/// matches them, and each key of [anchors] becomes a tappable span running its
-/// callback.
+/// flow, this builds one span tree per paragraph: URLs are matched the same
+/// way Linkify matches them, and each key of [anchors] becomes a tappable
+/// span running its callback.
 ///
 /// Anchors are matched literally and case-sensitively, so a phrase that is not
 /// present (the Malayalam copy, for instance) simply renders as plain text.
@@ -19,6 +19,11 @@ import 'package:flutter/material.dart';
 /// otherwise a heading that repeats an ordinary word (e.g. "മലയാളം") would
 /// bold that word everywhere it appears in the body text, not just where it
 /// stands alone as a heading.
+///
+/// Lines starting with "• " render as an indented bullet with a hanging
+/// indent (the marker sits in its own column so wrapped lines align under
+/// the text, not under the bullet), matching how the source document
+/// formats its lists rather than gluing the bullet glyph to flush-left text.
 class LinkedBodyText extends StatefulWidget {
   const LinkedBodyText({
     super.key,
@@ -53,6 +58,7 @@ class _LinkedBodyTextState extends State<LinkedBodyText> {
   }
 
   static const _urlPattern = r'(?:https?://|www\.)[^\s,;)]+';
+  static const _bulletPrefix = '• ';
 
   /// Builds spans for one line: URLs and [anchors] become tappable, and
   /// anything else renders as plain text in [style].
@@ -88,14 +94,9 @@ class _LinkedBodyTextState extends State<LinkedBodyText> {
     return spans;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    for (final recognizer in _recognizers) {
-      recognizer.dispose();
-    }
-    _recognizers.clear();
-
-    final lines = widget.text.split('\n');
+  /// Joins a run of non-bullet lines back into one paragraph block, so blank
+  /// lines between them still render as the blank-line gap they represent.
+  Widget _paragraphBlock(List<String> lines) {
     final spans = <InlineSpan>[];
     for (var i = 0; i < lines.length; i++) {
       final line = lines[i];
@@ -113,14 +114,62 @@ class _LinkedBodyTextState extends State<LinkedBodyText> {
         spans.add(const TextSpan(text: '\n'));
       }
     }
+    return Text.rich(TextSpan(style: widget.style, children: spans));
+  }
+
+  Widget _bulletBlock(String content) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20, bottom: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('•', style: widget.style),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text.rich(
+              TextSpan(style: widget.style, children: _lineSpans(content)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    for (final recognizer in _recognizers) {
+      recognizer.dispose();
+    }
+    _recognizers.clear();
+
+    final lines = widget.text.split('\n');
+    final blocks = <Widget>[];
+    var paragraph = <String>[];
+
+    void flushParagraph() {
+      if (paragraph.isEmpty) return;
+      blocks.add(_paragraphBlock(paragraph));
+      paragraph = [];
+    }
+
+    for (final line in lines) {
+      if (line.startsWith(_bulletPrefix)) {
+        flushParagraph();
+        blocks.add(_bulletBlock(line.substring(_bulletPrefix.length)));
+      } else {
+        paragraph.add(line);
+      }
+    }
+    flushParagraph();
 
     // Text.rich, not SelectableText.rich: on Android touch, SelectableText's
     // own selection gesture wins the gesture arena over a span's embedded
     // TapGestureRecognizer, so links inside it silently stop registering
     // taps -- confirmed on-device (mouse clicks on web are unaffected,
     // which is why this slipped through until tested on a phone).
-    return Text.rich(
-      TextSpan(style: widget.style, children: spans),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: blocks,
     );
   }
 }
