@@ -50,7 +50,7 @@ class _MainScreenState extends State<MainScreen> {
       assetPath: 'assets/icons/bookmark-img.png',
     ),
     (
-      label: '',
+      label: "Mus'haf",
       iconData: null,
       assetPath: 'assets/icons/mushaf-img-2.png',
     ),
@@ -61,6 +61,14 @@ class _MainScreenState extends State<MainScreen> {
     ),
     (label: 'About', iconData: null, assetPath: 'assets/icons/about-img.png'),
   ];
+
+  // Phone bottom nav only: Home and Mus'haf trade visual slots -- Home sits
+  // in the floating middle spot (position 2) and Mus'haf takes Home's old
+  // leftmost spot (position 0), while Bookmarks/Settings/About stay put.
+  // Content indices (0 = Home, 2 = Mus'haf) are unchanged everywhere else
+  // (app bar, back-button root, search delegates, tablet rail, web shell),
+  // so this maps visual position -> content index for this row only.
+  static const List<int> _phoneNavVisualOrder = [2, 1, 0, 3, 4];
 
   static const List<Widget> _pages = [
     HomeScreen(),
@@ -581,13 +589,13 @@ class _MainScreenState extends State<MainScreen> {
             alignment: Alignment.topCenter,
             child: FloatingActionButton(
             onPressed: () {
-              _onItemTapped(2);
+              _onItemTapped(0);
             },
             child: Image.asset(
-              _navItems[2].assetPath!,
+              _navItems[0].assetPath!,
               width: _navIconSize * scale,
               height: _navIconSize * scale,
-              color: isDarkMode && displayIndex != 2 ? inactiveColor : Colors.white,
+              color: isDarkMode && displayIndex != 0 ? inactiveColor : Colors.white,
             ),
             ),
           ),
@@ -632,12 +640,15 @@ class _MainScreenState extends State<MainScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Row(
-                      children: List.generate(_navItems.length, (index) {
+                      children: List.generate(_phoneNavVisualOrder.length, (
+                        position,
+                      ) {
+                        final index = _phoneNavVisualOrder[position];
                         final item = _navItems[index];
                         final isSelected = displayIndex == index;
-                        final isMushaf = index == 2;
+                        final isFabSlot = position == 2;
 
-                        final color = isMushaf
+                        final color = isFabSlot
                             ? Colors.white
                             : isSelected
                             ? (isDarkMode ? Colors.white : AppTheme.appIconTheme)
@@ -664,7 +675,7 @@ class _MainScreenState extends State<MainScreen> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    if (item.label.isEmpty)
+                                    if (isFabSlot)
                                       SizedBox.square(
                                         dimension: _navItemSize(index) * scale,
                                       )
