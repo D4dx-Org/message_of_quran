@@ -4,7 +4,8 @@
         {
             "name": "Flutter: Selected Device",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "toolArgs": ["--dart-define-from-file=dart_defines.json"]
         }
     ]
 }

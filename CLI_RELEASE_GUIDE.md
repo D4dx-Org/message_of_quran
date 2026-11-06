@@ -423,7 +423,7 @@ git push origin v2.0.10+36
 
 ### 5. Build AAB (Android)
 ```bash
-flutter build appbundle --release
+flutter build appbundle --release --dart-define-from-file=dart_defines.json
 # Output: build/app/outputs/bundle/release/app-release.aab
 ```
 
@@ -440,7 +440,7 @@ The Gradle Play Publisher plugin:
 
 ### 7. Build IPA (iOS)
 ```bash
-flutter build ipa --release
+flutter build ipa --release --dart-define-from-file=dart_defines.json
 # Output: build/ios/ipa/YourApp.ipa
 ```
 
@@ -696,7 +696,7 @@ gcloud services enable androidpublisher.googleapis.com --project=YOUR_PROJECT_ID
 
 - Check Xcode signing: `open ios/Runner.xcworkspace` → Signing & Capabilities
 - Make sure a valid provisioning profile is installed
-- Try: `flutter clean && flutter build ipa --release`
+- Try: `flutter clean && flutter build ipa --release --dart-define-from-file=dart_defines.json`
 
 ### "xcrun altool" returns authentication error
 
